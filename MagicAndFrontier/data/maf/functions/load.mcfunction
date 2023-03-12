@@ -6,6 +6,10 @@ function maf:magic/load
 
 scoreboard objectives add p7_playerID dummy
 
+
+# 定数
+scoreboard objectives add const0 dummy
+
 # 諸計算用
 scoreboard objectives add tmp dummy
 scoreboard objectives add tmp2 dummy

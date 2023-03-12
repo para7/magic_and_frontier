@@ -1,10 +1,23 @@
-# 魔法の使用が確定したら、魔法IDをここに投入
+# 魔導書に設定されているIDをそのまま代入する先
 scoreboard objectives add p7_magicID dummy
 
 scoreboard objectives add p7_MP dummy
 scoreboard objectives add p7_MaxMP dummy
 
-bossbar add mpbar1 "MP"
+
+scoreboard objectives add p7_castCost dummy
+scoreboard objectives add p7_castTime dummy
+# あえてmagicIDと二重にすることで、コストが違う同効果魔法の実装などを簡単に実現
+scoreboard objectives add p7_castID dummy
+
+
+ 
+# MP自然回復タイマー
+scoreboard objectives add p7_MPTick dummy
+
+# scoreboard objectives add p7_
+
+function maf:magic/setdb
 
 bossbar add mpbar1 "MP"
 bossbar set minecraft:mpbar1 style notched_10
@@ -66,5 +79,3 @@ bossbar set minecraft:mpbar19 color green
 bossbar add mpbar20 "MP"
 bossbar set minecraft:mpbar20 style notched_10
 bossbar set minecraft:mpbar20 color green
-
-# grimoire

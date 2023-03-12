@@ -1,1 +1,0 @@
-tellraw @s [{"text":"使用した魔法ID : "},{"score":{"name":"@s","objective":"p7_magicID"}}]
