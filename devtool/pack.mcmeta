@@ -1,6 +1,6 @@
 {
-    "pack": {
-        "pack_format": 6,
-        "description": "前提MOD 必須"
-    }
+  "pack": {
+    "pack_format": 12,
+    "description": "開発用"
+  }
 }

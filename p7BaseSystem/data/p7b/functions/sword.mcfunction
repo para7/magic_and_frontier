@@ -1,3 +1,4 @@
+# TODO: 処理順固定のため移動する
 
 scoreboard players set @a p7_UseSword 0
 execute if entity @a[scores={p7_dealt=1..},nbt={SelectedItem:{id:"minecraft:wooden_sword"}}] run scoreboard players set @a p7_UseSword 1

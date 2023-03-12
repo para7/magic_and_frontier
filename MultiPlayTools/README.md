@@ -1,16 +1,27 @@
 # マルチプレイ補助システム
 
-マルチプレイ用のユーティリティツール集です。  
-欲しい機能がありましたら動画のコメント欄や github の issue 等に意見をお願いします。
+マルチプレイ用の補助ツール集
 
-解説動画 url:
+ほか欲しい機能があればフォームや issue などで送ってください。検討します
 
 # 使い方
 
 要管理者権限
 
+# 全体設定を選択
+
+チャット欄にメニューが出ます
+
+```
 /function mptools:config/menu
+```
 
-様々な機能を選択できます。
+# サイドバーなどに出す情報を変更する
 
-/function mptools:config/setdisplay\_なんとかかんとか
+同じくチャット欄にメニューが出ます
+
+```
+/function mptools:config/setdisplay_belowname
+/function mptools:config/setdisplay_list
+/function mptools:config/setdisplay_sidebar
+```

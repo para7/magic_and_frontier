@@ -1,0 +1,1 @@
+advancement revoke @a only maf:entered_world

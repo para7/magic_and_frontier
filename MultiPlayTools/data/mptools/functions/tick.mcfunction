@@ -4,7 +4,7 @@ execute if data storage p7_:mpu {glow: true} run effect give @a minecraft:glowin
 execute as @a run function mptools:system/tick
 
 # ログインメッセージ
-execute as @a[scores={p7_logout=1..}] run function mptools:system/logintell
+# execute as @a[scores={p7_logout=1..}] run function mptools:system/logintell
 
 # ベッド通知
 execute if data storage p7_:mpu {bed: true} run function mptools:system/bednotice/main
