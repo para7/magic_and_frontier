@@ -1,0 +1,1 @@
+bossbar set minecraft:mpbar1 players @s
