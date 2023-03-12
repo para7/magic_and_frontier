@@ -5,6 +5,6 @@
     }
   },
   "rewards": {
-    "function": "p7:init"
+    "function": "mptools:init"
   }
 }

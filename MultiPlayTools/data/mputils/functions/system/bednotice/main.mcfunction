@@ -1,1 +1,0 @@
-execute as @a[scores={BedNotification=1..}] run function mputils:system/bednotice/notice

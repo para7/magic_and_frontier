@@ -5,6 +5,6 @@
     }
   },
   "rewards": {
-    "function": "mputils:init"
+    "function": "p7_:init"
   }
 }

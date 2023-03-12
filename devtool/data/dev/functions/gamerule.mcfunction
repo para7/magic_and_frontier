@@ -1,4 +1,4 @@
-time set 1000
+time set day
 
 gamerule doDaylightCycle false
 gamerule keepInventory true
