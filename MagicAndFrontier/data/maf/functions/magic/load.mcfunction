@@ -17,7 +17,7 @@ scoreboard objectives add p7_MPTick dummy
 
 # scoreboard objectives add p7_
 
-function maf:magic/setdb
+function maf:magic/cast/setdb
 
 bossbar add mpbar1 "MP"
 bossbar set minecraft:mpbar1 style notched_10

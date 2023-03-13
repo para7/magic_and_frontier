@@ -1,1 +1,0 @@
-data modify storage p7:maf_magicdb data set value {m1:{id:1, cost: 15, cast:30}}
