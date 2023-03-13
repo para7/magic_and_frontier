@@ -8,6 +8,7 @@ scoreboard objectives add p7_playerID dummy
 
 scoreboard objectives add p7_move dummy
 
+
 scoreboard objectives add p7_walkCM minecraft.custom:minecraft.walk_one_cm
 
 # エリトラ

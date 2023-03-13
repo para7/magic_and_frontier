@@ -14,5 +14,3 @@ playsound minecraft:entity.evoker.cast_spell master @a ~ ~ ~ 2 2
 playsound minecraft:entity.evoker.cast_spell master @a ~ ~ ~ 2 0.5
 
 tellraw @a[distance=..6] [{"selector":"@s"},{"text":" は ヒーリング を唱えた！"}]
-
-scoreboard players remove @s p7_MP 15

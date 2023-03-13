@@ -1,1 +1,1 @@
-data modify storage p7:maf_magicdb data set value {m1:{id:1, cost: 15, cast:5},m2:{id:1, cost: 15, cast:30}}
+data modify storage p7:maf_magicdb data set value {m1:{id:1, cost: 15, cast:15,title: "ヒーリング【高燃費版】"},m2:{id:1, cost: 5, cast:45, title: "ヒーリング【低燃費版】"}}
