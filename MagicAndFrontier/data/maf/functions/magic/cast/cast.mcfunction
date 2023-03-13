@@ -5,7 +5,8 @@
 scoreboard players set @a p7_MPTick -40
 
 # 詠唱中の移動キャンセル 
-execute if entity @s[scores={p7_castTime=9..,p7_move=1..}] run function maf:magic/cast/cancel
+# 滑りうちのしきい値設定
+execute if entity @s[scores={p7_castTime=11..,p7_move=1..}] run function maf:magic/cast/cancel
 
 # 要消費MPチェック
 
