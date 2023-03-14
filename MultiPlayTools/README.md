@@ -13,7 +13,7 @@
 チャット欄にメニューが出ます
 
 ```
-/function mptools:config/menu
+/function mpt:config/menu
 ```
 
 # サイドバーなどに出す情報を変更する
@@ -21,7 +21,7 @@
 同じくチャット欄にメニューが出ます
 
 ```
-/function mptools:config/setdisplay_belowname
-/function mptools:config/setdisplay_list
-/function mptools:config/setdisplay_sidebar
+/function mpt:config/setdisplay_belowname
+/function mpt:config/setdisplay_list
+/function mpt:config/setdisplay_sidebar
 ```

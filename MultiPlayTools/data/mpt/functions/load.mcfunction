@@ -6,12 +6,12 @@ scoreboard objectives add const60 dummy
 scoreboard objectives add const1200 dummy
 
 # 画面表示系
-scoreboard objectives add p7_Health health "HP"
-scoreboard objectives add p7_DeathCnt deathCount "リスポーン数"
-scoreboard objectives add p7_PlayTime minecraft.custom:minecraft.play_time
+scoreboard objectives add mpt_Health health "HP"
+scoreboard objectives add mpt_DeathCnt deathCount "リスポーン数"
+scoreboard objectives add mpt_PlayTime minecraft.custom:minecraft.play_time
 # scoreboard objectives add p7_PTSeconds dummy "プレイ時間(s)(未使用)"
-scoreboard objectives add p7_PTMinutes dummy "プレイ時間(m)"
-scoreboard objectives add p7_PTHours dummy "プレイ時間(h)"
+scoreboard objectives add mpt_PTMinutes dummy "プレイ時間(m)"
+scoreboard objectives add mpt_PTHours dummy "プレイ時間(h)"
 scoreboard objectives add tmp dummy
 
 # scoreboard objectives add p7_logout minecraft.custom:minecraft.leave_game
