@@ -50,7 +50,7 @@ https://docs.google.com/forms/d/e/1FAIpQLSdutG5Q5O34SY3zoA6wShnRi0LcSfw72-UXy7na
 
 - p7BaseSystem
 
-赤石愛さんの [oh my dat](https://github.com/Ai-Akaishi/OhMyDat) や [ScoreToHealth](https://github.com/Ai-Akaishi/ScoreToHealth) を導入検討中
+ほか赤石愛さんの [oh my dat](https://github.com/Ai-Akaishi/OhMyDat) や [ScoreToHealth](https://github.com/Ai-Akaishi/ScoreToHealth) を導入検討中
 
 ## 予定
 

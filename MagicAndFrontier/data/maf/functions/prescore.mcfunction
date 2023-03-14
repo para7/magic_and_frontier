@@ -19,4 +19,4 @@ scoreboard players operation @s p7_move += @s p7_sprintCM
 scoreboard players operation @s p7_move += @s p7_swimCM
 scoreboard players operation @s p7_move += @s p7_walkWaterCM
 scoreboard players operation @s p7_move += @s p7_underWaterCM
-scoreboard players operation @s p7_move += @s p7_isMovedY
+# scoreboard players operation @s p7_move += @s p7_isMovedY
