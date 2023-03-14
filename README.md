@@ -21,6 +21,12 @@
 /function maf:system/set_player_id/run
 ```
 
+過去バージョンから更新する場合、次のコマンドで更新可能です。
+
+```
+/function maf:reinstall
+```
+
 # メッセージなど各種報告フォーム
 
 バグ報告等は以下にお願いします
