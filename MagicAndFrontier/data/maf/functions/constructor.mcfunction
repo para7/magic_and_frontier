@@ -1,5 +1,16 @@
 tellraw @s [{"text":"初期化処理です"}]
 
-scoreboard players set @s const0 0
-scoreboard players set @s p7_MP 0
-scoreboard players set @s p7_MaxMP 100
+scoreboard players set @s p7_playerID
+scoreboard players set @s p7_move
+scoreboard players set @s p7_isMovedY 0
+scoreboard players set @s p7_posXpre 0
+scoreboard players set @s p7_posYpre 0
+scoreboard players set @s p7_posZpre 0
+scoreboard players set @s p7_posX 0
+scoreboard players set @s p7_posY 0
+scoreboard players set @s p7_posZ 0
+# scoreboard players set @s const0 0
+scoreboard players set @s tmp 0
+scoreboard players set @s tmp2 0
+
+function maf:magic/constructor

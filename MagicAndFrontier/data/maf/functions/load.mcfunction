@@ -43,7 +43,7 @@ scoreboard objectives add p7_posY dummy
 
 
 # 定数
-scoreboard objectives add const0 dummy
+# scoreboard objectives add const0 dummy
 
 # 諸計算用
 scoreboard objectives add tmp dummy
