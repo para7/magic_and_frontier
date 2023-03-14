@@ -46,7 +46,11 @@ https://docs.google.com/forms/d/e/1FAIpQLSdutG5Q5O34SY3zoA6wShnRi0LcSfw72-UXy7na
   <https://github.com/para7/magic_and_frontier>
   改造して再配布も OK です。
 
-## 前提データパックにすることを検討中
+# 前提データパック
+
+- p7BaseSystem
+
+赤石愛さんの [oh my dat](https://github.com/Ai-Akaishi/OhMyDat) や [ScoreToHealth](https://github.com/Ai-Akaishi/ScoreToHealth) を導入検討中
 
 ## 予定
 
