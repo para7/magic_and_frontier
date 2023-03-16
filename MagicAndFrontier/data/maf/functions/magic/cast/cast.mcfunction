@@ -3,13 +3,13 @@
 # execute if score @s p7_const0 = @s p7_castTime run function maf:magic/cast/exec
 
 # ブタに詠唱を止められないようにする
-effect give @e[type=minecraft:pig, distance=..3] minecraft:slowness 1 127
+effect give @e[type=minecraft:pig, distance=..4] minecraft:slowness 1 127 true
 
 scoreboard players set @a p7_MPTick -40
 
 #  particle minecraft:enchant ~ ~1.5 ~ 0.5 0 0.5 0.3 10 force
 # 詠唱演出
-execute if score @s p7_castTime matches 40.. run particle minecraft:enchant ~ ~2.3 ~ 0 0 0 3 30 force
+execute if score @s p7_castTime matches 40.. run particle minecraft:enchant ~ ~2.3 ~ 0 0 0 3 2 force
 execute if score @s p7_castTime matches 40 run particle minecraft:enchant ~ ~2.3 ~ 0 0 0 20 800 force
 
 # 詠唱中の移動キャンセル 
@@ -21,3 +21,4 @@ execute if entity @s[scores={p7_castTime=11..,p7_move=1..}] run function maf:mag
 execute if entity @s[scores={p7_castTime=0}] run function maf:magic/cast/exec
 
 scoreboard players remove @s[scores={p7_castTime=0..}] p7_castTime 1
+scoreboard players set @s p7_setSkEnable -1

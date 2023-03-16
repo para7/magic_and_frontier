@@ -4,3 +4,5 @@ tellraw @s [{"text":"cast/exec id:"}, {"score":{"name":"@s","objective":"p7_cast
 scoreboard players operation @s p7_MP -= @s p7_castCost
 
 execute if entity @s[scores={p7_castID=1}] run function maf:magic/effect/magic1
+
+execute if entity @s[scores={p7_castID=1001}] run function maf:magic/effect/skill/selector
