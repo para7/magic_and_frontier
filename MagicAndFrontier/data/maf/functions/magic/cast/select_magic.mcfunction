@@ -8,7 +8,10 @@ execute if entity @s[scores={p7_magicID=1}] run data modify storage p7:maf magic
 
 execute if entity @s[scores={p7_magicID=2}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m2
 
-execute if entity @s[scores={p7_magicID=1001}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.s1
+execute if entity @s[scores={p7_magicID=2001}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m2001
+execute if entity @s[scores={p7_magicID=2011}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m2011
+execute if entity @s[scores={p7_magicID=2021}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m2021
+execute if entity @s[scores={p7_magicID=2031}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m2031
 
 # バグ対策のため、スキル設定待ちを無効化
 # scoreboard players disable @s p7_targetSlot
