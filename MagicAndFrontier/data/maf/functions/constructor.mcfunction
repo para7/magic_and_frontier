@@ -9,6 +9,8 @@ scoreboard players set @s p7_posZpre 0
 scoreboard players set @s p7_posX 0
 scoreboard players set @s p7_posY 0
 scoreboard players set @s p7_posZ 0
+scoreboard players set @s p7_soul 0
+scoreboard players set @s p7_soulTick 0
 # scoreboard players set @s const0 0
 scoreboard players set @s tmp 0
 scoreboard players set @s tmp2 0

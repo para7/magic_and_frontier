@@ -9,5 +9,10 @@ scoreboard players add @a p7_MPTick 10
 execute as @a[scores={p7_MPTick=600..}] run scoreboard players add @s p7_MP 1
 execute as @a[scores={p7_MPTick=600..}] run scoreboard players set @s p7_MPTick 0
 
+# 最大MPをソウルと同値にする
+execute as @a run scoreboard players operation @s p7_MaxMP = @s p7_soul
+
 # MPキャップ処理
 execute as @a run scoreboard players operation @s p7_MP < @s p7_MaxMP
+
+

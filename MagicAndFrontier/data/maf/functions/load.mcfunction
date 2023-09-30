@@ -54,6 +54,11 @@ scoreboard objectives add p7_isMovedY dummy
 scoreboard objectives add p7_posY dummy
 # scoreboard objectives add p7_posZ dummy
 
+# # ソウルシステム用
+scoreboard objectives add p7_soul dummy "ソウル"
+scoreboard objectives add p7_soulTick dummy
+scoreboard objectives add p7_soulReset deathCount 
+
 
 # 定数
 # scoreboard objectives add const0 dummy
@@ -62,3 +67,4 @@ scoreboard objectives add p7_posY dummy
 scoreboard objectives add tmp dummy
 scoreboard objectives add tmp2 dummy
 
+gamerule keepInventory true

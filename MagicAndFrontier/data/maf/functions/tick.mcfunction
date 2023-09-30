@@ -26,3 +26,4 @@ scoreboard players set @a p7_walkWaterCM 0
 scoreboard players set @a p7_underWaterCM 0
 
 function maf:test/tick
+function maf:soul/tick

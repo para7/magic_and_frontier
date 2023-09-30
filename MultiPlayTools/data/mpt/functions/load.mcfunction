@@ -16,9 +16,6 @@ scoreboard objectives add tmp dummy
 
 # scoreboard objectives add p7_logout minecraft.custom:minecraft.leave_game
 
-
-scoreboard players set @s const1200 1200
-
 # scoreboard players set @s p7_logout 0
 
 # ベッド通知
