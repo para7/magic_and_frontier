@@ -2,7 +2,7 @@ import { storageName } from "../consts";
 import { DBSchemaType } from "../zod/db";
 
 const GenerateLine = (x: DBSchemaType["data"][number]) => {
-  return `m${x.castid}:{id:${x.effectid},cost: ${x.cost},cast:${x.cast},title: ${x.title},description:${x.description}}`;
+  return `"m${x.castid}":{"id":${x.effectid},cost: ${x.cost},cast:${x.cast},title: "${x.title}",description:"${x.description}"}`;
 };
 
 export const GenerateSetDBContents = (data: DBSchemaType) => {

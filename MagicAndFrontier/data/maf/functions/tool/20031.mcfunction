@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"スウィープI","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"周囲のアイテムをかき集めます","color":"aqua"}']},grimoire:1,magicID:20031,Enchantments:[{}]} 1

@@ -7,7 +7,7 @@
     "dev:clean": "rimraf out/result && pnpm build && pnpm start",
     "dev": "pnpm build && pnpm start",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "esbuild src/index.ts --bundle --platform=node --outfile=out/build.js",
+    "build": "esbuild src/index.ts --bundle --main-fields=module,main --platform=node --outfile=out/build.js",
     "tsc": "tsc --noEmit src/index.ts",
     "start": "cd out && node build.js",
     "lint": "eslint src/**/*.ts --fix",
@@ -30,6 +30,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
+    "jsonc-parser": "^3.2.0",
     "zod": "3.22.2"
   },
   "volta": {

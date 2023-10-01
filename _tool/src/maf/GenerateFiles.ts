@@ -40,7 +40,6 @@ export const GenerateFiles = async (
     const p = path.join(outputPaths.effect, x.filename);
 
     if (IsFileExistSync(p)) {
-      console.log("キャンセル", x.filename);
       // ファイルがあったらキャンセル
       return new Promise<void>((resolve) => {
         resolve();
