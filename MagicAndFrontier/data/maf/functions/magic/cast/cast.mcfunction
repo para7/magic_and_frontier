@@ -3,7 +3,7 @@
 # execute if score @s p7_const0 = @s p7_castTime run function maf:magic/cast/exec
 
 # ブタに詠唱を止められないようにする
-effect give @e[type=minecraft:pig, distance=..4] minecraft:slowness 1 127 true
+effect give @e[type=minecraft:pig, distance=..4] minecraft:slowness 10 127 true
 
 scoreboard players set @a p7_MPTick -40
 

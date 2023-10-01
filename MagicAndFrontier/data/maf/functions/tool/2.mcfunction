@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"ヒーリング【低燃費版】","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"回復します","color":"aqua"}']},grimoire:1,magicID:2,Enchantments:[{}]} 1

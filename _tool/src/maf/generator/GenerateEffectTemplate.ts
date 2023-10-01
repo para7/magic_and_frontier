@@ -4,7 +4,7 @@ import { DBSchemaType } from "../zod/db";
 import { RemoveDuplicatedCast } from "../RemoveDuplicatedCast";
 
 const SummonBookCommand = (x: DBSchemaType["data"][number]) => {
-  return `give @p book{display:{Name:'{"text":"${x.title}","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"${x.description}","color":"aqua"}']},grimoire:1,magicID:${x.castid},Enchantments:[{}]} 1`;
+  return `tellraw @s [{"text":"未実装です。開発者に連絡してください。 ID: ${x.effectid}"}]`;
 };
 
 export const GenerateEffectTemplate = (_data: DBSchemaType) => {

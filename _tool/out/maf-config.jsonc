@@ -7,9 +7,9 @@
         // "selectexec": "./result/",
         // "effect": "./result/effects/"
         "give": "../../MagicAndFrontier/data/maf/functions/tool",
-        "setdb": "./result/",
-        "selectdb": "./result/",
-        "selectexec": "./result/",
-        "effect": "./result/effects/"
+        "setdb": "../../MagicAndFrontier/data/maf/functions/magic/cast",
+        "selectdb": "../../MagicAndFrontier/data/maf/functions/magic/cast",
+        "selectexec": "../../MagicAndFrontier/data/maf/functions/magic/cast",
+        "effect": "../../MagicAndFrontier/data/maf/functions/magic/exec"
     }
 }

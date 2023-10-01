@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"ジャンプ","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"","color":"aqua"}']},grimoire:1,magicID:20021,Enchantments:[{}]} 1
