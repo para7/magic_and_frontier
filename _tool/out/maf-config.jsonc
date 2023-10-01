@@ -1,0 +1,15 @@
+{
+    "input": "./sample/maf.json",
+    "output": {
+        // "give": "./result/give/",
+        // "setdb": "./result/",
+        // "selectdb": "./result/",
+        // "selectexec": "./result/",
+        // "effect": "./result/effects/"
+        "give": "../../MagicAndFrontier/data/maf/functions/tool",
+        "setdb": "./result/",
+        "selectdb": "./result/",
+        "selectexec": "./result/",
+        "effect": "./result/effects/"
+    }
+}
