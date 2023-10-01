@@ -10,7 +10,7 @@ const SummonBookCommand = (x: DBSchemaType["data"][number]) => {
 export const GenerateEffectTemplate = (_data: DBSchemaType) => {
   const data = RemoveDuplicatedCast(_data);
   const files = data.map((x) => {
-    const filename = `${ConvertCategory(x.effectid)}/${ZeroPadding(x.effectid, 5)}.mcfunction`;
+    const filename = `${ConvertCategory(x.effectid)}/${ZeroPadding(x.effectid, 6)}.mcfunction`;
     const command = SummonBookCommand(x);
 
     return { filename, command };
