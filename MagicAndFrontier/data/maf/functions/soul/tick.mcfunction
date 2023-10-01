@@ -10,4 +10,6 @@ execute as @a[scores={p7_soulTick=1200..}] run scoreboard players set @s p7_soul
 execute as @a[scores={p7_soul=101..}] run scoreboard players set @s p7_soul 100
 
 execute as @a[scores={p7_soulReset=1..}] run scoreboard players set @s p7_soul 0
+# MP回復も一定時間ストップ
+execute as @a[scores={p7_soulReset=1..}] run scoreboard players set @s p7_MPTick 0
 execute as @a[scores={p7_soulReset=1..}] run scoreboard players set @s p7_soulReset 0

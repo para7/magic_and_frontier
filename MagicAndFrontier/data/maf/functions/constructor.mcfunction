@@ -1,7 +1,7 @@
 tellraw @s [{"text":"初期化処理です"}]
 
-scoreboard players set @s p7_playerID
-scoreboard players set @s p7_move
+scoreboard players set @s p7_playerID 0
+scoreboard players set @s p7_move 0
 scoreboard players set @s p7_isMovedY 0
 scoreboard players set @s p7_posXpre 0
 scoreboard players set @s p7_posYpre 0
