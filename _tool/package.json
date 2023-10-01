@@ -1,0 +1,39 @@
+{
+  "name": "maf-db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:clean": "rimraf out/result && pnpm build && pnpm start",
+    "dev": "pnpm build && pnpm start",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild src/index.ts --bundle --platform=node --outfile=out/build.js",
+    "tsc": "tsc --noEmit src/index.ts",
+    "start": "cd out && node build.js",
+    "lint": "eslint src/**/*.ts --fix",
+    "typescript": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "20.7.1",
+    "@typescript-eslint/eslint-plugin": "6.7.3",
+    "@typescript-eslint/parser": "6.7.3",
+    "esbuild": "0.19.4",
+    "eslint": "8.50.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "prettier": "3.0.3",
+    "rimraf": "^5.0.5",
+    "typescript": "5.2.2"
+  },
+  "dependencies": {
+    "zod": "3.22.2"
+  },
+  "volta": {
+    "node": "18.18.0",
+    "pnpm": "8.8.0"
+  }
+}

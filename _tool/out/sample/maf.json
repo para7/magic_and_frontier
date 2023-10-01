@@ -1,0 +1,52 @@
+{
+    "data": [
+        {
+            "castid": 1,
+            "effectid": 1,
+            "cost": 30,
+            "cast": 15,
+            "title": "ヒーリング【高速版】",
+            "description": "回復します"
+        },
+        {
+            "castid": 2,
+            "effectid": 1,
+            "cost": 12,
+            "cast": 60,
+            "title": "ヒーリング【低燃費版】",
+            "description": "回復します"
+        },
+        {
+            "castid": 20001,
+            "effectid": 20001,
+            "cost": 30,
+            "cast": 15,
+            "title": "移動速度",
+            "description": ""
+        },
+        {
+            "castid": 20011,
+            "effectid": 20011,
+            "cost": 50,
+            "cast": 60,
+            "title": "採掘速度",
+            "description": ""
+        },
+        {
+            "castid": 20021,
+            "effectid": 20021,
+            "cost": 15,
+            "cast": 30,
+            "title": "ジャンプ",
+            "description": ""
+        },
+        {
+            "castid": 20031,
+            "effectid": 20031,
+            "cost": 15,
+            "cast": 15,
+            "title": "スウィープI",
+            "description": "周囲のアイテムをかき集めます"
+        }
+    ]
+}
