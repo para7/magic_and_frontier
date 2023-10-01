@@ -17,7 +17,7 @@ scoreboard objectives add p7_MPTick dummy
 
 # scoreboard objectives add p7_
 
-tellraw @a [{"text":"データベースを設定"}]
+# tellraw @a [{"text":"データベースを設定"}]
 function maf:magic/cast/setdb
 
 bossbar add mpbar1 "MP"

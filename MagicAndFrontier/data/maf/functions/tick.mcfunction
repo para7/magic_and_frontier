@@ -7,6 +7,3 @@ function maf:soul/tick
 
 # スコアリセット
 function maf:system/score/afterscore
-
-
-# function maf:test/tick

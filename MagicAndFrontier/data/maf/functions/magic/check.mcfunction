@@ -1,4 +1,4 @@
-tell @s magic/check
+# tell @s magic/check
 
 # 杖・魔法の使用判定
 
