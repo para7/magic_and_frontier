@@ -8,7 +8,7 @@
         // "effect": "./result/effects/"
         "give": "../../MagicAndFrontier/data/maf/functions/tool",
         "setdb": "../../MagicAndFrontier/data/maf/functions/magic/cast",
-        "selectdb": "../../MagicAndFrontier/data/maf/functions/magic/cast",
+        "selectdb": "../../MagicAndFrontier/data/maf/functions/magic/exec",
         "selectexec": "../../MagicAndFrontier/data/maf/functions/magic/cast",
         "effect": "../../MagicAndFrontier/data/maf/functions/magic/exec"
     }
