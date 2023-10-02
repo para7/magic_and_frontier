@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"アナライズ","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"特殊アイテムを分析します","color":"aqua"}']},grimoire:1,magicID:29001,Enchantments:[{}]} 1

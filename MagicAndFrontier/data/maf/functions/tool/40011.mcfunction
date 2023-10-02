@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"採掘速度","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"","color":"aqua"}']},grimoire:1,magicID:40011,Enchantments:[{}]} 1
