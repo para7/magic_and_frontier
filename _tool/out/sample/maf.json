@@ -17,22 +17,6 @@
             "description": "回復します"
         },
         {
-            "castid": 20001,
-            "effectid": 20001,
-            "cost": 30,
-            "cast": 15,
-            "title": "移動速度",
-            "description": ""
-        },
-        {
-            "castid": 20011,
-            "effectid": 20011,
-            "cost": 50,
-            "cast": 60,
-            "title": "採掘速度",
-            "description": ""
-        },
-        {
             "castid": 20021,
             "effectid": 20021,
             "cost": 15,
@@ -47,6 +31,38 @@
             "cast": 15,
             "title": "スウィープI",
             "description": "周囲のアイテムをかき集めます"
+        },
+        {
+            "castid": 40001,
+            "effectid": 40001,
+            "cost": 30,
+            "cast": 15,
+            "title": "移動速度",
+            "description": ""
+        },
+        {
+            "castid": 40011,
+            "effectid": 40011,
+            "cost": 50,
+            "cast": 60,
+            "title": "採掘速度",
+            "description": ""
+        },
+        {
+            "castid": 40021,
+            "effectid": 40021,
+            "cost": 20,
+            "cast": 30,
+            "title": "攻撃ブースト",
+            "description": ""
+        },
+        {
+            "castid": 29001,
+            "effectid": 29001,
+            "cost": 10,
+            "cast": 40,
+            "title": "アナライズ",
+            "description": "特殊アイテムを分析します"
         }
     ]
 }
