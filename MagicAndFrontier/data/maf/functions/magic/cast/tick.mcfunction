@@ -1,7 +1,5 @@
 # tellraw @s [{"text":"cast"},{"score":{"name":"@s","objective":"p7_castTime"}}]
 
-# execute if score @s p7_const0 = @s p7_castTime run function maf:magic/cast/exec
-
 # ブタに詠唱を止められないようにする
 effect give @e[type=minecraft:pig, distance=..4] minecraft:slowness 10 127 true
 

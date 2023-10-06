@@ -18,7 +18,7 @@ scoreboard objectives add p7_MPTick dummy
 # scoreboard objectives add p7_
 
 # tellraw @a [{"text":"データベースを設定"}]
-function maf:magic/cast/setdb
+function maf:magic/setdb
 
 bossbar add mpbar1 "MP"
 bossbar set minecraft:mpbar1 style progress

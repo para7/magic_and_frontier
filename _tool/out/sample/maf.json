@@ -5,7 +5,7 @@
             "effectid": 1,
             "cost": 30,
             "cast": 15,
-            "title": "ヒーリング【高速版】",
+            "title": "ヒーリング",
             "description": "回復します"
         },
         {
@@ -13,24 +13,128 @@
             "effectid": 1,
             "cost": 12,
             "cast": 60,
-            "title": "ヒーリング【低燃費版】",
+            "title": "ヒーリング",
             "description": "回復します"
+        },
+        {
+            "castid": 101,
+            "effectid": 101,
+            "cost": 30,
+            "cast": 40,
+            "title": "バリア",
+            "description": "衝撃に備えます"
+        },
+        {
+            "castid": 201,
+            "effectid": 201,
+            "cost": 60,
+            "cast": 100,
+            "title": "リジェネ",
+            "description": "じっくり回復します"
+        },
+        {
+            "castid": 10001,
+            "effectid": 10001,
+            "cost": 60,
+            "cast": 100,
+            "title": "ファイアストーム",
+            "description": "炎の渦で周囲を包む"
+        },
+        {
+            "castid": 10101,
+            "effectid": 10101,
+            "cost": 20,
+            "cast": 80,
+            "title": "グランドシェイク",
+            "description": "大地からのエネルギーで攻撃する"
+        },
+        {
+            "castid": 10102,
+            "effectid": 10101,
+            "cost": 30,
+            "cast": 10,
+            "title": "グランドシェイク",
+            "description": "大地からのエネルギーで攻撃する"
+        },
+        {
+            "castid": 10111,
+            "effectid": 10111,
+            "cost": 50,
+            "cast": 120,
+            "title": "グランドシェイクII",
+            "description": "大地からのエネルギーで攻撃する"
+        },
+        {
+            "castid": 10112,
+            "effectid": 10111,
+            "cost": 70,
+            "cast": 10,
+            "title": "グランドシェイクII",
+            "description": "大地からのエネルギーで攻撃する"
+        },
+        {
+            "castid": 10121,
+            "effectid": 10121,
+            "cost": 100,
+            "cast": 150,
+            "title": "グランドシェイクIII",
+            "description": "大地からのエネルギーで攻撃する"
+        },
+        {
+            "castid": 10122,
+            "effectid": 10122,
+            "cost": 20,
+            "cast": 5,
+            "title": "グランドシェイクX",
+            "description": "大地からのエネルギーで攻撃する。"
+        },
+        {
+            "castid": 10201,
+            "effectid": 10201,
+            "cost": 30,
+            "cast": 50,
+            "title": "ブリザード",
+            "description": "すべてを凍てつかせる"
+        },
+        {
+            "castid": 10211,
+            "effectid": 10211,
+            "cost": 60,
+            "cast": 120,
+            "title": "ブリザードII",
+            "description": "すべてを凍てつかせる"
         },
         {
             "castid": 20001,
             "effectid": 20001,
-            "cost": 30,
-            "cast": 15,
-            "title": "移動速度",
-            "description": ""
+            "cost": 60,
+            "cast": 100,
+            "title": "クロックブースト",
+            "description": "世界の時間を進める"
         },
         {
             "castid": 20011,
             "effectid": 20011,
-            "cost": 50,
-            "cast": 60,
-            "title": "採掘速度",
-            "description": ""
+            "cost": 80,
+            "cast": 300,
+            "title": "操天秘技・ハレ",
+            "description": "空模様を書きかえる"
+        },
+        {
+            "castid": 20012,
+            "effectid": 20012,
+            "cost": 90,
+            "cast": 400,
+            "title": "操天秘技・アメ",
+            "description": "空模様を書きかえる"
+        },
+        {
+            "castid": 20013,
+            "effectid": 20013,
+            "cost": 100,
+            "cast": 600,
+            "title": "操天秘技・カミ",
+            "description": "空模様を書きかえる"
         },
         {
             "castid": 20021,
@@ -47,6 +151,102 @@
             "cast": 15,
             "title": "スウィープI",
             "description": "周囲のアイテムをかき集めます"
+        },
+        {
+            "castid": 40001,
+            "effectid": 40001,
+            "cost": 30,
+            "cast": 15,
+            "title": "移動速度",
+            "description": ""
+        },
+        {
+            "castid": 40011,
+            "effectid": 40011,
+            "cost": 50,
+            "cast": 60,
+            "title": "採掘速度",
+            "description": ""
+        },
+        {
+            "castid": 41001,
+            "effectid": 41001,
+            "cost": 20,
+            "cast": 10,
+            "title": "パワーブースト",
+            "description": "攻撃力を高める"
+        },
+        {
+            "castid": 41002,
+            "effectid": 41002,
+            "cost": 25,
+            "cast": 20,
+            "title": "パワーブーストII",
+            "description": "攻撃力を高める"
+        },
+        {
+            "castid": 41003,
+            "effectid": 41003,
+            "cost": 40,
+            "cast": 40,
+            "title": "パワーブーストIII",
+            "description": "攻撃力を高める"
+        },
+        {
+            "castid": 41004,
+            "effectid": 41004,
+            "cost": 60,
+            "cast": 100,
+            "title": "パワーブーストIV",
+            "description": "攻撃力を高める"
+        },
+        {
+            "castid": 41005,
+            "effectid": 41005,
+            "cost": 80,
+            "cast": 200,
+            "title": "パワーブーストV",
+            "description": "攻撃力を高める"
+        },
+        {
+            "castid": 41011,
+            "effectid": 41011,
+            "cost": 60,
+            "cast": 90,
+            "title": "アサルトドライブ",
+            "description": "攻撃力、耐性、暗視効果を得る"
+        },
+        {
+            "castid": 41021,
+            "effectid": 41021,
+            "cost": 60,
+            "cast": 100,
+            "title": "オーバードライブ",
+            "description": "攻撃力、移動速度、跳躍効果を得る"
+        },
+        {
+            "castid": 41031,
+            "effectid": 41031,
+            "cost": 100,
+            "cast": 500,
+            "title": "オメガドライヴ",
+            "description": "最強の補助魔法。"
+        },
+        {
+            "castid": 41041,
+            "effectid": 41041,
+            "cost": 20,
+            "cast": 60,
+            "title": "ソウルドライブ",
+            "description": "魂をわずかに削り、力へと変換する"
+        },
+        {
+            "castid": 29001,
+            "effectid": 29001,
+            "cost": 10,
+            "cast": 40,
+            "title": "アナライズ",
+            "description": "特殊アイテムを分析します"
         }
     ]
 }
