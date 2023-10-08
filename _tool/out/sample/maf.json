@@ -17,10 +17,42 @@
             "description": "回復します"
         },
         {
+            "castid": 6,
+            "effectid": 6,
+            "cost": 50,
+            "cast": 20,
+            "title": "ヒーリングII",
+            "description": "回復します"
+        },
+        {
+            "castid": 7,
+            "effectid": 6,
+            "cost": 20,
+            "cast": 90,
+            "title": "ヒーリングII",
+            "description": "回復します"
+        },
+        {
+            "castid": 51,
+            "effectid": 51,
+            "cost": 40,
+            "cast": 60,
+            "title": "エリアヒール",
+            "description": "広範囲を回復します"
+        },
+        {
+            "castid": 52,
+            "effectid": 51,
+            "cost": 60,
+            "cast": 10,
+            "title": "エリアヒール",
+            "description": "広範囲を回復します"
+        },
+        {
             "castid": 101,
             "effectid": 101,
-            "cost": 30,
-            "cast": 40,
+            "cost": 15,
+            "cast": 35,
             "title": "バリア",
             "description": "衝撃に備えます"
         },
@@ -43,10 +75,10 @@
         {
             "castid": 10001,
             "effectid": 10001,
-            "cost": 60,
+            "cost": 50,
             "cast": 100,
             "title": "ファイアストーム",
-            "description": "炎の渦で周囲を包む"
+            "description": "炎の渦で周囲の敵を攻撃"
         },
         {
             "castid": 10101,

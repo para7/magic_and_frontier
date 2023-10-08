@@ -1,4 +1,8 @@
 execute if entity @s[scores={p7_castID=1}] run function maf:magic/exec/00_heal/000001
+execute if entity @s[scores={p7_castID=6}] run function maf:magic/exec/00_heal/000006
+execute if entity @s[scores={p7_castID=6}] run function maf:magic/exec/00_heal/000006
+execute if entity @s[scores={p7_castID=51}] run function maf:magic/exec/00_heal/000051
+execute if entity @s[scores={p7_castID=51}] run function maf:magic/exec/00_heal/000051
 execute if entity @s[scores={p7_castID=101}] run function maf:magic/exec/00_heal/000101
 execute if entity @s[scores={p7_castID=102}] run function maf:magic/exec/00_heal/000102
 execute if entity @s[scores={p7_castID=201}] run function maf:magic/exec/00_heal/000201

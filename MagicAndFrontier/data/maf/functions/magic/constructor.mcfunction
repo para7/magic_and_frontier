@@ -8,5 +8,5 @@ scoreboard players set @s p7_castTimeMax 0
 scoreboard players set @s p7_MPTick 0
 
 # 開発中の仮置き
-scoreboard players set @s p7_MaxMP 100
+# scoreboard players set @s p7_MaxMP 100
 # function maf:magic/dev
