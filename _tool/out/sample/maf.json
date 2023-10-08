@@ -25,6 +25,14 @@
             "description": "衝撃に備えます"
         },
         {
+            "castid": 102,
+            "effectid": 102,
+            "cost": 60,
+            "cast": 50,
+            "title": "バリアII",
+            "description": "衝撃に備えます"
+        },
+        {
             "castid": 201,
             "effectid": 201,
             "cost": 60,
@@ -151,6 +159,22 @@
             "cast": 15,
             "title": "スウィープI",
             "description": "周囲のアイテムをかき集めます"
+        },
+        {
+            "castid": 20101,
+            "effectid": 20101,
+            "cost": 20,
+            "cast": 20,
+            "title": "フロアー",
+            "description": "床を召喚します"
+        },
+        {
+            "castid": 20102,
+            "effectid": 20102,
+            "cost": 30,
+            "cast": 0,
+            "title": "Pフロアー",
+            "description": "床を召喚します"
         },
         {
             "castid": 40001,

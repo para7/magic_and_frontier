@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"バリアII","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"衝撃に備えます","color":"aqua"}']},grimoire:1,magicID:102,Enchantments:[{}]} 1

@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"ファイアストーム","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"炎の渦で周囲を包む","color":"aqua"}']},grimoire:1,magicID:10001,Enchantments:[{}]} 1

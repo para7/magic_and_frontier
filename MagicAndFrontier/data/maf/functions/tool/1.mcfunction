@@ -1,1 +1,0 @@
-give @p book{display:{Name:'{"text":"ヒーリング【高速版】","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"回復します","color":"aqua"}']},grimoire:1,magicID:1,Enchantments:[{}]} 1

@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"Pフロアー","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"床を召喚します","color":"aqua"}']},grimoire:1,magicID:20102,Enchantments:[{}]} 1

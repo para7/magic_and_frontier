@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"ブリザードII","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"すべてを凍てつかせる","color":"aqua"}']},grimoire:1,magicID:10211,Enchantments:[{}]} 1

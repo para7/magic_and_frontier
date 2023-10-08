@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"オメガドライヴ","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"最強の補助魔法。","color":"aqua"}']},grimoire:1,magicID:41031,Enchantments:[{}]} 1

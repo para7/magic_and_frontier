@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"リジェネ","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"じっくり回復します","color":"aqua"}']},grimoire:1,magicID:201,Enchantments:[{}]} 1

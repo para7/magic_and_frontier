@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"ソウルドライブ","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"魂をわずかに削り、力へと変換する","color":"aqua"}']},grimoire:1,magicID:41041,Enchantments:[{}]} 1

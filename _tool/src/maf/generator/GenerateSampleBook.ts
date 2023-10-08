@@ -1,3 +1,4 @@
+import { ZeroPadding } from "@/lib/ZeroPadding";
 import { DBSchemaType } from "../zod/db";
 
 const SummonBookCommand = (x: DBSchemaType["data"][number]) => {
@@ -6,7 +7,7 @@ const SummonBookCommand = (x: DBSchemaType["data"][number]) => {
 
 export const GenerateSampleBook = (data: DBSchemaType) => {
   const files = data.data.map((x) => {
-    const filename = `${x.castid}.mcfunction`;
+    const filename = `${ZeroPadding(x.castid, 6)}.mcfunction`;
     const command = SummonBookCommand(x);
 
     return { filename, command };

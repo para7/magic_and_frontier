@@ -1,0 +1,1 @@
+give @p book{display:{Name:'{"text":"グランドシェイクIII","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"大地からのエネルギーで攻撃する","color":"aqua"}']},grimoire:1,magicID:10121,Enchantments:[{}]} 1

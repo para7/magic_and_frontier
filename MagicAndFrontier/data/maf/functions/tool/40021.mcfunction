@@ -1,1 +1,0 @@
-give @p book{display:{Name:'{"text":"攻撃ブースト","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"","color":"aqua"}']},grimoire:1,magicID:40021,Enchantments:[{}]} 1
