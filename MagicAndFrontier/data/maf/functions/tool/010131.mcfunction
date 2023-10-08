@@ -1,1 +1,1 @@
-give @p book{display:{Name:'{"text":"グランドシェイクX","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"大地からのエネルギーで攻撃する。","color":"aqua"}']},grimoire:1,magicID:10131,Enchantments:[{}]} 1
+give @p book{display:{Name:'{"text":"グランドシェイクX","color":"gold"}',Lore:['{"text":"魔法書"}','{"text":"大地からのエネルギーで攻撃する。力に指向性を持たせ、局所的な破壊をもたらす。","color":"aqua"}']},grimoire:1,magicID:10131,Enchantments:[{}]} 1

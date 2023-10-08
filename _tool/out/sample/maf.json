@@ -201,8 +201,8 @@
             "description": "床を召喚します"
         },
         {
-            "castid": 20102,
-            "effectid": 20102,
+            "castid": 20151,
+            "effectid": 20151,
             "cost": 30,
             "cast": 0,
             "title": "Pフロアー",

@@ -22,7 +22,7 @@ execute if entity @s[scores={p7_castID=20013}] run function maf:magic/exec/02_li
 execute if entity @s[scores={p7_castID=20021}] run function maf:magic/exec/02_live/020021
 execute if entity @s[scores={p7_castID=20031}] run function maf:magic/exec/02_live/020031
 execute if entity @s[scores={p7_castID=20101}] run function maf:magic/exec/02_live/020101
-execute if entity @s[scores={p7_castID=20102}] run function maf:magic/exec/02_live/020102
+execute if entity @s[scores={p7_castID=20151}] run function maf:magic/exec/02_live/020151
 execute if entity @s[scores={p7_castID=40001}] run function maf:magic/exec/04_buff/040001
 execute if entity @s[scores={p7_castID=40011}] run function maf:magic/exec/04_buff/040011
 execute if entity @s[scores={p7_castID=41001}] run function maf:magic/exec/04_buff/041001

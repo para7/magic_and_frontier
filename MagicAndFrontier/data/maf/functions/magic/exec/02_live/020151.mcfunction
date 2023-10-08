@@ -1,4 +1,4 @@
-fill ~-6 ~-1 ~-6 ~6 ~-1 ~6 minecraft:cobblestone replace #p7b:air
+fill ~-2 ~-1 ~-2 ~2 ~-1 ~2 minecraft:cobblestone replace #p7b:air
 
 particle minecraft:smoke ~ ~ ~ 1.2 0.1 1.2 1 200
 
