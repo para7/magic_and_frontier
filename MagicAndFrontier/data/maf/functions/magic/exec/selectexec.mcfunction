@@ -12,7 +12,7 @@ execute if entity @s[scores={p7_castID=10101}] run function maf:magic/exec/01_at
 execute if entity @s[scores={p7_castID=10111}] run function maf:magic/exec/01_attack/010111
 execute if entity @s[scores={p7_castID=10111}] run function maf:magic/exec/01_attack/010111
 execute if entity @s[scores={p7_castID=10121}] run function maf:magic/exec/01_attack/010121
-execute if entity @s[scores={p7_castID=10122}] run function maf:magic/exec/01_attack/010122
+execute if entity @s[scores={p7_castID=10131}] run function maf:magic/exec/01_attack/010131
 execute if entity @s[scores={p7_castID=10201}] run function maf:magic/exec/01_attack/010201
 execute if entity @s[scores={p7_castID=10211}] run function maf:magic/exec/01_attack/010211
 execute if entity @s[scores={p7_castID=20001}] run function maf:magic/exec/02_live/020001

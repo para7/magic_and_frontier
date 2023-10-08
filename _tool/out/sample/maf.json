@@ -121,12 +121,12 @@
             "description": "大地からのエネルギーで攻撃する"
         },
         {
-            "castid": 10122,
-            "effectid": 10122,
+            "castid": 10131,
+            "effectid": 10131,
             "cost": 20,
             "cast": 5,
             "title": "グランドシェイクX",
-            "description": "大地からのエネルギーで攻撃する。"
+            "description": "大地からのエネルギーで攻撃する。力に指向性を持たせ、局所的な破壊をもたらす。"
         },
         {
             "castid": 10201,

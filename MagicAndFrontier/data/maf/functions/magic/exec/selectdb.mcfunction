@@ -13,7 +13,7 @@ execute if entity @s[scores={p7_magicID=10102}] run data modify storage p7:maf m
 execute if entity @s[scores={p7_magicID=10111}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m10111
 execute if entity @s[scores={p7_magicID=10112}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m10112
 execute if entity @s[scores={p7_magicID=10121}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m10121
-execute if entity @s[scores={p7_magicID=10122}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m10122
+execute if entity @s[scores={p7_magicID=10131}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m10131
 execute if entity @s[scores={p7_magicID=10201}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m10201
 execute if entity @s[scores={p7_magicID=10211}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m10211
 execute if entity @s[scores={p7_magicID=20001}] run data modify storage p7:maf magictmp set from storage p7:maf_magicdb data.m20001
