@@ -147,8 +147,8 @@
         {
             "castid": 20001,
             "effectid": 20001,
-            "cost": 60,
-            "cast": 100,
+            "cost": 70,
+            "cast": 200,
             "title": "クロックブースト",
             "description": "世界の時間を進める"
         },
