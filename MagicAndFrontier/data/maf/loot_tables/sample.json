@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:entity",
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:book",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{Enchantments:[{}],grimoire:1,magicID:2}"
+                        },
+                        {
+                            "function": "minecraft:set_name",
+                            "name": "ふしぎなほん"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
