@@ -31,7 +31,7 @@ execute if entity @s[scores={p7_castID=41010}] run function maf:magic/exec/04_bu
 execute if entity @s[scores={p7_castID=41020}] run function maf:magic/exec/04_buff/041020
 execute if entity @s[scores={p7_castID=41030}] run function maf:magic/exec/04_buff/041030
 execute if entity @s[scores={p7_castID=41040}] run function maf:magic/exec/04_buff/041040
-execute if entity @s[scores={p7_castID=41000}] run function maf:magic/exec/04_buff/041000
+execute if entity @s[scores={p7_castID=41100}] run function maf:magic/exec/04_buff/041100
 execute if entity @s[scores={p7_castID=41150}] run function maf:magic/exec/04_buff/041150
 execute if entity @s[scores={p7_castID=41200}] run function maf:magic/exec/04_buff/041200
 execute if entity @s[scores={p7_castID=41250}] run function maf:magic/exec/04_buff/041250

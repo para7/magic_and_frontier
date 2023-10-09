@@ -274,9 +274,9 @@
         },
         {
             "castid": 41100,
-            "effectid": 41000,
-            "cost": 60,
-            "cast": 90,
+            "effectid": 41100,
+            "cost": 70,
+            "cast": 120,
             "title": "アサルトドライブ",
             "description": "攻撃力、耐性、暗視効果を得る"
         },
@@ -299,7 +299,7 @@
         {
             "castid": 41250,
             "effectid": 41250,
-            "cost": 20,
+            "cost": 70,
             "cast": 60,
             "title": "ソウルドライブ",
             "description": "魂をわずかに削り、力へと変換する"

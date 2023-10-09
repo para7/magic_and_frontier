@@ -1,1 +1,3 @@
-tellraw @s [{"text":"未実装です。開発者に連絡してください。 ID: 41030"}]
+effect give @e[distance=..8,type=#p7b:friendmob] minecraft:strength 60 5
+
+tellraw @a[distance=..8] [{"selector":"@s"},{"text":" は "},{"nbt":"magictmp.title","storage":"p7:maf"},{"text": "を唱えた！"}]
