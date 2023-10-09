@@ -14,7 +14,7 @@
                 "text": "魔法書"
             },
             {
-                "text": "cost:70 / cast:10",
+                "text": "cost:50 / cast:120",
                 "color": "white"
             },
             {
@@ -24,4 +24,4 @@
         ],
         "replace": true
     }
-]]
+]

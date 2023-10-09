@@ -11,6 +11,7 @@
         "selectdb": "../../MagicAndFrontier/data/maf/functions/magic/exec",
         "selectexec": "../../MagicAndFrontier/data/maf/functions/magic/exec",
         "effect": "../../MagicAndFrontier/data/maf/functions/magic/exec",
-        "modifiers": "../../MagicAndFrontier/data/maf/item_modifiers"
+        "modifiers": "../../MagicAndFrontier/data/maf/item_modifiers",
+        "full_loot": "../../MagicAndFrontier/data/maf/loot_tables"
     }
 }

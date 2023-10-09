@@ -9,6 +9,7 @@ import { GenerateSelectExec } from "./generator/GenerateSelectExec";
 import { GenerateEffectTemplate } from "./generator/GenerateEffectTemplate";
 import { GenerateBookModifires } from "./generator/GenerateBookModifiers";
 import { GenerateAnalyze } from "./generator/GenerateAnalyze";
+import { GenerateFullLoot } from "./generator/GenerateLoot";
 
 export const GenerateFiles = async (
   data: DBSchemaType,
@@ -26,11 +27,6 @@ export const GenerateFiles = async (
   const output = path.join(outputPaths.selectdb, "selectdb.mcfunction");
   writeFileWithDirSync(output, GenerateSelectDB(data));
 
-  console.log("generate dubug tool");
-  const promises = GenerateSampleBook(data).map((x) => {
-    return writeFileWithDir(path.join(outputPaths.give, x.filename), x.command);
-  });
-
   console.log("generate selectExec tool");
   writeFileWithDirSync(
     path.join(outputPaths.selectexec, "selectexec.mcfunction"),
@@ -42,6 +38,17 @@ export const GenerateFiles = async (
     path.join(outputPaths.effect, "generated", "analyze.mcfunction"),
     GenerateAnalyze(data)
   );
+
+  console.log("generate loot");
+  writeFileWithDirSync(
+    path.join(outputPaths.full_loot, "full_grimore_loot.json"),
+    GenerateFullLoot(data)
+  );
+
+  console.log("generate dubug tool");
+  const promises = GenerateSampleBook(data).map((x) => {
+    return writeFileWithDir(path.join(outputPaths.give, x.filename), x.command);
+  });
 
   console.log("init files");
   const promisesInits = GenerateEffectTemplate(data).map((x) => {

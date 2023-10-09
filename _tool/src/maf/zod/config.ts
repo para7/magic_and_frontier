@@ -10,6 +10,7 @@ export const ConfigSchema = z
       selectexec: z.string(),
       effect: z.string(),
       modifiers: z.string(),
+      full_loot: z.string(),
     }),
   })
   .passthrough();
