@@ -14,3 +14,4 @@ scoreboard players set rand p7_Rand3 0
 scoreboard players set rand p7_Rand4 0
 
 tellraw @a [{"text":"enable datapack: para7 BaseSystem"}]
+

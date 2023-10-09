@@ -68,3 +68,6 @@ scoreboard objectives add tmp dummy
 scoreboard objectives add tmp2 dummy
 
 gamerule keepInventory true
+
+# MPシステム初期化用
+scoreboard objectives add mafLogin minecraft.custom:minecraft.leave_game

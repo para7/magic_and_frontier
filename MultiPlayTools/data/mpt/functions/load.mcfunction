@@ -22,5 +22,4 @@ scoreboard objectives add tmp dummy
 scoreboard objectives add BedNotification minecraft.custom:minecraft.sleep_in_bed
 data merge storage p7_:mpu {bed: true}
 
-
 tellraw @a [{"text":"enable datapack: MultiPlayTools"}]

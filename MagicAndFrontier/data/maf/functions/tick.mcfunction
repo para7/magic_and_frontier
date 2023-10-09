@@ -1,3 +1,6 @@
+# ログインした人がいればMP処理を実行
+execute if entity @a[scores={mafLogin=1..}] run function maf:system/set_player_id/run
+
 # スコアボードの前処理
 execute as @a run function maf:system/score/prescore
 

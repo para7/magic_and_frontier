@@ -15,4 +15,6 @@ scoreboard players set @s p7_soulTick 0
 scoreboard players set @s tmp 0
 scoreboard players set @s tmp2 0
 
+scoreboard players set @s mafLogin 1
+
 function maf:magic/constructor

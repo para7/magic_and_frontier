@@ -5,6 +5,6 @@
     }
   },
   "rewards": {
-    "function": "p7_:init"
+    "function": "p7b:init"
   }
 }

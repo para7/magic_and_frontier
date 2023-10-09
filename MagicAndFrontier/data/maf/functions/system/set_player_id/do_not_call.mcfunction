@@ -1,4 +1,4 @@
-tellraw @a "番号付与"
+tellraw @a "プレイヤーID付与処理(MPバー)"
 
 # IDをインクリメントして保存する
 execute store result score @s p7_playerID run data get storage p7:maf playerSequence
