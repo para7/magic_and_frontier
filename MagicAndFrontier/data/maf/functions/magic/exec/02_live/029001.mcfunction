@@ -11,6 +11,5 @@ tellraw @s [{"text":"詠唱tick: "},{"nbt":"magictmp.cast","storage":"p7:maf"}]
 tellraw @s [{"text":"消費MP : "},{"nbt":"magictmp.cost","storage":"p7:maf"}]
 tellraw @s [{"text":"効果: "},{"nbt":"magictmp.description","storage":"p7:maf"}]
 
-
-
-# execute store result score @s p7_castCost run data get storage p7:maf magictmp.cost
+# modifires 置き換えのサンプル
+# /item modify entity @s inventory.0 maf:test
