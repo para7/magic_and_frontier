@@ -209,6 +209,14 @@
             "description": "床を召喚します"
         },
         {
+            "castid": 29001,
+            "effectid": 29001,
+            "cost": 10,
+            "cast": 40,
+            "title": "アナライズ",
+            "description": "特殊アイテムを分析します"
+        },
+        {
             "castid": 40001,
             "effectid": 40001,
             "cost": 30,
@@ -225,84 +233,76 @@
             "description": ""
         },
         {
-            "castid": 41001,
-            "effectid": 41001,
+            "castid": 41000,
+            "effectid": 41000,
             "cost": 20,
             "cast": 10,
             "title": "パワーブースト",
             "description": "攻撃力を高める"
         },
         {
-            "castid": 41002,
-            "effectid": 41002,
+            "castid": 41010,
+            "effectid": 41010,
             "cost": 25,
             "cast": 20,
             "title": "パワーブーストII",
             "description": "攻撃力を高める"
         },
         {
-            "castid": 41003,
-            "effectid": 41003,
+            "castid": 41020,
+            "effectid": 41020,
             "cost": 40,
             "cast": 40,
             "title": "パワーブーストIII",
             "description": "攻撃力を高める"
         },
         {
-            "castid": 41004,
-            "effectid": 41004,
+            "castid": 41030,
+            "effectid": 41030,
             "cost": 60,
             "cast": 100,
             "title": "パワーブーストIV",
             "description": "攻撃力を高める"
         },
         {
-            "castid": 41005,
-            "effectid": 41005,
+            "castid": 41040,
+            "effectid": 41040,
             "cost": 80,
             "cast": 200,
             "title": "パワーブーストV",
             "description": "攻撃力を高める"
         },
         {
-            "castid": 41011,
-            "effectid": 41011,
+            "castid": 41100,
+            "effectid": 41000,
             "cost": 60,
             "cast": 90,
             "title": "アサルトドライブ",
             "description": "攻撃力、耐性、暗視効果を得る"
         },
         {
-            "castid": 41021,
-            "effectid": 41021,
+            "castid": 41150,
+            "effectid": 41150,
             "cost": 60,
             "cast": 100,
             "title": "オーバードライブ",
             "description": "攻撃力、移動速度、跳躍効果を得る"
         },
         {
-            "castid": 41031,
-            "effectid": 41031,
+            "castid": 41200,
+            "effectid": 41200,
             "cost": 100,
             "cast": 500,
             "title": "オメガドライヴ",
             "description": "最強の補助魔法。"
         },
         {
-            "castid": 41041,
-            "effectid": 41041,
+            "castid": 41250,
+            "effectid": 41250,
             "cost": 20,
             "cast": 60,
             "title": "ソウルドライブ",
             "description": "魂をわずかに削り、力へと変換する"
-        },
-        {
-            "castid": 29001,
-            "effectid": 29001,
-            "cost": 10,
-            "cast": 40,
-            "title": "アナライズ",
-            "description": "特殊アイテムを分析します"
         }
     ]
 }
