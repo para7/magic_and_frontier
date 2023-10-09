@@ -8,6 +8,7 @@ import { ConfigSchemaType } from "./zod/config";
 import { GenerateSelectExec } from "./generator/GenerateSelectExec";
 import { GenerateEffectTemplate } from "./generator/GenerateEffectTemplate";
 import { GenerateBookModifires } from "./generator/GenerateBookModifiers";
+import { GenerateAnalyze } from "./generator/GenerateAnalyze";
 
 export const GenerateFiles = async (
   data: DBSchemaType,
@@ -36,6 +37,12 @@ export const GenerateFiles = async (
     GenerateSelectExec(data)
   );
 
+  console.log("analyze");
+  writeFileWithDirSync(
+    path.join(outputPaths.effect, "generated", "analyze.mcfunction"),
+    GenerateAnalyze(data)
+  );
+
   console.log("init files");
   const promisesInits = GenerateEffectTemplate(data).map((x) => {
     const p = path.join(outputPaths.effect, x.filename);
@@ -50,6 +57,7 @@ export const GenerateFiles = async (
     return writeFileWithDir(p, x.command);
   });
 
+  console.log("modifiers");
   const modifiers = GenerateBookModifires(data).map((x) => {
     const p = path.join(outputPaths.modifiers, x.filename);
     return writeFileWithDir(p, x.command);
