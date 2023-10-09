@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "ヒーリングII",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:20 / cast:90",
+                "color": "white"
+            },
+            {
+                "text": "回復します",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

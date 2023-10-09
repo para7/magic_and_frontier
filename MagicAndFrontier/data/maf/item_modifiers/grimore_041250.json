@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "ソウルドライブ",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:70 / cast:60",
+                "color": "white"
+            },
+            {
+                "text": "魂をわずかに削り、力へと変換する",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

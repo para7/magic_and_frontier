@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "グランドシェイクIII",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:100 / cast:150",
+                "color": "white"
+            },
+            {
+                "text": "大地からのエネルギーで攻撃する",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

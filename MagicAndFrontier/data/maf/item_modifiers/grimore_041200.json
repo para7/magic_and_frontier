@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "オメガドライヴ",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:100 / cast:500",
+                "color": "white"
+            },
+            {
+                "text": "最強の補助魔法。",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

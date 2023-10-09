@@ -9,6 +9,7 @@ export const ConfigSchema = z
       selectdb: z.string(),
       selectexec: z.string(),
       effect: z.string(),
+      modifiers: z.string(),
     }),
   })
   .passthrough();

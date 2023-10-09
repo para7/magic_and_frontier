@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "バリア",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:15 / cast:35",
+                "color": "white"
+            },
+            {
+                "text": "衝撃に備えます",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

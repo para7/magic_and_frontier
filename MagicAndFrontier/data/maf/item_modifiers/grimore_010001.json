@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "ファイアストーム",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:50 / cast:100",
+                "color": "white"
+            },
+            {
+                "text": "炎の渦で周囲の敵を攻撃",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "操天秘技・アメ",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:90 / cast:400",
+                "color": "white"
+            },
+            {
+                "text": "空模様を書きかえる",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

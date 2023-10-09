@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "アナライズ",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:10 / cast:40",
+                "color": "white"
+            },
+            {
+                "text": "特殊アイテムを分析します",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

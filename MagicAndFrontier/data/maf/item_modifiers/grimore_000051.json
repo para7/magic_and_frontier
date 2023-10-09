@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "エリアヒール",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:40 / cast:60",
+                "color": "white"
+            },
+            {
+                "text": "広範囲を回復します",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

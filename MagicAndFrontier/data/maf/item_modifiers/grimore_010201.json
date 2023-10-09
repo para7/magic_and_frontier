@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "ブリザード",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:30 / cast:50",
+                "color": "white"
+            },
+            {
+                "text": "すべてを凍てつかせる",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

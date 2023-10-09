@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "クロックブースト",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:70 / cast:200",
+                "color": "white"
+            },
+            {
+                "text": "世界の時間を進める",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

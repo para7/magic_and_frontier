@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "ジャンプ",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:15 / cast:30",
+                "color": "white"
+            },
+            {
+                "text": "",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

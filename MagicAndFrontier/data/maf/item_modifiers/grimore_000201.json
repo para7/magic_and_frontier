@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "リジェネ",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:60 / cast:100",
+                "color": "white"
+            },
+            {
+                "text": "じっくり回復します",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

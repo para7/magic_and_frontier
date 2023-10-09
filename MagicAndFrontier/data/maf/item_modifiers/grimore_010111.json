@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "グランドシェイクII",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:70 / cast:10",
+                "color": "white"
+            },
+            {
+                "text": "大地からのエネルギーで攻撃する",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]]

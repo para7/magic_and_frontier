@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "移動速度",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:30 / cast:15",
+                "color": "white"
+            },
+            {
+                "text": "",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

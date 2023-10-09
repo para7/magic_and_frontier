@@ -7,6 +7,7 @@ import { GenerateSelectDB } from "./generator/GenerateSelectDB";
 import { ConfigSchemaType } from "./zod/config";
 import { GenerateSelectExec } from "./generator/GenerateSelectExec";
 import { GenerateEffectTemplate } from "./generator/GenerateEffectTemplate";
+import { GenerateBookModifires } from "./generator/GenerateBookModifiers";
 
 export const GenerateFiles = async (
   data: DBSchemaType,
@@ -49,5 +50,10 @@ export const GenerateFiles = async (
     return writeFileWithDir(p, x.command);
   });
 
-  await Promise.all([...promises, ...promisesInits]);
+  const modifiers = GenerateBookModifires(data).map((x) => {
+    const p = path.join(outputPaths.modifiers, x.filename);
+    return writeFileWithDir(p, x.command);
+  });
+
+  await Promise.all([...promises, ...promisesInits, ...modifiers]);
 };

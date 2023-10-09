@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "パワーブーストII",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:25 / cast:20",
+                "color": "white"
+            },
+            {
+                "text": "攻撃力を高める",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]

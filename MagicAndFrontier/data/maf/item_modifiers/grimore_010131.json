@@ -1,0 +1,27 @@
+[
+    {
+        "function": "minecraft:set_name",
+        "name": {
+            "text": "グランドシェイクX",
+            "color": "gold",
+            "italic": true
+        }
+    },
+    {
+        "function": "minecraft:set_lore",
+        "lore": [
+            {
+                "text": "魔法書"
+            },
+            {
+                "text": "cost:20 / cast:5",
+                "color": "white"
+            },
+            {
+                "text": "大地からのエネルギーで攻撃する。力に指向性を持たせ、局所的な破壊をもたらす。",
+                "color": "aqua"
+            }
+        ],
+        "replace": true
+    }
+]
