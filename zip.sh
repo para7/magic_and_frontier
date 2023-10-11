@@ -1,19 +1,19 @@
+rm zip/devtool.zip
 cd devtool
-rm devtool.zip
 zip -r ../zip/devtool.zip *
 cd ../
 
+rm zip/MagicAndFrontier.zip
 cd MagicAndFrontier
-rm MagicAndFrontier.zip
 zip -r ../zip/MagicAndFrontier.zip *
 cd ../
 
+rm zip/MultiPlayTools.zip
 cd MultiPlayTools
-rm MultiPlayTools.zip
 zip -r ../zip/MultiPlayTools.zip *
 cd ../
 
+rm zip/p7BaseSystem.zip
 cd p7BaseSystem
-rm p7BaseSystem.zip
 zip -r ../zip/p7BaseSystem.zip *
 cd ../
