@@ -7,3 +7,4 @@ execute as @e[tag=VoidWarp] run function p7b:warp
 function p7b:generate_rand
 
 scoreboard players set @a p7_Login 0
+
