@@ -16,5 +16,6 @@ scoreboard players set @s tmp 0
 scoreboard players set @s tmp2 0
 
 scoreboard players set @s mafLogin 1
+scoreboard players set @s mafCastTime -1
 
 function maf:magic/constructor

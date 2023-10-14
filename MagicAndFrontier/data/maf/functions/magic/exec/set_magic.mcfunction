@@ -1,18 +1,18 @@
 tellraw @s [{"text":"set_magic"}]
 
 # 0になった時発動とするので、マイナスで初期化してバグ対策
-scoreboard players set @s p7_castTime -1
+scoreboard players set @s mafCastTime -1
 
 # 一時変数からデータをロード
-execute store result score @s p7_castCost run data get storage p7:maf magictmp.cost
-execute store result score @s p7_castTime run data get storage p7:maf magictmp.cast
-execute store result score @s p7_castTimeMax run data get storage p7:maf magictmp.cast
-execute store result score @s p7_castID run data get storage p7:maf magictmp.id
+execute store result score @s mafCastCost run data get storage p7:maf magictmp.cost
+execute store result score @s mafCastTime run data get storage p7:maf magictmp.cast
+execute store result score @s mafCastTimeMax run data get storage p7:maf magictmp.cast
+execute store result score @s mafCastID run data get storage p7:maf magictmp.id
 
-execute if score @s p7_castCost > @s mafMP run scoreboard players set @s p7_castTime -1
-# execute if score @s p7_castCost > @s mafMP run tellraw @s [{"text":"MPが足りません！"}, {"score":{"name":"@s","objective":"mafMP"}},{"text":" / "},{"score":{"name":"@s","objective":"p7_castCost"}}]
-execute if score @s p7_castCost > @s mafMP run tellraw @s [{"text":"MPが足りません！ 消費MP: "},{"score":{"name":"@s","objective":"p7_castCost"}}]
-execute if score @s p7_castCost > @s mafMP run playsound minecraft:block.dispenser.fail master @s ~ ~ ~ 1.0 1.1
+execute if score @s mafCastCost > @s mafMP run scoreboard players set @s mafCastTime -1
+# execute if score @s mafCastCost > @s mafMP run tellraw @s [{"text":"MPが足りません！"}, {"score":{"name":"@s","objective":"mafMP"}},{"text":" / "},{"score":{"name":"@s","objective":"mafCastCost"}}]
+execute if score @s mafCastCost > @s mafMP run tellraw @s [{"text":"MPが足りません！ 消費MP: "},{"score":{"name":"@s","objective":"mafCastCost"}}]
+execute if score @s mafCastCost > @s mafMP run playsound minecraft:block.dispenser.fail master @s ~ ~ ~ 1.0 1.1
 
 # 詠唱名を保存する
 execute as @a[scores={mafPlayerID=1}] run data modify storage p7:mpbar bar1.title set from storage p7:maf magictmp.title

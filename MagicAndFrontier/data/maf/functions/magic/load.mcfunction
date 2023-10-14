@@ -5,12 +5,12 @@ scoreboard objectives add mafMP dummy
 scoreboard objectives add mafMaxMP dummy
 
 
-scoreboard objectives add p7_castCost dummy
-scoreboard objectives add p7_castTime dummy
+scoreboard objectives add mafCastCost dummy
+scoreboard objectives add mafCastTime dummy
 # あえてmagicIDと二重にすることで、コストが違う同効果魔法の実装などを簡単に実現
-scoreboard objectives add p7_castID dummy
+scoreboard objectives add mafCastID dummy
 # 詠唱時間の表示用
-scoreboard objectives add p7_castTimeMax dummy
+scoreboard objectives add mafCastTimeMax dummy
  
 # MP自然回復タイマー
 scoreboard objectives add mafMPTick dummy

@@ -26,6 +26,6 @@ scoreboard objectives remove tmp2
 
 
 function maf:load
-# advancement revoke @a only maf:entered_world
+advancement revoke @a only maf:entered_world2
 # ここに仮置き 本来はログイン時毎回
-# function maf:system/set_player_id/run
+function maf:system/set_player_id/run

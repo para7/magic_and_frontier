@@ -1,6 +1,6 @@
 # MP自然回復処理
-# execute as @a[scores={p7_castTime=..-1}] run scoreboard players add @s mafMPTick 1
-# scoreboard players add @a[scores={p7_castTime=..-1}] mafMPTick 1
+# execute as @a[scores={mafCastTime=..-1}] run scoreboard players add @s mafMPTick 1
+# scoreboard players add @a[scores={mafCastTime=..-1}] mafMPTick 1
 
 # 1秒に回復する内部値
 scoreboard players add @a mafMPTick 10
