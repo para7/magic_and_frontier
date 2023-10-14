@@ -49,13 +49,15 @@ maf:tool/ 以下に魔法書の入手関数があります
 
 まるごと zip でダウンロードしてから、解凍します。
 
+MagicAndFrontier と p7BaseSystem 両方を導入してください。
+
 致命的なバグ等含む場合があります。
 
 ## リリース版
 
 本画面 右側の Releases からダウンロードできます。
 
-現行開発版と比べて安定
+現行開発版と比べて多少は安定しているものを置いています。
 
 <https://github.com/para7/magic_and_frontier/releases/>
 
