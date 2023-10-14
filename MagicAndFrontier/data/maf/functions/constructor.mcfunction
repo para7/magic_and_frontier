@@ -1,4 +1,4 @@
-tellraw @s [{"text":"初期化処理です"}]
+tellraw @s [{"text":"constructor: 初期化処理を実行"}]
 
 scoreboard players set @s mafPlayerID 0
 scoreboard players set @s mafMoved 0
