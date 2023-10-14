@@ -7,7 +7,7 @@ scoreboard players set @s mafCastTime -1
 execute store result score @s mafCastCost run data get storage p7:maf magictmp.cost
 execute store result score @s mafCastTime run data get storage p7:maf magictmp.cast
 execute store result score @s mafCastTimeMax run data get storage p7:maf magictmp.cast
-execute store result score @s mafCastID run data get storage p7:maf magictmp.id
+execute store result score @s mafEffectID run data get storage p7:maf magictmp.id
 
 execute if score @s mafCastCost > @s mafMP run scoreboard players set @s mafCastTime -1
 # execute if score @s mafCastCost > @s mafMP run tellraw @s [{"text":"MPが足りません！"}, {"score":{"name":"@s","objective":"mafMP"}},{"text":" / "},{"score":{"name":"@s","objective":"mafCastCost"}}]

@@ -1,5 +1,5 @@
 # 魔導書に設定されているIDをそのまま代入する先
-scoreboard objectives add mafMagicID dummy
+scoreboard objectives add mafCastID dummy
 
 scoreboard objectives add mafMP dummy
 scoreboard objectives add mafMaxMP dummy
@@ -8,7 +8,7 @@ scoreboard objectives add mafMaxMP dummy
 scoreboard objectives add mafCastCost dummy
 scoreboard objectives add mafCastTime dummy
 # あえてmagicIDと二重にすることで、コストが違う同効果魔法の実装などを簡単に実現
-scoreboard objectives add mafCastID dummy
+scoreboard objectives add mafEffectID dummy
 # 詠唱時間の表示用
 scoreboard objectives add mafCastTimeMax dummy
  

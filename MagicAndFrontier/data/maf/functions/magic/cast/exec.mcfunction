@@ -1,4 +1,4 @@
-tellraw @s [{"text":"cast/exec id:"}, {"score":{"name":"@s","objective":"mafCastID"}}]
+tellraw @s [{"text":"cast/exec id:"}, {"score":{"name":"@s","objective":"mafEffectID"}}]
 
 # MPの消費処理
 scoreboard players operation @s mafMP -= @s mafCastCost

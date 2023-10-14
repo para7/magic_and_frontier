@@ -11,17 +11,17 @@ scoreboard objectives add mafMoved dummy
 
 scoreboard objectives add mafWalkCM minecraft.custom:minecraft.walk_one_cm
 
-# # スキルセット処理
-# # セット先スロット
-# scoreboard objectives add p7_setSkSlot trigger
-# # セットID
-# scoreboard objectives add p7_setSkID dummy
-# # triggerを無効化出来ないので、有効判定用
-# scoreboard objectives add p7_setSkEnable dummy
+# スキルセット処理
+# セット先スロット
+scoreboard objectives add p7_setSkSlot trigger
+# セットID
+scoreboard objectives add p7_setSkID dummy
+# triggerを無効化出来ないので、有効判定用
+scoreboard objectives add p7_setSkEnable dummy
 
-# scoreboard objectives add p7_skillSlot1 dummy
-# scoreboard objectives add p7_skillSlot2 dummy
-# scoreboard objectives add p7_skillSlot3 dummy
+scoreboard objectives add p7_skillSlot1 dummy
+scoreboard objectives add p7_skillSlot2 dummy
+scoreboard objectives add p7_skillSlot3 dummy
 
 
 # エリトラ
