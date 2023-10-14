@@ -4,7 +4,7 @@ import { DBSchemaType } from "../zod/db";
 import { RemoveDuplicatedCast } from "../RemoveDuplicatedCast";
 
 const GenerateLine = (x: DBSchemaType["data"][number]) => {
-  return `execute if entity @s[scores={p7_castID=${
+  return `execute if entity @s[scores={mafEffectID=${
     x.effectid
   }}] run function maf:magic/exec/${ConvertCategory(x.effectid)}/${ZeroPadding(x.effectid, 6)}`;
 };

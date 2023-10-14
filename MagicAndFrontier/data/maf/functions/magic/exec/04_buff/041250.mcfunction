@@ -7,6 +7,6 @@ effect give @s minecraft:water_breathing 120 0
 effect give @s minecraft:wither 10 0
 effect give @s minecraft:saturation 1 5
 
-scoreboard players remove @s p7_soul 50
+scoreboard players remove @s mafSoul 50
 
 tellraw @a[distance=..12] [{"selector":"@s"},{"text":" は "},{"nbt":"magictmp.title","storage":"p7:maf"},{"text": "を唱えた！"}]

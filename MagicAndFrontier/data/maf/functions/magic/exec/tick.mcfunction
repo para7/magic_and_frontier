@@ -1,4 +1,4 @@
-tellraw @s [{"text":"使用した魔法ID : "},{"score":{"name":"@s","objective":"p7_magicID"}}]
+tellraw @s [{"text":"使用した魔法ID : "},{"score":{"name":"@s","objective":"mafCastID"}}]
 
 # 初期化
 data remove storage p7:maf magictmp
@@ -11,4 +11,4 @@ function maf:magic/exec/selectdb
 # データがあればキャスト処理に移る
 execute if data storage p7:maf magictmp run function maf:magic/exec/set_magic
 
-execute unless data storage p7:maf magictmp run tellraw @s [{"text":"魔法ID設定忘れです。使用している本や杖の名前と、次の魔法IDを開発者に報告してください。\n魔法ID = "},{"score":{"name":"@s","objective":"p7_magicID"}}]
+execute unless data storage p7:maf magictmp run tellraw @s [{"text":"魔法ID設定忘れです。使用している本や杖の名前と、次の魔法IDを開発者に報告してください。\n魔法ID = "},{"score":{"name":"@s","objective":"mafCastID"}}]

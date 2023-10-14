@@ -10,26 +10,64 @@
 
 - なんかいい感じの名称案ください
 
-# 導入方法(開発版)
+# 現在のあそびかた
+
+## 魔法について
+
+明らかに変なやつがスポーンします。そいつが魔法書を落とします。
+
+魔法は 魔法の杖と魔法書を両手それぞれに持って右クリックで発動します。
+
+## 杖について
+
+まだ杖をつくる方法がないので、コマンドで生成してください。
+
+```
+/summon item ~ ~ ~ {Item:{id:"minecraft:carrot_on_a_stick",Count:1b,tag:{display:{Name:'{"text":"魔法杖","color":"gold","italic":false}'},HideFlags:3,RepairCost:99,wandID:1,Enchantments:[{id:"minecraft:mending",lvl:1s}]}}}
+```
+
+## アナライズについて
+
+アナライズの魔法は、インベントリ欄のもっとも左上の欄に解析したい魔法書を置いてから詠唱してください。
+
+## 魔法書が直接ほしい
+
+maf:tool/ 以下に魔法書の入手関数があります
+
+```
+/function maf:tool/029001
+```
+
+などで実行してください。
+
+指定するのは詠唱 ID(castid)です。  
+魔法 ID はデータパック外の \_tool/out/sample/maf.json にあります
+
+# 導入方法
+
+## 現行開発版
 
 まるごと zip でダウンロードしてから、解凍します。
 
-入ってるものを全部導入してください。
+致命的なバグ等含む場合があります。
 
-以下のコマンドを実行して初期化します
+## リリース版
 
-```
-/function maf:magic/dev
-/function maf:system/set_player_id/run
-```
+本画面 右側の Releases からダウンロードできます。
 
-過去バージョンから更新する場合、次のコマンドで更新可能です。
+現行開発版と比べて安定
+
+<https://github.com/para7/magic_and_frontier/releases/>
+
+# マイグレーション
+
+過去バージョンから更新して正常に動かない場合、次のコマンドを実行すれば動作するかもしれません（α 版につき保証はいたしかねます）
 
 ```
 /function maf:reinstall
 ```
 
-# メッセージなど各種報告フォーム
+# 各種連絡・報告フォーム
 
 バグ報告等は以下にお願いします
 
@@ -37,7 +75,7 @@
 https://docs.google.com/forms/d/e/1FAIpQLSdutG5Q5O34SY3zoA6wShnRi0LcSfw72-UXy7nagEcP9JHbbQ/viewform?usp=sf_link
 
 【github わかる人向け】  
-ここの issue 等でもよいです
+ここの issue に直接立てて頂いて構いません。よろしくお願いします。
 
 # 利用条件
 
@@ -49,9 +87,15 @@ https://docs.google.com/forms/d/e/1FAIpQLSdutG5Q5O34SY3zoA6wShnRi0LcSfw72-UXy7na
 
 # 前提データパック
 
-- p7BaseSystem
+- p7BaseSystem : 自作のユーティリティパック
 
 ほか赤石愛さんの [oh my dat](https://github.com/Ai-Akaishi/OhMyDat) や [ScoreToHealth](https://github.com/Ai-Akaishi/ScoreToHealth) を導入検討中
+
+---
+
+---
+
+---
 
 ## 予定
 
