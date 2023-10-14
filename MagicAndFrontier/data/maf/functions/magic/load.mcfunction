@@ -1,8 +1,8 @@
 # 魔導書に設定されているIDをそのまま代入する先
-scoreboard objectives add p7_magicID dummy
+scoreboard objectives add mafMagicID dummy
 
-scoreboard objectives add p7_MP dummy
-scoreboard objectives add p7_MaxMP dummy
+scoreboard objectives add mafMP dummy
+scoreboard objectives add mafMaxMP dummy
 
 
 scoreboard objectives add p7_castCost dummy
@@ -13,7 +13,7 @@ scoreboard objectives add p7_castID dummy
 scoreboard objectives add p7_castTimeMax dummy
  
 # MP自然回復タイマー
-scoreboard objectives add p7_MPTick dummy
+scoreboard objectives add mafMPTick dummy
 
 # scoreboard objectives add p7_
 

@@ -2,7 +2,7 @@ import { ZeroPadding } from "@/lib/ZeroPadding";
 import { DBSchemaType } from "../zod/db";
 
 const GenerateLine = (x: DBSchemaType["data"][number]) => {
-  return `execute if entity @s[scores={p7_magicID=${
+  return `execute if entity @s[scores={mafMagicID=${
     x.castid
   }}] run item modify entity @s inventory.0 maf:grimore_${ZeroPadding(x.castid, 6)}`;
 };

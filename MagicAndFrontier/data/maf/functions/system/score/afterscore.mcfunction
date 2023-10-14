@@ -1,13 +1,13 @@
-scoreboard players set @a p7_useWand 0
-scoreboard players set @a p7_walkCM 0
-scoreboard players set @a p7_aviateCM 0
-scoreboard players set @a p7_climbCM 0
-scoreboard players set @a p7_crouchCM 0
-scoreboard players set @a p7_fallCM 0
-scoreboard players set @a p7_flyCM 0
-scoreboard players set @a p7_sprintCM 0
-scoreboard players set @a p7_swimCM 0
-scoreboard players set @a p7_walkWaterCM 0
-scoreboard players set @a p7_underWaterCM 0
+scoreboard players set @a mafUseWand 0
+scoreboard players set @a mafWalkCM 0
+scoreboard players set @a mafAviateCM 0
+scoreboard players set @a mafClimbCM 0
+scoreboard players set @a mafCrouchCM 0
+scoreboard players set @a mafFallCM 0
+scoreboard players set @a mafFlyCM 0
+scoreboard players set @a mafSprintCM 0
+scoreboard players set @a mafSwimCM 0
+scoreboard players set @a mafWalkWaterCM 0
+scoreboard players set @a mafUnderWaterCM 0
 
 scoreboard players set @a mafLogin 0

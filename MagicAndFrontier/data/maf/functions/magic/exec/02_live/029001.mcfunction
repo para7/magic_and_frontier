@@ -2,17 +2,17 @@ tellraw @p [{"selector":"@s"},{"text":" は "},{"nbt":"magictmp.title","storage"
 
 # 詠唱時のストレージ巻き上げ処理を利用してアナライズを実行する
 # バグ起きるかも. 要注意
-scoreboard players set @s p7_magicID 0
+scoreboard players set @s mafMagicID 0
 # 対象外アイテムの場合は0がセットされる
-execute store result score @s p7_magicID run data get entity @s Inventory[{Slot:9b}].tag.magicID
+execute store result score @s mafMagicID run data get entity @s Inventory[{Slot:9b}].tag.magicID
 
-execute if entity @s[scores={p7_magicID=0}] run tellraw @s [{"text":"インベントリの左上に対象アイテムをセットしてください"}]
-execute unless entity @s[scores={p7_magicID=0}] run function maf:magic/exec/02_live/029001_2
+execute if entity @s[scores={mafMagicID=0}] run tellraw @s [{"text":"インベントリの左上に対象アイテムをセットしてください"}]
+execute unless entity @s[scores={mafMagicID=0}] run function maf:magic/exec/02_live/029001_2
 
 
 # modifires 置き換え
 function maf:magic/exec/generated/analyze
 
 # 終了処理
-scoreboard players set @s p7_magicID 0
+scoreboard players set @s mafMagicID 0
 function maf:magic/exec/02_live/effect
