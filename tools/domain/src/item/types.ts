@@ -7,6 +7,12 @@ export type ItemEntry = {
 	enchantments: string;
 	unbreakable: boolean;
 	customModelData: string;
+	repairCost: string;
+	hideFlags: string;
+	potionId: string;
+	customPotionColor: string;
+	customPotionEffects: string;
+	attributeModifiers: string;
 	customNbt: string;
 	nbt: string;
 	updatedAt: string;
@@ -28,6 +34,12 @@ export type ItemFieldErrors = Partial<
 		| "lore"
 		| "enchantments"
 		| "customModelData"
+		| "repairCost"
+		| "hideFlags"
+		| "potionId"
+		| "customPotionColor"
+		| "customPotionEffects"
+		| "attributeModifiers"
 		| "customNbt",
 		string
 	>
@@ -42,6 +54,12 @@ export type SaveItemInput = {
 	enchantments: string;
 	unbreakable: boolean;
 	customModelData: string;
+	repairCost: string;
+	hideFlags: string;
+	potionId: string;
+	customPotionColor: string;
+	customPotionEffects: string;
+	attributeModifiers: string;
 	customNbt: string;
 };
 

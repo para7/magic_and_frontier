@@ -7,6 +7,12 @@ export interface ItemDraft {
   enchantments: string;
   unbreakable: boolean;
   customModelData: string;
+  repairCost: string;
+  hideFlags: string;
+  potionId: string;
+  customPotionColor: string;
+  customPotionEffects: string;
+  attributeModifiers: string;
   customNbt: string;
 }
 
@@ -83,6 +89,12 @@ export function createItemDraft(): ItemDraft {
     enchantments: "",
     unbreakable: false,
     customModelData: "",
+    repairCost: "",
+    hideFlags: "",
+    potionId: "",
+    customPotionColor: "",
+    customPotionEffects: "",
+    attributeModifiers: "",
     customNbt: ""
   };
 }

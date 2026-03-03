@@ -23,6 +23,21 @@ function normalizeCustomNbtFragment(value: string): string {
 	return trimmed;
 }
 
+function normalizeListValue(value: string): string {
+	const trimmed = value.trim();
+	if (!trimmed) {
+		return "";
+	}
+	if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+		return trimmed;
+	}
+	return `[${trimmed}]`;
+}
+
+function normalizePotionId(value: string): string {
+	return value.trim().replace(/^"/, "").replace(/"$/, "");
+}
+
 export function buildItemNbt(input: BuildItemNbtInput): NbtBuildResult {
 	const tagParts: string[] = [];
 
@@ -70,6 +85,33 @@ export function buildItemNbt(input: BuildItemNbtInput): NbtBuildResult {
 
 	if (input.customModelData.trim().length > 0) {
 		tagParts.push(`CustomModelData:${input.customModelData.trim()}`);
+	}
+
+	if (input.repairCost.trim().length > 0) {
+		tagParts.push(`RepairCost:${input.repairCost.trim()}`);
+	}
+
+	if (input.hideFlags.trim().length > 0) {
+		tagParts.push(`HideFlags:${input.hideFlags.trim()}`);
+	}
+
+	const potionId = normalizePotionId(input.potionId);
+	if (potionId.length > 0) {
+		tagParts.push(`Potion:"${potionId}"`);
+	}
+
+	if (input.customPotionColor.trim().length > 0) {
+		tagParts.push(`CustomPotionColor:${input.customPotionColor.trim()}`);
+	}
+
+	const customPotionEffects = normalizeListValue(input.customPotionEffects);
+	if (customPotionEffects.length > 0) {
+		tagParts.push(`CustomPotionEffects:${customPotionEffects}`);
+	}
+
+	const attributeModifiers = normalizeListValue(input.attributeModifiers);
+	if (attributeModifiers.length > 0) {
+		tagParts.push(`AttributeModifiers:${attributeModifiers}`);
 	}
 
 	const customFragment = normalizeCustomNbtFragment(input.customNbt);

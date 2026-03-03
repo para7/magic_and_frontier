@@ -3,6 +3,7 @@ import { Component, computed, inject, signal } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatDialog } from "@angular/material/dialog";
+import { MatPaginatorModule, type PageEvent } from "@angular/material/paginator";
 import { firstValueFrom } from "rxjs";
 import { ApiService } from "../../api";
 import { GrimoireEditorDialogComponent } from "./grimoire-editor-dialog.component";
@@ -12,7 +13,7 @@ import type { GrimoireEntry } from "../../types";
 @Component({
   selector: "app-grimoire-screen",
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatPaginatorModule],
   styleUrl: "./grimoire-screen.component.css",
   template: `
     <mat-card appearance="outlined">
@@ -64,20 +65,16 @@ import type { GrimoireEntry } from "../../types";
         </table>
       </div>
 
-      <div class="header-actions" *ngIf="totalPages() > 1">
-        <button mat-stroked-button type="button" (click)="prevPage()" [disabled]="currentPage() === 0">
-          前へ
-        </button>
-        <span>{{ currentPage() + 1 }} / {{ totalPages() }} ({{ entries().length }}件)</span>
-        <button
-          mat-stroked-button
-          type="button"
-          (click)="nextPage()"
-          [disabled]="currentPage() >= totalPages() - 1"
-        >
-          次へ
-        </button>
-      </div>
+      <mat-paginator
+        *ngIf="entries().length > pageSize"
+        [length]="entries().length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[pageSize]"
+        [hidePageSize]="true"
+        [showFirstLastButtons]="true"
+        [pageIndex]="pageIndex()"
+        (page)="onPage($event)"
+      />
     </mat-card>
   `
 })
@@ -88,9 +85,8 @@ export class GrimoireScreenComponent {
 
   readonly pageSize = 50;
   readonly entries = signal<GrimoireEntry[]>([]);
-  readonly currentPage = signal(0);
-  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.entries().length / this.pageSize)));
-  readonly pageStartIndex = computed(() => this.currentPage() * this.pageSize);
+  readonly pageIndex = signal(0);
+  readonly pageStartIndex = computed(() => this.pageIndex() * this.pageSize);
   readonly pagedEntries = computed(() =>
     this.entries().slice(this.pageStartIndex(), this.pageStartIndex() + this.pageSize)
   );
@@ -109,12 +105,8 @@ export class GrimoireScreenComponent {
     }
   }
 
-  prevPage(): void {
-    this.currentPage.update((page) => Math.max(0, page - 1));
-  }
-
-  nextPage(): void {
-    this.currentPage.update((page) => Math.min(this.totalPages() - 1, page + 1));
+  onPage(event: PageEvent): void {
+    this.pageIndex.set(event.pageIndex);
   }
 
   async openCreateModal(): Promise<void> {
@@ -167,9 +159,9 @@ export class GrimoireScreenComponent {
   }
 
   private ensureValidPage(): void {
-    const lastPage = this.totalPages() - 1;
-    if (this.currentPage() > lastPage) {
-      this.currentPage.set(lastPage);
+    const lastPage = Math.max(0, Math.ceil(this.entries().length / this.pageSize) - 1);
+    if (this.pageIndex() > lastPage) {
+      this.pageIndex.set(lastPage);
     }
   }
 }

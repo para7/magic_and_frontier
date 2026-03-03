@@ -34,6 +34,33 @@ export const saveItemSchema = v.object({
 		v.maxLength(20, "CustomModelData must be 20 digits or fewer."),
 		v.regex(/^\d*$/, "CustomModelData must be a non-negative integer."),
 	),
+	repairCost: v.pipe(
+		v.string(),
+		v.maxLength(20, "RepairCost must be 20 digits or fewer."),
+		v.regex(/^\d*$/, "RepairCost must be a non-negative integer."),
+	),
+	hideFlags: v.pipe(
+		v.string(),
+		v.maxLength(20, "HideFlags must be 20 digits or fewer."),
+		v.regex(/^\d*$/, "HideFlags must be a non-negative integer."),
+	),
+	potionId: v.pipe(
+		v.string(),
+		v.maxLength(120, "Potion id must be 120 characters or fewer."),
+	),
+	customPotionColor: v.pipe(
+		v.string(),
+		v.maxLength(20, "CustomPotionColor must be 20 digits or fewer."),
+		v.regex(/^\d*$/, "CustomPotionColor must be a non-negative integer."),
+	),
+	customPotionEffects: v.pipe(
+		v.string(),
+		v.maxLength(12000, "CustomPotionEffects must be 12000 characters or fewer."),
+	),
+	attributeModifiers: v.pipe(
+		v.string(),
+		v.maxLength(12000, "AttributeModifiers must be 12000 characters or fewer."),
+	),
 	customNbt: v.pipe(
 		v.string(),
 		v.maxLength(4000, "Custom NBT must be 4000 characters or fewer."),

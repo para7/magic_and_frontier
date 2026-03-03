@@ -1,4 +1,5 @@
 import { buildItemNbt } from "./nbt.js";
+import { extractKnownCustomNbt } from "./custom-nbt.js";
 import { defaultItemState, type ItemEntry, type ItemState } from "./types.js";
 
 function fallbackNbtFor(record: Record<string, unknown>): string {
@@ -18,6 +19,22 @@ function fallbackNbtFor(record: Record<string, unknown>): string {
 			typeof record.unbreakable === "boolean" ? record.unbreakable : false,
 		customModelData:
 			typeof record.customModelData === "string" ? record.customModelData : "",
+		repairCost:
+			typeof record.repairCost === "string" ? record.repairCost : "",
+		hideFlags: typeof record.hideFlags === "string" ? record.hideFlags : "",
+		potionId: typeof record.potionId === "string" ? record.potionId : "",
+		customPotionColor:
+			typeof record.customPotionColor === "string"
+				? record.customPotionColor
+				: "",
+		customPotionEffects:
+			typeof record.customPotionEffects === "string"
+				? record.customPotionEffects
+				: "",
+		attributeModifiers:
+			typeof record.attributeModifiers === "string"
+				? record.attributeModifiers
+				: "",
 		customNbt: typeof record.customNbt === "string" ? record.customNbt : "",
 	});
 	if (!built.enchantmentError) {
@@ -40,6 +57,9 @@ function normalizeItemEntry(value: unknown): ItemEntry | null {
 	}
 
 	const record = value as Record<string, unknown>;
+	const extracted = extractKnownCustomNbt(
+		typeof record.customNbt === "string" ? record.customNbt : "",
+	);
 	const fallbackNbt = fallbackNbtFor(record);
 
 	return {
@@ -58,12 +78,34 @@ function normalizeItemEntry(value: unknown): ItemEntry | null {
 		customName: typeof record.customName === "string" ? record.customName : "",
 		lore: typeof record.lore === "string" ? record.lore : "",
 		enchantments:
-			typeof record.enchantments === "string" ? record.enchantments : "",
+			typeof record.enchantments === "string" && record.enchantments.length > 0
+				? record.enchantments
+				: extracted.enchantmentsFromNbt,
 		unbreakable:
 			typeof record.unbreakable === "boolean" ? record.unbreakable : false,
 		customModelData:
 			typeof record.customModelData === "string" ? record.customModelData : "",
-		customNbt: typeof record.customNbt === "string" ? record.customNbt : "",
+		repairCost:
+			typeof record.repairCost === "string"
+				? record.repairCost
+				: extracted.repairCost,
+		hideFlags:
+			typeof record.hideFlags === "string" ? record.hideFlags : extracted.hideFlags,
+		potionId:
+			typeof record.potionId === "string" ? record.potionId : extracted.potionId,
+		customPotionColor:
+			typeof record.customPotionColor === "string"
+				? record.customPotionColor
+				: extracted.customPotionColor,
+		customPotionEffects:
+			typeof record.customPotionEffects === "string"
+				? record.customPotionEffects
+				: extracted.customPotionEffects,
+		attributeModifiers:
+			typeof record.attributeModifiers === "string"
+				? record.attributeModifiers
+				: extracted.attributeModifiers,
+		customNbt: extracted.remainingCustomNbt,
 		nbt:
 			typeof record.nbt === "string" && record.nbt.length > 0
 				? record.nbt

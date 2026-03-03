@@ -37,6 +37,15 @@ function toFieldErrors(
 		fieldErrors.enchantments = nested.enchantments[0];
 	if (nested.customModelData?.[0])
 		fieldErrors.customModelData = nested.customModelData[0];
+	if (nested.repairCost?.[0]) fieldErrors.repairCost = nested.repairCost[0];
+	if (nested.hideFlags?.[0]) fieldErrors.hideFlags = nested.hideFlags[0];
+	if (nested.potionId?.[0]) fieldErrors.potionId = nested.potionId[0];
+	if (nested.customPotionColor?.[0])
+		fieldErrors.customPotionColor = nested.customPotionColor[0];
+	if (nested.customPotionEffects?.[0])
+		fieldErrors.customPotionEffects = nested.customPotionEffects[0];
+	if (nested.attributeModifiers?.[0])
+		fieldErrors.attributeModifiers = nested.attributeModifiers[0];
 	if (nested.customNbt?.[0]) fieldErrors.customNbt = nested.customNbt[0];
 
 	return fieldErrors;

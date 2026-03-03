@@ -25,6 +25,12 @@ export function itemEntryToDraft(entry: ItemEntry): ItemDraft {
     enchantments: entry.enchantments,
     unbreakable: entry.unbreakable,
     customModelData: entry.customModelData,
+    repairCost: entry.repairCost,
+    hideFlags: entry.hideFlags,
+    potionId: entry.potionId,
+    customPotionColor: entry.customPotionColor,
+    customPotionEffects: entry.customPotionEffects,
+    attributeModifiers: entry.attributeModifiers,
     customNbt: entry.customNbt
   };
 }
@@ -52,6 +58,12 @@ export function itemDraftToSaveInput(draft: ItemDraft): {
   enchantments: string;
   unbreakable: boolean;
   customModelData: string;
+  repairCost: string;
+  hideFlags: string;
+  potionId: string;
+  customPotionColor: string;
+  customPotionEffects: string;
+  attributeModifiers: string;
   customNbt: string;
 } {
   return {
@@ -63,6 +75,12 @@ export function itemDraftToSaveInput(draft: ItemDraft): {
     enchantments: draft.enchantments,
     unbreakable: draft.unbreakable,
     customModelData: draft.customModelData,
+    repairCost: draft.repairCost,
+    hideFlags: draft.hideFlags,
+    potionId: draft.potionId,
+    customPotionColor: draft.customPotionColor,
+    customPotionEffects: draft.customPotionEffects,
+    attributeModifiers: draft.attributeModifiers,
     customNbt: draft.customNbt
   };
 }

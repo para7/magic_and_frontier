@@ -237,6 +237,12 @@ describe("acceptance scenarios", () => {
 			enchantments: "",
 			unbreakable: false,
 			customModelData: "",
+			repairCost: "",
+			hideFlags: "",
+			potionId: "",
+			customPotionColor: "",
+			customPotionEffects: "",
+			attributeModifiers: "",
 			customNbt: "",
 		});
 		await grimoireUsecase.saveGrimoireEntry({

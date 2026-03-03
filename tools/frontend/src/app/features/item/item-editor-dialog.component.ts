@@ -60,6 +60,40 @@ export interface ItemEditorDialogData {
           <input matInput [(ngModel)]="draft().customModelData" name="customModelData" />
         </mat-form-field>
         <mat-form-field appearance="outline">
+          <mat-label>RepairCost</mat-label>
+          <input matInput [(ngModel)]="draft().repairCost" name="repairCost" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>HideFlags</mat-label>
+          <input matInput [(ngModel)]="draft().hideFlags" name="hideFlags" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Potion ID</mat-label>
+          <input matInput [(ngModel)]="draft().potionId" name="potionId" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>CustomPotionColor</mat-label>
+          <input matInput [(ngModel)]="draft().customPotionColor" name="customPotionColor" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-span-2">
+          <mat-label>CustomPotionEffects (リスト)</mat-label>
+          <textarea
+            matInput
+            [(ngModel)]="draft().customPotionEffects"
+            name="customPotionEffects"
+            rows="3"
+          ></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-span-2">
+          <mat-label>AttributeModifiers (リスト)</mat-label>
+          <textarea
+            matInput
+            [(ngModel)]="draft().attributeModifiers"
+            name="attributeModifiers"
+            rows="4"
+          ></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
           <mat-label>カスタム名</mat-label>
           <input matInput [(ngModel)]="draft().customName" name="customName" />
         </mat-form-field>
@@ -113,7 +147,7 @@ export interface ItemEditorDialogData {
           </mat-accordion>
         </section>
         <mat-form-field appearance="outline" class="form-span-2">
-          <mat-label>カスタムNBT</mat-label>
+          <mat-label>追加カスタムNBT（未対応キー）</mat-label>
           <textarea matInput [(ngModel)]="draft().customNbt" name="customNbt" rows="2"></textarea>
         </mat-form-field>
         <mat-checkbox class="form-span-2" [(ngModel)]="draft().unbreakable" name="unbreakable"

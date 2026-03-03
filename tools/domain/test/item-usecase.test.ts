@@ -31,6 +31,12 @@ describe("item usecase", () => {
       enchantments: "",
       unbreakable: false,
       customModelData: "",
+      repairCost: "",
+      hideFlags: "",
+      potionId: "",
+      customPotionColor: "",
+      customPotionEffects: "",
+      attributeModifiers: "",
       customNbt: ""
     });
 
@@ -53,6 +59,12 @@ describe("item usecase", () => {
       enchantments: "",
       unbreakable: false,
       customModelData: "",
+      repairCost: "",
+      hideFlags: "",
+      potionId: "",
+      customPotionColor: "",
+      customPotionEffects: "",
+      attributeModifiers: "",
       customNbt: ""
     });
 

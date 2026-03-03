@@ -109,6 +109,12 @@ describe("save/export", () => {
 			enchantments: "",
 			unbreakable: false,
 			customModelData: "",
+			repairCost: "",
+			hideFlags: "",
+			potionId: "",
+			customPotionColor: "",
+			customPotionEffects: "",
+			attributeModifiers: "",
 			customNbt: "",
 		});
 		await grimoireUsecase.saveGrimoireEntry({
@@ -221,6 +227,12 @@ describe("save/export", () => {
 					enchantments: "",
 					unbreakable: false,
 					customModelData: "",
+					repairCost: "",
+					hideFlags: "",
+					potionId: "",
+					customPotionColor: "",
+					customPotionEffects: "",
+					attributeModifiers: "",
 					customNbt: "",
 				}),
 			});
@@ -341,6 +353,12 @@ describe("save/export", () => {
 					enchantments: "",
 					unbreakable: false,
 					customModelData: "",
+					repairCost: "",
+					hideFlags: "",
+					potionId: "",
+					customPotionColor: "",
+					customPotionEffects: "",
+					attributeModifiers: "",
 					customNbt: "",
 				}),
 			});

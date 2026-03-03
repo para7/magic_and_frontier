@@ -7,6 +7,12 @@ export interface ItemEntry {
   enchantments: string;
   unbreakable: boolean;
   customModelData: string;
+  repairCost: string;
+  hideFlags: string;
+  potionId: string;
+  customPotionColor: string;
+  customPotionEffects: string;
+  attributeModifiers: string;
   customNbt: string;
   nbt: string;
   updatedAt: string;

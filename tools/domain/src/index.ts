@@ -11,6 +11,7 @@ export * from "./grimoire/schema.js";
 export * from "./grimoire/types.js";
 export * from "./grimoire/usecase.js";
 export * from "./item/nbt.js";
+export * from "./item/custom-nbt.js";
 export * from "./item/normalize.js";
 export * from "./item/schema.js";
 export * from "./item/types.js";
