@@ -1,0 +1,33 @@
+package views
+
+import "tools2/internal/form"
+
+templ ContactForm(state form.State) {
+	<div id="contact-form-container">
+		if state.Success != "" {
+			<article>
+				<header>送信完了</header>
+				<p>{ state.Success }</p>
+			</article>
+		}
+		<form method="post" action="/contact/submit" hx-post="/contact/submit" hx-target="#contact-form-container" hx-swap="outerHTML">
+			<label for="name">名前</label>
+			if state.Errors.Name != "" {
+				<input id="name" name="name" value={ state.Name } aria-invalid="true" required minlength="1"/>
+				<small>{ state.Errors.Name }</small>
+			} else {
+				<input id="name" name="name" value={ state.Name } required minlength="1"/>
+			}
+
+			<label for="phone">電話番号</label>
+			if state.Errors.Phone != "" {
+				<input id="phone" name="phone" value={ state.Phone } aria-invalid="true" required pattern="[0-9]+" inputmode="numeric"/>
+				<small>{ state.Errors.Phone }</small>
+			} else {
+				<input id="phone" name="phone" value={ state.Phone } required pattern="[0-9]+" inputmode="numeric"/>
+			}
+
+			<button type="submit">送信</button>
+		</form>
+	</div>
+}

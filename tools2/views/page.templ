@@ -1,0 +1,23 @@
+package views
+
+import "tools2/internal/form"
+
+templ Page(state form.State) {
+	<!doctype html>
+	<html lang="ja">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>連絡先フォーム</title>
+			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
+			<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+		</head>
+		<body>
+			<main class="container">
+				<h1>連絡先フォーム</h1>
+				<p>名前と電話番号を入力してください。</p>
+				@ContactForm(state)
+			</main>
+		</body>
+	</html>
+}
