@@ -1,0 +1,9 @@
+package form
+
+import "tools2/app/internal/forms"
+
+templ FieldError(errs forms.FieldErrors, field string) {
+	if errs.Has(field) {
+		<small style="color: var(--pico-del-color);">{ errs.Get(field) }</small>
+	}
+}

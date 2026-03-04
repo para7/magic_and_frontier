@@ -1,0 +1,16 @@
+package form
+
+import "tools2/app/internal/forms"
+
+templ StorageFields(v forms.StorageForm, errs forms.FieldErrors) {
+	<label for="storage_bucket">
+		バケット名
+		<input id="storage_bucket" name="storage_bucket" value={ v.Bucket } placeholder="my-bucket"/>
+		@FieldError(errs, "storage_bucket")
+	</label>
+	<label for="storage_region">
+		リージョン
+		<input id="storage_region" name="storage_region" value={ v.Region } placeholder="ap-northeast-1"/>
+		@FieldError(errs, "storage_region")
+	</label>
+}
