@@ -27,26 +27,25 @@ templ FormContent(fs forms.FormSet, errs forms.FieldErrors) {
 		hx-on::before-request="window.__restoreFocus={};window.__restoreFocus.el=document.activeElement;window.__restoreFocus.id=document.activeElement&&document.activeElement.id?document.activeElement.id:'';window.__restoreFocus.name=document.activeElement&&document.activeElement.name?document.activeElement.name:'';window.__restoreFocus.pos=document.activeElement&&document.activeElement.selectionStart!==undefined?document.activeElement.selectionStart:null"
 		hx-on::after-settle="window.__restoreFocus&&((window.__restoreFocus.id&&document.getElementById(window.__restoreFocus.id)||window.__restoreFocus.name&&document.querySelector('[name=\''+window.__restoreFocus.name+'\']'))&&((window.__restoreFocus.id&&document.getElementById(window.__restoreFocus.id)||window.__restoreFocus.name&&document.querySelector('[name=\''+window.__restoreFocus.name+'\']')).focus(),window.__restoreFocus.pos!==null&&(window.__restoreFocus.id&&document.getElementById(window.__restoreFocus.id)||window.__restoreFocus.name&&document.querySelector('[name=\''+window.__restoreFocus.name+'\']')).setSelectionRange(window.__restoreFocus.pos,window.__restoreFocus.pos)))"
 	>
-		<label for="name">
-			名前
-			<input id="name" name="name" value={ fs.Common.Name } placeholder="例: sample"/>
-			@FieldError(errs, "name")
-		</label>
+		<fieldset>
+			<legend>共通設定</legend>
+			<label for="name">
+				名前
+				<input id="name" name="name" value={ fs.Common.Name } placeholder="例: sample"/>
+				@FieldError(errs, "name")
+			</label>
 
-		<label for="type">
-			種別
-			<select
-				id="type"
-				name="type"
-				x-on:change="window.location.href='/form?type='+encodeURIComponent($event.target.value)+'&name='+encodeURIComponent(document.getElementById('name')&&document.getElementById('name').value||'')"
-			>
-				<option value="" selected?={ fs.Common.Type == forms.KindNone }>選択してください</option>
-				<option value="server" selected?={ fs.Common.Type == forms.KindServer }>サーバー</option>
-				<option value="storage" selected?={ fs.Common.Type == forms.KindStorage }>ストレージ</option>
-				<option value="message" selected?={ fs.Common.Type == forms.KindMessage }>メッセージ</option>
-			</select>
-			@FieldError(errs, "type")
-		</label>
+			<label for="type">
+				種別
+				<select id="type" name="type">
+					<option value="" selected?={ fs.Common.Type == forms.KindNone }>選択してください</option>
+					<option value="server" selected?={ fs.Common.Type == forms.KindServer }>サーバー</option>
+					<option value="storage" selected?={ fs.Common.Type == forms.KindStorage }>ストレージ</option>
+					<option value="message" selected?={ fs.Common.Type == forms.KindMessage }>メッセージ</option>
+				</select>
+				@FieldError(errs, "type")
+			</label>
+		</fieldset>
 
 		<div id="dynamic-fields">
 			switch fs.Common.Type {

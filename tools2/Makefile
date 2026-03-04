@@ -44,6 +44,7 @@ test:
 	$(GO) test ./...
 
 run: generate
+	echo http://localhost:8080
 	$(GO) run $(APP_DIR)
 
 dev: run
