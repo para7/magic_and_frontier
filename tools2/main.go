@@ -14,6 +14,7 @@ import (
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", homeHandler)
+	mux.HandleFunc("GET /contact/mode-fields", modeFieldsHandler)
 	mux.HandleFunc("POST /contact/submit", submitHandler)
 
 	addr := ":8080"
@@ -24,7 +25,12 @@ func main() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	render(w, r, views.Page(form.State{}))
+	render(w, r, views.Page(form.State{Mode: form.ModeLatLng}))
+}
+
+func modeFieldsHandler(w http.ResponseWriter, r *http.Request) {
+	state := readStateFromRequest(r)
+	render(w, r, views.ModeFields(state))
 }
 
 func submitHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,11 +39,8 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	state := form.State{
-		Name:  r.FormValue("name"),
-		Phone: r.FormValue("phone"),
-	}
-	state.Errors = validation.Validate(state.Name, state.Phone)
+	state := readStateFromRequest(r)
+	state.Errors = validation.Validate(state)
 	if !state.Errors.Any() {
 		state.Success = "送信しました。"
 	}
@@ -51,6 +54,37 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 
 func isHTMX(r *http.Request) bool {
 	return r.Header.Get("HX-Request") == "true"
+}
+
+func readStateFromRequest(r *http.Request) form.State {
+	state := form.State{
+		Name:      r.FormValue("name"),
+		Phone:     r.FormValue("phone"),
+		Mode:      form.NormalizeMode(r.FormValue("mode")),
+		Latitude:  r.FormValue("latitude"),
+		Longitude: r.FormValue("longitude"),
+		Birthdate: r.FormValue("birthdate"),
+		Height:    r.FormValue("height"),
+		Weight:    r.FormValue("weight"),
+	}
+
+	switch state.Mode {
+	case form.ModeLatLng:
+		state.Birthdate = ""
+		state.Height = ""
+		state.Weight = ""
+	case form.ModeBirthdate:
+		state.Latitude = ""
+		state.Longitude = ""
+		state.Height = ""
+		state.Weight = ""
+	case form.ModeHeightWeight:
+		state.Latitude = ""
+		state.Longitude = ""
+		state.Birthdate = ""
+	}
+
+	return state
 }
 
 func render(w http.ResponseWriter, r *http.Request, component templ.Component) {

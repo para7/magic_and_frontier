@@ -27,7 +27,50 @@ templ ContactForm(state form.State) {
 				<input id="phone" name="phone" value={ state.Phone } required pattern="[0-9]+" inputmode="numeric"/>
 			}
 
+			<label for="mode">入力種別</label>
+			<select
+				id="mode"
+				name="mode"
+				hx-get="/contact/mode-fields"
+				hx-target="#mode-fields-container"
+				hx-swap="outerHTML"
+				hx-include="#name,#phone,#mode"
+			>
+				if state.Mode == form.ModeLatLng {
+					<option value={ form.ModeLatLng } selected>緯度経度</option>
+				} else {
+					<option value={ form.ModeLatLng }>緯度経度</option>
+				}
+				if state.Mode == form.ModeBirthdate {
+					<option value={ form.ModeBirthdate } selected>生年月日</option>
+				} else {
+					<option value={ form.ModeBirthdate }>生年月日</option>
+				}
+				if state.Mode == form.ModeHeightWeight {
+					<option value={ form.ModeHeightWeight } selected>身長体重</option>
+				} else {
+					<option value={ form.ModeHeightWeight }>身長体重</option>
+				}
+			</select>
+			if state.Errors.Mode != "" {
+				<small>{ state.Errors.Mode }</small>
+			}
+
+			@ModeFields(state)
+
 			<button type="submit">送信</button>
 		</form>
+	</div>
+}
+
+templ ModeFields(state form.State) {
+	<div id="mode-fields-container">
+		if state.Mode == form.ModeBirthdate {
+			@ModeBirthdateFields(state)
+		} else if state.Mode == form.ModeHeightWeight {
+			@ModeHeightWeightFields(state)
+		} else {
+			@ModeLatLngFields(state)
+		}
 	</div>
 }
