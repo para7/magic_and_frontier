@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -33,6 +34,257 @@ func TestHandler_Health(t *testing.T) {
 	decodeResponse(t, rec, &body)
 	if !body["ok"] {
 		t.Fatalf("body = %#v, want ok=true", body)
+	}
+}
+
+func TestHandler_SSRPageLoadsAllFeatures(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	tests := []struct {
+		path string
+		text string
+	}{
+		{path: "/items", text: "Items"},
+		{path: "/grimoire", text: "Grimoire"},
+		{path: "/skills", text: "Skills"},
+		{path: "/enemy-skills", text: "Enemy Skills"},
+		{path: "/treasures", text: "Treasures"},
+		{path: "/enemies", text: "Enemies"},
+	}
+
+	for _, tt := range tests {
+		rec := request(t, handler, http.MethodGet, tt.path, nil)
+		if rec.Code != http.StatusOK {
+			t.Fatalf("%s status = %d, want %d", tt.path, rec.Code, http.StatusOK)
+		}
+		if !strings.Contains(rec.Body.String(), tt.text) {
+			t.Fatalf("%s body missing %q", tt.path, tt.text)
+		}
+	}
+}
+
+func TestHandler_SSRCRUDHappyPathAndSave(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	itemID := uuid("000000000141")
+	grimoireID := uuid("000000000142")
+	skillID := uuid("000000000143")
+	enemySkillID := uuid("000000000144")
+	treasureID := uuid("000000000145")
+	enemyID := uuid("000000000146")
+
+	itemRec := postForm(t, handler, "/items", url.Values{
+		"id":                 {itemID},
+		"itemId":             {"minecraft:apple"},
+		"count":              {"2"},
+		"customName":         {"Starter Apple"},
+		"lore":               {"fresh"},
+		"enchantments":       {""},
+		"customNbt":          {""},
+		"dropTableId":        {""},
+		"unbreakable":        {""},
+		"repairCost":         {""},
+		"hideFlags":          {""},
+		"attributeModifiers": {""},
+	}, http.StatusOK)
+	if !strings.Contains(itemRec.Body.String(), "minecraft:apple") {
+		t.Fatalf("item body = %s", itemRec.Body.String())
+	}
+
+	grimoireRec := postForm(t, handler, "/grimoire", url.Values{
+		"id":           {grimoireID},
+		"castid":       {"2"},
+		"title":        {"Apple Spell"},
+		"description":  {"desc"},
+		"script":       {"function maf:spell/apple"},
+		"variantsText": {"6,40"},
+	}, http.StatusOK)
+	if !strings.Contains(grimoireRec.Body.String(), "Apple Spell") {
+		t.Fatalf("grimoire body = %s", grimoireRec.Body.String())
+	}
+
+	skillRec := postForm(t, handler, "/skills", url.Values{
+		"id":     {skillID},
+		"name":   {"Slash"},
+		"script": {"say slash"},
+		"itemId": {itemID},
+	}, http.StatusOK)
+	if !strings.Contains(skillRec.Body.String(), "Slash") {
+		t.Fatalf("skill body = %s", skillRec.Body.String())
+	}
+
+	enemySkillRec := postForm(t, handler, "/enemy-skills", url.Values{
+		"id":       {enemySkillID},
+		"name":     {"Roar"},
+		"script":   {"say roar"},
+		"cooldown": {"20"},
+		"trigger":  {"on_spawn"},
+	}, http.StatusOK)
+	if !strings.Contains(enemySkillRec.Body.String(), "Roar") {
+		t.Fatalf("enemy skill body = %s", enemySkillRec.Body.String())
+	}
+
+	treasureRec := postForm(t, handler, "/treasures", url.Values{
+		"id":            {treasureID},
+		"name":          {"Starter Treasure"},
+		"lootPoolsText": {"item," + itemID + ",3,1,1\ngrimoire," + grimoireID + ",1,1,1"},
+	}, http.StatusOK)
+	if !strings.Contains(treasureRec.Body.String(), "Starter Treasure") {
+		t.Fatalf("treasure body = %s", treasureRec.Body.String())
+	}
+
+	enemyRec := postForm(t, handler, "/enemies", url.Values{
+		"id":            {enemyID},
+		"name":          {"Zombie"},
+		"hp":            {"20"},
+		"dropTableId":   {treasureID},
+		"enemySkillIds": {enemySkillID},
+		"originX":       {"0"},
+		"originY":       {"64"},
+		"originZ":       {"0"},
+		"distanceMin":   {"0"},
+		"distanceMax":   {"32"},
+	}, http.StatusOK)
+	if !strings.Contains(enemyRec.Body.String(), "Zombie") {
+		t.Fatalf("enemy body = %s", enemyRec.Body.String())
+	}
+
+	saveRec := requestForm(t, handler, http.MethodPost, "/save", url.Values{
+		"currentPath": {"/items"},
+	})
+	if saveRec.Code != http.StatusOK {
+		t.Fatalf("save status = %d, want %d, body=%s", saveRec.Code, http.StatusOK, saveRec.Body.String())
+	}
+	if !strings.Contains(saveRec.Body.String(), "Exported") {
+		t.Fatalf("save body = %s", saveRec.Body.String())
+	}
+	if !strings.Contains(saveRec.Body.String(), "<!doctype html>") || !strings.Contains(saveRec.Body.String(), "Save / Export") {
+		t.Fatalf("save body should be full page, got %s", saveRec.Body.String())
+	}
+
+	deleteRec := requestForm(t, handler, http.MethodPost, "/enemies/"+enemyID+"/delete", url.Values{})
+	if !strings.Contains(deleteRec.Body.String(), "Enemy deleted.") {
+		t.Fatalf("enemy delete body = %s", deleteRec.Body.String())
+	}
+	deleteRec = requestForm(t, handler, http.MethodPost, "/enemy-skills/"+enemySkillID+"/delete", url.Values{})
+	if !strings.Contains(deleteRec.Body.String(), "Enemy skill deleted.") {
+		t.Fatalf("enemy skill delete body = %s", deleteRec.Body.String())
+	}
+	deleteRec = requestForm(t, handler, http.MethodPost, "/treasures/"+treasureID+"/delete", url.Values{})
+	if !strings.Contains(deleteRec.Body.String(), "Treasure deleted.") {
+		t.Fatalf("treasure delete body = %s", deleteRec.Body.String())
+	}
+	deleteRec = requestForm(t, handler, http.MethodPost, "/skills/"+skillID+"/delete", url.Values{})
+	if !strings.Contains(deleteRec.Body.String(), "Skill deleted.") {
+		t.Fatalf("skill delete body = %s", deleteRec.Body.String())
+	}
+	deleteRec = requestForm(t, handler, http.MethodPost, "/grimoire/"+grimoireID+"/delete", url.Values{})
+	if !strings.Contains(deleteRec.Body.String(), "Grimoire entry deleted.") {
+		t.Fatalf("grimoire delete body = %s", deleteRec.Body.String())
+	}
+	deleteRec = requestForm(t, handler, http.MethodPost, "/items/"+itemID+"/delete", url.Values{})
+	if !strings.Contains(deleteRec.Body.String(), "Item deleted.") {
+		t.Fatalf("item delete body = %s", deleteRec.Body.String())
+	}
+}
+
+func TestHandler_SaveNonHTMXReturnsCurrentFullPage(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	rec := requestForm(t, handler, http.MethodPost, "/save", url.Values{
+		"currentPath": {"/grimoire"},
+	})
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d, body=%s", rec.Code, http.StatusOK, rec.Body.String())
+	}
+	body := rec.Body.String()
+	if !strings.Contains(body, "<!doctype html>") {
+		t.Fatalf("expected full HTML page, got %s", body)
+	}
+	if !strings.Contains(body, "Grimoire") {
+		t.Fatalf("expected grimoire page, got %s", body)
+	}
+	if strings.Contains(body, "<div class=\"notice") && !strings.Contains(body, "Exported") && !strings.Contains(body, "Invalid export settings.") {
+		t.Fatalf("unexpected notice content: %s", body)
+	}
+}
+
+func TestHandler_SaveHTMXReturnsFragment(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	req := httptest.NewRequest(http.MethodPost, "/save", strings.NewReader(url.Values{
+		"currentPath": {"/items"},
+	}.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("HX-Request", "true")
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d, body=%s", rec.Code, http.StatusOK, rec.Body.String())
+	}
+	body := rec.Body.String()
+	if strings.Contains(body, "<!doctype html>") {
+		t.Fatalf("expected fragment, got full page: %s", body)
+	}
+	if !strings.Contains(body, "Exported") {
+		t.Fatalf("expected export notice, got %s", body)
+	}
+}
+
+func TestHandler_SaveNonHTMXFallsBackToItemsPage(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	rec := requestForm(t, handler, http.MethodPost, "/save", url.Values{
+		"currentPath": {"/not-a-screen"},
+	})
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d, body=%s", rec.Code, http.StatusOK, rec.Body.String())
+	}
+	body := rec.Body.String()
+	if !strings.Contains(body, "<!doctype html>") || !strings.Contains(body, "Items") {
+		t.Fatalf("expected items full page fallback, got %s", body)
+	}
+}
+
+func TestHandler_SSRValidationShowsFieldError(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	rec := postForm(t, handler, "/skills", url.Values{
+		"id":     {uuid("000000000201")},
+		"name":   {"Slash"},
+		"script": {"say slash"},
+		"itemId": {uuid("000000000777")},
+	}, http.StatusOK)
+
+	if !strings.Contains(rec.Body.String(), "Referenced item") {
+		t.Fatalf("body = %s", rec.Body.String())
+	}
+}
+
+func TestHandler_SSRFormsPushBaseURLAfterHTMXCRUD(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	tests := []struct {
+		path string
+		attr string
+	}{
+		{path: "/items", attr: `hx-push-url="/items"`},
+		{path: "/grimoire", attr: `hx-push-url="/grimoire"`},
+		{path: "/skills", attr: `hx-push-url="/skills"`},
+		{path: "/enemy-skills", attr: `hx-push-url="/enemy-skills"`},
+		{path: "/treasures", attr: `hx-push-url="/treasures"`},
+		{path: "/enemies", attr: `hx-push-url="/enemies"`},
+	}
+
+	for _, tt := range tests {
+		rec := request(t, handler, http.MethodGet, tt.path, nil)
+		if rec.Code != http.StatusOK {
+			t.Fatalf("%s status = %d, want %d", tt.path, rec.Code, http.StatusOK)
+		}
+		if !strings.Contains(rec.Body.String(), tt.attr) {
+			t.Fatalf("%s body missing %q", tt.path, tt.attr)
+		}
 	}
 }
 
@@ -403,6 +655,25 @@ func request(t *testing.T, handler http.Handler, method, path string, body []byt
 	}
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)
+	return rec
+}
+
+func requestForm(t *testing.T, handler http.Handler, method, path string, values url.Values) *httptest.ResponseRecorder {
+	t.Helper()
+	body := values.Encode()
+	req := httptest.NewRequest(method, path, strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+	return rec
+}
+
+func postForm(t *testing.T, handler http.Handler, path string, values url.Values, wantStatus int) *httptest.ResponseRecorder {
+	t.Helper()
+	rec := requestForm(t, handler, http.MethodPost, path, values)
+	if rec.Code != wantStatus {
+		t.Fatalf("%s status = %d, want %d, body=%s", path, rec.Code, wantStatus, rec.Body.String())
+	}
 	return rec
 }
 

@@ -16,6 +16,7 @@ import (
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/export"
 	"tools2/app/internal/store"
+	"tools2/app/internal/web"
 )
 
 type Dependencies struct {
@@ -35,10 +36,19 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/health", http.StatusFound)
+		http.Redirect(w, r, "/items", http.StatusFound)
 	})
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]bool{"ok": true})
+	})
+	web.RegisterRoutes(mux, cfg, web.Dependencies{
+		ItemRepo:       deps.ItemRepo,
+		GrimoireRepo:   deps.GrimoireRepo,
+		SkillRepo:      deps.SkillRepo,
+		EnemySkillRepo: deps.EnemySkillRepo,
+		EnemyRepo:      deps.EnemyRepo,
+		TreasureRepo:   deps.TreasureRepo,
+		Now:            deps.Now,
 	})
 
 	mux.HandleFunc("GET /api/items", func(w http.ResponseWriter, r *http.Request) {

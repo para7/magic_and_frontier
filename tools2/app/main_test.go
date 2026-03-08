@@ -18,8 +18,8 @@ func TestNewHandler_RedirectRootToForm(t *testing.T) {
 	if rec.Code != http.StatusFound {
 		t.Fatalf("status = %d, want %d", rec.Code, http.StatusFound)
 	}
-	if got := rec.Header().Get("Location"); got != "/health" {
-		t.Fatalf("location = %q, want %q", got, "/health")
+	if got := rec.Header().Get("Location"); got != "/items" {
+		t.Fatalf("location = %q, want %q", got, "/items")
 	}
 }
 

@@ -1,0 +1,327 @@
+package views
+
+import "tools2/app/internal/webui"
+
+templ Layout(title string, currentPath string) {
+	<!doctype html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ title }</title>
+			<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+			<style>
+				:root {
+					--bg: #f4f1ea;
+					--panel: #fffdf9;
+					--panel-border: #d3cbc0;
+					--text: #1f1f1f;
+					--muted: #6d655d;
+					--accent: #174c3c;
+					--accent-strong: #0f3b2e;
+					--accent-soft: #dce9e3;
+					--danger: #8b2d2d;
+					--danger-soft: #f6dfdf;
+					--success: #1f6a43;
+					--success-soft: #e0f0e7;
+					--info-soft: #e2e7f4;
+				}
+				* { box-sizing: border-box; }
+				body {
+					margin: 0;
+					font-family: "Iosevka Aile", "IBM Plex Sans", sans-serif;
+					color: var(--text);
+					background:
+						radial-gradient(circle at top left, rgba(23, 76, 60, 0.08), transparent 28%),
+						linear-gradient(180deg, #f7f4ef 0%, var(--bg) 100%);
+				}
+				a { color: inherit; }
+				.layout-shell {
+					display: grid;
+					grid-template-columns: 16rem 1fr;
+					min-height: 100vh;
+				}
+				.sidebar {
+					padding: 1.5rem 1rem;
+					border-right: 1px solid var(--panel-border);
+					background: rgba(255, 253, 249, 0.92);
+					backdrop-filter: blur(8px);
+				}
+				.sidebar-title {
+					margin: 0 0 0.3rem;
+					font-size: 1.35rem;
+				}
+				.sidebar-copy {
+					margin: 0 0 1rem;
+					color: var(--muted);
+					font-size: 0.95rem;
+					line-height: 1.4;
+				}
+				.sidebar nav {
+					display: grid;
+					gap: 0.35rem;
+					margin-bottom: 1rem;
+				}
+				.nav-link {
+					display: block;
+					padding: 0.65rem 0.8rem;
+					border-radius: 10px;
+					text-decoration: none;
+					border: 1px solid transparent;
+				}
+				.nav-link.active {
+					background: var(--accent);
+					color: #fff;
+					border-color: var(--accent-strong);
+				}
+				.nav-link:not(.active) {
+					background: rgba(255, 255, 255, 0.55);
+					border-color: var(--panel-border);
+				}
+				.sidebar-actions {
+					display: grid;
+					gap: 0.6rem;
+				}
+				.content {
+					padding: 1.5rem;
+				}
+				.panel {
+					background: var(--panel);
+					border: 1px solid var(--panel-border);
+					border-radius: 16px;
+					box-shadow: 0 18px 40px rgba(49, 45, 39, 0.08);
+				}
+				.button,
+				button,
+				select,
+				input,
+				textarea {
+					font: inherit;
+				}
+				button,
+				.button {
+					border: 1px solid var(--accent-strong);
+					background: var(--accent);
+					color: #fff;
+					padding: 0.65rem 0.9rem;
+					border-radius: 10px;
+					cursor: pointer;
+					text-decoration: none;
+				}
+				button.secondary,
+				.button.secondary {
+					background: #fff;
+					color: var(--text);
+					border-color: var(--panel-border);
+				}
+				button.danger {
+					background: var(--danger);
+					border-color: var(--danger);
+				}
+				input,
+				select,
+				textarea {
+					width: 100%;
+					padding: 0.65rem 0.75rem;
+					border-radius: 10px;
+					border: 1px solid var(--panel-border);
+					background: #fff;
+				}
+				textarea {
+					min-height: 7rem;
+					resize: vertical;
+				}
+				label {
+					display: grid;
+					gap: 0.35rem;
+					font-weight: 600;
+				}
+				small,
+				.helper-text {
+					color: var(--muted);
+					line-height: 1.4;
+				}
+				.notice {
+					padding: 0.85rem 1rem;
+					border-radius: 12px;
+					border: 1px solid var(--panel-border);
+					margin-bottom: 1rem;
+				}
+				.notice-success {
+					background: var(--success-soft);
+					border-color: rgba(31, 106, 67, 0.25);
+				}
+				.notice-error {
+					background: var(--danger-soft);
+					border-color: rgba(139, 45, 45, 0.25);
+				}
+				.notice-info {
+					background: var(--info-soft);
+					border-color: rgba(49, 72, 124, 0.2);
+				}
+				.field-error {
+					color: var(--danger);
+					font-size: 0.9rem;
+					font-weight: 500;
+				}
+				.page-header {
+					padding: 1.4rem 1.5rem 0;
+				}
+				.page-header h1 {
+					margin: 0 0 0.45rem;
+					font-size: 1.9rem;
+				}
+				.page-header p {
+					margin: 0;
+					color: var(--muted);
+				}
+				.feature-shell {
+					padding: 1.5rem;
+				}
+				.feature-grid {
+					display: grid;
+					grid-template-columns: minmax(0, 1.15fr) minmax(20rem, 0.85fr);
+					gap: 1rem;
+				}
+				.stack {
+					display: grid;
+					gap: 1rem;
+				}
+				.entry-list {
+					display: grid;
+					gap: 0.8rem;
+				}
+				.entry-card {
+					padding: 1rem;
+					border: 1px solid var(--panel-border);
+					border-radius: 14px;
+					background: #fff;
+				}
+				.entry-card header {
+					display: flex;
+					justify-content: space-between;
+					gap: 1rem;
+					align-items: start;
+					margin-bottom: 0.6rem;
+				}
+				.entry-card h3 {
+					margin: 0;
+					font-size: 1.05rem;
+				}
+				.entry-meta,
+				.entry-card pre,
+				.entry-card ul {
+					margin: 0;
+					color: var(--muted);
+				}
+				.entry-card pre {
+					white-space: pre-wrap;
+					background: #faf7f2;
+					padding: 0.8rem;
+					border-radius: 10px;
+					border: 1px solid #e5ddd2;
+					font-size: 0.92rem;
+				}
+				.entry-actions {
+					display: flex;
+					gap: 0.5rem;
+					flex-wrap: wrap;
+				}
+				.form-grid {
+					display: grid;
+					gap: 0.9rem;
+				}
+				.form-grid.two {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+				}
+				.form-span-2 {
+					grid-column: 1 / -1;
+				}
+				.form-actions {
+					display: flex;
+					gap: 0.6rem;
+					flex-wrap: wrap;
+				}
+				.kv-list {
+					display: grid;
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					gap: 0.45rem 0.75rem;
+					margin: 0;
+				}
+				.kv-list dt {
+					font-weight: 700;
+				}
+				.kv-list dd {
+					margin: 0;
+					color: var(--muted);
+				}
+				.reference-list {
+					display: grid;
+					gap: 0.3rem;
+					padding-left: 1.2rem;
+					margin: 0.4rem 0 0;
+				}
+				.code {
+					font-family: "Iosevka", monospace;
+				}
+				.checkbox-label {
+					display: flex;
+					align-items: center;
+					gap: 0.55rem;
+				}
+				.checkbox-label input {
+					width: auto;
+				}
+				@media (max-width: 980px) {
+					.layout-shell {
+						grid-template-columns: 1fr;
+					}
+					.sidebar {
+						border-right: 0;
+						border-bottom: 1px solid var(--panel-border);
+					}
+					.feature-grid {
+						grid-template-columns: 1fr;
+					}
+					.form-grid.two,
+					.kv-list {
+						grid-template-columns: 1fr;
+					}
+				}
+			</style>
+		</head>
+		<body>
+			<div class="layout-shell">
+				<aside class="sidebar">
+					<h2 class="sidebar-title">tools2</h2>
+					<p class="sidebar-copy">Go SSR migration surface. CRUD flows stay local, export stays under the existing API contract.</p>
+					<nav>
+						for _, item := range webui.NavItems() {
+							if item.Path == currentPath {
+								<a href={ item.Path } class="nav-link active">{ item.Label }</a>
+							} else {
+								<a href={ item.Path } class="nav-link">{ item.Label }</a>
+							}
+						}
+					</nav>
+						<div class="sidebar-actions">
+							<form
+								method="post"
+								action="/save"
+								hx-post="/save"
+								hx-target="#global-messages"
+								hx-swap="innerHTML"
+							>
+								<input type="hidden" name="currentPath" value={ currentPath }/>
+								<button type="submit">Save / Export</button>
+							</form>
+							<div id="global-messages"></div>
+						</div>
+				</aside>
+				<main class="content">
+					{ children... }
+				</main>
+			</div>
+		</body>
+	</html>
+}

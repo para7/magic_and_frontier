@@ -1,0 +1,607 @@
+package views
+
+import "tools2/app/internal/webui"
+
+templ NoticeBox(notice *webui.Notice) {
+	if notice != nil && notice.Text != "" {
+		<div class={ "notice " + NoticeClass(notice) }>{ notice.Text }</div>
+	}
+}
+
+templ FieldErrorBox(errs map[string]string, key string) {
+	if message := FieldError(errs, key); message != "" {
+		<div class="field-error">{ message }</div>
+	}
+}
+
+templ PageScaffold(meta webui.PageMeta, notice *webui.Notice) {
+	<section class="panel">
+		<div class="page-header">
+			<h1>{ meta.Title }</h1>
+			<p>{ meta.Description }</p>
+		</div>
+		{ children... }
+	</section>
+}
+
+templ ItemsPage(data webui.ItemsPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@ItemsShell(data)
+		}
+	}
+}
+
+templ ItemsShell(data webui.ItemsPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="stack">
+				<div class="entry-list">
+					for _, entry := range data.Entries {
+						<article class="entry-card">
+							<header>
+								<div>
+									<h3 class="code">{ entry.ID }</h3>
+									<p class="entry-meta">{ entry.ItemID } x{ entry.Count }</p>
+								</div>
+								<div class="entry-actions">
+									<a class="button secondary" href={ "/items?edit=" + entry.ID } hx-get={ "/items?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+										<form method="post" action={ "/items/" + entry.ID + "/delete" } hx-post={ "/items/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/items">
+										<button type="submit" class="danger">Delete</button>
+									</form>
+								</div>
+							</header>
+							<dl class="kv-list">
+								<dt>Item ID</dt><dd class="code">{ entry.ItemID }</dd>
+								<dt>Count</dt><dd>{ entry.Count }</dd>
+								<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
+								<dt>Unbreakable</dt><dd>{ BoolText(entry.Unbreakable) }</dd>
+							</dl>
+						</article>
+					}
+					if len(data.Entries) == 0 {
+						<article class="entry-card"><p class="entry-meta">No items yet.</p></article>
+					}
+				</div>
+			</section>
+			<section class="entry-card">
+					<form class="form-grid two" method="post" action="/items" hx-post="/items" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/items">
+					<input type="hidden" name="id" value={ data.Form.ID }/>
+					<label>
+						Item ID
+						<input name="itemId" value={ data.Form.ItemID }/>
+						@FieldErrorBox(data.Form.FieldErrors, "itemId")
+					</label>
+					<label>
+						Count
+						<input name="count" value={ data.Form.Count }/>
+						@FieldErrorBox(data.Form.FieldErrors, "count")
+					</label>
+					<label>
+						Custom Name
+						<input name="customName" value={ data.Form.CustomName }/>
+					</label>
+					<label>
+						Potion ID
+						<input name="potionId" value={ data.Form.PotionID }/>
+					</label>
+					<label class="form-span-2">
+						Lore
+						<textarea name="lore">{ data.Form.Lore }</textarea>
+					</label>
+					<label class="form-span-2">
+						Enchantments
+						<textarea name="enchantments">{ data.Form.Enchantments }</textarea>
+						<small>One `namespace:enchantment level` pair per line.</small>
+					</label>
+					<label>
+						CustomModelData
+						<input name="customModelData" value={ data.Form.CustomModelData }/>
+					</label>
+					<label>
+						RepairCost
+						<input name="repairCost" value={ data.Form.RepairCost }/>
+					</label>
+					<label>
+						HideFlags
+						<input name="hideFlags" value={ data.Form.HideFlags }/>
+					</label>
+					<label>
+						CustomPotionColor
+						<input name="customPotionColor" value={ data.Form.CustomPotionColor }/>
+					</label>
+					<label class="form-span-2">
+						CustomPotionEffects
+						<textarea name="customPotionEffects">{ data.Form.CustomPotionEffects }</textarea>
+					</label>
+					<label class="form-span-2">
+						AttributeModifiers
+						<textarea name="attributeModifiers">{ data.Form.AttributeModifiers }</textarea>
+					</label>
+					<label class="form-span-2">
+						Custom NBT
+						<textarea name="customNbt">{ data.Form.CustomNBT }</textarea>
+					</label>
+					<label class="checkbox-label form-span-2">
+						<input type="checkbox" name="unbreakable" checked?={ data.Form.Unbreakable }/>
+						<span>Unbreakable</span>
+					</label>
+					@FieldErrorBox(data.Form.FieldErrors, "id")
+					if data.Form.FormError != "" {
+						<div class="form-span-2"><div class="field-error">{ data.Form.FormError }</div></div>
+					}
+					<div class="form-actions form-span-2">
+						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+						<a class="button secondary" href="/items" hx-get="/items" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+					</div>
+				</form>
+			</section>
+		</div>
+	</div>
+}
+
+templ GrimoirePage(data webui.GrimoirePageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@GrimoireShell(data)
+		}
+	}
+}
+
+templ GrimoireShell(data webui.GrimoirePageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="entry-list">
+				for _, entry := range data.Entries {
+					<article class="entry-card">
+						<header>
+							<div>
+								<h3>{ entry.Title }</h3>
+								<p class="entry-meta code">{ entry.ID }</p>
+							</div>
+							<div class="entry-actions">
+								<a class="button secondary" href={ "/grimoire?edit=" + entry.ID } hx-get={ "/grimoire?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+									<form method="post" action={ "/grimoire/" + entry.ID + "/delete" } hx-post={ "/grimoire/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/grimoire">
+									<button type="submit" class="danger">Delete</button>
+								</form>
+							</div>
+						</header>
+						<dl class="kv-list">
+							<dt>Cast ID</dt><dd>{ entry.CastID }</dd>
+							<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
+						</dl>
+						<pre>{ entry.Script }</pre>
+					</article>
+				}
+				if len(data.Entries) == 0 {
+					<article class="entry-card"><p class="entry-meta">No grimoire entries yet.</p></article>
+				}
+			</section>
+			<section class="entry-card">
+					<form class="form-grid" method="post" action="/grimoire" hx-post="/grimoire" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/grimoire">
+					<input type="hidden" name="id" value={ data.Form.ID }/>
+					<label>
+						Cast ID
+						<input name="castid" value={ data.Form.CastID }/>
+						@FieldErrorBox(data.Form.FieldErrors, "castid")
+					</label>
+					<label>
+						Title
+						<input name="title" value={ data.Form.Title }/>
+						@FieldErrorBox(data.Form.FieldErrors, "title")
+					</label>
+					<label>
+						Description
+						<textarea name="description">{ data.Form.Description }</textarea>
+					</label>
+					<label>
+						Script
+						<textarea name="script">{ data.Form.Script }</textarea>
+						@FieldErrorBox(data.Form.FieldErrors, "script")
+					</label>
+					<label>
+						Variants
+						<textarea name="variantsText">{ data.Form.VariantsText }</textarea>
+						<small>Format: `cast,cost` per line.</small>
+						@FieldErrorBox(data.Form.FieldErrors, "variantsText")
+					</label>
+					if data.Form.FormError != "" {
+						<div class="field-error">{ data.Form.FormError }</div>
+					}
+					<div class="form-actions">
+						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+						<a class="button secondary" href="/grimoire" hx-get="/grimoire" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+					</div>
+				</form>
+			</section>
+		</div>
+	</div>
+}
+
+templ SkillsPage(data webui.SkillsPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@SkillsShell(data)
+		}
+	}
+}
+
+templ SkillsShell(data webui.SkillsPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="entry-list">
+				for _, entry := range data.Entries {
+					<article class="entry-card">
+						<header>
+							<div>
+								<h3>{ entry.Name }</h3>
+								<p class="entry-meta code">{ entry.ID }</p>
+							</div>
+							<div class="entry-actions">
+								<a class="button secondary" href={ "/skills?edit=" + entry.ID } hx-get={ "/skills?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+									<form method="post" action={ "/skills/" + entry.ID + "/delete" } hx-post={ "/skills/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/skills">
+									<button type="submit" class="danger">Delete</button>
+								</form>
+							</div>
+						</header>
+						<dl class="kv-list">
+							<dt>Item Ref</dt><dd class="code">{ entry.ItemID }</dd>
+							<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
+						</dl>
+						<pre>{ entry.Script }</pre>
+					</article>
+				}
+				if len(data.Entries) == 0 {
+					<article class="entry-card"><p class="entry-meta">No skills yet.</p></article>
+				}
+			</section>
+			<section class="entry-card">
+					<form class="form-grid" method="post" action="/skills" hx-post="/skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/skills">
+					<input type="hidden" name="id" value={ data.Form.ID }/>
+					<label>
+						Name
+						<input name="name" value={ data.Form.Name }/>
+						@FieldErrorBox(data.Form.FieldErrors, "name")
+					</label>
+					<label>
+						Item Ref
+						<select name="itemId">
+							<option value="">Select an item</option>
+							for _, option := range data.Form.ItemOptions {
+								<option value={ option.ID } selected?={ option.ID == data.Form.ItemID }>{ option.Label }</option>
+							}
+						</select>
+						@FieldErrorBox(data.Form.FieldErrors, "itemId")
+					</label>
+					<label>
+						Script
+						<textarea name="script">{ data.Form.Script }</textarea>
+						@FieldErrorBox(data.Form.FieldErrors, "script")
+					</label>
+					if data.Form.FormError != "" {
+						<div class="field-error">{ data.Form.FormError }</div>
+					}
+					<div class="form-actions">
+						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+						<a class="button secondary" href="/skills" hx-get="/skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+					</div>
+				</form>
+			</section>
+		</div>
+	</div>
+}
+
+templ EnemySkillsPage(data webui.EnemySkillsPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@EnemySkillsShell(data)
+		}
+	}
+}
+
+templ EnemySkillsShell(data webui.EnemySkillsPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="entry-list">
+				for _, entry := range data.Entries {
+					<article class="entry-card">
+						<header>
+							<div>
+								<h3>{ entry.Name }</h3>
+								<p class="entry-meta code">{ entry.ID }</p>
+							</div>
+							<div class="entry-actions">
+								<a class="button secondary" href={ "/enemy-skills?edit=" + entry.ID } hx-get={ "/enemy-skills?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+									<form method="post" action={ "/enemy-skills/" + entry.ID + "/delete" } hx-post={ "/enemy-skills/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/enemy-skills">
+									<button type="submit" class="danger">Delete</button>
+								</form>
+							</div>
+						</header>
+						<dl class="kv-list">
+							<dt>Trigger</dt><dd>{ TriggerText(entry) }</dd>
+							<dt>Cooldown</dt><dd>{ CooldownText(entry) }</dd>
+						</dl>
+						<pre>{ entry.Script }</pre>
+					</article>
+				}
+				if len(data.Entries) == 0 {
+					<article class="entry-card"><p class="entry-meta">No enemy skills yet.</p></article>
+				}
+			</section>
+			<section class="entry-card">
+					<form class="form-grid" method="post" action="/enemy-skills" hx-post="/enemy-skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/enemy-skills">
+					<input type="hidden" name="id" value={ data.Form.ID }/>
+					<label>
+						Name
+						<input name="name" value={ data.Form.Name }/>
+						@FieldErrorBox(data.Form.FieldErrors, "name")
+					</label>
+					<label>
+						Cooldown
+						<input name="cooldown" value={ data.Form.Cooldown }/>
+						@FieldErrorBox(data.Form.FieldErrors, "cooldown")
+					</label>
+					<label>
+						Trigger
+						<select name="trigger">
+							<option value="">No trigger</option>
+							<option value="on_spawn" selected?={ data.Form.Trigger == "on_spawn" }>on_spawn</option>
+							<option value="on_hit" selected?={ data.Form.Trigger == "on_hit" }>on_hit</option>
+							<option value="on_low_hp" selected?={ data.Form.Trigger == "on_low_hp" }>on_low_hp</option>
+							<option value="on_timer" selected?={ data.Form.Trigger == "on_timer" }>on_timer</option>
+						</select>
+						@FieldErrorBox(data.Form.FieldErrors, "trigger")
+					</label>
+					<label>
+						Script
+						<textarea name="script">{ data.Form.Script }</textarea>
+						@FieldErrorBox(data.Form.FieldErrors, "script")
+					</label>
+					if data.Form.FormError != "" {
+						<div class="field-error">{ data.Form.FormError }</div>
+					}
+					<div class="form-actions">
+						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+						<a class="button secondary" href="/enemy-skills" hx-get="/enemy-skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+					</div>
+				</form>
+			</section>
+		</div>
+	</div>
+}
+
+templ TreasuresPage(data webui.TreasuresPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@TreasuresShell(data)
+		}
+	}
+}
+
+templ TreasuresShell(data webui.TreasuresPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="entry-list">
+				for _, entry := range data.Entries {
+					<article class="entry-card">
+						<header>
+							<div>
+								<h3>{ entry.Name }</h3>
+								<p class="entry-meta code">{ entry.ID }</p>
+							</div>
+							<div class="entry-actions">
+								<a class="button secondary" href={ "/treasures?edit=" + entry.ID } hx-get={ "/treasures?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+									<form method="post" action={ "/treasures/" + entry.ID + "/delete" } hx-post={ "/treasures/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/treasures">
+									<button type="submit" class="danger">Delete</button>
+								</form>
+							</div>
+						</header>
+						<ul class="reference-list">
+							for _, pool := range entry.LootPools {
+								<li class="code">{ pool.Kind } / { pool.RefID } / weight={ pool.Weight }</li>
+							}
+						</ul>
+					</article>
+				}
+				if len(data.Entries) == 0 {
+					<article class="entry-card"><p class="entry-meta">No treasures yet.</p></article>
+				}
+			</section>
+			<section class="entry-card">
+					<form class="form-grid" method="post" action="/treasures" hx-post="/treasures" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/treasures">
+					<input type="hidden" name="id" value={ data.Form.ID }/>
+					<label>
+						Name
+						<input name="name" value={ data.Form.Name }/>
+						@FieldErrorBox(data.Form.FieldErrors, "name")
+					</label>
+					<label>
+						Loot Pools
+						<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
+						<small>Format: `kind,refId,weight,countMin,countMax` per line. Leave countMin/countMax blank to omit.</small>
+						@FieldErrorBox(data.Form.FieldErrors, "lootPoolsText")
+					</label>
+					<div>
+						<small>Item refs</small>
+						<ul class="reference-list">
+							for _, option := range data.ItemOptions {
+								<li class="code">{ option.ID } - { option.Label }</li>
+							}
+						</ul>
+					</div>
+					<div>
+						<small>Grimoire refs</small>
+						<ul class="reference-list">
+							for _, option := range data.GrimoireOptions {
+								<li class="code">{ option.ID } - { option.Label }</li>
+							}
+						</ul>
+					</div>
+					if data.Form.FormError != "" {
+						<div class="field-error">{ data.Form.FormError }</div>
+					}
+					<div class="form-actions">
+						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+						<a class="button secondary" href="/treasures" hx-get="/treasures" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+					</div>
+				</form>
+			</section>
+		</div>
+	</div>
+}
+
+templ EnemiesPage(data webui.EnemiesPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@EnemiesShell(data)
+		}
+	}
+}
+
+templ EnemiesShell(data webui.EnemiesPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="entry-list">
+				for _, entry := range data.Entries {
+					<article class="entry-card">
+						<header>
+							<div>
+								<h3>{ entry.Name }</h3>
+								<p class="entry-meta code">{ entry.ID }</p>
+							</div>
+							<div class="entry-actions">
+								<a class="button secondary" href={ "/enemies?edit=" + entry.ID } hx-get={ "/enemies?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+									<form method="post" action={ "/enemies/" + entry.ID + "/delete" } hx-post={ "/enemies/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/enemies">
+									<button type="submit" class="danger">Delete</button>
+								</form>
+							</div>
+						</header>
+						<dl class="kv-list">
+							<dt>HP</dt><dd>{ trimFloat(entry.HP) }</dd>
+							<dt>Drop Table</dt><dd class="code">{ entry.DropTableID }</dd>
+							<dt>Attack</dt><dd>{ FloatText(entry.Attack) }</dd>
+							<dt>Defense</dt><dd>{ FloatText(entry.Defense) }</dd>
+							<dt>Move Speed</dt><dd>{ FloatText(entry.MoveSpeed) }</dd>
+							<dt>Enemy Skills</dt><dd>{ JoinLines(entry.EnemySkillIDs) }</dd>
+						</dl>
+					</article>
+				}
+				if len(data.Entries) == 0 {
+					<article class="entry-card"><p class="entry-meta">No enemies yet.</p></article>
+				}
+			</section>
+			<section class="entry-card">
+					<form class="form-grid two" method="post" action="/enemies" hx-post="/enemies" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/enemies">
+					<input type="hidden" name="id" value={ data.Form.ID }/>
+					<label>
+						Name
+						<input name="name" value={ data.Form.Name }/>
+						@FieldErrorBox(data.Form.FieldErrors, "name")
+					</label>
+					<label>
+						HP
+						<input name="hp" value={ data.Form.HP }/>
+						@FieldErrorBox(data.Form.FieldErrors, "hp")
+					</label>
+					<label>
+						Attack
+						<input name="attack" value={ data.Form.Attack }/>
+						@FieldErrorBox(data.Form.FieldErrors, "attack")
+					</label>
+					<label>
+						Defense
+						<input name="defense" value={ data.Form.Defense }/>
+						@FieldErrorBox(data.Form.FieldErrors, "defense")
+					</label>
+					<label>
+						Move Speed
+						<input name="moveSpeed" value={ data.Form.MoveSpeed }/>
+						@FieldErrorBox(data.Form.FieldErrors, "moveSpeed")
+					</label>
+					<label>
+						Drop Table ID
+						<input name="dropTableId" value={ data.Form.DropTableID }/>
+						@FieldErrorBox(data.Form.FieldErrors, "dropTableId")
+					</label>
+					<label class="form-span-2">
+						Enemy Skill Refs
+						<select name="enemySkillIds" multiple size="6">
+							for _, option := range data.Form.EnemySkillOptions {
+								<option value={ option.ID } selected?={ HasValue(data.Form.EnemySkillIDs, option.ID) }>{ option.Label }</option>
+							}
+						</select>
+						@FieldErrorBox(data.Form.FieldErrors, "enemySkillIds")
+					</label>
+					<label>
+						Origin X
+						<input name="originX" value={ data.Form.OriginX }/>
+						@FieldErrorBox(data.Form.FieldErrors, "originX")
+					</label>
+					<label>
+						Origin Y
+						<input name="originY" value={ data.Form.OriginY }/>
+						@FieldErrorBox(data.Form.FieldErrors, "originY")
+					</label>
+					<label class="form-span-2">
+						Origin Z
+						<input name="originZ" value={ data.Form.OriginZ }/>
+						@FieldErrorBox(data.Form.FieldErrors, "originZ")
+					</label>
+					<label>
+						Distance Min
+						<input name="distanceMin" value={ data.Form.DistanceMin }/>
+						@FieldErrorBox(data.Form.FieldErrors, "distanceMin")
+					</label>
+					<label>
+						Distance Max
+						<input name="distanceMax" value={ data.Form.DistanceMax }/>
+						@FieldErrorBox(data.Form.FieldErrors, "distanceMax")
+					</label>
+					<label>
+						X Min
+						<input name="xMin" value={ data.Form.XMin }/>
+						@FieldErrorBox(data.Form.FieldErrors, "xMin")
+					</label>
+					<label>
+						X Max
+						<input name="xMax" value={ data.Form.XMax }/>
+						@FieldErrorBox(data.Form.FieldErrors, "xMax")
+					</label>
+					<label>
+						Y Min
+						<input name="yMin" value={ data.Form.YMin }/>
+						@FieldErrorBox(data.Form.FieldErrors, "yMin")
+					</label>
+					<label>
+						Y Max
+						<input name="yMax" value={ data.Form.YMax }/>
+						@FieldErrorBox(data.Form.FieldErrors, "yMax")
+					</label>
+					<label>
+						Z Min
+						<input name="zMin" value={ data.Form.ZMin }/>
+						@FieldErrorBox(data.Form.FieldErrors, "zMin")
+					</label>
+					<label>
+						Z Max
+						<input name="zMax" value={ data.Form.ZMax }/>
+						@FieldErrorBox(data.Form.FieldErrors, "zMax")
+					</label>
+					if data.Form.FormError != "" {
+						<div class="field-error form-span-2">{ data.Form.FormError }</div>
+					}
+					<div class="form-actions form-span-2">
+						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+						<a class="button secondary" href="/enemies" hx-get="/enemies" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+					</div>
+				</form>
+			</section>
+		</div>
+	</div>
+}
