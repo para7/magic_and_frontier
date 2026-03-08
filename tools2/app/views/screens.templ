@@ -46,7 +46,7 @@ templ ItemsShell(data webui.ItemsPageData) {
 									<p class="entry-meta">{ entry.ItemID } x{ entry.Count }</p>
 								</div>
 								<div class="entry-actions">
-									<a class="button secondary" href={ "/items?edit=" + entry.ID } hx-get={ "/items?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+									<a class="secondary outline" role="button" href={ "/items?edit=" + entry.ID } hx-get={ "/items?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
 										<form method="post" action={ "/items/" + entry.ID + "/delete" } hx-post={ "/items/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/items">
 										<button type="submit" class="danger">Delete</button>
 									</form>
@@ -133,7 +133,7 @@ templ ItemsShell(data webui.ItemsPageData) {
 					}
 					<div class="form-actions form-span-2">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="button secondary" href="/items" hx-get="/items" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/items" hx-get="/items" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
 					</div>
 				</form>
 			</section>
@@ -162,7 +162,7 @@ templ GrimoireShell(data webui.GrimoirePageData) {
 								<p class="entry-meta code">{ entry.ID }</p>
 							</div>
 							<div class="entry-actions">
-								<a class="button secondary" href={ "/grimoire?edit=" + entry.ID } hx-get={ "/grimoire?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+								<a class="secondary outline" role="button" href={ "/grimoire?edit=" + entry.ID } hx-get={ "/grimoire?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
 									<form method="post" action={ "/grimoire/" + entry.ID + "/delete" } hx-post={ "/grimoire/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/grimoire">
 									<button type="submit" class="danger">Delete</button>
 								</form>
@@ -212,7 +212,7 @@ templ GrimoireShell(data webui.GrimoirePageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="button secondary" href="/grimoire" hx-get="/grimoire" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/grimoire" hx-get="/grimoire" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
 					</div>
 				</form>
 			</section>
@@ -241,7 +241,7 @@ templ SkillsShell(data webui.SkillsPageData) {
 								<p class="entry-meta code">{ entry.ID }</p>
 							</div>
 							<div class="entry-actions">
-								<a class="button secondary" href={ "/skills?edit=" + entry.ID } hx-get={ "/skills?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+								<a class="secondary outline" role="button" href={ "/skills?edit=" + entry.ID } hx-get={ "/skills?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
 									<form method="post" action={ "/skills/" + entry.ID + "/delete" } hx-post={ "/skills/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/skills">
 									<button type="submit" class="danger">Delete</button>
 								</form>
@@ -286,7 +286,7 @@ templ SkillsShell(data webui.SkillsPageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="button secondary" href="/skills" hx-get="/skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/skills" hx-get="/skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
 					</div>
 				</form>
 			</section>
@@ -315,7 +315,7 @@ templ EnemySkillsShell(data webui.EnemySkillsPageData) {
 								<p class="entry-meta code">{ entry.ID }</p>
 							</div>
 							<div class="entry-actions">
-								<a class="button secondary" href={ "/enemy-skills?edit=" + entry.ID } hx-get={ "/enemy-skills?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+								<a class="secondary outline" role="button" href={ "/enemy-skills?edit=" + entry.ID } hx-get={ "/enemy-skills?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
 									<form method="post" action={ "/enemy-skills/" + entry.ID + "/delete" } hx-post={ "/enemy-skills/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/enemy-skills">
 									<button type="submit" class="danger">Delete</button>
 								</form>
@@ -366,7 +366,7 @@ templ EnemySkillsShell(data webui.EnemySkillsPageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="button secondary" href="/enemy-skills" hx-get="/enemy-skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/enemy-skills" hx-get="/enemy-skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
 					</div>
 				</form>
 			</section>
@@ -395,7 +395,7 @@ templ TreasuresShell(data webui.TreasuresPageData) {
 								<p class="entry-meta code">{ entry.ID }</p>
 							</div>
 							<div class="entry-actions">
-								<a class="button secondary" href={ "/treasures?edit=" + entry.ID } hx-get={ "/treasures?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+								<a class="secondary outline" role="button" href={ "/treasures?edit=" + entry.ID } hx-get={ "/treasures?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
 									<form method="post" action={ "/treasures/" + entry.ID + "/delete" } hx-post={ "/treasures/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/treasures">
 									<button type="submit" class="danger">Delete</button>
 								</form>
@@ -447,7 +447,7 @@ templ TreasuresShell(data webui.TreasuresPageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="button secondary" href="/treasures" hx-get="/treasures" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/treasures" hx-get="/treasures" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
 					</div>
 				</form>
 			</section>
@@ -476,7 +476,7 @@ templ EnemiesShell(data webui.EnemiesPageData) {
 								<p class="entry-meta code">{ entry.ID }</p>
 							</div>
 							<div class="entry-actions">
-								<a class="button secondary" href={ "/enemies?edit=" + entry.ID } hx-get={ "/enemies?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
+								<a class="secondary outline" role="button" href={ "/enemies?edit=" + entry.ID } hx-get={ "/enemies?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
 									<form method="post" action={ "/enemies/" + entry.ID + "/delete" } hx-post={ "/enemies/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/enemies">
 									<button type="submit" class="danger">Delete</button>
 								</form>
@@ -598,7 +598,7 @@ templ EnemiesShell(data webui.EnemiesPageData) {
 					}
 					<div class="form-actions form-span-2">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="button secondary" href="/enemies" hx-get="/enemies" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/enemies" hx-get="/enemies" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
 					</div>
 				</form>
 			</section>
