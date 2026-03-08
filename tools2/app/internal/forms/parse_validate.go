@@ -2,12 +2,34 @@ package forms
 
 import (
 	"net/http"
-	"strings"
+
+	"tools2/app/internal/domain/common"
 )
 
 const (
 	errRequired = "1文字以上で入力してください"
+	errInvalid  = "入力内容を確認してください"
 )
+
+type commonInput struct {
+	Name string `json:"name" validate:"trimmed_required"`
+	Type Kind   `json:"type" validate:"required,oneof=server storage message"`
+}
+
+type serverInput struct {
+	Host string `json:"server_host" validate:"trimmed_required"`
+	Port string `json:"server_port" validate:"trimmed_required"`
+}
+
+type storageInput struct {
+	Bucket string `json:"storage_bucket" validate:"trimmed_required"`
+	Region string `json:"storage_region" validate:"trimmed_required"`
+}
+
+type messageInput struct {
+	Topic string `json:"message_topic" validate:"trimmed_required"`
+	QoS   string `json:"message_qos" validate:"trimmed_required"`
+}
 
 func FromQuery(r *http.Request) FormSet {
 	q := r.URL.Query()
@@ -54,27 +76,42 @@ func FromPostForm(r *http.Request) FormSet {
 
 func Validate(fs FormSet) FieldErrors {
 	errs := FieldErrors{}
-
-	requireField(errs, "name", fs.Common.Name, errRequired)
-	requireField(errs, "type", string(fs.Common.Type), errRequired)
+	collectFormErrors(errs, common.ValidateStruct(commonInput{
+		Name: fs.Common.Name,
+		Type: fs.Common.Type,
+	}))
 
 	switch fs.Common.Type {
 	case KindServer:
-		requireField(errs, "server_host", fs.Server.Host, errRequired)
-		requireField(errs, "server_port", fs.Server.Port, errRequired)
+		collectFormErrors(errs, common.ValidateStruct(serverInput{
+			Host: fs.Server.Host,
+			Port: fs.Server.Port,
+		}))
 	case KindStorage:
-		requireField(errs, "storage_bucket", fs.Storage.Bucket, errRequired)
-		requireField(errs, "storage_region", fs.Storage.Region, errRequired)
+		collectFormErrors(errs, common.ValidateStruct(storageInput{
+			Bucket: fs.Storage.Bucket,
+			Region: fs.Storage.Region,
+		}))
 	case KindMessage:
-		requireField(errs, "message_topic", fs.Message.Topic, errRequired)
-		requireField(errs, "message_qos", fs.Message.QoS, errRequired)
+		collectFormErrors(errs, common.ValidateStruct(messageInput{
+			Topic: fs.Message.Topic,
+			QoS:   fs.Message.QoS,
+		}))
 	}
 
 	return errs
 }
 
-func requireField(errs FieldErrors, key, value, msg string) {
-	if strings.TrimSpace(value) == "" {
-		errs[key] = msg
+func collectFormErrors(errs FieldErrors, violations []common.FieldViolation) {
+	for _, violation := range violations {
+		if _, exists := errs[violation.Field]; exists {
+			continue
+		}
+		switch violation.Tag {
+		case "required", "trimmed_required":
+			errs[violation.Field] = errRequired
+		default:
+			errs[violation.Field] = errInvalid
+		}
 	}
 }
