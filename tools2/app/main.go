@@ -1,14 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"runtime/debug"
 	"time"
+
+	"tools2/app/internal/config"
+	"tools2/app/internal/httpapi"
 )
 
 func main() {
-	addr := ":8080"
+	cfg := config.Load()
+	addr := fmt.Sprintf(":%d", cfg.Port)
 	log.Printf("listening on %s", addr)
 	if err := http.ListenAndServe(addr, newHandler()); err != nil {
 		log.Fatal(err)
@@ -16,15 +21,8 @@ func main() {
 }
 
 func newHandler() http.Handler {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/form", http.StatusFound)
-	})
-	mux.HandleFunc("GET /form", handleForm)
-	mux.HandleFunc("POST /form", handleFormSubmit)
-	mux.HandleFunc("POST /form/validate", handleFormValidate)
-
-	return chain(mux, recoverMiddleware, loggingMiddleware)
+	cfg := config.Load()
+	return chain(httpapi.NewHandler(cfg, httpapi.DefaultDependencies(cfg)), recoverMiddleware, loggingMiddleware)
 }
 
 type middleware func(http.Handler) http.Handler

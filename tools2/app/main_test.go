@@ -18,19 +18,8 @@ func TestNewHandler_RedirectRootToForm(t *testing.T) {
 	if rec.Code != http.StatusFound {
 		t.Fatalf("status = %d, want %d", rec.Code, http.StatusFound)
 	}
-	if got := rec.Header().Get("Location"); got != "/form" {
-		t.Fatalf("location = %q, want %q", got, "/form")
-	}
-}
-
-func TestNewHandler_MethodNotAllowedOnValidateGet(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/form/validate", nil)
-	rec := httptest.NewRecorder()
-
-	newHandler().ServeHTTP(rec, req)
-
-	if rec.Code != http.StatusMethodNotAllowed {
-		t.Fatalf("status = %d, want %d", rec.Code, http.StatusMethodNotAllowed)
+	if got := rec.Header().Get("Location"); got != "/health" {
+		t.Fatalf("location = %q, want %q", got, "/health")
 	}
 }
 

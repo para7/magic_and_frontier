@@ -68,6 +68,7 @@
 7. Integrate router into `app/main.go`
 - Replace demo-form routes progressively.
 - Keep middleware: recover + request logging.
+- Move the old form demo into a non-build archive path and document that it is retained only as plan 3 reference material.
 
 8. Add server tests (happy path baseline)
 - Health endpoint returns `{ ok: true }`.

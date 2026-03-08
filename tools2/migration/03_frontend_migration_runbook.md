@@ -6,8 +6,8 @@
 ## Input References
 - `../tools/frontend/src/app/**`
 - Existing `tools2` templ usage:
-1. `app/views/layout.templ`
-2. `app/views/form/*.templ`
+1. `migration/form-sample/app/views/layout.templ.txt`
+2. `migration/form-sample/app/views/form/*.templ.txt`
 
 ## Output Location
 - Recommended package roots:
