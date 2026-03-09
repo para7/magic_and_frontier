@@ -125,6 +125,11 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 	}
 }
 
+func ValidateSettings(settingsPath string) error {
+	_, err := loadExportSettings(settingsPath)
+	return err
+}
+
 type itemOutputStats struct {
 	ItemFunctions  int
 	ItemLootTables int
@@ -561,32 +566,31 @@ func buildDropLootTable(drops []treasures.DropRef, itemsByID map[string]items.It
 		if !ok {
 			return nil, fmt.Errorf("%s: referenced grimoire not found (%s)", context, drop.RefID)
 		}
-		lore := make([]any, 0, len(linesToLoreValues(entry.Description)))
-		for _, line := range linesToLoreValues(entry.Description) {
-			lore = append(lore, map[string]any{"text": line})
-		}
-		entries = append(entries, map[string]any{
-			"type":   "minecraft:item",
-			"name":   "minecraft:written_book",
-			"weight": toWeight(drop.Weight),
-			"functions": []any{
-				map[string]any{
-					"function": "minecraft:set_count",
-					"count":    toCountValue(drop.CountMin, drop.CountMax),
-				},
-				map[string]any{
-					"function": "minecraft:set_name",
-					"name":     map[string]any{"text": entry.Title},
-				},
-				map[string]any{
-					"function": "minecraft:set_lore",
-					"lore":     lore,
-				},
-				map[string]any{
-					"function": "minecraft:set_custom_data",
-					"tag":      fmt.Sprintf("{maf:{source_id:%s,%s}}", jsonString(drop.RefID), toPrimarySpellCustomData(entry)),
-				},
+		functions := []any{
+			map[string]any{
+				"function": "minecraft:set_count",
+				"count":    toCountValue(drop.CountMin, drop.CountMax),
 			},
+			map[string]any{
+				"function": "minecraft:set_name",
+				"name":     map[string]any{"text": entry.Title},
+			},
+		}
+		if lore := toLoreComponents(entry.Description); len(lore) > 0 {
+			functions = append(functions, map[string]any{
+				"function": "minecraft:set_lore",
+				"lore":     lore,
+			})
+		}
+		functions = append(functions, map[string]any{
+			"function": "minecraft:set_custom_data",
+			"tag":      fmt.Sprintf("{maf:{source_id:%s,%s}}", jsonString(drop.RefID), toPrimarySpellCustomData(entry)),
+		})
+		entries = append(entries, map[string]any{
+			"type":      "minecraft:item",
+			"name":      "minecraft:written_book",
+			"weight":    toWeight(drop.Weight),
+			"functions": functions,
 		})
 	}
 	return map[string]any{
@@ -628,10 +632,22 @@ func normalizeFunctionBody(script string) string {
 }
 
 func toSpellLootTable(entry grimoire.GrimoireEntry, variant grimoire.Variant) map[string]any {
-	lore := make([]any, 0, len(linesToLoreValues(entry.Description)))
-	for _, line := range linesToLoreValues(entry.Description) {
-		lore = append(lore, map[string]any{"text": line})
+	functions := []any{
+		map[string]any{
+			"function": "minecraft:set_name",
+			"name":     map[string]any{"text": entry.Title},
+		},
 	}
+	if lore := toLoreComponents(entry.Description); len(lore) > 0 {
+		functions = append(functions, map[string]any{
+			"function": "minecraft:set_lore",
+			"lore":     lore,
+		})
+	}
+	functions = append(functions, map[string]any{
+		"function": "minecraft:set_custom_data",
+		"tag":      fmt.Sprintf("{%s}", toSpellCustomData(entry, variant)),
+	})
 	return map[string]any{
 		"type": "minecraft:generic",
 		"pools": []any{
@@ -639,22 +655,9 @@ func toSpellLootTable(entry grimoire.GrimoireEntry, variant grimoire.Variant) ma
 				"rolls": 1,
 				"entries": []any{
 					map[string]any{
-						"type": "minecraft:item",
-						"name": "minecraft:written_book",
-						"functions": []any{
-							map[string]any{
-								"function": "minecraft:set_name",
-								"name":     map[string]any{"text": entry.Title},
-							},
-							map[string]any{
-								"function": "minecraft:set_lore",
-								"lore":     lore,
-							},
-							map[string]any{
-								"function": "minecraft:set_custom_data",
-								"tag":      fmt.Sprintf("{%s}", toSpellCustomData(entry, variant)),
-							},
-						},
+						"type":      "minecraft:item",
+						"name":      "minecraft:written_book",
+						"functions": functions,
 					},
 				},
 			},
@@ -663,15 +666,15 @@ func toSpellLootTable(entry grimoire.GrimoireEntry, variant grimoire.Variant) ma
 }
 
 func toSpellGiveCommand(entry grimoire.GrimoireEntry, variant grimoire.Variant) string {
-	loreParts := make([]string, 0, len(linesToLoreValues(entry.Description)))
+	customName := "'" + strings.ReplaceAll(string(mustJSON(map[string]string{"text": entry.Title})), "'", "\\'") + "'"
+	loreParts := make([]string, 0)
 	for _, line := range linesToLoreValues(entry.Description) {
-		loreParts = append(loreParts, textComponent(line))
+		loreParts = append(loreParts, "'"+strings.ReplaceAll(string(mustJSON(map[string]string{"text": line})), "'", "\\'")+"'")
 	}
 	loreValue := ""
 	if len(loreParts) > 0 {
 		loreValue = ",lore:[" + strings.Join(loreParts, ",") + "]"
 	}
-	customName := "'" + strings.ReplaceAll(string(mustJSON(map[string]string{"text": entry.Title})), "'", "\\'") + "'"
 	return fmt.Sprintf("give @s minecraft:written_book[custom_name=%s%s,custom_data={%s}] 1", customName, loreValue, toSpellCustomData(entry, variant))
 }
 
@@ -687,11 +690,6 @@ func toPrimarySpellCustomData(entry grimoire.GrimoireEntry) string {
 	return fmt.Sprintf("spell:{castid:%d,cost:%d,cast:%d,title:%s,description:%s,script:%s}", entry.CastID, primary.Cost, primary.Cast, jsonString(entry.Title), jsonString(entry.Description), jsonString(entry.Script))
 }
 
-func textComponent(value string) string {
-	raw := strings.ReplaceAll(string(mustJSON(map[string]string{"text": value})), "'", "\\'")
-	return "'" + raw + "'"
-}
-
 func linesToLoreValues(value string) []string {
 	raw := strings.Split(strings.ReplaceAll(value, "\r\n", "\n"), "\n")
 	out := make([]string, 0, len(raw))
@@ -700,6 +698,15 @@ func linesToLoreValues(value string) []string {
 		if line != "" {
 			out = append(out, line)
 		}
+	}
+	return out
+}
+
+func toLoreComponents(value string) []any {
+	lines := linesToLoreValues(value)
+	out := make([]any, 0, len(lines))
+	for _, line := range lines {
+		out = append(out, map[string]any{"text": line})
 	}
 	return out
 }
