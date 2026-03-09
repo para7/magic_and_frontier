@@ -61,7 +61,7 @@ templ ItemsShell(data webui.ItemsPageData) {
 						</article>
 					}
 					if len(data.Entries) == 0 {
-						<article class="entry-card"><p class="entry-meta">No items yet.</p></article>
+						<article class="entry-card"><p class="entry-meta">まだアイテムはありません。</p></article>
 					}
 				</div>
 			</section>
@@ -93,7 +93,7 @@ templ ItemsShell(data webui.ItemsPageData) {
 					<label class="form-span-2">
 						Enchantments
 						<textarea name="enchantments">{ data.Form.Enchantments }</textarea>
-						<small>One `namespace:enchantment level` pair per line.</small>
+						<small>1行につき `namespace:enchantment level` を1件入力します。</small>
 					</label>
 					<label>
 						CustomModelData
@@ -176,7 +176,7 @@ templ GrimoireShell(data webui.GrimoirePageData) {
 					</article>
 				}
 				if len(data.Entries) == 0 {
-					<article class="entry-card"><p class="entry-meta">No grimoire entries yet.</p></article>
+					<article class="entry-card"><p class="entry-meta">まだ魔導書エントリはありません。</p></article>
 				}
 			</section>
 			<section class="entry-card">
@@ -204,7 +204,7 @@ templ GrimoireShell(data webui.GrimoirePageData) {
 					<label>
 						Variants
 						<textarea name="variantsText">{ data.Form.VariantsText }</textarea>
-						<small>Format: `cast,cost` per line.</small>
+						<small>1行につき `cast,cost` 形式で入力します。</small>
 						@FieldErrorBox(data.Form.FieldErrors, "variantsText")
 					</label>
 					if data.Form.FormError != "" {
@@ -255,7 +255,7 @@ templ SkillsShell(data webui.SkillsPageData) {
 					</article>
 				}
 				if len(data.Entries) == 0 {
-					<article class="entry-card"><p class="entry-meta">No skills yet.</p></article>
+					<article class="entry-card"><p class="entry-meta">まだスキルはありません。</p></article>
 				}
 			</section>
 			<section class="entry-card">
@@ -329,7 +329,7 @@ templ EnemySkillsShell(data webui.EnemySkillsPageData) {
 					</article>
 				}
 				if len(data.Entries) == 0 {
-					<article class="entry-card"><p class="entry-meta">No enemy skills yet.</p></article>
+					<article class="entry-card"><p class="entry-meta">まだ敵スキルはありません。</p></article>
 				}
 			</section>
 			<section class="entry-card">
@@ -409,7 +409,7 @@ templ TreasuresShell(data webui.TreasuresPageData) {
 					</article>
 				}
 				if len(data.Entries) == 0 {
-					<article class="entry-card"><p class="entry-meta">No treasures yet.</p></article>
+					<article class="entry-card"><p class="entry-meta">まだ宝箱はありません。</p></article>
 				}
 			</section>
 			<section class="entry-card">
@@ -423,7 +423,7 @@ templ TreasuresShell(data webui.TreasuresPageData) {
 					<label>
 						Loot Pools
 						<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
-						<small>Format: `kind,refId,weight,countMin,countMax` per line. Leave countMin/countMax blank to omit.</small>
+						<small>1行につき `kind,refId,weight,countMin,countMax` 形式で入力します。countMin と countMax は空欄で省略できます。</small>
 						@FieldErrorBox(data.Form.FieldErrors, "lootPoolsText")
 					</label>
 					<div>
@@ -493,7 +493,7 @@ templ EnemiesShell(data webui.EnemiesPageData) {
 					</article>
 				}
 				if len(data.Entries) == 0 {
-					<article class="entry-card"><p class="entry-meta">No enemies yet.</p></article>
+					<article class="entry-card"><p class="entry-meta">まだ敵はありません。</p></article>
 				}
 			</section>
 			<section class="entry-card">

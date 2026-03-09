@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"tools2/app/internal/application"
 	"tools2/app/internal/config"
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
@@ -14,25 +15,17 @@ import (
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/treasures"
-	"tools2/app/internal/export"
 	"tools2/app/internal/store"
 	"tools2/app/internal/web"
 )
 
-type Dependencies struct {
-	ItemRepo       store.ItemStateRepository
-	GrimoireRepo   store.GrimoireStateRepository
-	SkillRepo      store.EntryStateRepository[skills.SkillEntry]
-	EnemySkillRepo store.EntryStateRepository[enemyskills.EnemySkillEntry]
-	EnemyRepo      store.EntryStateRepository[enemies.EnemyEntry]
-	TreasureRepo   store.EntryStateRepository[treasures.TreasureEntry]
-	Now            func() time.Time
-}
+type Dependencies = application.Dependencies
 
 func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	if deps.Now == nil {
 		deps.Now = time.Now
 	}
+	appService := application.NewService(cfg, deps)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
@@ -366,45 +359,7 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	})
 
 	mux.HandleFunc("POST /api/save", func(w http.ResponseWriter, r *http.Request) {
-		itemState, err := deps.ItemRepo.LoadItemState()
-		if err != nil {
-			writeInternalError(w, err)
-			return
-		}
-		grimoireState, err := deps.GrimoireRepo.LoadGrimoireState()
-		if err != nil {
-			writeInternalError(w, err)
-			return
-		}
-		skillState, err := deps.SkillRepo.LoadState()
-		if err != nil {
-			writeInternalError(w, err)
-			return
-		}
-		enemySkillState, err := deps.EnemySkillRepo.LoadState()
-		if err != nil {
-			writeInternalError(w, err)
-			return
-		}
-		enemyState, err := deps.EnemyRepo.LoadState()
-		if err != nil {
-			writeInternalError(w, err)
-			return
-		}
-		treasureState, err := deps.TreasureRepo.LoadState()
-		if err != nil {
-			writeInternalError(w, err)
-			return
-		}
-		result := export.ExportDatapack(export.ExportParams{
-			ItemState:          itemState,
-			GrimoireState:      grimoireState,
-			Skills:             skillState.Entries,
-			EnemySkills:        enemySkillState.Entries,
-			Enemies:            enemyState.Entries,
-			Treasures:          treasureState.Entries,
-			ExportSettingsPath: cfg.ExportSettingsPath,
-		})
+		result := appService.ExportDatapack()
 		status := http.StatusOK
 		if !result.OK {
 			status = http.StatusBadRequest
@@ -416,15 +371,7 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 }
 
 func DefaultDependencies(cfg config.Config) Dependencies {
-	return Dependencies{
-		ItemRepo:       store.NewItemStateRepository(cfg.ItemStatePath),
-		GrimoireRepo:   store.NewGrimoireStateRepository(cfg.GrimoireStatePath),
-		SkillRepo:      store.NewEntryStateRepository[skills.SkillEntry](cfg.SkillStatePath),
-		EnemySkillRepo: store.NewEntryStateRepository[enemyskills.EnemySkillEntry](cfg.EnemySkillStatePath),
-		EnemyRepo:      store.NewEntryStateRepository[enemies.EnemyEntry](cfg.EnemyStatePath),
-		TreasureRepo:   store.NewEntryStateRepository[treasures.TreasureEntry](cfg.TreasureStatePath),
-		Now:            time.Now,
-	}
+	return application.DefaultDependencies(cfg)
 }
 
 func decodeJSON(w http.ResponseWriter, r *http.Request, dest any) bool {

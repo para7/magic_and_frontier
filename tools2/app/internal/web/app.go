@@ -11,6 +11,7 @@ import (
 
 	"github.com/a-h/templ"
 
+	"tools2/app/internal/application"
 	"tools2/app/internal/config"
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
@@ -19,21 +20,11 @@ import (
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/treasures"
-	"tools2/app/internal/export"
-	"tools2/app/internal/store"
 	"tools2/app/internal/webui"
 	"tools2/app/views"
 )
 
-type Dependencies struct {
-	ItemRepo       store.ItemStateRepository
-	GrimoireRepo   store.GrimoireStateRepository
-	SkillRepo      store.EntryStateRepository[skills.SkillEntry]
-	EnemySkillRepo store.EntryStateRepository[enemyskills.EnemySkillEntry]
-	EnemyRepo      store.EntryStateRepository[enemies.EnemyEntry]
-	TreasureRepo   store.EntryStateRepository[treasures.TreasureEntry]
-	Now            func() time.Time
-}
+type Dependencies = application.Dependencies
 
 type App struct {
 	cfg  config.Config
@@ -573,46 +564,7 @@ func (a App) enemiesDelete(w http.ResponseWriter, r *http.Request) {
 func (a App) saveExport(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
 	currentPath := normalizeScreenPath(r.Form.Get("currentPath"))
-	itemState, err := a.deps.ItemRepo.LoadItemState()
-	if err != nil {
-		a.renderSaveResponse(w, r, currentPath, errorNotice(err.Error()))
-		return
-	}
-	grimoireState, err := a.deps.GrimoireRepo.LoadGrimoireState()
-	if err != nil {
-		a.renderSaveResponse(w, r, currentPath, errorNotice(err.Error()))
-		return
-	}
-	skillState, err := a.deps.SkillRepo.LoadState()
-	if err != nil {
-		a.renderSaveResponse(w, r, currentPath, errorNotice(err.Error()))
-		return
-	}
-	enemySkillState, err := a.deps.EnemySkillRepo.LoadState()
-	if err != nil {
-		a.renderSaveResponse(w, r, currentPath, errorNotice(err.Error()))
-		return
-	}
-	enemyState, err := a.deps.EnemyRepo.LoadState()
-	if err != nil {
-		a.renderSaveResponse(w, r, currentPath, errorNotice(err.Error()))
-		return
-	}
-	treasureState, err := a.deps.TreasureRepo.LoadState()
-	if err != nil {
-		a.renderSaveResponse(w, r, currentPath, errorNotice(err.Error()))
-		return
-	}
-
-	result := export.ExportDatapack(export.ExportParams{
-		ItemState:          itemState,
-		GrimoireState:      grimoireState,
-		Skills:             skillState.Entries,
-		EnemySkills:        enemySkillState.Entries,
-		Enemies:            enemyState.Entries,
-		Treasures:          treasureState.Entries,
-		ExportSettingsPath: a.cfg.ExportSettingsPath,
-	})
+	result := application.NewService(a.cfg, a.deps).ExportDatapack()
 	if !result.OK {
 		a.renderSaveResponse(w, r, currentPath, errorNotice(result.Message))
 		return
@@ -787,27 +739,27 @@ func (a App) renderComponent(w http.ResponseWriter, component templ.Component) {
 }
 
 func itemMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Items", CurrentPath: "/items", Description: "Create and maintain item outputs. Complex NBT fields stay as text for this migration phase."}
+	return webui.PageMeta{Title: "Items", CurrentPath: "/items", Description: "アイテム出力を作成・管理します。複雑な NBT 項目はこの移行段階ではテキストのまま扱います。"}
 }
 
 func grimoireMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Grimoire", CurrentPath: "/grimoire", Description: "Maintain spell entries. Variants are entered as compact `cast,cost` lines."}
+	return webui.PageMeta{Title: "Grimoire", CurrentPath: "/grimoire", Description: "呪文エントリを管理します。Variants は `cast,cost` を1行ずつ入力します。"}
 }
 
 func skillsMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Skills", CurrentPath: "/skills", Description: "Maintain skill scripts and their referenced item entry."}
+	return webui.PageMeta{Title: "Skills", CurrentPath: "/skills", Description: "スキルの script と参照する item entry を管理します。"}
 }
 
 func enemySkillsMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Enemy Skills", CurrentPath: "/enemy-skills", Description: "Maintain reusable enemy-skill scripts with optional trigger and cooldown."}
+	return webui.PageMeta{Title: "Enemy Skills", CurrentPath: "/enemy-skills", Description: "再利用可能な enemy-skill script を管理します。trigger と cooldown は任意です。"}
 }
 
 func treasuresMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Treasures", CurrentPath: "/treasures", Description: "Maintain treasure loot pools. Each line is `kind,refId,weight,countMin,countMax`."}
+	return webui.PageMeta{Title: "Treasures", CurrentPath: "/treasures", Description: "treasure loot pools を管理します。各行は `kind,refId,weight,countMin,countMax` 形式です。"}
 }
 
 func enemiesMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Enemies", CurrentPath: "/enemies", Description: "Maintain enemy stats, spawn rules, and referenced enemy skills."}
+	return webui.PageMeta{Title: "Enemies", CurrentPath: "/enemies", Description: "enemy stats、spawn rules、参照する enemy skills を管理します。"}
 }
 
 func defaultItemForm() webui.ItemFormData {

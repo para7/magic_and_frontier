@@ -4,7 +4,7 @@ import "tools2/app/internal/webui"
 
 templ Layout(title string, currentPath string) {
 	<!doctype html>
-	<html lang="en" data-theme="dark">
+	<html lang="ja" data-theme="dark">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -289,7 +289,7 @@ templ Layout(title string, currentPath string) {
 			<div class="layout-shell">
 				<aside class="sidebar">
 					<h2 class="sidebar-title">tools2</h2>
-					<p class="sidebar-copy">Go SSR migration surface. CRUD flows stay local and export keeps the existing contract.</p>
+					<p class="sidebar-copy">Go製SSR画面です。CRUD はローカルで完結し、エクスポートは既存仕様を維持します。</p>
 					<nav>
 						for _, item := range webui.NavItems() {
 							if item.Path == currentPath {
