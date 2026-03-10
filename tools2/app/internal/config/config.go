@@ -46,8 +46,6 @@ func defaultStatePath(fileName string) string {
 	candidates := []string{
 		filepath.Clean(filepath.Join(".", "savedata", fileName)),
 		filepath.Clean(filepath.Join("..", "savedata", fileName)),
-		filepath.Clean(filepath.Join("..", "tools", "savedata", fileName)),
-		filepath.Clean(filepath.Join("tools", "savedata", fileName)),
 	}
 	return firstExistingOrDefault(candidates)
 }

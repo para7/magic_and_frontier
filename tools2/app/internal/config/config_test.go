@@ -6,17 +6,16 @@ import (
 	"testing"
 )
 
-func TestDefaultStatePath_ResolvesSiblingToolsSavedata(t *testing.T) {
+func TestDefaultStatePath_FallsBackToParentSavedata(t *testing.T) {
 	root := t.TempDir()
 	tools2Root := filepath.Join(root, "tools2")
-	toolsRoot := filepath.Join(root, "tools")
 	if err := os.MkdirAll(filepath.Join(tools2Root), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.MkdirAll(filepath.Join(toolsRoot, "savedata"), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(root, "savedata"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	statePath := filepath.Join(toolsRoot, "savedata", "form-state.json")
+	statePath := filepath.Join(root, "savedata", "form-state.json")
 	if err := os.WriteFile(statePath, []byte("{}\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -24,7 +23,7 @@ func TestDefaultStatePath_ResolvesSiblingToolsSavedata(t *testing.T) {
 	t.Chdir(tools2Root)
 
 	got := defaultStatePath("form-state.json")
-	want := filepath.Clean(filepath.Join("..", "tools", "savedata", "form-state.json"))
+	want := filepath.Clean(filepath.Join("..", "savedata", "form-state.json"))
 	if got != want {
 		t.Fatalf("defaultStatePath = %q, want %q", got, want)
 	}
@@ -34,17 +33,17 @@ func TestDefaultStatePath_PrefersExistingLocalSavedata(t *testing.T) {
 	root := t.TempDir()
 	tools2Root := filepath.Join(root, "tools2")
 	localSavedata := filepath.Join(tools2Root, "savedata")
-	siblingSavedata := filepath.Join(root, "tools", "savedata")
+	parentSavedata := filepath.Join(root, "savedata")
 	if err := os.MkdirAll(localSavedata, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.MkdirAll(siblingSavedata, 0o755); err != nil {
+	if err := os.MkdirAll(parentSavedata, 0o755); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(localSavedata, "form-state.json"), []byte("{}\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(siblingSavedata, "form-state.json"), []byte("{}\n"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(parentSavedata, "form-state.json"), []byte("{}\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 
