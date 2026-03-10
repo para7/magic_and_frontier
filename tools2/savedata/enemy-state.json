@@ -1,15 +1,15 @@
 {
   "entries": [
     {
-      "id": "66666666-6666-4666-8666-666666666666",
+      "id": "943731c3-07c2-4b9a-a8f1-70a18100569c",
       "name": "Sample Zombie",
       "hp": 40,
       "attack": 6,
       "defense": 2,
       "moveSpeed": 0.22,
-      "dropTableId": "77777777-7777-4777-8777-777777777777",
+      "dropTableId": "64b9426e-882e-4c45-aea5-25d4e4405e19",
       "enemySkillIds": [
-        "55555555-5555-4555-8555-555555555555"
+        "735fc113-b90a-44f9-b13f-e832c3f6a477"
       ],
       "spawnRule": {
         "origin": {
