@@ -41,15 +41,16 @@ func TestHandler_SSRPageLoadsAllFeatures(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
 	tests := []struct {
-		path string
-		text string
+		path      string
+		text      string
+		createURL string
 	}{
-		{path: "/items", text: "Items"},
-		{path: "/grimoire", text: "Grimoire"},
-		{path: "/skills", text: "Skills"},
-		{path: "/enemy-skills", text: "Enemy Skills"},
-		{path: "/treasures", text: "Treasures"},
-		{path: "/enemies", text: "Enemies"},
+		{path: "/items", text: "Items", createURL: "/items/new"},
+		{path: "/grimoire", text: "Grimoire", createURL: "/grimoire/new"},
+		{path: "/skills", text: "Skills", createURL: "/skills/new"},
+		{path: "/enemy-skills", text: "Enemy Skills", createURL: "/enemy-skills/new"},
+		{path: "/treasures", text: "Treasures", createURL: "/treasures/new"},
+		{path: "/enemies", text: "Enemies", createURL: "/enemies/new"},
 	}
 
 	for _, tt := range tests {
@@ -57,9 +58,108 @@ func TestHandler_SSRPageLoadsAllFeatures(t *testing.T) {
 		if rec.Code != http.StatusOK {
 			t.Fatalf("%s status = %d, want %d", tt.path, rec.Code, http.StatusOK)
 		}
-		if !strings.Contains(rec.Body.String(), tt.text) {
+		body := rec.Body.String()
+		if !strings.Contains(body, tt.text) {
 			t.Fatalf("%s body missing %q", tt.path, tt.text)
 		}
+		if !strings.Contains(body, tt.createURL) {
+			t.Fatalf("%s body missing create link %q", tt.path, tt.createURL)
+		}
+	}
+}
+
+func TestHandler_SSRNewPageLoadsForm(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	rec := request(t, handler, http.MethodGet, "/items/new", nil)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
+	}
+	body := rec.Body.String()
+	if !strings.Contains(body, `action="/items/new"`) {
+		t.Fatalf("body missing new form action: %s", body)
+	}
+	if !strings.Contains(body, "Back to list") {
+		t.Fatalf("body missing back link: %s", body)
+	}
+}
+
+func TestHandler_SSREditPageLoadsExistingEntry(t *testing.T) {
+	handler, _ := newTestHandler(t)
+	itemID := uuid("000000000301")
+
+	rec := postForm(t, handler, "/items/new", url.Values{
+		"id":                 {itemID},
+		"itemId":             {"minecraft:apple"},
+		"count":              {"2"},
+		"customName":         {"Starter Apple"},
+		"lore":               {"fresh"},
+		"enchantments":       {""},
+		"customNbt":          {""},
+		"dropTableId":        {""},
+		"unbreakable":        {""},
+		"repairCost":         {""},
+		"hideFlags":          {""},
+		"attributeModifiers": {""},
+	}, http.StatusSeeOther)
+	assertRedirect(t, rec, "/items")
+
+	rec = request(t, handler, http.MethodGet, "/items/edit?id="+itemID, nil)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
+	}
+	body := rec.Body.String()
+	if !strings.Contains(body, `action="/items/edit"`) {
+		t.Fatalf("body missing edit form action: %s", body)
+	}
+	if !strings.Contains(body, "Starter Apple") {
+		t.Fatalf("body missing existing entry values: %s", body)
+	}
+}
+
+func TestHandler_SSREditSubmitUpdatesExistingEntry(t *testing.T) {
+	handler, _ := newTestHandler(t)
+	itemID := uuid("000000000302")
+
+	rec := postForm(t, handler, "/items/new", url.Values{
+		"id":                 {itemID},
+		"itemId":             {"minecraft:apple"},
+		"count":              {"2"},
+		"customName":         {"Starter Apple"},
+		"lore":               {"fresh"},
+		"enchantments":       {""},
+		"customNbt":          {""},
+		"dropTableId":        {""},
+		"unbreakable":        {""},
+		"repairCost":         {""},
+		"hideFlags":          {""},
+		"attributeModifiers": {""},
+	}, http.StatusSeeOther)
+	assertRedirect(t, rec, "/items")
+
+	rec = postForm(t, handler, "/items/edit", url.Values{
+		"id":                 {itemID},
+		"itemId":             {"minecraft:golden_apple"},
+		"count":              {"4"},
+		"customName":         {"Edited Apple"},
+		"lore":               {"fresh"},
+		"enchantments":       {""},
+		"customNbt":          {""},
+		"dropTableId":        {""},
+		"unbreakable":        {""},
+		"repairCost":         {""},
+		"hideFlags":          {""},
+		"attributeModifiers": {""},
+	}, http.StatusSeeOther)
+	assertRedirect(t, rec, "/items")
+
+	rec = request(t, handler, http.MethodGet, "/items", nil)
+	body := rec.Body.String()
+	if !strings.Contains(body, "minecraft:golden_apple") {
+		t.Fatalf("edit body = %s", body)
+	}
+	if strings.Contains(body, "minecraft:apple x2") {
+		t.Fatalf("body still contains stale value: %s", body)
 	}
 }
 
@@ -73,7 +173,7 @@ func TestHandler_SSRCRUDHappyPathAndSave(t *testing.T) {
 	treasureID := uuid("000000000145")
 	enemyID := uuid("000000000146")
 
-	itemRec := postForm(t, handler, "/items", url.Values{
+	itemRec := postForm(t, handler, "/items/new", url.Values{
 		"id":                 {itemID},
 		"itemId":             {"minecraft:apple"},
 		"count":              {"2"},
@@ -86,54 +186,44 @@ func TestHandler_SSRCRUDHappyPathAndSave(t *testing.T) {
 		"repairCost":         {""},
 		"hideFlags":          {""},
 		"attributeModifiers": {""},
-	}, http.StatusOK)
-	if !strings.Contains(itemRec.Body.String(), "minecraft:apple") {
-		t.Fatalf("item body = %s", itemRec.Body.String())
-	}
+	}, http.StatusSeeOther)
+	assertRedirect(t, itemRec, "/items")
 
-	grimoireRec := postForm(t, handler, "/grimoire", url.Values{
+	grimoireRec := postForm(t, handler, "/grimoire/new", url.Values{
 		"id":           {grimoireID},
 		"castid":       {"2"},
 		"title":        {"Apple Spell"},
 		"description":  {"desc"},
 		"script":       {"function maf:spell/apple"},
 		"variantsText": {"6,40"},
-	}, http.StatusOK)
-	if !strings.Contains(grimoireRec.Body.String(), "Apple Spell") {
-		t.Fatalf("grimoire body = %s", grimoireRec.Body.String())
-	}
+	}, http.StatusSeeOther)
+	assertRedirect(t, grimoireRec, "/grimoire")
 
-	skillRec := postForm(t, handler, "/skills", url.Values{
+	skillRec := postForm(t, handler, "/skills/new", url.Values{
 		"id":     {skillID},
 		"name":   {"Slash"},
 		"script": {"say slash"},
 		"itemId": {itemID},
-	}, http.StatusOK)
-	if !strings.Contains(skillRec.Body.String(), "Slash") {
-		t.Fatalf("skill body = %s", skillRec.Body.String())
-	}
+	}, http.StatusSeeOther)
+	assertRedirect(t, skillRec, "/skills")
 
-	enemySkillRec := postForm(t, handler, "/enemy-skills", url.Values{
+	enemySkillRec := postForm(t, handler, "/enemy-skills/new", url.Values{
 		"id":       {enemySkillID},
 		"name":     {"Roar"},
 		"script":   {"say roar"},
 		"cooldown": {"20"},
 		"trigger":  {"on_spawn"},
-	}, http.StatusOK)
-	if !strings.Contains(enemySkillRec.Body.String(), "Roar") {
-		t.Fatalf("enemy skill body = %s", enemySkillRec.Body.String())
-	}
+	}, http.StatusSeeOther)
+	assertRedirect(t, enemySkillRec, "/enemy-skills")
 
-	treasureRec := postForm(t, handler, "/treasures", url.Values{
+	treasureRec := postForm(t, handler, "/treasures/new", url.Values{
 		"id":            {treasureID},
 		"name":          {"Starter Treasure"},
 		"lootPoolsText": {"item," + itemID + ",3,1,1\ngrimoire," + grimoireID + ",1,1,1"},
-	}, http.StatusOK)
-	if !strings.Contains(treasureRec.Body.String(), "Starter Treasure") {
-		t.Fatalf("treasure body = %s", treasureRec.Body.String())
-	}
+	}, http.StatusSeeOther)
+	assertRedirect(t, treasureRec, "/treasures")
 
-	enemyRec := postForm(t, handler, "/enemies", url.Values{
+	enemyRec := postForm(t, handler, "/enemies/new", url.Values{
 		"id":            {enemyID},
 		"name":          {"Zombie"},
 		"hp":            {"20"},
@@ -144,9 +234,26 @@ func TestHandler_SSRCRUDHappyPathAndSave(t *testing.T) {
 		"originZ":       {"0"},
 		"distanceMin":   {"0"},
 		"distanceMax":   {"32"},
-	}, http.StatusOK)
-	if !strings.Contains(enemyRec.Body.String(), "Zombie") {
-		t.Fatalf("enemy body = %s", enemyRec.Body.String())
+	}, http.StatusSeeOther)
+	assertRedirect(t, enemyRec, "/enemies")
+
+	if rec := request(t, handler, http.MethodGet, "/items", nil); !strings.Contains(rec.Body.String(), "minecraft:apple") {
+		t.Fatalf("item body = %s", rec.Body.String())
+	}
+	if rec := request(t, handler, http.MethodGet, "/grimoire", nil); !strings.Contains(rec.Body.String(), "Apple Spell") {
+		t.Fatalf("grimoire body = %s", rec.Body.String())
+	}
+	if rec := request(t, handler, http.MethodGet, "/skills", nil); !strings.Contains(rec.Body.String(), "Slash") {
+		t.Fatalf("skill body = %s", rec.Body.String())
+	}
+	if rec := request(t, handler, http.MethodGet, "/enemy-skills", nil); !strings.Contains(rec.Body.String(), "Roar") {
+		t.Fatalf("enemy skill body = %s", rec.Body.String())
+	}
+	if rec := request(t, handler, http.MethodGet, "/treasures", nil); !strings.Contains(rec.Body.String(), "Starter Treasure") {
+		t.Fatalf("treasure body = %s", rec.Body.String())
+	}
+	if rec := request(t, handler, http.MethodGet, "/enemies", nil); !strings.Contains(rec.Body.String(), "Zombie") {
+		t.Fatalf("enemy body = %s", rec.Body.String())
 	}
 
 	saveRec := requestForm(t, handler, http.MethodPost, "/save", url.Values{
@@ -163,29 +270,17 @@ func TestHandler_SSRCRUDHappyPathAndSave(t *testing.T) {
 	}
 
 	deleteRec := requestForm(t, handler, http.MethodPost, "/enemies/"+enemyID+"/delete", url.Values{})
-	if !strings.Contains(deleteRec.Body.String(), "Enemy deleted.") {
-		t.Fatalf("enemy delete body = %s", deleteRec.Body.String())
-	}
+	assertRedirect(t, deleteRec, "/enemies")
 	deleteRec = requestForm(t, handler, http.MethodPost, "/enemy-skills/"+enemySkillID+"/delete", url.Values{})
-	if !strings.Contains(deleteRec.Body.String(), "Enemy skill deleted.") {
-		t.Fatalf("enemy skill delete body = %s", deleteRec.Body.String())
-	}
+	assertRedirect(t, deleteRec, "/enemy-skills")
 	deleteRec = requestForm(t, handler, http.MethodPost, "/treasures/"+treasureID+"/delete", url.Values{})
-	if !strings.Contains(deleteRec.Body.String(), "Treasure deleted.") {
-		t.Fatalf("treasure delete body = %s", deleteRec.Body.String())
-	}
+	assertRedirect(t, deleteRec, "/treasures")
 	deleteRec = requestForm(t, handler, http.MethodPost, "/skills/"+skillID+"/delete", url.Values{})
-	if !strings.Contains(deleteRec.Body.String(), "Skill deleted.") {
-		t.Fatalf("skill delete body = %s", deleteRec.Body.String())
-	}
+	assertRedirect(t, deleteRec, "/skills")
 	deleteRec = requestForm(t, handler, http.MethodPost, "/grimoire/"+grimoireID+"/delete", url.Values{})
-	if !strings.Contains(deleteRec.Body.String(), "Grimoire entry deleted.") {
-		t.Fatalf("grimoire delete body = %s", deleteRec.Body.String())
-	}
+	assertRedirect(t, deleteRec, "/grimoire")
 	deleteRec = requestForm(t, handler, http.MethodPost, "/items/"+itemID+"/delete", url.Values{})
-	if !strings.Contains(deleteRec.Body.String(), "Item deleted.") {
-		t.Fatalf("item delete body = %s", deleteRec.Body.String())
-	}
+	assertRedirect(t, deleteRec, "/items")
 }
 
 func TestHandler_SaveNonHTMXReturnsCurrentFullPage(t *testing.T) {
@@ -204,7 +299,7 @@ func TestHandler_SaveNonHTMXReturnsCurrentFullPage(t *testing.T) {
 	if !strings.Contains(body, "Grimoire") {
 		t.Fatalf("expected grimoire page, got %s", body)
 	}
-	if strings.Contains(body, "<div class=\"notice") && !strings.Contains(body, "Exported") && !strings.Contains(body, "Invalid export settings.") {
+	if strings.Contains(body, `<div class="notice`) && !strings.Contains(body, "Exported") && !strings.Contains(body, "Invalid export settings.") {
 		t.Fatalf("unexpected notice content: %s", body)
 	}
 }
@@ -250,7 +345,7 @@ func TestHandler_SaveNonHTMXFallsBackToItemsPage(t *testing.T) {
 func TestHandler_SSRValidationShowsFieldError(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
-	rec := postForm(t, handler, "/skills", url.Values{
+	rec := postForm(t, handler, "/skills/new", url.Values{
 		"id":     {uuid("000000000201")},
 		"name":   {"Slash"},
 		"script": {"say slash"},
@@ -262,29 +357,13 @@ func TestHandler_SSRValidationShowsFieldError(t *testing.T) {
 	}
 }
 
-func TestHandler_SSRFormsPushBaseURLAfterHTMXCRUD(t *testing.T) {
-	handler, _ := newTestHandler(t)
-
-	tests := []struct {
-		path string
-		attr string
-	}{
-		{path: "/items", attr: `hx-push-url="/items"`},
-		{path: "/grimoire", attr: `hx-push-url="/grimoire"`},
-		{path: "/skills", attr: `hx-push-url="/skills"`},
-		{path: "/enemy-skills", attr: `hx-push-url="/enemy-skills"`},
-		{path: "/treasures", attr: `hx-push-url="/treasures"`},
-		{path: "/enemies", attr: `hx-push-url="/enemies"`},
+func assertRedirect(t *testing.T, rec *httptest.ResponseRecorder, want string) {
+	t.Helper()
+	if rec.Code != http.StatusSeeOther {
+		t.Fatalf("status = %d, want %d, body=%s", rec.Code, http.StatusSeeOther, rec.Body.String())
 	}
-
-	for _, tt := range tests {
-		rec := request(t, handler, http.MethodGet, tt.path, nil)
-		if rec.Code != http.StatusOK {
-			t.Fatalf("%s status = %d, want %d", tt.path, rec.Code, http.StatusOK)
-		}
-		if !strings.Contains(rec.Body.String(), tt.attr) {
-			t.Fatalf("%s body missing %q", tt.path, tt.attr)
-		}
+	if got := rec.Header().Get("Location"); got != want {
+		t.Fatalf("location = %q, want %q", got, want)
 	}
 }
 

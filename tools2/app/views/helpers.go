@@ -69,6 +69,20 @@ func SubmitLabel(editing bool) string {
 	return "Create"
 }
 
+func FormTitle(label string, editing bool) string {
+	if editing {
+		return "Edit " + label
+	}
+	return "New " + label
+}
+
+func FormAction(basePath string, editing bool) string {
+	if editing {
+		return basePath + "/edit"
+	}
+	return basePath + "/new"
+}
+
 func TriggerText(entry enemyskills.EnemySkillEntry) string {
 	if entry.Trigger == nil {
 		return "-"

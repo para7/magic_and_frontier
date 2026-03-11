@@ -24,6 +24,23 @@ templ PageScaffold(meta webui.PageMeta, notice *webui.Notice) {
 	</section>
 }
 
+templ ListToolbar(newPath string, label string) {
+	<div class="form-actions">
+		<a class="secondary" role="button" href={ newPath }>{ label }</a>
+	</div>
+}
+
+templ FormShellHeader(listPath string, title string) {
+	<header>
+		<div>
+			<h2>{ title }</h2>
+		</div>
+		<div class="entry-actions">
+			<a class="secondary outline" role="button" href={ listPath }>Back to list</a>
+		</div>
+	</header>
+}
+
 templ ItemsPage(data webui.ItemsPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
@@ -36,7 +53,8 @@ templ ItemsShell(data webui.ItemsPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
-			<section class="stack">
+			<section class="stack form-span-2">
+				@ListToolbar("/items/new", "Add Item")
 				<div class="entry-list">
 					for _, entry := range data.Entries {
 						<article class="entry-card">
@@ -46,8 +64,8 @@ templ ItemsShell(data webui.ItemsPageData) {
 									<p class="entry-meta">{ entry.ItemID } x{ entry.Count }</p>
 								</div>
 								<div class="entry-actions">
-									<a class="secondary outline" role="button" href={ "/items?edit=" + entry.ID } hx-get={ "/items?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
-										<form method="post" action={ "/items/" + entry.ID + "/delete" } hx-post={ "/items/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/items">
+									<a class="secondary outline" role="button" href={ "/items/edit?id=" + entry.ID }>Edit</a>
+									<form method="post" action={ "/items/" + entry.ID + "/delete" }>
 										<button type="submit" class="danger">Delete</button>
 									</form>
 								</div>
@@ -65,8 +83,25 @@ templ ItemsShell(data webui.ItemsPageData) {
 					}
 				</div>
 			</section>
-			<section class="entry-card">
-					<form class="form-grid two" method="post" action="/items" hx-post="/items" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/items">
+		</div>
+	</div>
+}
+
+templ ItemFormPage(data webui.ItemsPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@ItemFormShell(data)
+		}
+	}
+}
+
+templ ItemFormShell(data webui.ItemsPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="form-span-2">
+				@FormShellHeader("/items", FormTitle("Item", data.Form.IsEditing))
+				<form class="form-grid two" method="post" action={ FormAction("/items", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
 					<label>
 						Item ID
@@ -133,7 +168,7 @@ templ ItemsShell(data webui.ItemsPageData) {
 					}
 					<div class="form-actions form-span-2">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/items" hx-get="/items" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/items">Cancel</a>
 					</div>
 				</form>
 			</section>
@@ -153,34 +188,54 @@ templ GrimoireShell(data webui.GrimoirePageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
-			<section class="entry-list">
-				for _, entry := range data.Entries {
-					<article class="entry-card">
-						<header>
-							<div>
-								<h3>{ entry.Title }</h3>
-								<p class="entry-meta code">{ entry.ID }</p>
-							</div>
-							<div class="entry-actions">
-								<a class="secondary outline" role="button" href={ "/grimoire?edit=" + entry.ID } hx-get={ "/grimoire?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
-									<form method="post" action={ "/grimoire/" + entry.ID + "/delete" } hx-post={ "/grimoire/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/grimoire">
-									<button type="submit" class="danger">Delete</button>
-								</form>
-							</div>
-						</header>
-						<dl class="kv-list">
-							<dt>Cast ID</dt><dd>{ entry.CastID }</dd>
-							<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
-						</dl>
-						<pre>{ entry.Script }</pre>
-					</article>
-				}
-				if len(data.Entries) == 0 {
-					<article class="entry-card"><p class="entry-meta">まだ魔導書エントリはありません。</p></article>
-				}
+			<section class="form-span-2">
+				@ListToolbar("/grimoire/new", "Add Entry")
+				<div class="entry-list">
+					for _, entry := range data.Entries {
+						<article class="entry-card">
+							<header>
+								<div>
+									<h3>{ entry.Title }</h3>
+									<p class="entry-meta code">{ entry.ID }</p>
+								</div>
+								<div class="entry-actions">
+									<a class="secondary outline" role="button" href={ "/grimoire/edit?id=" + entry.ID }>Edit</a>
+									<form method="post" action={ "/grimoire/" + entry.ID + "/delete" }>
+										<button type="submit" class="danger">Delete</button>
+									</form>
+								</div>
+							</header>
+							<dl class="kv-list">
+								<dt>Cast ID</dt><dd>{ entry.CastID }</dd>
+								<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
+							</dl>
+							<pre>{ entry.Script }</pre>
+						</article>
+					}
+					if len(data.Entries) == 0 {
+						<article class="entry-card"><p class="entry-meta">まだ魔導書エントリはありません。</p></article>
+					}
+				</div>
 			</section>
-			<section class="entry-card">
-					<form class="form-grid" method="post" action="/grimoire" hx-post="/grimoire" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/grimoire">
+		</div>
+	</div>
+}
+
+templ GrimoireFormPage(data webui.GrimoirePageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@GrimoireFormShell(data)
+		}
+	}
+}
+
+templ GrimoireFormShell(data webui.GrimoirePageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="form-span-2">
+				@FormShellHeader("/grimoire", FormTitle("Grimoire Entry", data.Form.IsEditing))
+				<form class="form-grid" method="post" action={ FormAction("/grimoire", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
 					<label>
 						Cast ID
@@ -212,7 +267,7 @@ templ GrimoireShell(data webui.GrimoirePageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/grimoire" hx-get="/grimoire" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/grimoire">Cancel</a>
 					</div>
 				</form>
 			</section>
@@ -232,34 +287,54 @@ templ SkillsShell(data webui.SkillsPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
-			<section class="entry-list">
-				for _, entry := range data.Entries {
-					<article class="entry-card">
-						<header>
-							<div>
-								<h3>{ entry.Name }</h3>
-								<p class="entry-meta code">{ entry.ID }</p>
-							</div>
-							<div class="entry-actions">
-								<a class="secondary outline" role="button" href={ "/skills?edit=" + entry.ID } hx-get={ "/skills?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
-									<form method="post" action={ "/skills/" + entry.ID + "/delete" } hx-post={ "/skills/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/skills">
-									<button type="submit" class="danger">Delete</button>
-								</form>
-							</div>
-						</header>
-						<dl class="kv-list">
-							<dt>Item Ref</dt><dd class="code">{ entry.ItemID }</dd>
-							<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
-						</dl>
-						<pre>{ entry.Script }</pre>
-					</article>
-				}
-				if len(data.Entries) == 0 {
-					<article class="entry-card"><p class="entry-meta">まだスキルはありません。</p></article>
-				}
+			<section class="form-span-2">
+				@ListToolbar("/skills/new", "Add Skill")
+				<div class="entry-list">
+					for _, entry := range data.Entries {
+						<article class="entry-card">
+							<header>
+								<div>
+									<h3>{ entry.Name }</h3>
+									<p class="entry-meta code">{ entry.ID }</p>
+								</div>
+								<div class="entry-actions">
+									<a class="secondary outline" role="button" href={ "/skills/edit?id=" + entry.ID }>Edit</a>
+									<form method="post" action={ "/skills/" + entry.ID + "/delete" }>
+										<button type="submit" class="danger">Delete</button>
+									</form>
+								</div>
+							</header>
+							<dl class="kv-list">
+								<dt>Item Ref</dt><dd class="code">{ entry.ItemID }</dd>
+								<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
+							</dl>
+							<pre>{ entry.Script }</pre>
+						</article>
+					}
+					if len(data.Entries) == 0 {
+						<article class="entry-card"><p class="entry-meta">まだスキルはありません。</p></article>
+					}
+				</div>
 			</section>
-			<section class="entry-card">
-					<form class="form-grid" method="post" action="/skills" hx-post="/skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/skills">
+		</div>
+	</div>
+}
+
+templ SkillFormPage(data webui.SkillsPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@SkillFormShell(data)
+		}
+	}
+}
+
+templ SkillFormShell(data webui.SkillsPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="form-span-2">
+				@FormShellHeader("/skills", FormTitle("Skill", data.Form.IsEditing))
+				<form class="form-grid" method="post" action={ FormAction("/skills", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
 					<label>
 						Name
@@ -286,7 +361,7 @@ templ SkillsShell(data webui.SkillsPageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/skills" hx-get="/skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/skills">Cancel</a>
 					</div>
 				</form>
 			</section>
@@ -306,34 +381,54 @@ templ EnemySkillsShell(data webui.EnemySkillsPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
-			<section class="entry-list">
-				for _, entry := range data.Entries {
-					<article class="entry-card">
-						<header>
-							<div>
-								<h3>{ entry.Name }</h3>
-								<p class="entry-meta code">{ entry.ID }</p>
-							</div>
-							<div class="entry-actions">
-								<a class="secondary outline" role="button" href={ "/enemy-skills?edit=" + entry.ID } hx-get={ "/enemy-skills?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
-									<form method="post" action={ "/enemy-skills/" + entry.ID + "/delete" } hx-post={ "/enemy-skills/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/enemy-skills">
-									<button type="submit" class="danger">Delete</button>
-								</form>
-							</div>
-						</header>
-						<dl class="kv-list">
-							<dt>Trigger</dt><dd>{ TriggerText(entry) }</dd>
-							<dt>Cooldown</dt><dd>{ CooldownText(entry) }</dd>
-						</dl>
-						<pre>{ entry.Script }</pre>
-					</article>
-				}
-				if len(data.Entries) == 0 {
-					<article class="entry-card"><p class="entry-meta">まだ敵スキルはありません。</p></article>
-				}
+			<section class="form-span-2">
+				@ListToolbar("/enemy-skills/new", "Add Enemy Skill")
+				<div class="entry-list">
+					for _, entry := range data.Entries {
+						<article class="entry-card">
+							<header>
+								<div>
+									<h3>{ entry.Name }</h3>
+									<p class="entry-meta code">{ entry.ID }</p>
+								</div>
+								<div class="entry-actions">
+									<a class="secondary outline" role="button" href={ "/enemy-skills/edit?id=" + entry.ID }>Edit</a>
+									<form method="post" action={ "/enemy-skills/" + entry.ID + "/delete" }>
+										<button type="submit" class="danger">Delete</button>
+									</form>
+								</div>
+							</header>
+							<dl class="kv-list">
+								<dt>Trigger</dt><dd>{ TriggerText(entry) }</dd>
+								<dt>Cooldown</dt><dd>{ CooldownText(entry) }</dd>
+							</dl>
+							<pre>{ entry.Script }</pre>
+						</article>
+					}
+					if len(data.Entries) == 0 {
+						<article class="entry-card"><p class="entry-meta">まだ敵スキルはありません。</p></article>
+					}
+				</div>
 			</section>
-			<section class="entry-card">
-					<form class="form-grid" method="post" action="/enemy-skills" hx-post="/enemy-skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/enemy-skills">
+		</div>
+	</div>
+}
+
+templ EnemySkillFormPage(data webui.EnemySkillsPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@EnemySkillFormShell(data)
+		}
+	}
+}
+
+templ EnemySkillFormShell(data webui.EnemySkillsPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="form-span-2">
+				@FormShellHeader("/enemy-skills", FormTitle("Enemy Skill", data.Form.IsEditing))
+				<form class="form-grid" method="post" action={ FormAction("/enemy-skills", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
 					<label>
 						Name
@@ -366,7 +461,7 @@ templ EnemySkillsShell(data webui.EnemySkillsPageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/enemy-skills" hx-get="/enemy-skills" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/enemy-skills">Cancel</a>
 					</div>
 				</form>
 			</section>
@@ -386,34 +481,54 @@ templ TreasuresShell(data webui.TreasuresPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
-			<section class="entry-list">
-				for _, entry := range data.Entries {
-					<article class="entry-card">
-						<header>
-							<div>
-								<h3>{ entry.Name }</h3>
-								<p class="entry-meta code">{ entry.ID }</p>
-							</div>
-							<div class="entry-actions">
-								<a class="secondary outline" role="button" href={ "/treasures?edit=" + entry.ID } hx-get={ "/treasures?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
-									<form method="post" action={ "/treasures/" + entry.ID + "/delete" } hx-post={ "/treasures/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/treasures">
-									<button type="submit" class="danger">Delete</button>
-								</form>
-							</div>
-						</header>
-						<ul class="reference-list">
-							for _, pool := range entry.LootPools {
-								<li class="code">{ pool.Kind } / { pool.RefID } / weight={ pool.Weight }</li>
-							}
-						</ul>
-					</article>
-				}
-				if len(data.Entries) == 0 {
-					<article class="entry-card"><p class="entry-meta">まだ宝箱はありません。</p></article>
-				}
+			<section class="form-span-2">
+				@ListToolbar("/treasures/new", "Add Treasure")
+				<div class="entry-list">
+					for _, entry := range data.Entries {
+						<article class="entry-card">
+							<header>
+								<div>
+									<h3>{ entry.Name }</h3>
+									<p class="entry-meta code">{ entry.ID }</p>
+								</div>
+								<div class="entry-actions">
+									<a class="secondary outline" role="button" href={ "/treasures/edit?id=" + entry.ID }>Edit</a>
+									<form method="post" action={ "/treasures/" + entry.ID + "/delete" }>
+										<button type="submit" class="danger">Delete</button>
+									</form>
+								</div>
+							</header>
+							<ul class="reference-list">
+								for _, pool := range entry.LootPools {
+									<li class="code">{ pool.Kind } / { pool.RefID } / weight={ pool.Weight }</li>
+								}
+							</ul>
+						</article>
+					}
+					if len(data.Entries) == 0 {
+						<article class="entry-card"><p class="entry-meta">まだ宝箱はありません。</p></article>
+					}
+				</div>
 			</section>
-			<section class="entry-card">
-					<form class="form-grid" method="post" action="/treasures" hx-post="/treasures" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/treasures">
+		</div>
+	</div>
+}
+
+templ TreasureFormPage(data webui.TreasuresPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@TreasureFormShell(data)
+		}
+	}
+}
+
+templ TreasureFormShell(data webui.TreasuresPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="form-span-2">
+				@FormShellHeader("/treasures", FormTitle("Treasure", data.Form.IsEditing))
+				<form class="form-grid" method="post" action={ FormAction("/treasures", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
 					<label>
 						Name
@@ -447,7 +562,7 @@ templ TreasuresShell(data webui.TreasuresPageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/treasures" hx-get="/treasures" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/treasures">Cancel</a>
 					</div>
 				</form>
 			</section>
@@ -467,37 +582,57 @@ templ EnemiesShell(data webui.EnemiesPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
-			<section class="entry-list">
-				for _, entry := range data.Entries {
-					<article class="entry-card">
-						<header>
-							<div>
-								<h3>{ entry.Name }</h3>
-								<p class="entry-meta code">{ entry.ID }</p>
-							</div>
-							<div class="entry-actions">
-								<a class="secondary outline" role="button" href={ "/enemies?edit=" + entry.ID } hx-get={ "/enemies?edit=" + entry.ID } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Edit</a>
-									<form method="post" action={ "/enemies/" + entry.ID + "/delete" } hx-post={ "/enemies/" + entry.ID + "/delete" } hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/enemies">
-									<button type="submit" class="danger">Delete</button>
-								</form>
-							</div>
-						</header>
-						<dl class="kv-list">
-							<dt>HP</dt><dd>{ trimFloat(entry.HP) }</dd>
-							<dt>Drop Table</dt><dd class="code">{ entry.DropTableID }</dd>
-							<dt>Attack</dt><dd>{ FloatText(entry.Attack) }</dd>
-							<dt>Defense</dt><dd>{ FloatText(entry.Defense) }</dd>
-							<dt>Move Speed</dt><dd>{ FloatText(entry.MoveSpeed) }</dd>
-							<dt>Enemy Skills</dt><dd>{ JoinLines(entry.EnemySkillIDs) }</dd>
-						</dl>
-					</article>
-				}
-				if len(data.Entries) == 0 {
-					<article class="entry-card"><p class="entry-meta">まだ敵はありません。</p></article>
-				}
+			<section class="form-span-2">
+				@ListToolbar("/enemies/new", "Add Enemy")
+				<div class="entry-list">
+					for _, entry := range data.Entries {
+						<article class="entry-card">
+							<header>
+								<div>
+									<h3>{ entry.Name }</h3>
+									<p class="entry-meta code">{ entry.ID }</p>
+								</div>
+								<div class="entry-actions">
+									<a class="secondary outline" role="button" href={ "/enemies/edit?id=" + entry.ID }>Edit</a>
+									<form method="post" action={ "/enemies/" + entry.ID + "/delete" }>
+										<button type="submit" class="danger">Delete</button>
+									</form>
+								</div>
+							</header>
+							<dl class="kv-list">
+								<dt>HP</dt><dd>{ trimFloat(entry.HP) }</dd>
+								<dt>Drop Table</dt><dd class="code">{ entry.DropTableID }</dd>
+								<dt>Attack</dt><dd>{ FloatText(entry.Attack) }</dd>
+								<dt>Defense</dt><dd>{ FloatText(entry.Defense) }</dd>
+								<dt>Move Speed</dt><dd>{ FloatText(entry.MoveSpeed) }</dd>
+								<dt>Enemy Skills</dt><dd>{ JoinLines(entry.EnemySkillIDs) }</dd>
+							</dl>
+						</article>
+					}
+					if len(data.Entries) == 0 {
+						<article class="entry-card"><p class="entry-meta">まだ敵はありません。</p></article>
+					}
+				</div>
 			</section>
-			<section class="entry-card">
-					<form class="form-grid two" method="post" action="/enemies" hx-post="/enemies" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="/enemies">
+		</div>
+	</div>
+}
+
+templ EnemyFormPage(data webui.EnemiesPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@EnemyFormShell(data)
+		}
+	}
+}
+
+templ EnemyFormShell(data webui.EnemiesPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="form-span-2">
+				@FormShellHeader("/enemies", FormTitle("Enemy", data.Form.IsEditing))
+				<form class="form-grid two" method="post" action={ FormAction("/enemies", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
 					<label>
 						Name
@@ -598,7 +733,7 @@ templ EnemiesShell(data webui.EnemiesPageData) {
 					}
 					<div class="form-actions form-span-2">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/enemies" hx-get="/enemies" hx-target="#feature-shell" hx-swap="outerHTML" hx-push-url="true">Reset</a>
+						<a class="secondary outline" role="button" href="/enemies">Cancel</a>
 					</div>
 				</form>
 			</section>

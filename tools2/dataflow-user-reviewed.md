@@ -17,38 +17,32 @@
 CREATE TABLE items (
   id UUID PRIMARY KEY,
   minecraft_item_id TEXT,           -- Minecraft item id
-  updated_at TEXT
 );
 
 CREATE TABLE grimoire (
   id UUID PRIMARY KEY,
   cast_id INTEGER,        -- export 用の固有値
   title TEXT,
-  updated_at TEXT
 );
 CREATE TABLE skills (
   id UUID PRIMARY KEY,
   item_id UUID NOT NULL,  -- FK -> items.id
-  name TEXT,
-  updated_at TEXT,
+  name TEXT,,
   FOREIGN KEY (item_id) REFERENCES items(id)
 );
 CREATE TABLE enemy_skills (
   id UUID PRIMARY KEY,
   name TEXT,
-  updated_at TEXT
 );
 -- items の配列。
 CREATE TABLE treasures (
   loot_table TEXT, -- minecraft 公式に用意されている、ルートテーブル名。
   itemid UUID PRIMARY KEY, -- item_id
-  updated_at TEXT
 );
 CREATE TABLE enemies (
   id UUID PRIMARY KEY,
   drop_table_id UUID NOT NULL, -- FK -> treasures.id
-  name TEXT,
-  updated_at TEXT,
+  name TEXT,,
   FOREIGN KEY (drop_table_id) REFERENCES treasures(id)
 );
 ```

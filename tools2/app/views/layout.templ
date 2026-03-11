@@ -3,320 +3,374 @@ package views
 import "tools2/app/internal/webui"
 
 templ Layout(title string, currentPath string) {
-	<!doctype html>
-	<html lang="ja" data-theme="dark">
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<meta name="color-scheme" content="dark"/>
-			<title>{ title }</title>
-			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
-			<script src="https://unpkg.com/htmx.org@2.0.4"></script>
-			<style>
-				:root {
-					--header-height: 3.5rem;
-					--sidebar-width: 13.75rem;
-					--surface-1: #11141a;
-					--surface-2: #181d26;
-					--surface-3: #1e2430;
-					--line: #2b3343;
-					--danger: #ff7e7e;
+<!doctype html>
+<html lang="ja" data-theme="dark">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="color-scheme" content="dark" />
+	<title>{ title }</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+	<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+	<style>
+		:root {
+			--header-height: 3.5rem;
+			--sidebar-width: 13.75rem;
+			--surface-1: #11141a;
+			--surface-2: #181d26;
+			--surface-3: #1e2430;
+			--line: #2b3343;
+			--danger: #ff7e7e;
+		}
+
+		html {
+			background: radial-gradient(circle at top left, #1d2430 0, var(--surface-1) 45%);
+		}
+
+		body {
+			min-height: 100vh;
+			background: transparent;
+		}
+
+		body>header {
+			align-items: center;
+			background: #1f6b4a;
+			border-bottom: 1px solid var(--line);
+			display: flex;
+			height: var(--header-height);
+			left: 0;
+			padding: 0 var(--pico-spacing);
+			position: fixed;
+			right: 0;
+			top: 0;
+			z-index: 1100;
+		}
+
+		body>header h1 {
+			color: #fff;
+			font-size: 1.05rem;
+			margin: 0;
+		}
+
+		.layout-shell {
+			min-height: 100vh;
+			padding-top: var(--header-height);
+		}
+
+		.sidebar {
+			background: linear-gradient(180deg, rgb(18 24 34 / 96%), rgb(14 19 28 / 96%));
+			border-right: 1px solid var(--line);
+			bottom: 0;
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+			left: 0;
+			overflow-y: auto;
+			padding: var(--pico-spacing);
+			position: fixed;
+			top: var(--header-height);
+			width: var(--sidebar-width);
+		}
+
+		.sidebar-title {
+			margin: 0;
+			font-size: 1.05rem;
+		}
+
+		.sidebar-copy {
+			margin: 0;
+			font-size: 0.9rem;
+		}
+
+		.sidebar nav,
+		.sidebar-actions {
+			display: grid;
+			gap: 0.65rem;
+		}
+
+		.nav-link {
+			margin: 0;
+			text-align: left;
+			width: 100%;
+		}
+
+		.nav-link.active {
+			background: rgb(99 162 255 / 16%);
+			border-color: rgb(99 162 255 / 28%);
+		}
+
+		.content {
+			margin-left: var(--sidebar-width);
+			min-height: calc(100vh - var(--header-height));
+			padding: 1.75rem 1.25rem 2.5rem;
+		}
+
+		.panel {
+			background: var(--surface-2);
+			border: 1px solid var(--line);
+		}
+
+		.page-header {
+			border-bottom: 1px solid var(--line);
+			padding-bottom: 0.9rem;
+			margin-bottom: 1.25rem;
+		}
+
+		.page-header h1 {
+			margin-bottom: 0.35rem;
+		}
+
+		.page-header p {
+			margin-bottom: 0;
+		}
+
+		.feature-grid {
+			align-items: start;
+		}
+
+		.entry-list,
+		.stack,
+		.form-grid {
+			display: grid;
+			gap: 1rem;
+		}
+
+		.feature-grid>section,
+		.entry-card {
+			background: var(--surface-2);
+			border: 1px solid var(--line);
+			border-radius: var(--pico-border-radius);
+		}
+
+		.feature-grid>section {
+			padding: 1rem;
+		}
+
+		.entry-card {
+			margin: 0;
+		}
+
+		.entry-card header {
+			align-items: start;
+			display: flex;
+			gap: 1rem;
+			justify-content: space-between;
+			margin-bottom: 0.75rem;
+		}
+
+		.entry-card header>div:first-child> :last-child {
+			margin-bottom: 0;
+		}
+
+		.feature-grid {
+			display: grid;
+			gap: 1rem;
+			grid-template-columns: minmax(0, 1.15fr) minmax(19rem, 0.85fr);
+		}
+
+		.entry-card h3 {
+			margin-bottom: 0.2rem;
+		}
+
+		.entry-card pre {
+			background: #10141d;
+			border: 1px solid var(--line);
+			border-radius: calc(var(--pico-border-radius) * 0.8);
+			font-size: 0.92rem;
+			margin-bottom: 0;
+			overflow-wrap: anywhere;
+			padding: 0.8rem;
+			white-space: pre-wrap;
+		}
+
+		.entry-actions {
+			display: flex;
+			gap: 0.5rem;
+			flex-wrap: wrap;
+		}
+
+		.form-grid.two {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.form-span-2 {
+			grid-column: 1 / -1;
+		}
+
+		.form-actions {
+			display: flex;
+			gap: 0.6rem;
+			flex-wrap: wrap;
+		}
+
+		.form-actions>* {
+			margin-bottom: 0;
+		}
+
+		.kv-list {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 0.45rem 0.75rem;
+			margin: 0;
+		}
+
+		.kv-list dd {
+			margin: 0;
+		}
+
+		.reference-list {
+			display: grid;
+			gap: 0.3rem;
+			padding-left: 1.2rem;
+			margin: 0.4rem 0 0;
+		}
+
+		.code {
+			font-family: "Iosevka", monospace;
+		}
+
+		.entry-meta,
+		.helper-text,
+		small {
+			color: var(--pico-muted-color);
+		}
+
+		.notice {
+			margin-bottom: 1rem;
+		}
+
+		.notice-success,
+		.notice-error,
+		.notice-info {
+			border-left: 0.35rem solid transparent;
+		}
+
+		.notice-success {
+			border-left-color: var(--pico-form-element-valid-active-border-color);
+		}
+
+		.notice-error {
+			border-left-color: var(--danger);
+		}
+
+		.notice-info {
+			border-left-color: var(--pico-primary);
+		}
+
+		.field-error {
+			color: var(--danger);
+			font-size: 0.9rem;
+			margin-top: calc(var(--pico-spacing) * -0.35);
+		}
+
+		.checkbox-label {
+			display: flex;
+			align-items: center;
+			gap: 0.55rem;
+			margin-bottom: 0;
+		}
+
+		.checkbox-label input {
+			width: auto;
+			margin-bottom: 0;
+		}
+
+		.nav-link[role="button"],
+		.sidebar-actions button,
+		.entry-actions a[role="button"] {
+			padding-inline: 0.85rem;
+		}
+
+		.entry-actions form,
+		.sidebar-actions form {
+			margin-bottom: 0;
+		}
+
+		button.danger,
+		[role="button"].danger {
+			--pico-background-color: #7b2f2f;
+			--pico-border-color: #7b2f2f;
+			--pico-color: #fff2f2;
+		}
+
+		select[multiple] {
+			padding: 0.35rem;
+		}
+
+		.feature-shell {
+			padding: 0;
+		}
+
+		@media (max-width: 980px) {
+			.sidebar {
+				border-right: none;
+				border-bottom: 1px solid var(--line);
+				bottom: auto;
+				gap: 0.8rem;
+				position: static;
+				width: auto;
+			}
+
+			.content {
+				margin-left: 0;
+			}
+		}
+
+		@media (max-width: 760px) {
+			.content {
+				padding: 1rem 0.75rem 2rem;
+			}
+
+			.sidebar nav {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+
+			.feature-grid,
+			.form-grid.two,
+			.kv-list {
+				grid-template-columns: 1fr;
+			}
+
+			.entry-card header,
+			.form-actions {
+				flex-direction: column;
+				align-items: stretch;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<h1>MAF Command Editor</h1>
+	</header>
+	<div class="layout-shell">
+		<aside class="sidebar">
+			<h2 class="sidebar-title">tools2</h2>
+			// <p class="sidebar-copy">Go製SSR画面です。CRUD はローカルで完結し、エクスポートは既存仕様を維持します。</p>
+			<nav>
+				for _, item := range webui.NavItems() {
+				if item.Path == currentPath {
+				<a href={ item.Path } class="nav-link active secondary" role="button">{ item.Label }</a>
+				} else {
+				<a href={ item.Path } class="nav-link secondary outline" role="button">{ item.Label }</a>
 				}
-				html {
-					background: radial-gradient(circle at top left, #1d2430 0, var(--surface-1) 45%);
 				}
-				body {
-					min-height: 100vh;
-					background: transparent;
-				}
-				body > header {
-					align-items: center;
-					background: #1f6b4a;
-					border-bottom: 1px solid var(--line);
-					display: flex;
-					height: var(--header-height);
-					left: 0;
-					padding: 0 var(--pico-spacing);
-					position: fixed;
-					right: 0;
-					top: 0;
-					z-index: 1100;
-				}
-				body > header h1 {
-					color: #fff;
-					font-size: 1.05rem;
-					margin: 0;
-				}
-				.layout-shell {
-					min-height: 100vh;
-					padding-top: var(--header-height);
-				}
-				.sidebar {
-					background: linear-gradient(180deg, rgb(18 24 34 / 96%), rgb(14 19 28 / 96%));
-					border-right: 1px solid var(--line);
-					bottom: 0;
-					display: flex;
-					flex-direction: column;
-					gap: 1rem;
-					left: 0;
-					overflow-y: auto;
-					padding: var(--pico-spacing);
-					position: fixed;
-					top: var(--header-height);
-					width: var(--sidebar-width);
-				}
-				.sidebar-title {
-					margin: 0;
-					font-size: 1.05rem;
-				}
-				.sidebar-copy {
-					margin: 0;
-					font-size: 0.9rem;
-				}
-				.sidebar nav,
-				.sidebar-actions {
-					display: grid;
-					gap: 0.65rem;
-				}
-				.nav-link {
-					margin: 0;
-					text-align: left;
-					width: 100%;
-				}
-				.nav-link.active {
-					background: rgb(99 162 255 / 16%);
-					border-color: rgb(99 162 255 / 28%);
-				}
-				.content {
-					margin-left: var(--sidebar-width);
-					min-height: calc(100vh - var(--header-height));
-					padding: 1.75rem 1.25rem 2.5rem;
-				}
-				.panel {
-					background: var(--surface-2);
-					border: 1px solid var(--line);
-				}
-				.page-header {
-					border-bottom: 1px solid var(--line);
-					padding-bottom: 0.9rem;
-					margin-bottom: 1.25rem;
-				}
-				.page-header h1 {
-					margin-bottom: 0.35rem;
-				}
-				.page-header p {
-					margin-bottom: 0;
-				}
-				.feature-grid {
-					align-items: start;
-				}
-				.entry-list,
-				.stack,
-				.form-grid {
-					display: grid;
-					gap: 1rem;
-				}
-				.feature-grid > section,
-				.entry-card {
-					background: var(--surface-2);
-					border: 1px solid var(--line);
-					border-radius: var(--pico-border-radius);
-				}
-				.feature-grid > section {
-					padding: 1rem;
-				}
-				.entry-card {
-					margin: 0;
-				}
-				.entry-card header {
-					align-items: start;
-					display: flex;
-					gap: 1rem;
-					justify-content: space-between;
-					margin-bottom: 0.75rem;
-				}
-				.entry-card header > div:first-child > :last-child {
-					margin-bottom: 0;
-				}
-				.feature-grid {
-					display: grid;
-					gap: 1rem;
-					grid-template-columns: minmax(0, 1.15fr) minmax(19rem, 0.85fr);
-				}
-				.entry-card h3 {
-					margin-bottom: 0.2rem;
-				}
-				.entry-card pre {
-					background: #10141d;
-					border: 1px solid var(--line);
-					border-radius: calc(var(--pico-border-radius) * 0.8);
-					font-size: 0.92rem;
-					margin-bottom: 0;
-					overflow-wrap: anywhere;
-					padding: 0.8rem;
-					white-space: pre-wrap;
-				}
-				.entry-actions {
-					display: flex;
-					gap: 0.5rem;
-					flex-wrap: wrap;
-				}
-				.form-grid.two {
-					grid-template-columns: repeat(2, minmax(0, 1fr));
-				}
-				.form-span-2 {
-					grid-column: 1 / -1;
-				}
-				.form-actions {
-					display: flex;
-					gap: 0.6rem;
-					flex-wrap: wrap;
-				}
-				.form-actions > * {
-					margin-bottom: 0;
-				}
-				.kv-list {
-					display: grid;
-					grid-template-columns: repeat(2, minmax(0, 1fr));
-					gap: 0.45rem 0.75rem;
-					margin: 0;
-				}
-				.kv-list dd {
-					margin: 0;
-				}
-				.reference-list {
-					display: grid;
-					gap: 0.3rem;
-					padding-left: 1.2rem;
-					margin: 0.4rem 0 0;
-				}
-				.code {
-					font-family: "Iosevka", monospace;
-				}
-				.entry-meta,
-				.helper-text,
-				small {
-					color: var(--pico-muted-color);
-				}
-				.notice {
-					margin-bottom: 1rem;
-				}
-				.notice-success,
-				.notice-error,
-				.notice-info {
-					border-left: 0.35rem solid transparent;
-				}
-				.notice-success {
-					border-left-color: var(--pico-form-element-valid-active-border-color);
-				}
-				.notice-error {
-					border-left-color: var(--danger);
-				}
-				.notice-info {
-					border-left-color: var(--pico-primary);
-				}
-				.field-error {
-					color: var(--danger);
-					font-size: 0.9rem;
-					margin-top: calc(var(--pico-spacing) * -0.35);
-				}
-				.checkbox-label {
-					display: flex;
-					align-items: center;
-					gap: 0.55rem;
-					margin-bottom: 0;
-				}
-				.checkbox-label input {
-					width: auto;
-					margin-bottom: 0;
-				}
-				.nav-link[role="button"],
-				.sidebar-actions button,
-				.entry-actions a[role="button"] {
-					padding-inline: 0.85rem;
-				}
-				.entry-actions form,
-				.sidebar-actions form {
-					margin-bottom: 0;
-				}
-				button.danger,
-				[role="button"].danger {
-					--pico-background-color: #7b2f2f;
-					--pico-border-color: #7b2f2f;
-					--pico-color: #fff2f2;
-				}
-				select[multiple] {
-					padding: 0.35rem;
-				}
-				.feature-shell {
-					padding: 0;
-				}
-				@media (max-width: 980px) {
-					.sidebar {
-						border-right: none;
-						border-bottom: 1px solid var(--line);
-						bottom: auto;
-						gap: 0.8rem;
-						position: static;
-						width: auto;
-					}
-					.content { margin-left: 0; }
-				}
-				@media (max-width: 760px) {
-					.content {
-						padding: 1rem 0.75rem 2rem;
-					}
-					.sidebar nav {
-						grid-template-columns: repeat(2, minmax(0, 1fr));
-					}
-					.feature-grid,
-					.form-grid.two,
-					.kv-list {
-						grid-template-columns: 1fr;
-					}
-					.entry-card header,
-					.form-actions {
-						flex-direction: column;
-						align-items: stretch;
-					}
-				}
-			</style>
-		</head>
-		<body>
-			<header>
-				<h1>MAF Command Editor</h1>
-			</header>
-			<div class="layout-shell">
-				<aside class="sidebar">
-					<h2 class="sidebar-title">tools2</h2>
-					<p class="sidebar-copy">Go製SSR画面です。CRUD はローカルで完結し、エクスポートは既存仕様を維持します。</p>
-					<nav>
-						for _, item := range webui.NavItems() {
-							if item.Path == currentPath {
-								<a href={ item.Path } class="nav-link active secondary" role="button">{ item.Label }</a>
-							} else {
-								<a href={ item.Path } class="nav-link secondary outline" role="button">{ item.Label }</a>
-							}
-						}
-					</nav>
-						<div class="sidebar-actions">
-							<form
-								method="post"
-								action="/save"
-								hx-post="/save"
-								hx-target="#global-messages"
-								hx-swap="innerHTML"
-							>
-								<input type="hidden" name="currentPath" value={ currentPath }/>
-								<button type="submit">Save / Export</button>
-							</form>
-							<div id="global-messages"></div>
-						</div>
-				</aside>
-				<main class="content">
-					{ children... }
-				</main>
+			</nav>
+			<div class="sidebar-actions">
+				<form method="post" action="/save" hx-post="/save" hx-target="#global-messages" hx-swap="innerHTML">
+					<input type="hidden" name="currentPath" value={ currentPath } />
+					<button type="submit">Save / Export</button>
+				</form>
+				<div id="global-messages"></div>
 			</div>
-		</body>
-	</html>
+		</aside>
+		<main class="content">
+			{ children... }
+		</main>
+	</div>
+</body>
+
+</html>
 }
