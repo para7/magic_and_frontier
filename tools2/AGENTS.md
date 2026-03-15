@@ -10,3 +10,7 @@ Prefer running project commands via `make` targets when a suitable target exists
 
 Minecraft local server is run with docker, ../compose.yml .
 
+## old projects info
+
+project1: https://github.com/para7/Minecraft_Datapack
+project2: https://github.com/para7/magic_and_frontier
