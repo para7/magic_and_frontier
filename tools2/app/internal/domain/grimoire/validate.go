@@ -8,16 +8,18 @@ import (
 
 func ValidateSave(input SaveInput, now time.Time) common.SaveResult[GrimoireEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
+	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "grimoire_")
 	if errs.Any() {
 		return common.SaveValidationError[GrimoireEntry](errs, "Validation failed. Fix the highlighted fields.")
 	}
 	entry := GrimoireEntry{
-		ID:          common.NormalizeText(input.ID),
+		ID:          id,
 		CastID:      input.CastID,
+		CastTime:    input.CastTime,
+		MPCost:      input.MPCost,
 		Script:      common.NormalizeText(input.Script),
 		Title:       common.NormalizeText(input.Title),
 		Description: common.OptionalText(input.Description),
-		Variants:    append([]Variant{}, input.Variants...),
 		UpdatedAt:   now.UTC().Format(time.RFC3339),
 	}
 	return common.SaveSuccess(entry, common.SaveModeCreated)

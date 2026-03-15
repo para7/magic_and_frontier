@@ -9,9 +9,7 @@ import (
 
 func ValidateSave(input SaveInput, enemySkillIDs, itemIDs, grimoireIDs map[string]struct{}, now time.Time) common.SaveResult[EnemyEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
-	attack := input.Attack
-	defense := input.Defense
-	moveSpeed := input.MoveSpeed
+	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "enemy_")
 
 	normalizedEnemySkillIDs := make([]string, 0, len(input.EnemySkillIDs))
 	seen := map[string]struct{}{}
@@ -20,70 +18,67 @@ func ValidateSave(input SaveInput, enemySkillIDs, itemIDs, grimoireIDs map[strin
 		if idv == "" {
 			continue
 		}
+		if !common.IsPrefixedSequenceID(idv, "enemyskill_") {
+			errs.Add(fmt.Sprintf("enemySkillIds.%d", i), "Invalid ID format.")
+			continue
+		}
 		if _, ok := enemySkillIDs[idv]; !ok {
 			errs.Add(fmt.Sprintf("enemySkillIds.%d", i), "Referenced enemy skill does not exist.")
 			continue
 		}
-		if _, exists := seen[idv]; !exists {
-			seen[idv] = struct{}{}
-			normalizedEnemySkillIDs = append(normalizedEnemySkillIDs, idv)
+		if _, exists := seen[idv]; exists {
+			continue
 		}
+		seen[idv] = struct{}{}
+		normalizedEnemySkillIDs = append(normalizedEnemySkillIDs, idv)
 	}
 
-	if input.SpawnRule.Distance.Min > input.SpawnRule.Distance.Max {
-		errs.Add("spawnRule.distance.min", "Must be <= distance.max.")
+	equipment := Equipment{
+		Mainhand: normalizeEquipmentSlot(errs, "equipment.mainhand", input.Equipment.Mainhand, itemIDs),
+		Offhand:  normalizeEquipmentSlot(errs, "equipment.offhand", input.Equipment.Offhand, itemIDs),
+		Head:     normalizeEquipmentSlot(errs, "equipment.head", input.Equipment.Head, itemIDs),
+		Chest:    normalizeEquipmentSlot(errs, "equipment.chest", input.Equipment.Chest, itemIDs),
+		Legs:     normalizeEquipmentSlot(errs, "equipment.legs", input.Equipment.Legs, itemIDs),
+		Feet:     normalizeEquipmentSlot(errs, "equipment.feet", input.Equipment.Feet, itemIDs),
 	}
 
-	var axis *AxisBounds
-	if input.SpawnRule.AxisBounds != nil {
-		a := input.SpawnRule.AxisBounds
-		axis = &AxisBounds{
-			XMin: a.XMin,
-			XMax: a.XMax,
-			YMin: a.YMin,
-			YMax: a.YMax,
-			ZMin: a.ZMin,
-			ZMax: a.ZMax,
-		}
-		if axis.XMin != nil && axis.XMax != nil && *axis.XMin > *axis.XMax {
-			errs.Add("spawnRule.axisBounds.xMin", "Must be <= xMax.")
-		}
-		if axis.YMin != nil && axis.YMax != nil && *axis.YMin > *axis.YMax {
-			errs.Add("spawnRule.axisBounds.yMin", "Must be <= yMax.")
-		}
-		if axis.ZMin != nil && axis.ZMax != nil && *axis.ZMin > *axis.ZMax {
-			errs.Add("spawnRule.axisBounds.zMin", "Must be <= zMax.")
-		}
-	}
-
-	dropTable := make([]DropRef, 0, len(input.DropTable))
-	for i, d := range input.DropTable {
+	drops := make([]DropRef, 0, len(input.Drops))
+	for i, d := range input.Drops {
 		kind := common.NormalizeText(d.Kind)
 		refID := common.NormalizeText(d.RefID)
 		if refID != "" {
-			if kind == "item" {
-				if _, ok := itemIDs[refID]; !ok {
-					errs.Add(fmt.Sprintf("dropTable.%d.refId", i), "Referenced entry does not exist.")
+			switch kind {
+			case "item":
+				if !common.IsPrefixedSequenceID(refID, "items_") {
+					errs.Add(fmt.Sprintf("drops.%d.refId", i), "Invalid ID format.")
+				} else if _, ok := itemIDs[refID]; !ok {
+					errs.Add(fmt.Sprintf("drops.%d.refId", i), "Referenced entry does not exist.")
 				}
-			} else if _, ok := grimoireIDs[refID]; !ok {
-				errs.Add(fmt.Sprintf("dropTable.%d.refId", i), "Referenced entry does not exist.")
+			case "grimoire":
+				if !common.IsPrefixedSequenceID(refID, "grimoire_") {
+					errs.Add(fmt.Sprintf("drops.%d.refId", i), "Invalid ID format.")
+				} else if _, ok := grimoireIDs[refID]; !ok {
+					errs.Add(fmt.Sprintf("drops.%d.refId", i), "Referenced entry does not exist.")
+				}
+			case "minecraft_item":
+				if !common.IsNamespacedResourceID(refID) {
+					errs.Add(fmt.Sprintf("drops.%d.refId", i), "Must be a minecraft item id.")
+				}
 			}
 		}
-		countMin := d.CountMin
-		countMax := d.CountMax
-		if countMin != nil && countMax != nil && *countMin > *countMax {
-			errs.Add(fmt.Sprintf("dropTable.%d.countMin", i), "Must be <= countMax.")
+		if d.CountMin != nil && d.CountMax != nil && *d.CountMin > *d.CountMax {
+			errs.Add(fmt.Sprintf("drops.%d.countMin", i), "Must be <= countMax.")
 		}
-		if _, invalid := errs[fmt.Sprintf("dropTable.%d.kind", i)]; invalid {
+		if errs[fmt.Sprintf("drops.%d.kind", i)] != "" || errs[fmt.Sprintf("drops.%d.refId", i)] != "" || errs[fmt.Sprintf("drops.%d.weight", i)] != "" {
 			continue
 		}
-		if _, invalid := errs[fmt.Sprintf("dropTable.%d.refId", i)]; invalid {
-			continue
-		}
-		if _, invalid := errs[fmt.Sprintf("dropTable.%d.weight", i)]; invalid {
-			continue
-		}
-		dropTable = append(dropTable, DropRef{Kind: kind, RefID: refID, Weight: d.Weight, CountMin: countMin, CountMax: countMax})
+		drops = append(drops, DropRef{
+			Kind:     kind,
+			RefID:    refID,
+			Weight:   d.Weight,
+			CountMin: d.CountMin,
+			CountMax: d.CountMax,
+		})
 	}
 
 	if errs.Any() {
@@ -91,21 +86,55 @@ func ValidateSave(input SaveInput, enemySkillIDs, itemIDs, grimoireIDs map[strin
 	}
 
 	entry := EnemyEntry{
-		ID:            common.NormalizeText(input.ID),
-		Name:          common.NormalizeText(input.Name),
+		ID:            id,
+		MobType:       common.NormalizeText(input.MobType),
+		Name:          common.OptionalText(input.Name),
 		HP:            input.HP,
-		Attack:        attack,
-		Defense:       defense,
-		MoveSpeed:     moveSpeed,
-		DropTableID:   common.NormalizeText(input.DropTableID),
+		Attack:        input.Attack,
+		Defense:       input.Defense,
+		MoveSpeed:     input.MoveSpeed,
+		Equipment:     equipment,
 		EnemySkillIDs: normalizedEnemySkillIDs,
-		SpawnRule: SpawnRule{
-			Origin:     input.SpawnRule.Origin,
-			Distance:   input.SpawnRule.Distance,
-			AxisBounds: axis,
-		},
-		DropTable: dropTable,
-		UpdatedAt: now.UTC().Format(time.RFC3339),
+		DropMode:      common.NormalizeText(input.DropMode),
+		Drops:         drops,
+		UpdatedAt:     now.UTC().Format(time.RFC3339),
 	}
 	return common.SaveSuccess(entry, common.SaveModeCreated)
+}
+
+func normalizeEquipmentSlot(errs common.FieldErrors, field string, slot *EquipmentSlot, itemIDs map[string]struct{}) *EquipmentSlot {
+	if slot == nil {
+		return nil
+	}
+	kind := common.NormalizeText(slot.Kind)
+	refID := common.NormalizeText(slot.RefID)
+	switch kind {
+	case "item":
+		if !common.IsPrefixedSequenceID(refID, "items_") {
+			errs.Add(field+".refId", "Invalid ID format.")
+		} else if _, ok := itemIDs[refID]; !ok {
+			errs.Add(field+".refId", "Referenced entry does not exist.")
+		}
+	case "minecraft_item":
+		if !common.IsNamespacedResourceID(refID) {
+			errs.Add(field+".refId", "Must be a minecraft item id.")
+		}
+	default:
+		errs.Add(field+".kind", "Invalid value.")
+	}
+	if slot.Count < 1 || slot.Count > 64 {
+		errs.Add(field+".count", "Must satisfy range 1..64.")
+	}
+	if slot.DropChance != nil && (*slot.DropChance < 0 || *slot.DropChance > 1) {
+		errs.Add(field+".dropChance", "Must satisfy range 0..1.")
+	}
+	if errs[field+".kind"] != "" || errs[field+".refId"] != "" || errs[field+".count"] != "" || errs[field+".dropChance"] != "" {
+		return nil
+	}
+	return &EquipmentSlot{
+		Kind:       kind,
+		RefID:      refID,
+		Count:      slot.Count,
+		DropChance: slot.DropChance,
+	}
 }

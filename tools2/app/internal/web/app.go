@@ -33,6 +33,28 @@ type App struct {
 }
 
 func RegisterRoutes(mux *http.ServeMux, cfg config.Config, deps Dependencies) {
+	defaults := application.DefaultDependencies(cfg)
+	if deps.ItemRepo == nil {
+		deps.ItemRepo = defaults.ItemRepo
+	}
+	if deps.GrimoireRepo == nil {
+		deps.GrimoireRepo = defaults.GrimoireRepo
+	}
+	if deps.SkillRepo == nil {
+		deps.SkillRepo = defaults.SkillRepo
+	}
+	if deps.EnemySkillRepo == nil {
+		deps.EnemySkillRepo = defaults.EnemySkillRepo
+	}
+	if deps.EnemyRepo == nil {
+		deps.EnemyRepo = defaults.EnemyRepo
+	}
+	if deps.TreasureRepo == nil {
+		deps.TreasureRepo = defaults.TreasureRepo
+	}
+	if deps.CounterRepo == nil {
+		deps.CounterRepo = defaults.CounterRepo
+	}
 	if deps.Now == nil {
 		deps.Now = time.Now
 	}
@@ -90,11 +112,21 @@ func (a App) itemsPage(w http.ResponseWriter, r *http.Request) {
 		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: notice})
+	skillState, err := a.deps.SkillRepo.LoadState()
+	if err != nil {
+		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
+		return
+	}
+	a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: notice, Form: defaultItemForm(skillOptions(skillState.Entries))})
 }
 
 func (a App) itemsNewPage(w http.ResponseWriter, r *http.Request) {
-	a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: defaultItemForm()})
+	skillState, err := a.deps.SkillRepo.LoadState()
+	if err != nil {
+		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: defaultItemForm(nil)})
+		return
+	}
+	a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: defaultItemForm(skillOptions(skillState.Entries))})
 }
 
 func (a App) itemsEditPage(w http.ResponseWriter, r *http.Request) {
@@ -103,9 +135,15 @@ func (a App) itemsEditPage(w http.ResponseWriter, r *http.Request) {
 		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
+	skillState, err := a.deps.SkillRepo.LoadState()
+	if err != nil {
+		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
+		return
+	}
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
 	if entry, ok := findEntry(state.Items, id, func(entry items.ItemEntry) string { return entry.ID }); ok {
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: itemEntryToForm(entry)})
+		form := itemEntryToForm(entry, skillOptions(skillState.Entries))
+		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
 		return
 	}
 	a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
@@ -121,20 +159,33 @@ func (a App) itemsEditSubmit(w http.ResponseWriter, r *http.Request) {
 
 func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	_ = r.ParseForm()
-	form, input, parseErrs := parseItemForm(r)
-	form.IsEditing = editing
 	state, err := a.deps.ItemRepo.LoadItemState()
 	if err != nil {
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: defaultItemForm(nil)})
 		return
 	}
+	skillState, err := a.deps.SkillRepo.LoadState()
+	if err != nil {
+		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: defaultItemForm(nil)})
+		return
+	}
+	form, input, parseErrs := parseItemForm(r, skillState.Entries)
+	form.IsEditing = editing
 	if editing {
 		if _, ok := findEntry(state.Items, form.ID, func(entry items.ItemEntry) string { return entry.ID }); !ok {
 			a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
 			return
 		}
+	} else if strings.TrimSpace(input.ID) == "" {
+		id, allocErr := application.NewService(a.cfg, a.deps).AllocateID("items")
+		if allocErr != nil {
+			a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(allocErr.Error()), Form: form})
+			return
+		}
+		input.ID = id
+		form.ID = id
 	}
-	result := items.ValidateSave(input, a.deps.Now())
+	result := items.ValidateSave(input, toIDSet(skillState.Entries, func(entry skills.SkillEntry) string { return entry.ID }), a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, result.FieldErrors)
 	if len(errors) > 0 {
 		form.FieldErrors = errors
@@ -186,16 +237,11 @@ func (a App) grimoirePage(w http.ResponseWriter, r *http.Request) {
 		a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Entries: state.Entries, Notice: notice})
+	a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Entries: state.Entries, Notice: notice, Form: defaultGrimoireForm(nil)})
 }
 
 func (a App) grimoireNewPage(w http.ResponseWriter, r *http.Request) {
-	state, err := a.deps.GrimoireRepo.LoadGrimoireState()
-	if err != nil {
-		a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error()), Form: defaultGrimoireForm(nil)})
-		return
-	}
-	a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Form: defaultGrimoireForm(state.Entries)})
+	a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Form: defaultGrimoireForm(nil)})
 }
 
 func (a App) grimoireEditPage(w http.ResponseWriter, r *http.Request) {
@@ -232,13 +278,31 @@ func (a App) grimoireSave(w http.ResponseWriter, r *http.Request, editing bool) 
 	form, input, parseErrs := parseGrimoireForm(r)
 	form.IsEditing = editing
 	if editing {
-		if _, ok := findEntry(state.Entries, form.ID, func(entry grimoire.GrimoireEntry) string { return entry.ID }); !ok {
+		existing, ok := findEntry(state.Entries, form.ID, func(entry grimoire.GrimoireEntry) string { return entry.ID })
+		if !ok {
 			a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Entries: state.Entries, Notice: errorNotice("Grimoire entry not found.")})
 			return
 		}
+		input.ID = existing.ID
+		input.CastID = existing.CastID
+		form.ID = existing.ID
+		form.CastID = strconv.Itoa(existing.CastID)
+	} else {
+		id, castID, allocErr := application.NewService(a.cfg, a.deps).AllocateGrimoireIdentity()
+		if allocErr != nil {
+			a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(allocErr.Error()), Form: form})
+			return
+		}
+		input.ID = id
+		input.CastID = castID
+		form.ID = id
+		form.CastID = strconv.Itoa(castID)
 	}
 	result := grimoire.ValidateSave(input, a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapGrimoireField))
+	if conflictID := duplicateCastID(state.Entries, input.ID, input.CastID); conflictID != "" {
+		errors["castid"] = "Cast ID is already used by " + conflictID + "."
+	}
 	if len(errors) > 0 {
 		form.FieldErrors = errors
 		form.FormError = formErrorText(result.FormError)
@@ -289,24 +353,14 @@ func (a App) skillsPage(w http.ResponseWriter, r *http.Request) {
 		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: notice})
+	a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: notice, Form: defaultSkillForm()})
 }
 
 func (a App) skillsNewPage(w http.ResponseWriter, r *http.Request) {
-	itemState, err := a.deps.ItemRepo.LoadItemState()
-	if err != nil {
-		a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: defaultSkillForm(nil)})
-		return
-	}
-	a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Form: defaultSkillForm(itemState.Items)})
+	a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Form: defaultSkillForm()})
 }
 
 func (a App) skillsEditPage(w http.ResponseWriter, r *http.Request) {
-	itemState, err := a.deps.ItemRepo.LoadItemState()
-	if err != nil {
-		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
-		return
-	}
 	state, err := a.deps.SkillRepo.LoadState()
 	if err != nil {
 		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
@@ -314,7 +368,7 @@ func (a App) skillsEditPage(w http.ResponseWriter, r *http.Request) {
 	}
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
 	if entry, ok := findEntry(state.Entries, id, func(entry skills.SkillEntry) string { return entry.ID }); ok {
-		form := skillEntryToForm(entry, itemOptions(itemState.Items))
+		form := skillEntryToForm(entry)
 		a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Form: form})
 		return
 	}
@@ -331,29 +385,30 @@ func (a App) skillsEditSubmit(w http.ResponseWriter, r *http.Request) {
 
 func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	_ = r.ParseForm()
-	itemState, err := a.deps.ItemRepo.LoadItemState()
-	if err != nil {
-		form := defaultSkillForm(nil)
-		form.IsEditing = editing
-		a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
-		return
-	}
 	state, err := a.deps.SkillRepo.LoadState()
 	if err != nil {
-		form := defaultSkillForm(itemState.Items)
+		form := defaultSkillForm()
 		form.IsEditing = editing
 		a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
-	form, input, parseErrs := parseSkillForm(r, itemState.Items)
+	form, input, parseErrs := parseSkillForm(r)
 	form.IsEditing = editing
 	if editing {
 		if _, ok := findEntry(state.Entries, form.ID, func(entry skills.SkillEntry) string { return entry.ID }); !ok {
 			a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill not found.")})
 			return
 		}
+	} else if strings.TrimSpace(input.ID) == "" {
+		id, allocErr := application.NewService(a.cfg, a.deps).AllocateID("skill")
+		if allocErr != nil {
+			a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(allocErr.Error()), Form: form})
+			return
+		}
+		input.ID = id
+		form.ID = id
 	}
-	result := skills.ValidateSave(input, itemIDSet(itemState), a.deps.Now())
+	result := skills.ValidateSave(input, a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, result.FieldErrors)
 	if len(errors) > 0 {
 		form.FieldErrors = errors
@@ -375,12 +430,24 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 }
 
 func (a App) skillsDelete(w http.ResponseWriter, r *http.Request) {
-	state, err := a.deps.SkillRepo.LoadState()
+	itemState, err := a.deps.ItemRepo.LoadItemState()
 	if err != nil {
 		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.PathValue("id"))
+	for _, entry := range itemState.Items {
+		if entry.SkillID == id {
+			state, _ := a.deps.SkillRepo.LoadState()
+			a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill is referenced by item " + entry.ID + ".")})
+			return
+		}
+	}
+	state, err := a.deps.SkillRepo.LoadState()
+	if err != nil {
+		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
+		return
+	}
 	nextState, ok := common.DeleteEntries(state, id, func(entry skills.SkillEntry) string { return entry.ID })
 	if !ok {
 		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill not found.")})
@@ -405,7 +472,7 @@ func (a App) enemySkillsPage(w http.ResponseWriter, r *http.Request) {
 		a.renderEnemySkills(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	a.renderEnemySkills(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Entries: state.Entries, Notice: notice})
+	a.renderEnemySkills(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Entries: state.Entries, Notice: notice, Form: defaultEnemySkillForm()})
 }
 
 func (a App) enemySkillsNewPage(w http.ResponseWriter, r *http.Request) {
@@ -450,6 +517,14 @@ func (a App) enemySkillsSave(w http.ResponseWriter, r *http.Request, editing boo
 			a.renderEnemySkills(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Entries: state.Entries, Notice: errorNotice("Enemy skill not found.")})
 			return
 		}
+	} else if strings.TrimSpace(input.ID) == "" {
+		id, allocErr := application.NewService(a.cfg, a.deps).AllocateID("enemyskill")
+		if allocErr != nil {
+			a.renderEnemySkillForm(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Notice: errorNotice(allocErr.Error()), Form: form})
+			return
+		}
+		input.ID = id
+		form.ID = id
 	}
 	result := enemyskills.ValidateSave(input, a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, result.FieldErrors)
@@ -599,9 +674,20 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request, editing bool)
 			a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Entries: state.Entries, Notice: errorNotice("Treasure not found.")})
 			return
 		}
+	} else if strings.TrimSpace(input.ID) == "" {
+		id, allocErr := application.NewService(a.cfg, a.deps).AllocateID("treasure")
+		if allocErr != nil {
+			a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(allocErr.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+			return
+		}
+		input.ID = id
+		form.ID = id
 	}
 	result := treasures.ValidateSave(input, itemIDSet(itemState), grimoireIDSet(grimoireState), a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapTreasureField))
+	if conflictID := duplicateCustomTablePath(state.Entries, input.ID, input.Mode, input.TablePath); conflictID != "" {
+		errors["tablePath"] = "Custom loot table path is already used by " + conflictID + "."
+	}
 	if len(errors) > 0 {
 		form.FieldErrors = errors
 		form.FormError = formErrorText(result.FormError)
@@ -729,6 +815,14 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 			a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Entries: enemyState.Entries, Notice: errorNotice("Enemy not found.")})
 			return
 		}
+	} else if strings.TrimSpace(input.ID) == "" {
+		id, allocErr := application.NewService(a.cfg, a.deps).AllocateID("enemy")
+		if allocErr != nil {
+			a.renderEnemyForm(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(allocErr.Error()), Form: form})
+			return
+		}
+		input.ID = id
+		form.ID = id
 	}
 	result := enemies.ValidateSave(input, enemySkillIDSet(enemySkillState), itemIDSet(itemState), grimoireIDSet(grimoireState), a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapEnemyField))
@@ -811,21 +905,16 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 			Form:    defaultGrimoireForm(state.Entries),
 		})
 	case "/skills":
-		itemState, err := a.deps.ItemRepo.LoadItemState()
-		if err != nil {
-			a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: defaultSkillForm(nil)})
-			return
-		}
 		state, err := a.deps.SkillRepo.LoadState()
 		if err != nil {
-			a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: defaultSkillForm(itemState.Items)})
+			a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: defaultSkillForm()})
 			return
 		}
 		a.renderSkills(w, r, webui.SkillsPageData{
 			Meta:    skillsMeta(),
 			Notice:  notice,
 			Entries: state.Entries,
-			Form:    defaultSkillForm(itemState.Items),
+			Form:    defaultSkillForm(),
 		})
 	case "/enemy-skills":
 		state, err := a.deps.EnemySkillRepo.LoadState()
@@ -885,14 +974,14 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 	default:
 		state, err := a.deps.ItemRepo.LoadItemState()
 		if err != nil {
-			a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: defaultItemForm()})
+			a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: defaultItemForm(nil)})
 			return
 		}
 		a.renderItems(w, r, webui.ItemsPageData{
 			Meta:    itemMeta(),
 			Notice:  notice,
 			Entries: state.Items,
-			Form:    defaultItemForm(),
+			Form:    defaultItemForm(nil),
 		})
 	}
 }
@@ -1005,30 +1094,31 @@ func itemMeta() webui.PageMeta {
 }
 
 func grimoireMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Grimoire", CurrentPath: "/grimoire", Description: "呪文エントリを管理します。Variants は `cast,cost` を1行ずつ入力します。"}
+	return webui.PageMeta{Title: "Grimoire", CurrentPath: "/grimoire", Description: "呪文エントリを管理します。cast time と MP cost は単一値です。"}
 }
 
 func skillsMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Skills", CurrentPath: "/skills", Description: "スキルの script と参照する item entry を管理します。"}
+	return webui.PageMeta{Title: "Skills", CurrentPath: "/skills", Description: "スキルの script と説明を管理します。item から参照されます。"}
 }
 
 func enemySkillsMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Enemy Skills", CurrentPath: "/enemy-skills", Description: "再利用可能な enemy-skill script を管理します。trigger と cooldown は任意です。"}
+	return webui.PageMeta{Title: "Enemy Skills", CurrentPath: "/enemy-skills", Description: "再利用可能な enemy-skill script と説明を管理します。"}
 }
 
 func treasuresMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Treasures", CurrentPath: "/treasures", Description: "treasure loot pools を管理します。各行は `kind,refId,weight,countMin,countMax` 形式です。"}
+	return webui.PageMeta{Title: "Treasures", CurrentPath: "/treasures", Description: "treasure loot pools と保存先 table path を管理します。"}
 }
 
 func enemiesMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Enemies", CurrentPath: "/enemies", Description: "enemy stats、spawn rules、参照する enemy skills を管理します。"}
+	return webui.PageMeta{Title: "Enemies", CurrentPath: "/enemies", Description: "enemy の mob type、装備、drop mode、直接ドロップを管理します。"}
 }
 
-func defaultItemForm() webui.ItemFormData {
+func defaultItemForm(options []webui.ReferenceOption) webui.ItemFormData {
 	return webui.ItemFormData{
-		ID:                  newUUID(),
+		ID:                  "",
 		ItemID:              "minecraft:stone",
 		Count:               "1",
+		SkillOptions:        options,
 		FieldErrors:         map[string]string{},
 		CustomName:          "",
 		Lore:                "",
@@ -1044,11 +1134,13 @@ func defaultItemForm() webui.ItemFormData {
 	}
 }
 
-func itemEntryToForm(entry items.ItemEntry) webui.ItemFormData {
+func itemEntryToForm(entry items.ItemEntry, options []webui.ReferenceOption) webui.ItemFormData {
 	return webui.ItemFormData{
 		ID:                  entry.ID,
 		ItemID:              entry.ItemID,
 		Count:               strconv.Itoa(entry.Count),
+		SkillID:             entry.SkillID,
+		SkillOptions:        options,
 		CustomName:          entry.CustomName,
 		Lore:                entry.Lore,
 		Enchantments:        entry.Enchantments,
@@ -1066,57 +1158,39 @@ func itemEntryToForm(entry items.ItemEntry) webui.ItemFormData {
 	}
 }
 
-func defaultGrimoireForm(entries []grimoire.GrimoireEntry) webui.GrimoireFormData {
-	nextCastID := 10
-	for _, entry := range entries {
-		if entry.CastID >= nextCastID {
-			nextCastID = entry.CastID + 10
-		}
-	}
+func defaultGrimoireForm(_ []grimoire.GrimoireEntry) webui.GrimoireFormData {
 	return webui.GrimoireFormData{
-		ID:           newUUID(),
-		CastID:       strconv.Itoa(nextCastID),
-		VariantsText: "0,0",
-		FieldErrors:  map[string]string{},
+		ID:          "",
+		CastTime:    "0",
+		MPCost:      "0",
+		FieldErrors: map[string]string{},
 	}
 }
 
 func grimoireEntryToForm(entry grimoire.GrimoireEntry) webui.GrimoireFormData {
-	lines := make([]string, 0, len(entry.Variants))
-	for _, variant := range entry.Variants {
-		lines = append(lines, fmt.Sprintf("%d,%d", variant.Cast, variant.Cost))
-	}
 	return webui.GrimoireFormData{
-		ID:           entry.ID,
-		CastID:       strconv.Itoa(entry.CastID),
-		Script:       entry.Script,
-		Title:        entry.Title,
-		Description:  entry.Description,
-		VariantsText: strings.Join(lines, "\n"),
-		FieldErrors:  map[string]string{},
-		IsEditing:    true,
-	}
-}
-
-func defaultSkillForm(items []items.ItemEntry) webui.SkillFormData {
-	form := webui.SkillFormData{
-		ID:          newUUID(),
-		ItemOptions: itemOptions(items),
+		ID:          entry.ID,
+		CastID:      strconv.Itoa(entry.CastID),
+		CastTime:    strconv.Itoa(entry.CastTime),
+		MPCost:      strconv.Itoa(entry.MPCost),
+		Script:      entry.Script,
+		Title:       entry.Title,
+		Description: entry.Description,
 		FieldErrors: map[string]string{},
+		IsEditing:   true,
 	}
-	if len(items) > 0 {
-		form.ItemID = items[0].ID
-	}
-	return form
 }
 
-func skillEntryToForm(entry skills.SkillEntry, options []webui.ReferenceOption) webui.SkillFormData {
+func defaultSkillForm() webui.SkillFormData {
+	return webui.SkillFormData{FieldErrors: map[string]string{}}
+}
+
+func skillEntryToForm(entry skills.SkillEntry) webui.SkillFormData {
 	return webui.SkillFormData{
 		ID:          entry.ID,
 		Name:        entry.Name,
+		Description: entry.Description,
 		Script:      entry.Script,
-		ItemID:      entry.ItemID,
-		ItemOptions: options,
 		FieldErrors: map[string]string{},
 		IsEditing:   true,
 	}
@@ -1124,31 +1198,26 @@ func skillEntryToForm(entry skills.SkillEntry, options []webui.ReferenceOption) 
 
 func defaultEnemySkillForm() webui.EnemySkillFormData {
 	return webui.EnemySkillFormData{
-		ID:          newUUID(),
 		FieldErrors: map[string]string{},
 	}
 }
 
 func enemySkillEntryToForm(entry enemyskills.EnemySkillEntry) webui.EnemySkillFormData {
-	form := webui.EnemySkillFormData{
+	return webui.EnemySkillFormData{
 		ID:          entry.ID,
 		Name:        entry.Name,
+		Description: entry.Description,
 		Script:      entry.Script,
 		FieldErrors: map[string]string{},
 		IsEditing:   true,
 	}
-	if entry.Cooldown != nil {
-		form.Cooldown = strconv.FormatFloat(*entry.Cooldown, 'f', -1, 64)
-	}
-	if entry.Trigger != nil {
-		form.Trigger = string(*entry.Trigger)
-	}
-	return form
 }
 
 func defaultTreasureForm() webui.TreasureFormData {
 	return webui.TreasureFormData{
-		ID:            newUUID(),
+		ID:            "",
+		Mode:          "custom",
+		TablePath:     "maf:treasure/example",
 		LootPoolsText: "item,,1,1,1",
 		FieldErrors:   map[string]string{},
 	}
@@ -1175,7 +1244,8 @@ func treasureEntryToForm(entry treasures.TreasureEntry) webui.TreasureFormData {
 	}
 	return webui.TreasureFormData{
 		ID:            entry.ID,
-		Name:          entry.Name,
+		Mode:          entry.Mode,
+		TablePath:     entry.TablePath,
 		LootPoolsText: strings.Join(lines, "\n"),
 		FieldErrors:   map[string]string{},
 		IsEditing:     true,
@@ -1183,34 +1253,27 @@ func treasureEntryToForm(entry treasures.TreasureEntry) webui.TreasureFormData {
 }
 
 func defaultEnemyForm(entries []enemyskills.EnemySkillEntry) webui.EnemyFormData {
-	form := webui.EnemyFormData{
-		ID:                newUUID(),
+	return webui.EnemyFormData{
+		ID:                "",
+		MobType:           "minecraft:zombie",
 		HP:                "20",
-		OriginX:           "0",
-		OriginY:           "0",
-		OriginZ:           "0",
-		DistanceMin:       "0",
-		DistanceMax:       "16",
+		DropMode:          "replace",
 		FieldErrors:       map[string]string{},
 		EnemySkillOptions: enemySkillOptions(entries),
 	}
-	form.DropTableID = form.ID
-	return form
 }
 
 func enemyEntryToForm(entry enemies.EnemyEntry, options []webui.ReferenceOption) webui.EnemyFormData {
 	form := webui.EnemyFormData{
 		ID:                entry.ID,
+		MobType:           entry.MobType,
 		Name:              entry.Name,
 		HP:                strconv.FormatFloat(entry.HP, 'f', -1, 64),
-		DropTableID:       entry.DropTableID,
+		DropMode:          entry.DropMode,
 		EnemySkillIDs:     append([]string{}, entry.EnemySkillIDs...),
 		EnemySkillOptions: options,
-		OriginX:           strconv.FormatFloat(entry.SpawnRule.Origin.X, 'f', -1, 64),
-		OriginY:           strconv.FormatFloat(entry.SpawnRule.Origin.Y, 'f', -1, 64),
-		OriginZ:           strconv.FormatFloat(entry.SpawnRule.Origin.Z, 'f', -1, 64),
-		DistanceMin:       strconv.FormatFloat(entry.SpawnRule.Distance.Min, 'f', -1, 64),
-		DistanceMax:       strconv.FormatFloat(entry.SpawnRule.Distance.Max, 'f', -1, 64),
+		EquipmentText:     formatEquipmentText(entry.Equipment),
+		DropsText:         formatEnemyDropsText(entry.Drops),
 		FieldErrors:       map[string]string{},
 		IsEditing:         true,
 	}
@@ -1223,34 +1286,15 @@ func enemyEntryToForm(entry enemies.EnemyEntry, options []webui.ReferenceOption)
 	if entry.MoveSpeed != nil {
 		form.MoveSpeed = strconv.FormatFloat(*entry.MoveSpeed, 'f', -1, 64)
 	}
-	if axis := entry.SpawnRule.AxisBounds; axis != nil {
-		if axis.XMin != nil {
-			form.XMin = strconv.FormatFloat(*axis.XMin, 'f', -1, 64)
-		}
-		if axis.XMax != nil {
-			form.XMax = strconv.FormatFloat(*axis.XMax, 'f', -1, 64)
-		}
-		if axis.YMin != nil {
-			form.YMin = strconv.FormatFloat(*axis.YMin, 'f', -1, 64)
-		}
-		if axis.YMax != nil {
-			form.YMax = strconv.FormatFloat(*axis.YMax, 'f', -1, 64)
-		}
-		if axis.ZMin != nil {
-			form.ZMin = strconv.FormatFloat(*axis.ZMin, 'f', -1, 64)
-		}
-		if axis.ZMax != nil {
-			form.ZMax = strconv.FormatFloat(*axis.ZMax, 'f', -1, 64)
-		}
-	}
 	return form
 }
 
-func parseItemForm(r *http.Request) (webui.ItemFormData, items.SaveInput, map[string]string) {
-	form := defaultItemForm()
-	form.ID = valueOrDefault(r.Form.Get("id"), newUUID())
+func parseItemForm(r *http.Request, skills []skills.SkillEntry) (webui.ItemFormData, items.SaveInput, map[string]string) {
+	form := defaultItemForm(skillOptions(skills))
+	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.ItemID = strings.TrimSpace(r.Form.Get("itemId"))
 	form.Count = strings.TrimSpace(r.Form.Get("count"))
+	form.SkillID = strings.TrimSpace(r.Form.Get("skillId"))
 	form.CustomName = r.Form.Get("customName")
 	form.Lore = r.Form.Get("lore")
 	form.Enchantments = r.Form.Get("enchantments")
@@ -1268,6 +1312,7 @@ func parseItemForm(r *http.Request) (webui.ItemFormData, items.SaveInput, map[st
 		ID:                  form.ID,
 		ItemID:              form.ItemID,
 		Count:               parseRequiredInt(errs, "count", form.Count),
+		SkillID:             form.SkillID,
 		CustomName:          form.CustomName,
 		Lore:                form.Lore,
 		Enchantments:        form.Enchantments,
@@ -1286,67 +1331,69 @@ func parseItemForm(r *http.Request) (webui.ItemFormData, items.SaveInput, map[st
 
 func parseGrimoireForm(r *http.Request) (webui.GrimoireFormData, grimoire.SaveInput, map[string]string) {
 	form := defaultGrimoireForm(nil)
-	form.ID = valueOrDefault(r.Form.Get("id"), newUUID())
+	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.CastID = strings.TrimSpace(r.Form.Get("castid"))
+	form.CastTime = strings.TrimSpace(r.Form.Get("castTime"))
+	form.MPCost = strings.TrimSpace(r.Form.Get("mpCost"))
 	form.Script = r.Form.Get("script")
 	form.Title = r.Form.Get("title")
 	form.Description = r.Form.Get("description")
-	form.VariantsText = r.Form.Get("variantsText")
 	errs := map[string]string{}
 	input := grimoire.SaveInput{
 		ID:          form.ID,
 		CastID:      parseRequiredInt(errs, "castid", form.CastID),
+		CastTime:    parseRequiredInt(errs, "castTime", form.CastTime),
+		MPCost:      parseRequiredInt(errs, "mpCost", form.MPCost),
 		Script:      form.Script,
 		Title:       form.Title,
 		Description: form.Description,
-		Variants:    parseVariants(errs, form.VariantsText),
 	}
 	return form, input, errs
 }
 
-func parseSkillForm(r *http.Request, itemEntries []items.ItemEntry) (webui.SkillFormData, skills.SaveInput, map[string]string) {
-	form := defaultSkillForm(itemEntries)
-	form.ID = valueOrDefault(r.Form.Get("id"), newUUID())
+func parseSkillForm(r *http.Request) (webui.SkillFormData, skills.SaveInput, map[string]string) {
+	form := defaultSkillForm()
+	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.Name = r.Form.Get("name")
+	form.Description = r.Form.Get("description")
 	form.Script = r.Form.Get("script")
-	form.ItemID = strings.TrimSpace(r.Form.Get("itemId"))
 	errs := map[string]string{}
 	input := skills.SaveInput{
-		ID:     form.ID,
-		Name:   form.Name,
-		Script: form.Script,
-		ItemID: form.ItemID,
+		ID:          form.ID,
+		Name:        form.Name,
+		Description: form.Description,
+		Script:      form.Script,
 	}
 	return form, input, errs
 }
 
 func parseEnemySkillForm(r *http.Request) (webui.EnemySkillFormData, enemyskills.SaveInput, map[string]string) {
 	form := defaultEnemySkillForm()
-	form.ID = valueOrDefault(r.Form.Get("id"), newUUID())
+	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.Name = r.Form.Get("name")
+	form.Description = r.Form.Get("description")
 	form.Script = r.Form.Get("script")
-	form.Cooldown = strings.TrimSpace(r.Form.Get("cooldown"))
-	form.Trigger = strings.TrimSpace(r.Form.Get("trigger"))
 	errs := map[string]string{}
 	input := enemyskills.SaveInput{
-		ID:       form.ID,
-		Name:     form.Name,
-		Script:   form.Script,
-		Cooldown: parseOptionalFloat(errs, "cooldown", form.Cooldown),
-		Trigger:  form.Trigger,
+		ID:          form.ID,
+		Name:        form.Name,
+		Description: form.Description,
+		Script:      form.Script,
 	}
 	return form, input, errs
 }
 
 func parseTreasureForm(r *http.Request) (webui.TreasureFormData, treasures.SaveInput, map[string]string) {
 	form := defaultTreasureForm()
-	form.ID = valueOrDefault(r.Form.Get("id"), newUUID())
-	form.Name = r.Form.Get("name")
+	form.ID = strings.TrimSpace(r.Form.Get("id"))
+	form.Mode = strings.TrimSpace(r.Form.Get("mode"))
+	form.TablePath = strings.TrimSpace(r.Form.Get("tablePath"))
 	form.LootPoolsText = r.Form.Get("lootPoolsText")
 	errs := map[string]string{}
 	input := treasures.SaveInput{
 		ID:        form.ID,
-		Name:      form.Name,
+		Mode:      form.Mode,
+		TablePath: form.TablePath,
 		LootPools: parseTreasurePools(errs, form.LootPoolsText),
 	}
 	return form, input, errs
@@ -1354,82 +1401,33 @@ func parseTreasureForm(r *http.Request) (webui.TreasureFormData, treasures.SaveI
 
 func parseEnemyForm(r *http.Request, enemySkillEntries []enemyskills.EnemySkillEntry) (webui.EnemyFormData, enemies.SaveInput, map[string]string) {
 	form := defaultEnemyForm(enemySkillEntries)
-	form.ID = valueOrDefault(r.Form.Get("id"), newUUID())
+	form.ID = strings.TrimSpace(r.Form.Get("id"))
+	form.MobType = strings.TrimSpace(r.Form.Get("mobType"))
 	form.Name = r.Form.Get("name")
 	form.HP = strings.TrimSpace(r.Form.Get("hp"))
 	form.Attack = strings.TrimSpace(r.Form.Get("attack"))
 	form.Defense = strings.TrimSpace(r.Form.Get("defense"))
 	form.MoveSpeed = strings.TrimSpace(r.Form.Get("moveSpeed"))
-	form.DropTableID = strings.TrimSpace(r.Form.Get("dropTableId"))
+	form.DropMode = strings.TrimSpace(r.Form.Get("dropMode"))
 	form.EnemySkillIDs = append([]string{}, r.Form["enemySkillIds"]...)
-	form.OriginX = strings.TrimSpace(r.Form.Get("originX"))
-	form.OriginY = strings.TrimSpace(r.Form.Get("originY"))
-	form.OriginZ = strings.TrimSpace(r.Form.Get("originZ"))
-	form.DistanceMin = strings.TrimSpace(r.Form.Get("distanceMin"))
-	form.DistanceMax = strings.TrimSpace(r.Form.Get("distanceMax"))
-	form.XMin = strings.TrimSpace(r.Form.Get("xMin"))
-	form.XMax = strings.TrimSpace(r.Form.Get("xMax"))
-	form.YMin = strings.TrimSpace(r.Form.Get("yMin"))
-	form.YMax = strings.TrimSpace(r.Form.Get("yMax"))
-	form.ZMin = strings.TrimSpace(r.Form.Get("zMin"))
-	form.ZMax = strings.TrimSpace(r.Form.Get("zMax"))
+	form.EquipmentText = r.Form.Get("equipmentText")
+	form.DropsText = r.Form.Get("dropsText")
 	errs := map[string]string{}
-
-	axisBounds := &enemies.AxisBounds{
-		XMin: parseOptionalFloat(errs, "xMin", form.XMin),
-		XMax: parseOptionalFloat(errs, "xMax", form.XMax),
-		YMin: parseOptionalFloat(errs, "yMin", form.YMin),
-		YMax: parseOptionalFloat(errs, "yMax", form.YMax),
-		ZMin: parseOptionalFloat(errs, "zMin", form.ZMin),
-		ZMax: parseOptionalFloat(errs, "zMax", form.ZMax),
-	}
-	if axisBounds.XMin == nil && axisBounds.XMax == nil && axisBounds.YMin == nil && axisBounds.YMax == nil && axisBounds.ZMin == nil && axisBounds.ZMax == nil {
-		axisBounds = nil
-	}
 
 	input := enemies.SaveInput{
 		ID:            form.ID,
+		MobType:       form.MobType,
 		Name:          form.Name,
 		HP:            parseRequiredFloat(errs, "hp", form.HP),
 		Attack:        parseOptionalFloat(errs, "attack", form.Attack),
 		Defense:       parseOptionalFloat(errs, "defense", form.Defense),
 		MoveSpeed:     parseOptionalFloat(errs, "moveSpeed", form.MoveSpeed),
-		DropTableID:   form.DropTableID,
+		Equipment:     parseEquipment(errs, form.EquipmentText),
 		EnemySkillIDs: append([]string{}, form.EnemySkillIDs...),
-		SpawnRule: enemies.SpawnRule{
-			Origin: enemies.Vec3{
-				X: parseRequiredFloat(errs, "originX", form.OriginX),
-				Y: parseRequiredFloat(errs, "originY", form.OriginY),
-				Z: parseRequiredFloat(errs, "originZ", form.OriginZ),
-			},
-			Distance: enemies.Distance{
-				Min: parseRequiredFloat(errs, "distanceMin", form.DistanceMin),
-				Max: parseRequiredFloat(errs, "distanceMax", form.DistanceMax),
-			},
-			AxisBounds: axisBounds,
-		},
+		DropMode:      form.DropMode,
+		Drops:         parseEnemyDrops(errs, form.DropsText),
 	}
 	return form, input, errs
-}
-
-func parseVariants(errs map[string]string, value string) []grimoire.Variant {
-	lines := compactLines(value)
-	out := make([]grimoire.Variant, 0, len(lines))
-	for _, line := range lines {
-		parts := splitCSV(line, 2)
-		if len(parts) != 2 {
-			errs["variantsText"] = "Each variant line must be `cast,cost`."
-			return nil
-		}
-		cast, okCast := parseIntText(parts[0])
-		cost, okCost := parseIntText(parts[1])
-		if !okCast || !okCost {
-			errs["variantsText"] = "Each variant line must contain numeric cast and cost."
-			return nil
-		}
-		out = append(out, grimoire.Variant{Cast: cast, Cost: cost})
-	}
-	return out
 }
 
 func parseTreasurePools(errs map[string]string, value string) []treasures.DropRef {
@@ -1469,6 +1467,18 @@ func itemOptions(entries []items.ItemEntry) []webui.ReferenceOption {
 	return options
 }
 
+func skillOptions(entries []skills.SkillEntry) []webui.ReferenceOption {
+	options := make([]webui.ReferenceOption, 0, len(entries))
+	for _, entry := range entries {
+		label := entry.Name
+		if strings.TrimSpace(label) == "" {
+			label = entry.ID
+		}
+		options = append(options, webui.ReferenceOption{ID: entry.ID, Label: label})
+	}
+	return options
+}
+
 func grimoireOptions(entries []grimoire.GrimoireEntry) []webui.ReferenceOption {
 	options := make([]webui.ReferenceOption, 0, len(entries))
 	for _, entry := range entries {
@@ -1495,6 +1505,10 @@ func grimoireIDSet(state grimoire.GrimoireState) map[string]struct{} {
 
 func enemySkillIDSet(state common.EntryState[enemyskills.EnemySkillEntry]) map[string]struct{} {
 	return toIDSet(state.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
+}
+
+func skillIDSet(state common.EntryState[skills.SkillEntry]) map[string]struct{} {
+	return toIDSet(state.Entries, func(entry skills.SkillEntry) string { return entry.ID })
 }
 
 func toIDSet[T any](entries []T, idOf func(T) string) map[string]struct{} {
@@ -1605,9 +1619,6 @@ func mapFieldErrors(errs common.FieldErrors, mapField func(string) string) map[s
 }
 
 func mapGrimoireField(key string) string {
-	if strings.HasPrefix(key, "variants.") {
-		return "variantsText"
-	}
 	return key
 }
 
@@ -1619,34 +1630,133 @@ func mapTreasureField(key string) string {
 }
 
 func mapEnemyField(key string) string {
-	switch key {
-	case "spawnRule.origin.x":
-		return "originX"
-	case "spawnRule.origin.y":
-		return "originY"
-	case "spawnRule.origin.z":
-		return "originZ"
-	case "spawnRule.distance.min":
-		return "distanceMin"
-	case "spawnRule.distance.max":
-		return "distanceMax"
-	case "spawnRule.axisBounds.xMin":
-		return "xMin"
-	case "spawnRule.axisBounds.xMax":
-		return "xMax"
-	case "spawnRule.axisBounds.yMin":
-		return "yMin"
-	case "spawnRule.axisBounds.yMax":
-		return "yMax"
-	case "spawnRule.axisBounds.zMin":
-		return "zMin"
-	case "spawnRule.axisBounds.zMax":
-		return "zMax"
-	}
 	if strings.HasPrefix(key, "enemySkillIds.") {
 		return "enemySkillIds"
 	}
+	if strings.HasPrefix(key, "equipment.") {
+		return "equipmentText"
+	}
+	if strings.HasPrefix(key, "drops.") {
+		return "dropsText"
+	}
 	return key
+}
+
+func parseEquipment(errs map[string]string, value string) enemies.Equipment {
+	lines := compactLines(value)
+	equipment := enemies.Equipment{}
+	for _, line := range lines {
+		parts := splitCSV(line, 5)
+		if len(parts) < 4 {
+			errs["equipmentText"] = "Each equipment line must be `slot,kind,refId,count,dropChance`."
+			return enemies.Equipment{}
+		}
+		count := parseRequiredInt(errs, "equipmentText", parts[3])
+		if errs["equipmentText"] != "" {
+			errs["equipmentText"] = "Equipment count must be numeric."
+			return enemies.Equipment{}
+		}
+		slot := &enemies.EquipmentSlot{
+			Kind:       parts[1],
+			RefID:      parts[2],
+			Count:      count,
+			DropChance: parseOptionalFloat(errs, "equipmentText", valueOrIndex(parts, 4)),
+		}
+		if errs["equipmentText"] != "" {
+			errs["equipmentText"] = "Equipment dropChance must be numeric when provided."
+			return enemies.Equipment{}
+		}
+		switch parts[0] {
+		case "mainhand":
+			equipment.Mainhand = slot
+		case "offhand":
+			equipment.Offhand = slot
+		case "head":
+			equipment.Head = slot
+		case "chest":
+			equipment.Chest = slot
+		case "legs":
+			equipment.Legs = slot
+		case "feet":
+			equipment.Feet = slot
+		default:
+			errs["equipmentText"] = "Equipment slot must be one of mainhand,offhand,head,chest,legs,feet."
+			return enemies.Equipment{}
+		}
+	}
+	return equipment
+}
+
+func parseEnemyDrops(errs map[string]string, value string) []enemies.DropRef {
+	lines := compactLines(value)
+	out := make([]enemies.DropRef, 0, len(lines))
+	for _, line := range lines {
+		parts := splitCSV(line, 5)
+		if len(parts) < 3 {
+			errs["dropsText"] = "Each drop line must be `kind,refId,weight,countMin,countMax`."
+			return nil
+		}
+		weight, err := strconv.ParseFloat(parts[2], 64)
+		if err != nil {
+			errs["dropsText"] = "Drop weight must be numeric."
+			return nil
+		}
+		out = append(out, enemies.DropRef{
+			Kind:     parts[0],
+			RefID:    parts[1],
+			Weight:   weight,
+			CountMin: parseOptionalFloat(errs, "dropsText", valueOrIndex(parts, 3)),
+			CountMax: parseOptionalFloat(errs, "dropsText", valueOrIndex(parts, 4)),
+		})
+		if errs["dropsText"] != "" {
+			errs["dropsText"] = "Drop count values must be numeric when provided."
+			return nil
+		}
+	}
+	return out
+}
+
+func formatEquipmentText(equipment enemies.Equipment) string {
+	lines := make([]string, 0, 6)
+	appendSlot := func(name string, slot *enemies.EquipmentSlot) {
+		if slot == nil {
+			return
+		}
+		dropChance := ""
+		if slot.DropChance != nil {
+			dropChance = strconv.FormatFloat(*slot.DropChance, 'f', -1, 64)
+		}
+		lines = append(lines, strings.Join([]string{name, slot.Kind, slot.RefID, strconv.Itoa(slot.Count), dropChance}, ","))
+	}
+	appendSlot("mainhand", equipment.Mainhand)
+	appendSlot("offhand", equipment.Offhand)
+	appendSlot("head", equipment.Head)
+	appendSlot("chest", equipment.Chest)
+	appendSlot("legs", equipment.Legs)
+	appendSlot("feet", equipment.Feet)
+	return strings.Join(lines, "\n")
+}
+
+func formatEnemyDropsText(drops []enemies.DropRef) string {
+	lines := make([]string, 0, len(drops))
+	for _, drop := range drops {
+		countMin := ""
+		countMax := ""
+		if drop.CountMin != nil {
+			countMin = strconv.FormatFloat(*drop.CountMin, 'f', -1, 64)
+		}
+		if drop.CountMax != nil {
+			countMax = strconv.FormatFloat(*drop.CountMax, 'f', -1, 64)
+		}
+		lines = append(lines, strings.Join([]string{
+			drop.Kind,
+			drop.RefID,
+			strconv.FormatFloat(drop.Weight, 'f', -1, 64),
+			countMin,
+			countMax,
+		}, ","))
+	}
+	return strings.Join(lines, "\n")
 }
 
 func noticeText(label string, mode common.SaveMode) string {
@@ -1776,4 +1886,28 @@ func findEntry[T any](entries []T, id string, idOf func(T) string) (T, bool) {
 		}
 	}
 	return zero, false
+}
+
+func duplicateCastID(entries []grimoire.GrimoireEntry, id string, castID int) string {
+	for _, entry := range entries {
+		if entry.ID == id {
+			continue
+		}
+		if entry.CastID == castID {
+			return entry.ID
+		}
+	}
+	return ""
+}
+
+func duplicateCustomTablePath(entries []treasures.TreasureEntry, entryID, mode, tablePath string) string {
+	if mode != "custom" {
+		return ""
+	}
+	for _, entry := range entries {
+		if entry.ID != entryID && entry.Mode == "custom" && entry.TablePath == tablePath {
+			return entry.ID
+		}
+	}
+	return ""
 }

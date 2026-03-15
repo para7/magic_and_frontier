@@ -9,17 +9,34 @@ import (
 
 func ValidateSave(input SaveInput, itemIDs, grimoireIDs map[string]struct{}, now time.Time) common.SaveResult[TreasureEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
+	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "treasure_")
+	mode := common.NormalizeText(input.Mode)
+	tablePath := common.NormalizeText(input.TablePath)
+	if !common.IsSafeNamespacedResourcePath(tablePath) {
+		errs.Add("tablePath", "Must be a namespaced loot table path.")
+	}
 	pools := make([]DropRef, 0, len(input.LootPools))
 	for i, p := range input.LootPools {
 		kind := common.NormalizeText(p.Kind)
 		refID := common.NormalizeText(p.RefID)
 		if refID != "" {
-			if kind == "item" {
-				if _, ok := itemIDs[refID]; !ok {
+			switch kind {
+			case "item":
+				if !common.IsPrefixedSequenceID(refID, "items_") {
+					errs.Add(fmt.Sprintf("lootPools.%d.refId", i), "Invalid ID format.")
+				} else if _, ok := itemIDs[refID]; !ok {
 					errs.Add(fmt.Sprintf("lootPools.%d.refId", i), "Referenced entry does not exist.")
 				}
-			} else if _, ok := grimoireIDs[refID]; !ok {
-				errs.Add(fmt.Sprintf("lootPools.%d.refId", i), "Referenced entry does not exist.")
+			case "grimoire":
+				if !common.IsPrefixedSequenceID(refID, "grimoire_") {
+					errs.Add(fmt.Sprintf("lootPools.%d.refId", i), "Invalid ID format.")
+				} else if _, ok := grimoireIDs[refID]; !ok {
+					errs.Add(fmt.Sprintf("lootPools.%d.refId", i), "Referenced entry does not exist.")
+				}
+			case "minecraft_item":
+				if !common.IsNamespacedResourceID(refID) {
+					errs.Add(fmt.Sprintf("lootPools.%d.refId", i), "Must be a minecraft item id.")
+				}
 			}
 		}
 		cmin := p.CountMin
@@ -42,8 +59,9 @@ func ValidateSave(input SaveInput, itemIDs, grimoireIDs map[string]struct{}, now
 		return common.SaveValidationError[TreasureEntry](errs, "Validation failed. Fix the highlighted fields.")
 	}
 	entry := TreasureEntry{
-		ID:        common.NormalizeText(input.ID),
-		Name:      common.NormalizeText(input.Name),
+		ID:        id,
+		Mode:      mode,
+		TablePath: tablePath,
 		LootPools: pools,
 		UpdatedAt: now.UTC().Format(time.RFC3339),
 	}

@@ -21,68 +21,73 @@ import (
 func TestValidateBundleDetectsBrokenReferences(t *testing.T) {
 	report := ValidateBundle(StateBundle{
 		ItemState: items.ItemState{Items: []items.ItemEntry{
-			{ID: testUUID("141"), ItemID: "minecraft:apple", Count: 1},
+			{ID: "items_1", ItemID: "minecraft:apple", Count: 1, SkillID: "skill_9"},
 		}},
 		GrimoireState: grimoire.GrimoireState{Entries: []grimoire.GrimoireEntry{
-			{ID: testUUID("142"), CastID: 1, Script: "say cast", Title: "Spell"},
+			{ID: "grimoire_1", CastID: 1, CastTime: 10, MPCost: 5, Script: "say cast", Title: "Spell"},
+			{ID: "grimoire_2", CastID: 1, CastTime: 10, MPCost: 5, Script: "say cast", Title: "Spell 2"},
 		}},
 		SkillState: common.EntryState[skills.SkillEntry]{Entries: []skills.SkillEntry{{
-			ID:     testUUID("143"),
-			Name:   "Slash",
+			ID:     "skill_1",
 			Script: "say slash",
-			ItemID: testUUID("999"),
 		}}},
 		EnemySkillState: common.EntryState[enemyskills.EnemySkillEntry]{Entries: []enemyskills.EnemySkillEntry{{
-			ID:     testUUID("144"),
-			Name:   "Roar",
+			ID:     "enemyskill_1",
 			Script: "say roar",
 		}}},
-		TreasureState: common.EntryState[treasures.TreasureEntry]{Entries: []treasures.TreasureEntry{{
-			ID:   testUUID("145"),
-			Name: "Chest",
-			LootPools: []treasures.DropRef{{
-				Kind:   "item",
-				RefID:  testUUID("141"),
-				Weight: 1,
-			}},
-		}}},
+		TreasureState: common.EntryState[treasures.TreasureEntry]{Entries: []treasures.TreasureEntry{
+			{ID: "treasure_1", Mode: "custom", TablePath: "maf:loot/test", LootPools: []treasures.DropRef{{Kind: "item", RefID: "items_1", Weight: 1}}},
+			{ID: "treasure_2", Mode: "custom", TablePath: "maf:loot/test", LootPools: []treasures.DropRef{{Kind: "grimoire", RefID: "grimoire_1", Weight: 1}}},
+		}},
 		EnemyState: common.EntryState[enemies.EnemyEntry]{Entries: []enemies.EnemyEntry{{
-			ID:          testUUID("146"),
-			Name:        "Zombie",
-			HP:          20,
-			DropTableID: testUUID("404"),
-			SpawnRule: enemies.SpawnRule{
-				Origin:   enemies.Vec3{X: 0, Y: 64, Z: 0},
-				Distance: enemies.Distance{Min: 0, Max: 16},
-			},
+			ID:            "enemy_1",
+			MobType:       "minecraft:zombie",
+			Name:          "Zombie",
+			HP:            20,
+			EnemySkillIDs: []string{"enemyskill_404"},
+			DropMode:      "replace",
+			Drops:         []enemies.DropRef{{Kind: "item", RefID: "items_404", Weight: 1}},
 		}}},
 	}, "", fixedNow())
 
 	if report.OK {
 		t.Fatalf("expected validation failure")
 	}
-	if !strings.Contains(report.String(), "skill["+testUUID("143")+"].itemId: Referenced item does not exist.") {
+	if !strings.Contains(report.String(), "item[items_1].skillId: Referenced skill does not exist.") {
 		t.Fatalf("report = %s", report.String())
 	}
-	if !strings.Contains(report.String(), "enemy["+testUUID("146")+"].dropTableId: Referenced treasure does not exist.") {
+	if !strings.Contains(report.String(), "grimoire[grimoire_2].castid: Cast ID is already used by grimoire_1.") {
 		t.Fatalf("report = %s", report.String())
+	}
+	if !strings.Contains(report.String(), "treasure[treasure_2].tablePath: Custom loot table path is already used by treasure_1.") {
+		t.Fatalf("report = %s", report.String())
+	}
+}
+
+func TestServiceAllocateGrimoireIdentity(t *testing.T) {
+	cfg := testConfig(t)
+	svc := NewService(cfg, Dependencies{Now: fixedNow})
+	id, castID, err := svc.AllocateGrimoireIdentity()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if id != "grimoire_1" || castID != 1 {
+		t.Fatalf("got %s %d", id, castID)
+	}
+	nextID, err := svc.AllocateID("items")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if nextID != "items_1" {
+		t.Fatalf("nextID = %s", nextID)
 	}
 }
 
 func TestServiceExportDatapackRejectsInvalidSavedata(t *testing.T) {
 	cfg := testConfig(t)
 	writeJSONFile(t, cfg.ItemStatePath, items.ItemState{Items: []items.ItemEntry{
-		{ID: testUUID("141"), ItemID: "minecraft:apple", Count: 1},
+		{ID: "items_1", ItemID: "minecraft:apple", Count: 1, SkillID: "skill_999"},
 	}})
-	writeJSONFile(t, cfg.SkillStatePath, map[string]any{
-		"entries": []map[string]any{{
-			"id":     testUUID("143"),
-			"name":   "Slash",
-			"script": "say slash",
-			"itemId": testUUID("999"),
-		}},
-	})
-
 	svc := NewService(cfg, Dependencies{Now: fixedNow})
 	result := svc.ExportDatapack()
 	if result.OK {
@@ -91,7 +96,7 @@ func TestServiceExportDatapackRejectsInvalidSavedata(t *testing.T) {
 	if result.Code != "VALIDATION_FAILED" {
 		t.Fatalf("code = %q", result.Code)
 	}
-	if !strings.Contains(result.Details, "Referenced item does not exist.") {
+	if !strings.Contains(result.Details, "Referenced skill does not exist.") {
 		t.Fatalf("details = %s", result.Details)
 	}
 }
@@ -136,6 +141,7 @@ func testConfig(t *testing.T) config.Config {
 		EnemySkillStatePath: filepath.Join(root, "enemy-skill-state.json"),
 		EnemyStatePath:      filepath.Join(root, "enemy-state.json"),
 		TreasureStatePath:   filepath.Join(root, "treasure-state.json"),
+		IDCounterStatePath:  filepath.Join(root, "id-counters.json"),
 		ExportSettingsPath:  settingsPath,
 	}
 }
@@ -149,8 +155,4 @@ func writeJSONFile(t *testing.T, path string, value any) {
 	if err := os.WriteFile(path, append(data, '\n'), 0o644); err != nil {
 		t.Fatal(err)
 	}
-}
-
-func testUUID(suffix string) string {
-	return "00000000-0000-4000-8000-000000000" + suffix
 }

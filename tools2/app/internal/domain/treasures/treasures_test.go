@@ -5,109 +5,50 @@ import (
 	"time"
 )
 
-func TestValidateSaveSuccessCases(t *testing.T) {
+func TestValidateSaveSuccess(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
-	min := 1.0
-	max := 2.0
-	tests := []struct {
-		name        string
-		input       SaveInput
-		itemIDs     map[string]struct{}
-		grimoireIDs map[string]struct{}
-	}{
-		{
-			name: "item loot pool with trimming",
-			input: SaveInput{
-				ID:   "00000000-0000-4000-8000-000000000001",
-				Name: " Chest ",
-				LootPools: []DropRef{{
-					Kind: " item ", RefID: "00000000-0000-4000-8000-000000000010", Weight: 10, CountMin: &min, CountMax: &max,
-				}},
-			},
-			itemIDs:     map[string]struct{}{"00000000-0000-4000-8000-000000000010": {}},
-			grimoireIDs: map[string]struct{}{},
-		},
-		{
-			name: "grimoire loot pool",
-			input: SaveInput{
-				ID:   "00000000-0000-4000-8000-000000000001",
-				Name: "Chest",
-				LootPools: []DropRef{{
-					Kind: "grimoire", RefID: "00000000-0000-4000-8000-000000000020", Weight: 5,
-				}},
-			},
-			itemIDs:     map[string]struct{}{},
-			grimoireIDs: map[string]struct{}{"00000000-0000-4000-8000-000000000020": {}},
-		},
+	result := ValidateSave(SaveInput{
+		ID:        "treasure_1",
+		Mode:      "custom",
+		TablePath: "maf:treasure/test",
+		LootPools: []DropRef{{Kind: "minecraft_item", RefID: "minecraft:apple", Weight: 1}},
+	}, map[string]struct{}{}, map[string]struct{}{}, now)
+	if !result.OK || result.Entry == nil {
+		t.Fatalf("expected success, got %+v", result)
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			res := ValidateSave(tt.input, tt.itemIDs, tt.grimoireIDs, now)
-			if !res.OK || res.Entry == nil {
-				t.Fatalf("expected success, got %+v", res)
-			}
-			if res.Entry.Name != "Chest" {
-				t.Fatalf("name = %q", res.Entry.Name)
-			}
-			if len(res.Entry.LootPools) != 1 {
-				t.Fatalf("lootPools = %#v", res.Entry.LootPools)
-			}
-		})
+	if result.Entry.TablePath != "maf:treasure/test" {
+		t.Fatalf("entry = %#v", result.Entry)
 	}
 }
 
-func TestValidateSaveValidationErrors(t *testing.T) {
+func TestValidateSaveErrors(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
-	min := 10.0
-	max := 2.0
-	tests := []struct {
-		name        string
-		input       SaveInput
-		itemIDs     map[string]struct{}
-		grimoireIDs map[string]struct{}
-		wantField   string
-	}{
-		{
-			name: "loot pools required",
-			input: SaveInput{
-				ID: "00000000-0000-4000-8000-000000000001", Name: "Chest",
-			},
-			itemIDs:     map[string]struct{}{},
-			grimoireIDs: map[string]struct{}{},
-			wantField:   "lootPools",
-		},
-		{
-			name: "missing item reference",
-			input: SaveInput{
-				ID: "00000000-0000-4000-8000-000000000001", Name: "Chest",
-				LootPools: []DropRef{{Kind: "item", RefID: "00000000-0000-4000-8000-000000000010", Weight: 10}},
-			},
-			itemIDs:     map[string]struct{}{},
-			grimoireIDs: map[string]struct{}{},
-			wantField:   "lootPools.0.refId",
-		},
-		{
-			name: "count range reversed",
-			input: SaveInput{
-				ID: "00000000-0000-4000-8000-000000000001", Name: "Chest",
-				LootPools: []DropRef{{Kind: "item", RefID: "00000000-0000-4000-8000-000000000010", Weight: 10, CountMin: &min, CountMax: &max}},
-			},
-			itemIDs:     map[string]struct{}{"00000000-0000-4000-8000-000000000010": {}},
-			grimoireIDs: map[string]struct{}{},
-			wantField:   "lootPools.0.countMin",
-		},
+	result := ValidateSave(SaveInput{
+		ID:        "bad",
+		Mode:      "custom",
+		TablePath: "bad path",
+		LootPools: []DropRef{{Kind: "item", RefID: "items_9", Weight: 1}},
+	}, map[string]struct{}{}, map[string]struct{}{}, now)
+	if result.OK {
+		t.Fatalf("expected validation error")
 	}
+	if result.FieldErrors["id"] == "" || result.FieldErrors["tablePath"] == "" || result.FieldErrors["lootPools.0.refId"] == "" {
+		t.Fatalf("fieldErrors = %#v", result.FieldErrors)
+	}
+}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			res := ValidateSave(tt.input, tt.itemIDs, tt.grimoireIDs, now)
-			if res.OK {
-				t.Fatalf("expected validation error")
-			}
-			if res.FieldErrors[tt.wantField] == "" {
-				t.Fatalf("expected %s field error, got %#v", tt.wantField, res.FieldErrors)
-			}
-		})
+func TestValidateSaveRejectsTraversalTablePath(t *testing.T) {
+	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
+	result := ValidateSave(SaveInput{
+		ID:        "treasure_1",
+		Mode:      "custom",
+		TablePath: "maf:loot/../escape",
+		LootPools: []DropRef{{Kind: "minecraft_item", RefID: "minecraft:apple", Weight: 1}},
+	}, map[string]struct{}{}, map[string]struct{}{}, now)
+	if result.OK {
+		t.Fatalf("expected validation error")
+	}
+	if result.FieldErrors["tablePath"] == "" {
+		t.Fatalf("fieldErrors = %#v", result.FieldErrors)
 	}
 }

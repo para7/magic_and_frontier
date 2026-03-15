@@ -192,3 +192,36 @@ func TestDefaultValidationMessage(t *testing.T) {
 		t.Fatalf("message = %q", msg)
 	}
 }
+
+func TestIsPrefixedSequenceID(t *testing.T) {
+	if !IsPrefixedSequenceID("items_12", "items_") {
+		t.Fatalf("expected prefixed sequence id to be valid")
+	}
+	if IsPrefixedSequenceID("items_x", "items_") {
+		t.Fatalf("expected invalid numeric suffix")
+	}
+	if IsPrefixedSequenceID("item_1", "items_") {
+		t.Fatalf("expected invalid prefix")
+	}
+}
+
+func TestResourcePathHelpers(t *testing.T) {
+	if !IsNamespacedResourceID("maf:loot/chest_1") {
+		t.Fatalf("expected namespaced resource id to be valid")
+	}
+	if !IsSafeNamespacedResourcePath("maf:loot/chest_1") {
+		t.Fatalf("expected safe namespaced resource path to be valid")
+	}
+	if IsSafeNamespacedResourcePath("maf:loot/../escape") {
+		t.Fatalf("expected traversal path to be invalid")
+	}
+	if HasSafeResourcePathSegments("loot/../escape") {
+		t.Fatalf("expected unsafe relative path segments to be rejected")
+	}
+	if !IsRelativeResourcePath("\\foo/bar_1") {
+		t.Fatalf("expected normalized relative path to be valid")
+	}
+	if NormalizeResourcePath("/foo/bar/") != "foo/bar" {
+		t.Fatalf("NormalizeResourcePath mismatch")
+	}
+}

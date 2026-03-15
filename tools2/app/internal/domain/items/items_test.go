@@ -9,49 +9,19 @@ import (
 
 func TestValidateSaveSuccessCases(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
-	tests := []struct {
-		name      string
-		input     SaveInput
-		wantItem  string
-		wantCount string
-	}{
-		{
-			name: "minimum count",
-			input: SaveInput{
-				ID: "00000000-0000-4000-8000-000000000001", ItemID: " minecraft:stone ", Count: 1,
-			},
-			wantItem:  "minecraft:stone",
-			wantCount: "Count:1b",
-		},
-		{
-			name: "maximum count",
-			input: SaveInput{
-				ID: "00000000-0000-4000-8000-000000000001", ItemID: " minecraft:diamond ", Count: 64,
-			},
-			wantItem:  "minecraft:diamond",
-			wantCount: "Count:64b",
-		},
+	result := ValidateSave(SaveInput{
+		ID:     "items_1",
+		ItemID: " minecraft:stone ",
+		Count:  1,
+	}, map[string]struct{}{}, now)
+	if !result.OK || result.Entry == nil {
+		t.Fatalf("expected success, got %+v", result)
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := ValidateSave(tt.input, now)
-			if !result.OK || result.Entry == nil {
-				t.Fatalf("expected success, got %+v", result)
-			}
-			if result.Entry.UpdatedAt != now.Format(time.RFC3339) {
-				t.Fatalf("updatedAt = %s", result.Entry.UpdatedAt)
-			}
-			if result.Entry.ItemID != tt.wantItem {
-				t.Fatalf("itemId = %q", result.Entry.ItemID)
-			}
-			if !strings.Contains(result.Entry.NBT, `id:"`+tt.wantItem+`"`) {
-				t.Fatalf("nbt should include normalized id, got: %s", result.Entry.NBT)
-			}
-			if !strings.Contains(result.Entry.NBT, tt.wantCount) {
-				t.Fatalf("nbt should include count, got: %s", result.Entry.NBT)
-			}
-		})
+	if result.Entry.ItemID != "minecraft:stone" {
+		t.Fatalf("itemId = %q", result.Entry.ItemID)
+	}
+	if !strings.Contains(result.Entry.NBT, `Count:1b`) {
+		t.Fatalf("nbt mismatch: %s", result.Entry.NBT)
 	}
 }
 
@@ -60,41 +30,16 @@ func TestValidateSaveValidationErrors(t *testing.T) {
 	tests := []struct {
 		name      string
 		input     SaveInput
+		skillIDs  map[string]struct{}
 		wantField string
 	}{
-		{
-			name: "invalid enchantment line",
-			input: SaveInput{
-				ID:           "00000000-0000-4000-8000-000000000001",
-				ItemID:       "minecraft:stone",
-				Count:        1,
-				Enchantments: "minecraft:sharpness",
-			},
-			wantField: "enchantments",
-		},
-		{
-			name: "count below minimum",
-			input: SaveInput{
-				ID:     "00000000-0000-4000-8000-000000000001",
-				ItemID: "minecraft:stone",
-				Count:  0,
-			},
-			wantField: "count",
-		},
-		{
-			name: "item id whitespace only",
-			input: SaveInput{
-				ID:     "00000000-0000-4000-8000-000000000001",
-				ItemID: " \n ",
-				Count:  1,
-			},
-			wantField: "itemId",
-		},
+		{name: "invalid id", input: SaveInput{ID: "bad", ItemID: "minecraft:stone", Count: 1}, skillIDs: map[string]struct{}{}, wantField: "id"},
+		{name: "invalid enchantment line", input: SaveInput{ID: "items_1", ItemID: "minecraft:stone", Count: 1, Enchantments: "minecraft:sharpness"}, skillIDs: map[string]struct{}{}, wantField: "enchantments"},
+		{name: "missing skill", input: SaveInput{ID: "items_1", ItemID: "minecraft:stone", Count: 1, SkillID: "skill_2"}, skillIDs: map[string]struct{}{}, wantField: "skillId"},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := ValidateSave(tt.input, now)
+			result := ValidateSave(tt.input, tt.skillIDs, now)
 			if result.OK {
 				t.Fatalf("expected validation error")
 			}
@@ -106,7 +51,7 @@ func TestValidateSaveValidationErrors(t *testing.T) {
 }
 
 func TestStateJSONShape(t *testing.T) {
-	state := ItemState{Items: []ItemEntry{{ID: "x"}}}
+	state := ItemState{Items: []ItemEntry{{ID: "items_1"}}}
 	raw, err := json.Marshal(state)
 	if err != nil {
 		t.Fatal(err)

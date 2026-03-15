@@ -6,8 +6,10 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
+	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/enemyskills"
 	"tools2/app/internal/domain/grimoire"
@@ -74,7 +76,6 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 	if err != nil {
 		return exportFailure("INVALID_CONFIG", "Invalid export settings.", err)
 	}
-
 	if err := writeDatapackScaffold(settings); err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
@@ -95,7 +96,7 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
-	enemyStats, err := generateEnemyOutputs(settings, params.Enemies, params.Treasures, params.ItemState.Items, params.GrimoireState.Entries)
+	enemyStats, err := generateEnemyOutputs(settings, params.Enemies, params.ItemState.Items, params.GrimoireState.Entries)
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
@@ -115,7 +116,7 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 		EnemyLootTables:     enemyStats.EnemyLootTables,
 		TreasureLootTables:  treasureStats.TreasureLootTables,
 	}
-	stats.TotalFiles = stats.ItemFunctions + stats.ItemLootTables + stats.SpellFunctions + stats.SpellLootTables + stats.SkillFunctions + stats.EnemySkillFunctions + stats.EnemyFunctions + stats.EnemyLootTables + stats.TreasureLootTables + 3
+	stats.TotalFiles = stats.ItemFunctions + stats.ItemLootTables + stats.SpellFunctions + stats.SpellLootTables + stats.SkillFunctions + stats.EnemySkillFunctions + stats.EnemyFunctions + stats.EnemyLootTables + stats.TreasureLootTables + 2
 
 	return SaveDataResponse{
 		OK:         true,
@@ -234,7 +235,7 @@ func loadExportSettings(settingsPath string) (ExportSettings, error) {
 		return ExportSettings{}, err
 	}
 
-	settings := ExportSettings{
+	return ExportSettings{
 		OutputRoot:       filepath.Clean(filepath.Join(baseDir, outputRoot)),
 		Namespace:        namespace,
 		TemplatePackPath: filepath.Clean(filepath.Join(baseDir, templatePackPath)),
@@ -251,8 +252,7 @@ func loadExportSettings(settingsPath string) (ExportSettings, error) {
 			DebugFunctionDir:      debugFunctionDir,
 			MinecraftTagDir:       minecraftTagDir,
 		},
-	}
-	return settings, nil
+	}, nil
 }
 
 func requireString(value any, key string) (string, error) {
@@ -323,8 +323,7 @@ func writeDatapackScaffold(settings ExportSettings) error {
 	if err := os.MkdirAll(filepath.Dir(loadTagPath), 0o755); err != nil {
 		return err
 	}
-	loadTag := map[string]any{"values": []string{settings.Namespace + ":load"}}
-	if err := writeJSON(loadTagPath, loadTag); err != nil {
+	if err := writeJSON(loadTagPath, map[string]any{"values": []string{settings.Namespace + ":load"}}); err != nil {
 		return err
 	}
 
@@ -345,40 +344,14 @@ func generateItemOutputs(settings ExportSettings, entries []items.ItemEntry) (it
 		return itemOutputStats{}, err
 	}
 	for _, entry := range entries {
-		functionPath := filepath.Join(functionRoot, entry.ID+".mcfunction")
-		lootPath := filepath.Join(lootRoot, entry.ID+".json")
-		lines := []string{
+		if err := os.WriteFile(filepath.Join(functionRoot, entry.ID+".mcfunction"), []byte(strings.Join([]string{
 			fmt.Sprintf("# itemId=%s sourceId=%s", entry.ItemID, entry.ID),
 			fmt.Sprintf("loot give @s loot %s:item/%s", settings.Namespace, entry.ID),
-		}
-		if err := os.WriteFile(functionPath, []byte(strings.Join(lines, "\n")+"\n"), 0o644); err != nil {
+			"",
+		}, "\n")), 0o644); err != nil {
 			return itemOutputStats{}, err
 		}
-		lootTable := map[string]any{
-			"type": "minecraft:generic",
-			"pools": []any{
-				map[string]any{
-					"rolls": 1,
-					"entries": []any{
-						map[string]any{
-							"type": "minecraft:item",
-							"name": entry.ItemID,
-							"functions": []any{
-								map[string]any{
-									"function": "minecraft:set_count",
-									"count":    entry.Count,
-								},
-								map[string]any{
-									"function": "minecraft:set_custom_data",
-									"tag":      fmt.Sprintf("{maf:{item_id:%s,source_id:%s,nbt_snapshot:%s}}", jsonString(entry.ItemID), jsonString(entry.ID), jsonString(entry.NBT)),
-								},
-							},
-						},
-					},
-				},
-			},
-		}
-		if err := writeJSON(lootPath, lootTable); err != nil {
+		if err := writeJSON(filepath.Join(lootRoot, entry.ID+".json"), toItemLootTable(entry, entry.Count)); err != nil {
 			return itemOutputStats{}, err
 		}
 	}
@@ -394,26 +367,21 @@ func generateGrimoireOutputs(settings ExportSettings, entries []grimoire.Grimoir
 	if err := os.MkdirAll(lootRoot, 0o755); err != nil {
 		return spellOutputStats{}, err
 	}
-	count := 0
+
+	dispatchLines := make([]string, 0, len(entries))
 	for _, entry := range entries {
-		for idx, variant := range entry.Variants {
-			count++
-			base := fmt.Sprintf("cast_%d_v%d", entry.CastID, idx+1)
-			functionPath := filepath.Join(functionRoot, base+".mcfunction")
-			lootPath := filepath.Join(lootRoot, base+".json")
-			lines := []string{
-				fmt.Sprintf("# castid=%d variant=%d sourceId=%s", entry.CastID, idx+1, entry.ID),
-				toSpellGiveCommand(entry, variant),
-			}
-			if err := os.WriteFile(functionPath, []byte(strings.Join(lines, "\n")+"\n"), 0o644); err != nil {
-				return spellOutputStats{}, err
-			}
-			if err := writeJSON(lootPath, toSpellLootTable(entry, variant)); err != nil {
-				return spellOutputStats{}, err
-			}
+		if err := os.WriteFile(filepath.Join(functionRoot, entry.ID+".mcfunction"), []byte(normalizeFunctionBody(entry.Script)), 0o644); err != nil {
+			return spellOutputStats{}, err
 		}
+		if err := writeJSON(filepath.Join(lootRoot, entry.ID+".json"), toSpellLootTable(entry)); err != nil {
+			return spellOutputStats{}, err
+		}
+		dispatchLines = append(dispatchLines, fmt.Sprintf("execute if entity @s[scores={mafCastID=%d}] run function %s", entry.CastID, functionResourceID(settings, settings.Paths.SpellFunctionDir, entry.ID)))
 	}
-	return spellOutputStats{SpellFunctions: count, SpellLootTables: count}, nil
+	if err := os.WriteFile(filepath.Join(functionRoot, "selectexec.mcfunction"), []byte(strings.Join(dispatchLines, "\n")+"\n"), 0o644); err != nil {
+		return spellOutputStats{}, err
+	}
+	return spellOutputStats{SpellFunctions: len(entries) + 1, SpellLootTables: len(entries)}, nil
 }
 
 func generateSkillOutputs(settings ExportSettings, entries []skills.SkillEntry) (skillOutputStats, error) {
@@ -442,7 +410,7 @@ func generateEnemySkillOutputs(settings ExportSettings, entries []enemyskills.En
 	return enemySkillOutputStats{EnemySkillFunctions: len(entries)}, nil
 }
 
-func generateEnemyOutputs(settings ExportSettings, entries []enemies.EnemyEntry, treasuresState []treasures.TreasureEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (enemyOutputStats, error) {
+func generateEnemyOutputs(settings ExportSettings, entries []enemies.EnemyEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (enemyOutputStats, error) {
 	functionRoot := filepath.Join(settings.OutputRoot, settings.Paths.EnemyFunctionDir)
 	lootRoot := filepath.Join(settings.OutputRoot, settings.Paths.EnemyLootDir)
 	if err := os.MkdirAll(functionRoot, 0o755); err != nil {
@@ -451,10 +419,7 @@ func generateEnemyOutputs(settings ExportSettings, entries []enemies.EnemyEntry,
 	if err := os.MkdirAll(lootRoot, 0o755); err != nil {
 		return enemyOutputStats{}, err
 	}
-	treasuresByID := map[string]treasures.TreasureEntry{}
-	for _, entry := range treasuresState {
-		treasuresByID[entry.ID] = entry
-	}
+
 	itemsByID := map[string]items.ItemEntry{}
 	for _, entry := range itemEntries {
 		itemsByID[entry.ID] = entry
@@ -465,20 +430,14 @@ func generateEnemyOutputs(settings ExportSettings, entries []enemies.EnemyEntry,
 	}
 
 	for _, entry := range entries {
-		functionPath := filepath.Join(functionRoot, entry.ID+".mcfunction")
-		lootPath := filepath.Join(lootRoot, entry.ID+".json")
-		drops, err := resolveEnemyDrops(entry, treasuresByID)
+		lootTable, err := buildDropLootTable(toTreasureDrops(entry.Drops), itemsByID, grimoiresByID, "enemy("+entry.ID+")")
 		if err != nil {
 			return enemyOutputStats{}, err
 		}
-		if err := os.WriteFile(functionPath, []byte(strings.Join(toEnemyFunctionLines(entry), "\n")+"\n"), 0o644); err != nil {
+		if err := writeJSON(filepath.Join(lootRoot, entry.ID+".json"), lootTable); err != nil {
 			return enemyOutputStats{}, err
 		}
-		lootTable, err := buildDropLootTable(drops, itemsByID, grimoiresByID, "enemy("+entry.ID+")")
-		if err != nil {
-			return enemyOutputStats{}, err
-		}
-		if err := writeJSON(lootPath, lootTable); err != nil {
+		if err := os.WriteFile(filepath.Join(functionRoot, entry.ID+".mcfunction"), []byte(strings.Join(toEnemyFunctionLines(settings, entry, itemsByID), "\n")+"\n"), 0o644); err != nil {
 			return enemyOutputStats{}, err
 		}
 	}
@@ -486,10 +445,6 @@ func generateEnemyOutputs(settings ExportSettings, entries []enemies.EnemyEntry,
 }
 
 func generateTreasureOutputs(settings ExportSettings, entries []treasures.TreasureEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (treasureOutputStats, error) {
-	lootRoot := filepath.Join(settings.OutputRoot, settings.Paths.TreasureLootDir)
-	if err := os.MkdirAll(lootRoot, 0o755); err != nil {
-		return treasureOutputStats{}, err
-	}
 	itemsByID := map[string]items.ItemEntry{}
 	for _, entry := range itemEntries {
 		itemsByID[entry.ID] = entry
@@ -506,21 +461,15 @@ func generateTreasureOutputs(settings ExportSettings, entries []treasures.Treasu
 		if err != nil {
 			return treasureOutputStats{}, err
 		}
-		if err := writeJSON(filepath.Join(lootRoot, entry.ID+".json"), lootTable); err != nil {
+		outPath, err := treasureOutputPath(settings, entry.TablePath)
+		if err != nil {
+			return treasureOutputStats{}, err
+		}
+		if err := writeJSON(outPath, lootTable); err != nil {
 			return treasureOutputStats{}, err
 		}
 	}
 	return treasureOutputStats{TreasureLootTables: len(entries)}, nil
-}
-
-func resolveEnemyDrops(entry enemies.EnemyEntry, treasuresByID map[string]treasures.TreasureEntry) ([]treasures.DropRef, error) {
-	if len(entry.DropTable) > 0 {
-		return toTreasureDrops(entry.DropTable), nil
-	}
-	if treasure, ok := treasuresByID[entry.DropTableID]; ok && len(treasure.LootPools) > 0 {
-		return treasure.LootPools, nil
-	}
-	return nil, fmt.Errorf("enemy(%s): drop table was not found", entry.ID)
 }
 
 func toTreasureDrops(drops []enemies.DropRef) []treasures.DropRef {
@@ -540,58 +489,35 @@ func toTreasureDrops(drops []enemies.DropRef) []treasures.DropRef {
 func buildDropLootTable(drops []treasures.DropRef, itemsByID map[string]items.ItemEntry, grimoiresByID map[string]grimoire.GrimoireEntry, context string) (map[string]any, error) {
 	entries := make([]any, 0, len(drops))
 	for _, drop := range drops {
-		if drop.Kind == "item" {
+		switch drop.Kind {
+		case "minecraft_item":
+			entries = append(entries, map[string]any{
+				"type":   "minecraft:item",
+				"name":   drop.RefID,
+				"weight": toWeight(drop.Weight),
+				"functions": []any{
+					map[string]any{"function": "minecraft:set_count", "count": toCountValue(drop.CountMin, drop.CountMax)},
+				},
+			})
+		case "item":
 			item, ok := itemsByID[drop.RefID]
 			if !ok {
 				return nil, fmt.Errorf("%s: referenced item not found (%s)", context, drop.RefID)
 			}
-			entries = append(entries, map[string]any{
-				"type":   "minecraft:item",
-				"name":   item.ItemID,
-				"weight": toWeight(drop.Weight),
-				"functions": []any{
-					map[string]any{
-						"function": "minecraft:set_count",
-						"count":    toCountValue(drop.CountMin, drop.CountMax),
-					},
-					map[string]any{
-						"function": "minecraft:set_custom_data",
-						"tag":      fmt.Sprintf("{maf:{source_id:%s}}", jsonString(drop.RefID)),
-					},
-				},
-			})
-			continue
+			entry := toItemLootEntry(item, drop.CountMin, drop.CountMax)
+			entry["weight"] = toWeight(drop.Weight)
+			entries = append(entries, entry)
+		case "grimoire":
+			entry, ok := grimoiresByID[drop.RefID]
+			if !ok {
+				return nil, fmt.Errorf("%s: referenced grimoire not found (%s)", context, drop.RefID)
+			}
+			out := toSpellLootEntry(entry, drop.CountMin, drop.CountMax)
+			out["weight"] = toWeight(drop.Weight)
+			entries = append(entries, out)
+		default:
+			return nil, fmt.Errorf("%s: unsupported drop kind (%s)", context, drop.Kind)
 		}
-		entry, ok := grimoiresByID[drop.RefID]
-		if !ok {
-			return nil, fmt.Errorf("%s: referenced grimoire not found (%s)", context, drop.RefID)
-		}
-		functions := []any{
-			map[string]any{
-				"function": "minecraft:set_count",
-				"count":    toCountValue(drop.CountMin, drop.CountMax),
-			},
-			map[string]any{
-				"function": "minecraft:set_name",
-				"name":     map[string]any{"text": entry.Title},
-			},
-		}
-		if lore := toLoreComponents(entry.Description); len(lore) > 0 {
-			functions = append(functions, map[string]any{
-				"function": "minecraft:set_lore",
-				"lore":     lore,
-			})
-		}
-		functions = append(functions, map[string]any{
-			"function": "minecraft:set_custom_data",
-			"tag":      fmt.Sprintf("{maf:{source_id:%s,%s}}", jsonString(drop.RefID), toPrimarySpellCustomData(entry)),
-		})
-		entries = append(entries, map[string]any{
-			"type":      "minecraft:item",
-			"name":      "minecraft:written_book",
-			"weight":    toWeight(drop.Weight),
-			"functions": functions,
-		})
 	}
 	return map[string]any{
 		"type": "minecraft:generic",
@@ -604,24 +530,92 @@ func buildDropLootTable(drops []treasures.DropRef, itemsByID map[string]items.It
 	}, nil
 }
 
-func toEnemyFunctionLines(entry enemies.EnemyEntry) []string {
+func toEnemyFunctionLines(settings ExportSettings, entry enemies.EnemyEntry, itemsByID map[string]items.ItemEntry) []string {
+	lootID := lootTableResourceID(settings, settings.Paths.EnemyLootDir, entry.ID)
 	lines := []string{
-		fmt.Sprintf("# enemyId=%s name=%s", entry.ID, firstNonEmpty(entry.Name, entry.ID)),
-		fmt.Sprintf("# distance=%v..%v", entry.SpawnRule.Distance.Min, entry.SpawnRule.Distance.Max),
-		fmt.Sprintf("execute positioned %v %v %v run summon minecraft:zombie ~ ~ ~", entry.SpawnRule.Origin.X, entry.SpawnRule.Origin.Y, entry.SpawnRule.Origin.Z),
-	}
-	if entry.SpawnRule.AxisBounds != nil {
-		raw, _ := json.Marshal(entry.SpawnRule.AxisBounds)
-		lines = append([]string{lines[0], lines[1], "# axisBounds=" + strings.ReplaceAll(string(raw), " ", "")}, lines[2:]...)
+		fmt.Sprintf("# enemyId=%s mobType=%s", entry.ID, entry.MobType),
+		fmt.Sprintf("# dropMode=%s", entry.DropMode),
+		fmt.Sprintf("summon %s ~ ~ ~ %s", entry.MobType, enemySummonNBT(lootID, entry, itemsByID)),
 	}
 	return lines
 }
 
-func firstNonEmpty(value, fallback string) string {
-	if strings.TrimSpace(value) == "" {
-		return fallback
+func enemySummonNBT(lootID string, entry enemies.EnemyEntry, itemsByID map[string]items.ItemEntry) string {
+	parts := []string{
+		fmt.Sprintf("Health:%sf", formatFloat(entry.HP)),
+		fmt.Sprintf("DeathLootTable:%s", jsonString(lootID)),
 	}
-	return value
+	if entry.Name != "" {
+		parts = append(parts, fmt.Sprintf("CustomName:%s", singleQuotedJSON(map[string]string{"text": entry.Name})))
+	}
+	if tags := enemyTags(entry); len(tags) > 0 {
+		parts = append(parts, fmt.Sprintf("Tags:[%s]", strings.Join(tags, ",")))
+	}
+	if attrs := enemyAttributes(entry); len(attrs) > 0 {
+		parts = append(parts, fmt.Sprintf("Attributes:[%s]", strings.Join(attrs, ",")))
+	}
+	if handItems, handDrops := equipmentArray(itemsByID, entry.Equipment.Mainhand, entry.Equipment.Offhand); handItems != "" {
+		parts = append(parts, "HandItems:["+handItems+"]", "HandDropChances:["+handDrops+"]")
+	}
+	if armorItems, armorDrops := equipmentArray(itemsByID, entry.Equipment.Feet, entry.Equipment.Legs, entry.Equipment.Chest, entry.Equipment.Head); armorItems != "" {
+		parts = append(parts, "ArmorItems:["+armorItems+"]", "ArmorDropChances:["+armorDrops+"]")
+	}
+	return "{" + strings.Join(parts, ",") + "}"
+}
+
+func enemyTags(entry enemies.EnemyEntry) []string {
+	tags := []string{jsonString("maf_enemy"), jsonString("maf_enemy_" + entry.ID)}
+	for _, skillID := range entry.EnemySkillIDs {
+		tags = append(tags, jsonString("maf_enemy_skill_"+skillID))
+	}
+	return tags
+}
+
+func enemyAttributes(entry enemies.EnemyEntry) []string {
+	attrs := []string{
+		fmt.Sprintf("{Name:generic.max_health,Base:%s}", formatFloat(entry.HP)),
+	}
+	if entry.Attack != nil {
+		attrs = append(attrs, fmt.Sprintf("{Name:generic.attack_damage,Base:%s}", formatFloat(*entry.Attack)))
+	}
+	if entry.Defense != nil {
+		attrs = append(attrs, fmt.Sprintf("{Name:generic.armor,Base:%s}", formatFloat(*entry.Defense)))
+	}
+	if entry.MoveSpeed != nil {
+		attrs = append(attrs, fmt.Sprintf("{Name:generic.movement_speed,Base:%s}", formatFloat(*entry.MoveSpeed)))
+	}
+	return attrs
+}
+
+func equipmentArray(itemsByID map[string]items.ItemEntry, slots ...*enemies.EquipmentSlot) (string, string) {
+	itemsOut := make([]string, 0, len(slots))
+	dropsOut := make([]string, 0, len(slots))
+	for _, slot := range slots {
+		if slot == nil {
+			itemsOut = append(itemsOut, "{}")
+			dropsOut = append(dropsOut, "0.085F")
+			continue
+		}
+		itemsOut = append(itemsOut, fmt.Sprintf("{id:%s,Count:%db}", jsonString(resolveEquipmentItemID(slot, itemsByID)), slot.Count))
+		dropChance := 0.085
+		if slot.DropChance != nil {
+			dropChance = *slot.DropChance
+		}
+		dropsOut = append(dropsOut, formatFloat(dropChance)+"F")
+	}
+	return strings.Join(itemsOut, ","), strings.Join(dropsOut, ",")
+}
+
+func resolveEquipmentItemID(slot *enemies.EquipmentSlot, itemsByID map[string]items.ItemEntry) string {
+	if slot == nil {
+		return ""
+	}
+	if slot.Kind == "item" {
+		if entry, ok := itemsByID[slot.RefID]; ok && entry.ItemID != "" {
+			return entry.ItemID
+		}
+	}
+	return slot.RefID
 }
 
 func normalizeFunctionBody(script string) string {
@@ -631,63 +625,85 @@ func normalizeFunctionBody(script string) string {
 	return script + "\n"
 }
 
-func toSpellLootTable(entry grimoire.GrimoireEntry, variant grimoire.Variant) map[string]any {
-	functions := []any{
-		map[string]any{
-			"function": "minecraft:set_name",
-			"name":     map[string]any{"text": entry.Title},
-		},
-	}
-	if lore := toLoreComponents(entry.Description); len(lore) > 0 {
-		functions = append(functions, map[string]any{
-			"function": "minecraft:set_lore",
-			"lore":     lore,
-		})
-	}
-	functions = append(functions, map[string]any{
-		"function": "minecraft:set_custom_data",
-		"tag":      fmt.Sprintf("{%s}", toSpellCustomData(entry, variant)),
-	})
+func toSpellLootTable(entry grimoire.GrimoireEntry) map[string]any {
 	return map[string]any{
 		"type": "minecraft:generic",
 		"pools": []any{
 			map[string]any{
 				"rolls": 1,
 				"entries": []any{
-					map[string]any{
-						"type":      "minecraft:item",
-						"name":      "minecraft:written_book",
-						"functions": functions,
-					},
+					toSpellLootEntry(entry, ptrFloat(1), ptrFloat(1)),
 				},
 			},
 		},
 	}
 }
 
-func toSpellGiveCommand(entry grimoire.GrimoireEntry, variant grimoire.Variant) string {
-	customName := "'" + strings.ReplaceAll(string(mustJSON(map[string]string{"text": entry.Title})), "'", "\\'") + "'"
-	loreParts := make([]string, 0)
-	for _, line := range linesToLoreValues(entry.Description) {
-		loreParts = append(loreParts, "'"+strings.ReplaceAll(string(mustJSON(map[string]string{"text": line})), "'", "\\'")+"'")
+func toItemLootTable(entry items.ItemEntry, count int) map[string]any {
+	value := float64(count)
+	return map[string]any{
+		"type": "minecraft:generic",
+		"pools": []any{
+			map[string]any{
+				"rolls": 1,
+				"entries": []any{
+					toItemLootEntry(entry, &value, &value),
+				},
+			},
+		},
 	}
-	loreValue := ""
-	if len(loreParts) > 0 {
-		loreValue = ",lore:[" + strings.Join(loreParts, ",") + "]"
-	}
-	return fmt.Sprintf("give @s minecraft:written_book[custom_name=%s%s,custom_data={%s}] 1", customName, loreValue, toSpellCustomData(entry, variant))
 }
 
-func toSpellCustomData(entry grimoire.GrimoireEntry, variant grimoire.Variant) string {
-	return fmt.Sprintf("maf:{spell:{castid:%d,cost:%d,cast:%d,title:%s,description:%s,script:%s}}", entry.CastID, variant.Cost, variant.Cast, jsonString(entry.Title), jsonString(entry.Description), jsonString(entry.Script))
+func toItemLootEntry(entry items.ItemEntry, min, max *float64) map[string]any {
+	return map[string]any{
+		"type": "minecraft:item",
+		"name": entry.ItemID,
+		"functions": []any{
+			map[string]any{"function": "minecraft:set_count", "count": toCountValue(min, max)},
+			map[string]any{"function": "minecraft:set_custom_data", "tag": itemCustomData(entry)},
+		},
+	}
 }
 
-func toPrimarySpellCustomData(entry grimoire.GrimoireEntry) string {
-	primary := grimoire.Variant{}
-	if len(entry.Variants) > 0 {
-		primary = entry.Variants[0]
+func toSpellLootEntry(entry grimoire.GrimoireEntry, min, max *float64) map[string]any {
+	functions := []any{
+		map[string]any{"function": "minecraft:set_count", "count": toCountValue(min, max)},
+		map[string]any{"function": "minecraft:set_name", "name": map[string]any{"text": entry.Title}},
 	}
-	return fmt.Sprintf("spell:{castid:%d,cost:%d,cast:%d,title:%s,description:%s,script:%s}", entry.CastID, primary.Cost, primary.Cast, jsonString(entry.Title), jsonString(entry.Description), jsonString(entry.Script))
+	if lore := toLoreComponents(entry.Description); len(lore) > 0 {
+		functions = append(functions, map[string]any{"function": "minecraft:set_lore", "lore": lore})
+	}
+	functions = append(functions, map[string]any{"function": "minecraft:set_custom_data", "tag": spellCustomData(entry)})
+	return map[string]any{
+		"type":      "minecraft:item",
+		"name":      "minecraft:written_book",
+		"functions": functions,
+	}
+}
+
+func itemCustomData(entry items.ItemEntry) string {
+	parts := []string{
+		fmt.Sprintf("item_id:%s", jsonString(entry.ItemID)),
+		fmt.Sprintf("source_id:%s", jsonString(entry.ID)),
+		fmt.Sprintf("nbt_snapshot:%s", jsonString(entry.NBT)),
+	}
+	if entry.SkillID != "" {
+		parts = append(parts, "maf_skill:1b", fmt.Sprintf("maf_skill_id:%s", jsonString(entry.SkillID)))
+	}
+	return "{maf:{" + strings.Join(parts, ",") + "}}"
+}
+
+func spellCustomData(entry grimoire.GrimoireEntry) string {
+	return fmt.Sprintf("{maf:{grimoire_id:%s,spell:{castid:%d,cost:%d,cast:%d,title:%s,description:%s}}}", jsonString(entry.ID), entry.CastID, entry.MPCost, entry.CastTime, jsonString(entry.Title), jsonString(entry.Description))
+}
+
+func toLoreComponents(value string) []any {
+	lines := linesToLoreValues(value)
+	out := make([]any, 0, len(lines))
+	for _, line := range lines {
+		out = append(out, map[string]any{"text": line})
+	}
+	return out
 }
 
 func linesToLoreValues(value string) []string {
@@ -698,15 +714,6 @@ func linesToLoreValues(value string) []string {
 		if line != "" {
 			out = append(out, line)
 		}
-	}
-	return out
-}
-
-func toLoreComponents(value string) []any {
-	lines := linesToLoreValues(value)
-	out := make([]any, 0, len(lines))
-	for _, line := range lines {
-		out = append(out, map[string]any{"text": line})
 	}
 	return out
 }
@@ -741,8 +748,42 @@ func isFinite(v float64) bool {
 	return !math.IsNaN(v) && !math.IsInf(v, 0)
 }
 
+func functionResourceID(settings ExportSettings, relativeDir, baseName string) string {
+	resourcePath := strings.TrimPrefix(filepath.ToSlash(relativeDir), "data/"+settings.Namespace+"/function/")
+	resourcePath = strings.Trim(resourcePath, "/")
+	if resourcePath == "" {
+		return settings.Namespace + ":" + baseName
+	}
+	return settings.Namespace + ":" + resourcePath + "/" + baseName
+}
+
+func lootTableResourceID(settings ExportSettings, relativeDir, baseName string) string {
+	prefix := "data/" + settings.Namespace + "/loot_table/"
+	resourcePath := strings.TrimPrefix(filepath.ToSlash(relativeDir), prefix)
+	resourcePath = strings.Trim(resourcePath, "/")
+	if resourcePath == "" {
+		return settings.Namespace + ":" + baseName
+	}
+	return settings.Namespace + ":" + resourcePath + "/" + baseName
+}
+
+func treasureOutputPath(settings ExportSettings, tablePath string) (string, error) {
+	if !common.IsSafeNamespacedResourcePath(tablePath) {
+		return "", fmt.Errorf("invalid treasure table path: %s", tablePath)
+	}
+	parts := strings.SplitN(tablePath, ":", 2)
+	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+		return "", fmt.Errorf("invalid treasure table path: %s", tablePath)
+	}
+	return filepath.Join(settings.OutputRoot, "data", parts[0], "loot_table", filepath.FromSlash(common.NormalizeResourcePath(parts[1]))+".json"), nil
+}
+
 func jsonString(value string) string {
 	return string(mustJSON(value))
+}
+
+func singleQuotedJSON(value any) string {
+	return "'" + strings.ReplaceAll(string(mustJSON(value)), "'", "\\'") + "'"
 }
 
 func mustJSON(value any) []byte {
@@ -753,13 +794,23 @@ func mustJSON(value any) []byte {
 	return data
 }
 
+func ptrFloat(v float64) *float64 {
+	return &v
+}
+
+func formatFloat(v float64) string {
+	return strconv.FormatFloat(v, 'f', -1, 64)
+}
+
 func writeJSON(path string, value any) error {
 	data, err := json.MarshalIndent(value, "", "  ")
 	if err != nil {
 		return err
 	}
-	data = append(data, '\n')
-	return os.WriteFile(path, data, 0o644)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return err
+	}
+	return os.WriteFile(path, append(data, '\n'), 0o644)
 }
 
 func exportFailure(code, message string, err error) SaveDataResponse {

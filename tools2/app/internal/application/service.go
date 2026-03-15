@@ -15,6 +15,7 @@ import (
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/export"
+	"tools2/app/internal/idseq"
 	"tools2/app/internal/store"
 )
 
@@ -25,6 +26,7 @@ type Dependencies struct {
 	EnemySkillRepo     store.EntryStateRepository[enemyskills.EnemySkillEntry]
 	EnemyRepo          store.EntryStateRepository[enemies.EnemyEntry]
 	TreasureRepo       store.EntryStateRepository[treasures.TreasureEntry]
+	CounterRepo        store.CounterRepository
 	ExportSettingsPath string
 	Now                func() time.Time
 }
@@ -72,6 +74,7 @@ func DefaultDependencies(cfg config.Config) Dependencies {
 		EnemySkillRepo:     store.NewEntryStateRepository[enemyskills.EnemySkillEntry](cfg.EnemySkillStatePath),
 		EnemyRepo:          store.NewEntryStateRepository[enemies.EnemyEntry](cfg.EnemyStatePath),
 		TreasureRepo:       store.NewEntryStateRepository[treasures.TreasureEntry](cfg.TreasureStatePath),
+		CounterRepo:        store.NewCounterRepository(cfg.IDCounterStatePath),
 		ExportSettingsPath: cfg.ExportSettingsPath,
 		Now:                time.Now,
 	}
@@ -96,6 +99,9 @@ func NewService(cfg config.Config, deps Dependencies) Service {
 	}
 	if deps.TreasureRepo == nil {
 		deps.TreasureRepo = defaults.TreasureRepo
+	}
+	if deps.CounterRepo == nil {
+		deps.CounterRepo = defaults.CounterRepo
 	}
 	if deps.ExportSettingsPath == "" {
 		deps.ExportSettingsPath = defaults.ExportSettingsPath
@@ -147,6 +153,31 @@ func (s Service) ValidateAll() (ValidationReport, error) {
 		return ValidationReport{}, err
 	}
 	return ValidateBundle(states, s.deps.ExportSettingsPath, s.deps.Now()), nil
+}
+
+func (s Service) AllocateID(kind idseq.Kind) (string, error) {
+	state, err := s.deps.CounterRepo.LoadCounterState()
+	if err != nil {
+		return "", err
+	}
+	next, id := idseq.NextID(state, kind)
+	if err := s.deps.CounterRepo.SaveCounterState(next); err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
+func (s Service) AllocateGrimoireIdentity() (string, int, error) {
+	state, err := s.deps.CounterRepo.LoadCounterState()
+	if err != nil {
+		return "", 0, err
+	}
+	next, id := idseq.NextID(state, idseq.KindGrimoire)
+	next, castID := idseq.NextCastID(next)
+	if err := s.deps.CounterRepo.SaveCounterState(next); err != nil {
+		return "", 0, err
+	}
+	return id, castID, nil
 }
 
 func (s Service) ExportDatapack() export.SaveDataResponse {
@@ -213,36 +244,50 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, now time.Time
 
 	itemIDs := entryIDs(states.ItemState.Items, func(entry items.ItemEntry) string { return entry.ID })
 	grimoireIDs := entryIDs(states.GrimoireState.Entries, func(entry grimoire.GrimoireEntry) string { return entry.ID })
+	skillIDs := entryIDs(states.SkillState.Entries, func(entry skills.SkillEntry) string { return entry.ID })
 	enemySkillIDs := entryIDs(states.EnemySkillState.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
-	treasureIDs := entryIDs(states.TreasureState.Entries, func(entry treasures.TreasureEntry) string { return entry.ID })
+	customTreasurePaths := map[string]string{}
+	castIDs := map[int]string{}
 
 	for _, entry := range states.ItemState.Items {
-		appendSaveIssues(&report, "item", entry.ID, items.ValidateSave(itemToInput(entry), now))
+		appendSaveIssues(&report, "item", entry.ID, items.ValidateSave(itemToInput(entry), skillIDs, now))
 	}
 	for _, entry := range states.GrimoireState.Entries {
 		appendSaveIssues(&report, "grimoire", entry.ID, grimoire.ValidateSave(grimoireToInput(entry), now))
+		if prevID, exists := castIDs[entry.CastID]; exists && prevID != entry.ID {
+			report.Issues = append(report.Issues, ValidationIssue{
+				Entity:  "grimoire",
+				ID:      entry.ID,
+				Field:   "castid",
+				Message: "Cast ID is already used by " + prevID + ".",
+			})
+		} else {
+			castIDs[entry.CastID] = entry.ID
+		}
 	}
 	for _, entry := range states.SkillState.Entries {
-		appendSaveIssues(&report, "skill", entry.ID, skills.ValidateSave(skillToInput(entry), itemIDs, now))
+		appendSaveIssues(&report, "skill", entry.ID, skills.ValidateSave(skillToInput(entry), now))
 	}
 	for _, entry := range states.EnemySkillState.Entries {
 		appendSaveIssues(&report, "enemy-skill", entry.ID, enemyskills.ValidateSave(enemySkillToInput(entry), now))
 	}
 	for _, entry := range states.TreasureState.Entries {
 		appendSaveIssues(&report, "treasure", entry.ID, treasures.ValidateSave(treasureToInput(entry), itemIDs, grimoireIDs, now))
+		if entry.Mode == "custom" {
+			if prevID, exists := customTreasurePaths[strings.TrimSpace(entry.TablePath)]; exists && prevID != entry.ID {
+				report.Issues = append(report.Issues, ValidationIssue{
+					Entity:  "treasure",
+					ID:      entry.ID,
+					Field:   "tablePath",
+					Message: "Custom loot table path is already used by " + prevID + ".",
+				})
+			} else {
+				customTreasurePaths[strings.TrimSpace(entry.TablePath)] = entry.ID
+			}
+		}
 	}
 	for _, entry := range states.EnemyState.Entries {
 		appendSaveIssues(&report, "enemy", entry.ID, enemies.ValidateSave(enemyToInput(entry), enemySkillIDs, itemIDs, grimoireIDs, now))
-		if strings.TrimSpace(entry.DropTableID) != "" {
-			if _, ok := treasureIDs[strings.TrimSpace(entry.DropTableID)]; !ok {
-				report.Issues = append(report.Issues, ValidationIssue{
-					Entity:  "enemy",
-					ID:      entry.ID,
-					Field:   "dropTableId",
-					Message: "Referenced treasure does not exist.",
-				})
-			}
-		}
 	}
 
 	report.OK = len(report.Issues) == 0
@@ -308,6 +353,7 @@ func itemToInput(entry items.ItemEntry) items.SaveInput {
 		ID:                  entry.ID,
 		ItemID:              entry.ItemID,
 		Count:               entry.Count,
+		SkillID:             entry.SkillID,
 		CustomName:          entry.CustomName,
 		Lore:                entry.Lore,
 		Enchantments:        entry.Enchantments,
@@ -327,39 +373,37 @@ func grimoireToInput(entry grimoire.GrimoireEntry) grimoire.SaveInput {
 	return grimoire.SaveInput{
 		ID:          entry.ID,
 		CastID:      entry.CastID,
+		CastTime:    entry.CastTime,
+		MPCost:      entry.MPCost,
 		Script:      entry.Script,
 		Title:       entry.Title,
 		Description: entry.Description,
-		Variants:    append([]grimoire.Variant{}, entry.Variants...),
 	}
 }
 
 func skillToInput(entry skills.SkillEntry) skills.SaveInput {
 	return skills.SaveInput{
-		ID:     entry.ID,
-		Name:   entry.Name,
-		Script: entry.Script,
-		ItemID: entry.ItemID,
+		ID:          entry.ID,
+		Name:        entry.Name,
+		Description: entry.Description,
+		Script:      entry.Script,
 	}
 }
 
 func enemySkillToInput(entry enemyskills.EnemySkillEntry) enemyskills.SaveInput {
-	input := enemyskills.SaveInput{
-		ID:       entry.ID,
-		Name:     entry.Name,
-		Script:   entry.Script,
-		Cooldown: entry.Cooldown,
+	return enemyskills.SaveInput{
+		ID:          entry.ID,
+		Name:        entry.Name,
+		Description: entry.Description,
+		Script:      entry.Script,
 	}
-	if entry.Trigger != nil {
-		input.Trigger = string(*entry.Trigger)
-	}
-	return input
 }
 
 func treasureToInput(entry treasures.TreasureEntry) treasures.SaveInput {
 	return treasures.SaveInput{
 		ID:        entry.ID,
-		Name:      entry.Name,
+		Mode:      entry.Mode,
+		TablePath: entry.TablePath,
 		LootPools: append([]treasures.DropRef{}, entry.LootPools...),
 	}
 }
@@ -367,15 +411,16 @@ func treasureToInput(entry treasures.TreasureEntry) treasures.SaveInput {
 func enemyToInput(entry enemies.EnemyEntry) enemies.SaveInput {
 	return enemies.SaveInput{
 		ID:            entry.ID,
+		MobType:       entry.MobType,
 		Name:          entry.Name,
 		HP:            entry.HP,
 		Attack:        entry.Attack,
 		Defense:       entry.Defense,
 		MoveSpeed:     entry.MoveSpeed,
-		DropTableID:   entry.DropTableID,
+		Equipment:     entry.Equipment,
 		EnemySkillIDs: append([]string{}, entry.EnemySkillIDs...),
-		SpawnRule:     entry.SpawnRule,
-		DropTable:     append([]enemies.DropRef{}, entry.DropTable...),
+		DropMode:      entry.DropMode,
+		Drops:         append([]enemies.DropRef{}, entry.Drops...),
 	}
 }
 

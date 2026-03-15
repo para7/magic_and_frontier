@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"tools2/app/internal/domain/enemyskills"
 	"tools2/app/internal/webui"
 )
 
@@ -81,17 +80,6 @@ func FormAction(basePath string, editing bool) string {
 		return basePath + "/edit"
 	}
 	return basePath + "/new"
-}
-
-func TriggerText(entry enemyskills.EnemySkillEntry) string {
-	if entry.Trigger == nil {
-		return "-"
-	}
-	return string(*entry.Trigger)
-}
-
-func CooldownText(entry enemyskills.EnemySkillEntry) string {
-	return FloatText(entry.Cooldown)
 }
 
 func JoinLines(values []string) string {

@@ -34,7 +34,7 @@ func TestRunValidateFailure(t *testing.T) {
 	if code != 1 {
 		t.Fatalf("code = %d, stderr = %s", code, stderr.String())
 	}
-	if !strings.Contains(stderr.String(), "Referenced item does not exist.") {
+	if !strings.Contains(stderr.String(), "Referenced skill does not exist.") {
 		t.Fatalf("stderr = %s", stderr.String())
 	}
 }
@@ -83,22 +83,23 @@ func writeFixtureConfig(t *testing.T, valid bool) config.Config {
 	writeJSON(t, settingsPath, settings)
 	writeJSON(t, filepath.Join(root, "item-state.json"), map[string]any{
 		"items": []map[string]any{{
-			"id":     testUUID("141"),
-			"itemId": "minecraft:apple",
-			"count":  1,
+			"id":      "items_1",
+			"itemId":  "minecraft:apple",
+			"count":   1,
+			"skillId": "skill_1",
 		}},
 	})
-	itemID := testUUID("141")
+	skillEntries := []map[string]any{{
+		"id":          "skill_1",
+		"name":        "Slash",
+		"description": "Basic slash",
+		"script":      "say slash",
+	}}
 	if !valid {
-		itemID = testUUID("999")
+		skillEntries = []map[string]any{}
 	}
 	writeJSON(t, filepath.Join(root, "skill-state.json"), map[string]any{
-		"entries": []map[string]any{{
-			"id":     testUUID("143"),
-			"name":   "Slash",
-			"script": "say slash",
-			"itemId": itemID,
-		}},
+		"entries": skillEntries,
 	})
 
 	return config.Config{
@@ -109,6 +110,7 @@ func writeFixtureConfig(t *testing.T, valid bool) config.Config {
 		EnemySkillStatePath: filepath.Join(root, "enemy-skill-state.json"),
 		EnemyStatePath:      filepath.Join(root, "enemy-state.json"),
 		TreasureStatePath:   filepath.Join(root, "treasure-state.json"),
+		IDCounterStatePath:  filepath.Join(root, "id-counters.json"),
 		ExportSettingsPath:  settingsPath,
 	}
 }
@@ -122,8 +124,4 @@ func writeJSON(t *testing.T, path string, value any) {
 	if err := os.WriteFile(path, append(data, '\n'), 0o644); err != nil {
 		t.Fatal(err)
 	}
-}
-
-func testUUID(suffix string) string {
-	return "00000000-0000-4000-8000-000000000" + suffix
 }

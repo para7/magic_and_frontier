@@ -73,6 +73,7 @@ templ ItemsShell(data webui.ItemsPageData) {
 							<dl class="kv-list">
 								<dt>Item ID</dt><dd class="code">{ entry.ItemID }</dd>
 								<dt>Count</dt><dd>{ entry.Count }</dd>
+								<dt>Skill</dt><dd class="code">{ entry.SkillID }</dd>
 								<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
 								<dt>Unbreakable</dt><dd>{ BoolText(entry.Unbreakable) }</dd>
 							</dl>
@@ -112,6 +113,16 @@ templ ItemFormShell(data webui.ItemsPageData) {
 						Count
 						<input name="count" value={ data.Form.Count }/>
 						@FieldErrorBox(data.Form.FieldErrors, "count")
+					</label>
+					<label>
+						Skill
+						<select name="skillId">
+							<option value="">No skill</option>
+							for _, option := range data.Form.SkillOptions {
+								<option value={ option.ID } selected?={ option.ID == data.Form.SkillID }>{ option.Label }</option>
+							}
+						</select>
+						@FieldErrorBox(data.Form.FieldErrors, "skillId")
 					</label>
 					<label>
 						Custom Name
@@ -207,6 +218,8 @@ templ GrimoireShell(data webui.GrimoirePageData) {
 							</header>
 							<dl class="kv-list">
 								<dt>Cast ID</dt><dd>{ entry.CastID }</dd>
+								<dt>Cast Time</dt><dd>{ entry.CastTime }</dd>
+								<dt>MP Cost</dt><dd>{ entry.MPCost }</dd>
 								<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
 							</dl>
 							<pre>{ entry.Script }</pre>
@@ -238,9 +251,25 @@ templ GrimoireFormShell(data webui.GrimoirePageData) {
 				<form class="form-grid" method="post" action={ FormAction("/grimoire", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
 					<label>
+						ID
+						<input value={ data.Form.ID } readonly/>
+						<small>Assigned by the server.</small>
+					</label>
+					<label>
 						Cast ID
-						<input name="castid" value={ data.Form.CastID }/>
+						<input name="castid" value={ data.Form.CastID } readonly/>
+						<small>Assigned by the server.</small>
 						@FieldErrorBox(data.Form.FieldErrors, "castid")
+					</label>
+					<label>
+						Cast Time
+						<input name="castTime" value={ data.Form.CastTime }/>
+						@FieldErrorBox(data.Form.FieldErrors, "castTime")
+					</label>
+					<label>
+						MP Cost
+						<input name="mpCost" value={ data.Form.MPCost }/>
+						@FieldErrorBox(data.Form.FieldErrors, "mpCost")
 					</label>
 					<label>
 						Title
@@ -251,16 +280,10 @@ templ GrimoireFormShell(data webui.GrimoirePageData) {
 						Description
 						<textarea name="description">{ data.Form.Description }</textarea>
 					</label>
-					<label>
+					<label class="form-span-2">
 						Script
 						<textarea name="script">{ data.Form.Script }</textarea>
 						@FieldErrorBox(data.Form.FieldErrors, "script")
-					</label>
-					<label>
-						Variants
-						<textarea name="variantsText">{ data.Form.VariantsText }</textarea>
-						<small>1行につき `cast,cost` 形式で入力します。</small>
-						@FieldErrorBox(data.Form.FieldErrors, "variantsText")
 					</label>
 					if data.Form.FormError != "" {
 						<div class="field-error">{ data.Form.FormError }</div>
@@ -304,8 +327,8 @@ templ SkillsShell(data webui.SkillsPageData) {
 									</form>
 								</div>
 							</header>
-							<dl class="kv-list">
-								<dt>Item Ref</dt><dd class="code">{ entry.ItemID }</dd>
+								<dl class="kv-list">
+								<dt>Description</dt><dd>{ entry.Description }</dd>
 								<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
 							</dl>
 							<pre>{ entry.Script }</pre>
@@ -342,16 +365,11 @@ templ SkillFormShell(data webui.SkillsPageData) {
 						@FieldErrorBox(data.Form.FieldErrors, "name")
 					</label>
 					<label>
-						Item Ref
-						<select name="itemId">
-							<option value="">Select an item</option>
-							for _, option := range data.Form.ItemOptions {
-								<option value={ option.ID } selected?={ option.ID == data.Form.ItemID }>{ option.Label }</option>
-							}
-						</select>
-						@FieldErrorBox(data.Form.FieldErrors, "itemId")
+						Description
+						<textarea name="description">{ data.Form.Description }</textarea>
+						@FieldErrorBox(data.Form.FieldErrors, "description")
 					</label>
-					<label>
+					<label class="form-span-2">
 						Script
 						<textarea name="script">{ data.Form.Script }</textarea>
 						@FieldErrorBox(data.Form.FieldErrors, "script")
@@ -399,8 +417,8 @@ templ EnemySkillsShell(data webui.EnemySkillsPageData) {
 								</div>
 							</header>
 							<dl class="kv-list">
-								<dt>Trigger</dt><dd>{ TriggerText(entry) }</dd>
-								<dt>Cooldown</dt><dd>{ CooldownText(entry) }</dd>
+								<dt>Description</dt><dd>{ entry.Description }</dd>
+								<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
 							</dl>
 							<pre>{ entry.Script }</pre>
 						</article>
@@ -436,22 +454,11 @@ templ EnemySkillFormShell(data webui.EnemySkillsPageData) {
 						@FieldErrorBox(data.Form.FieldErrors, "name")
 					</label>
 					<label>
-						Cooldown
-						<input name="cooldown" value={ data.Form.Cooldown }/>
-						@FieldErrorBox(data.Form.FieldErrors, "cooldown")
+						Description
+						<textarea name="description">{ data.Form.Description }</textarea>
+						@FieldErrorBox(data.Form.FieldErrors, "description")
 					</label>
-					<label>
-						Trigger
-						<select name="trigger">
-							<option value="">No trigger</option>
-							<option value="on_spawn" selected?={ data.Form.Trigger == "on_spawn" }>on_spawn</option>
-							<option value="on_hit" selected?={ data.Form.Trigger == "on_hit" }>on_hit</option>
-							<option value="on_low_hp" selected?={ data.Form.Trigger == "on_low_hp" }>on_low_hp</option>
-							<option value="on_timer" selected?={ data.Form.Trigger == "on_timer" }>on_timer</option>
-						</select>
-						@FieldErrorBox(data.Form.FieldErrors, "trigger")
-					</label>
-					<label>
+					<label class="form-span-2">
 						Script
 						<textarea name="script">{ data.Form.Script }</textarea>
 						@FieldErrorBox(data.Form.FieldErrors, "script")
@@ -488,7 +495,7 @@ templ TreasuresShell(data webui.TreasuresPageData) {
 						<article class="entry-card">
 							<header>
 								<div>
-									<h3>{ entry.Name }</h3>
+									<h3>{ entry.TablePath }</h3>
 									<p class="entry-meta code">{ entry.ID }</p>
 								</div>
 								<div class="entry-actions">
@@ -499,6 +506,7 @@ templ TreasuresShell(data webui.TreasuresPageData) {
 								</div>
 							</header>
 							<ul class="reference-list">
+								<li class="code">mode={ entry.Mode }</li>
 								for _, pool := range entry.LootPools {
 									<li class="code">{ pool.Kind } / { pool.RefID } / weight={ pool.Weight }</li>
 								}
@@ -531,14 +539,22 @@ templ TreasureFormShell(data webui.TreasuresPageData) {
 				<form class="form-grid" method="post" action={ FormAction("/treasures", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
 					<label>
-						Name
-						<input name="name" value={ data.Form.Name }/>
-						@FieldErrorBox(data.Form.FieldErrors, "name")
+						Mode
+						<select name="mode">
+							<option value="custom" selected?={ data.Form.Mode == "custom" }>custom</option>
+							<option value="override" selected?={ data.Form.Mode == "override" }>override</option>
+						</select>
+						@FieldErrorBox(data.Form.FieldErrors, "mode")
 					</label>
 					<label>
+						Table Path
+						<input name="tablePath" value={ data.Form.TablePath }/>
+						@FieldErrorBox(data.Form.FieldErrors, "tablePath")
+					</label>
+					<label class="form-span-2">
 						Loot Pools
 						<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
-						<small>1行につき `kind,refId,weight,countMin,countMax` 形式で入力します。countMin と countMax は空欄で省略できます。</small>
+						<small>1行につき `kind,refId,weight,countMin,countMax`。kind は `minecraft_item`,`item`,`grimoire`。</small>
 						@FieldErrorBox(data.Form.FieldErrors, "lootPoolsText")
 					</label>
 					<div>
@@ -600,8 +616,9 @@ templ EnemiesShell(data webui.EnemiesPageData) {
 								</div>
 							</header>
 							<dl class="kv-list">
+								<dt>Mob Type</dt><dd class="code">{ entry.MobType }</dd>
 								<dt>HP</dt><dd>{ trimFloat(entry.HP) }</dd>
-								<dt>Drop Table</dt><dd class="code">{ entry.DropTableID }</dd>
+								<dt>Drop Mode</dt><dd>{ entry.DropMode }</dd>
 								<dt>Attack</dt><dd>{ FloatText(entry.Attack) }</dd>
 								<dt>Defense</dt><dd>{ FloatText(entry.Defense) }</dd>
 								<dt>Move Speed</dt><dd>{ FloatText(entry.MoveSpeed) }</dd>
@@ -635,6 +652,11 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 				<form class="form-grid two" method="post" action={ FormAction("/enemies", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
 					<label>
+						Mob Type
+						<input name="mobType" value={ data.Form.MobType }/>
+						@FieldErrorBox(data.Form.FieldErrors, "mobType")
+					</label>
+					<label>
 						Name
 						<input name="name" value={ data.Form.Name }/>
 						@FieldErrorBox(data.Form.FieldErrors, "name")
@@ -660,9 +682,12 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 						@FieldErrorBox(data.Form.FieldErrors, "moveSpeed")
 					</label>
 					<label>
-						Drop Table ID
-						<input name="dropTableId" value={ data.Form.DropTableID }/>
-						@FieldErrorBox(data.Form.FieldErrors, "dropTableId")
+						Drop Mode
+						<select name="dropMode">
+							<option value="replace" selected?={ data.Form.DropMode == "replace" }>replace</option>
+							<option value="append" selected?={ data.Form.DropMode == "append" }>append</option>
+						</select>
+						@FieldErrorBox(data.Form.FieldErrors, "dropMode")
 					</label>
 					<label class="form-span-2">
 						Enemy Skill Refs
@@ -673,60 +698,17 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 						</select>
 						@FieldErrorBox(data.Form.FieldErrors, "enemySkillIds")
 					</label>
-					<label>
-						Origin X
-						<input name="originX" value={ data.Form.OriginX }/>
-						@FieldErrorBox(data.Form.FieldErrors, "originX")
-					</label>
-					<label>
-						Origin Y
-						<input name="originY" value={ data.Form.OriginY }/>
-						@FieldErrorBox(data.Form.FieldErrors, "originY")
+					<label class="form-span-2">
+						Equipment
+						<textarea name="equipmentText">{ data.Form.EquipmentText }</textarea>
+						<small>1行につき `slot,kind,refId,count,dropChance`。slot は `mainhand,offhand,head,chest,legs,feet`。</small>
+						@FieldErrorBox(data.Form.FieldErrors, "equipmentText")
 					</label>
 					<label class="form-span-2">
-						Origin Z
-						<input name="originZ" value={ data.Form.OriginZ }/>
-						@FieldErrorBox(data.Form.FieldErrors, "originZ")
-					</label>
-					<label>
-						Distance Min
-						<input name="distanceMin" value={ data.Form.DistanceMin }/>
-						@FieldErrorBox(data.Form.FieldErrors, "distanceMin")
-					</label>
-					<label>
-						Distance Max
-						<input name="distanceMax" value={ data.Form.DistanceMax }/>
-						@FieldErrorBox(data.Form.FieldErrors, "distanceMax")
-					</label>
-					<label>
-						X Min
-						<input name="xMin" value={ data.Form.XMin }/>
-						@FieldErrorBox(data.Form.FieldErrors, "xMin")
-					</label>
-					<label>
-						X Max
-						<input name="xMax" value={ data.Form.XMax }/>
-						@FieldErrorBox(data.Form.FieldErrors, "xMax")
-					</label>
-					<label>
-						Y Min
-						<input name="yMin" value={ data.Form.YMin }/>
-						@FieldErrorBox(data.Form.FieldErrors, "yMin")
-					</label>
-					<label>
-						Y Max
-						<input name="yMax" value={ data.Form.YMax }/>
-						@FieldErrorBox(data.Form.FieldErrors, "yMax")
-					</label>
-					<label>
-						Z Min
-						<input name="zMin" value={ data.Form.ZMin }/>
-						@FieldErrorBox(data.Form.FieldErrors, "zMin")
-					</label>
-					<label>
-						Z Max
-						<input name="zMax" value={ data.Form.ZMax }/>
-						@FieldErrorBox(data.Form.FieldErrors, "zMax")
+						Drops
+						<textarea name="dropsText">{ data.Form.DropsText }</textarea>
+						<small>1行につき `kind,refId,weight,countMin,countMax`。kind は `minecraft_item`,`item`,`grimoire`。</small>
+						@FieldErrorBox(data.Form.FieldErrors, "dropsText")
 					</label>
 					if data.Form.FormError != "" {
 						<div class="field-error form-span-2">{ data.Form.FormError }</div>

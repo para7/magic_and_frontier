@@ -4,6 +4,7 @@ type ItemEntry struct {
 	ID                  string `json:"id"`
 	ItemID              string `json:"itemId"`
 	Count               int    `json:"count"`
+	SkillID             string `json:"skillId,omitempty"`
 	CustomName          string `json:"customName"`
 	Lore                string `json:"lore"`
 	Enchantments        string `json:"enchantments"`
@@ -25,9 +26,10 @@ type ItemState struct {
 }
 
 type SaveInput struct {
-	ID                  string `json:"id" validate:"required,uuid_any"`
+	ID                  string `json:"id"`
 	ItemID              string `json:"itemId" validate:"trimmed_required,trimmed_min=1,trimmed_max=200"`
 	Count               int    `json:"count" validate:"gte=1,lte=64"`
+	SkillID             string `json:"skillId,omitempty"`
 	CustomName          string `json:"customName"`
 	Lore                string `json:"lore"`
 	Enchantments        string `json:"enchantments"`

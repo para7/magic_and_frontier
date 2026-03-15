@@ -45,6 +45,8 @@ type ItemFormData struct {
 	ID                  string
 	ItemID              string
 	Count               string
+	SkillID             string
+	SkillOptions        []ReferenceOption
 	CustomName          string
 	Lore                string
 	Enchantments        string
@@ -70,15 +72,16 @@ type ItemsPageData struct {
 }
 
 type GrimoireFormData struct {
-	ID           string
-	CastID       string
-	Script       string
-	Title        string
-	Description  string
-	VariantsText string
-	FieldErrors  map[string]string
-	FormError    string
-	IsEditing    bool
+	ID          string
+	CastID      string
+	CastTime    string
+	MPCost      string
+	Script      string
+	Title       string
+	Description string
+	FieldErrors map[string]string
+	FormError   string
+	IsEditing   bool
 }
 
 type GrimoirePageData struct {
@@ -91,9 +94,8 @@ type GrimoirePageData struct {
 type SkillFormData struct {
 	ID          string
 	Name        string
+	Description string
 	Script      string
-	ItemID      string
-	ItemOptions []ReferenceOption
 	FieldErrors map[string]string
 	FormError   string
 	IsEditing   bool
@@ -109,9 +111,8 @@ type SkillsPageData struct {
 type EnemySkillFormData struct {
 	ID          string
 	Name        string
+	Description string
 	Script      string
-	Cooldown    string
-	Trigger     string
 	FieldErrors map[string]string
 	FormError   string
 	IsEditing   bool
@@ -126,7 +127,8 @@ type EnemySkillsPageData struct {
 
 type TreasureFormData struct {
 	ID            string
-	Name          string
+	Mode          string
+	TablePath     string
 	LootPoolsText string
 	FieldErrors   map[string]string
 	FormError     string
@@ -144,25 +146,17 @@ type TreasuresPageData struct {
 
 type EnemyFormData struct {
 	ID                string
+	MobType           string
 	Name              string
 	HP                string
 	Attack            string
 	Defense           string
 	MoveSpeed         string
-	DropTableID       string
+	DropMode          string
 	EnemySkillIDs     []string
 	EnemySkillOptions []ReferenceOption
-	OriginX           string
-	OriginY           string
-	OriginZ           string
-	DistanceMin       string
-	DistanceMax       string
-	XMin              string
-	XMax              string
-	YMin              string
-	YMax              string
-	ZMin              string
-	ZMax              string
+	EquipmentText     string
+	DropsText         string
 	FieldErrors       map[string]string
 	FormError         string
 	IsEditing         bool

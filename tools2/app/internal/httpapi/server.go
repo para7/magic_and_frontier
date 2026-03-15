@@ -22,6 +22,31 @@ import (
 type Dependencies = application.Dependencies
 
 func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
+	defaults := DefaultDependencies(cfg)
+	if deps.ItemRepo == nil {
+		deps.ItemRepo = defaults.ItemRepo
+	}
+	if deps.GrimoireRepo == nil {
+		deps.GrimoireRepo = defaults.GrimoireRepo
+	}
+	if deps.SkillRepo == nil {
+		deps.SkillRepo = defaults.SkillRepo
+	}
+	if deps.EnemySkillRepo == nil {
+		deps.EnemySkillRepo = defaults.EnemySkillRepo
+	}
+	if deps.EnemyRepo == nil {
+		deps.EnemyRepo = defaults.EnemyRepo
+	}
+	if deps.TreasureRepo == nil {
+		deps.TreasureRepo = defaults.TreasureRepo
+	}
+	if deps.CounterRepo == nil {
+		deps.CounterRepo = defaults.CounterRepo
+	}
+	if deps.ExportSettingsPath == "" {
+		deps.ExportSettingsPath = defaults.ExportSettingsPath
+	}
 	if deps.Now == nil {
 		deps.Now = time.Now
 	}
@@ -41,6 +66,7 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		EnemySkillRepo: deps.EnemySkillRepo,
 		EnemyRepo:      deps.EnemyRepo,
 		TreasureRepo:   deps.TreasureRepo,
+		CounterRepo:    deps.CounterRepo,
 		Now:            deps.Now,
 	})
 
@@ -57,14 +83,26 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		result := items.ValidateSave(input, deps.Now())
-		if !result.OK {
-			writeJSON(w, http.StatusBadRequest, result)
-			return
-		}
 		state, err := deps.ItemRepo.LoadItemState()
 		if err != nil {
 			writeInternalError(w, err)
+			return
+		}
+		skillState, err := deps.SkillRepo.LoadState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		if strings.TrimSpace(input.ID) == "" {
+			input.ID, err = appService.AllocateID("items")
+			if err != nil {
+				writeInternalError(w, err)
+				return
+			}
+		}
+		result := items.ValidateSave(input, entryIDs(skillState.Entries, func(entry skills.SkillEntry) string { return entry.ID }), deps.Now())
+		if !result.OK {
+			writeJSON(w, http.StatusBadRequest, result)
 			return
 		}
 		nextState, mode := items.Upsert(state, *result.Entry)
@@ -111,14 +149,30 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
+		state, err := deps.GrimoireRepo.LoadGrimoireState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		if existing, ok := findEntry(state.Entries, strings.TrimSpace(input.ID), func(entry grimoire.GrimoireEntry) string { return entry.ID }); ok {
+			input.ID = existing.ID
+			input.CastID = existing.CastID
+		} else {
+			id, castID, allocErr := appService.AllocateGrimoireIdentity()
+			if allocErr != nil {
+				writeInternalError(w, allocErr)
+				return
+			}
+			input.ID = id
+			input.CastID = castID
+		}
 		result := grimoire.ValidateSave(input, deps.Now())
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
 			return
 		}
-		state, err := deps.GrimoireRepo.LoadGrimoireState()
-		if err != nil {
-			writeInternalError(w, err)
+		if conflictID := duplicateCastID(state.Entries, result.Entry.ID, result.Entry.CastID); conflictID != "" {
+			writeJSON(w, http.StatusBadRequest, common.SaveValidationError[grimoire.GrimoireEntry](common.FieldErrors{"castid": "Cast ID is already used by " + conflictID + "."}, "Validation failed. Fix the highlighted fields."))
 			return
 		}
 		nextState, mode := grimoire.Upsert(state, *result.Entry)
@@ -165,19 +219,21 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		itemState, err := deps.ItemRepo.LoadItemState()
-		if err != nil {
-			writeInternalError(w, err)
-			return
-		}
-		result := skills.ValidateSave(input, itemIDs(itemState), deps.Now())
-		if !result.OK {
-			writeJSON(w, http.StatusBadRequest, result)
-			return
-		}
 		state, err := deps.SkillRepo.LoadState()
 		if err != nil {
 			writeInternalError(w, err)
+			return
+		}
+		if strings.TrimSpace(input.ID) == "" {
+			input.ID, err = appService.AllocateID("skill")
+			if err != nil {
+				writeInternalError(w, err)
+				return
+			}
+		}
+		result := skills.ValidateSave(input, deps.Now())
+		if !result.OK {
+			writeJSON(w, http.StatusBadRequest, result)
 			return
 		}
 		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry skills.SkillEntry) string { return entry.ID })
@@ -189,6 +245,18 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		writeJSON(w, http.StatusOK, result)
 	})
 	mux.HandleFunc("DELETE /api/skills/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := strings.TrimSpace(r.PathValue("id"))
+		itemState, err := deps.ItemRepo.LoadItemState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		for _, entry := range itemState.Items {
+			if entry.SkillID == id {
+				writeJSON(w, http.StatusBadRequest, map[string]any{"ok": false, "code": "REFERENCE_ERROR", "formError": "Skill is referenced by item " + entry.ID + "."})
+				return
+			}
+		}
 		deleteEntry(w, r, deps.SkillRepo, "skill", "Skill", func(entry skills.SkillEntry) string { return entry.ID })
 	})
 
@@ -204,6 +272,14 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		var input enemyskills.SaveInput
 		if !decodeJSON(w, r, &input) {
 			return
+		}
+		var err error
+		if strings.TrimSpace(input.ID) == "" {
+			input.ID, err = appService.AllocateID("enemyskill")
+			if err != nil {
+				writeInternalError(w, err)
+				return
+			}
 		}
 		result := enemyskills.ValidateSave(input, deps.Now())
 		if !result.OK {
@@ -276,6 +352,14 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
+		if strings.TrimSpace(input.ID) == "" {
+			var err error
+			input.ID, err = appService.AllocateID("enemy")
+			if err != nil {
+				writeInternalError(w, err)
+				return
+			}
+		}
 		enemySkillState, err := deps.EnemySkillRepo.LoadState()
 		if err != nil {
 			writeInternalError(w, err)
@@ -326,6 +410,14 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
+		if strings.TrimSpace(input.ID) == "" {
+			var err error
+			input.ID, err = appService.AllocateID("treasure")
+			if err != nil {
+				writeInternalError(w, err)
+				return
+			}
+		}
 		itemState, err := deps.ItemRepo.LoadItemState()
 		if err != nil {
 			writeInternalError(w, err)
@@ -344,6 +436,10 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		state, err := deps.TreasureRepo.LoadState()
 		if err != nil {
 			writeInternalError(w, err)
+			return
+		}
+		if conflictID := duplicateCustomTablePath(state.Entries, result.Entry.ID, result.Entry.Mode, result.Entry.TablePath); conflictID != "" {
+			writeJSON(w, http.StatusBadRequest, common.SaveValidationError[treasures.TreasureEntry](common.FieldErrors{"tablePath": "Custom loot table path is already used by " + conflictID + "."}, "Validation failed. Fix the highlighted fields."))
 			return
 		}
 		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry treasures.TreasureEntry) string { return entry.ID })
@@ -412,6 +508,20 @@ func entryIDs[T any](entries []T, idOf func(T) string) map[string]struct{} {
 	return out
 }
 
+func findEntry[T any](entries []T, id string, idOf func(T) string) (T, bool) {
+	var zero T
+	id = strings.TrimSpace(id)
+	if id == "" {
+		return zero, false
+	}
+	for _, entry := range entries {
+		if strings.TrimSpace(idOf(entry)) == id {
+			return entry, true
+		}
+	}
+	return zero, false
+}
+
 func deleteEntry[T any](w http.ResponseWriter, r *http.Request, repo store.EntryStateRepository[T], missingLabel, notFoundLabel string, idOf func(T) string) {
 	id := strings.TrimSpace(r.PathValue("id"))
 	if id == "" {
@@ -433,4 +543,25 @@ func deleteEntry[T any](w http.ResponseWriter, r *http.Request, repo store.Entry
 		return
 	}
 	writeJSON(w, http.StatusOK, common.DeleteSuccess(id))
+}
+
+func duplicateCastID(entries []grimoire.GrimoireEntry, entryID string, castID int) string {
+	for _, entry := range entries {
+		if entry.ID != entryID && entry.CastID == castID {
+			return entry.ID
+		}
+	}
+	return ""
+}
+
+func duplicateCustomTablePath(entries []treasures.TreasureEntry, entryID, mode, tablePath string) string {
+	if mode != "custom" {
+		return ""
+	}
+	for _, entry := range entries {
+		if entry.ID != entryID && entry.Mode == "custom" && entry.TablePath == tablePath {
+			return entry.ID
+		}
+	}
+	return ""
 }

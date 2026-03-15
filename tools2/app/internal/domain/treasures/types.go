@@ -1,8 +1,8 @@
 package treasures
 
 type DropRef struct {
-	Kind     string   `json:"kind" validate:"trimmed_required,trimmed_oneof=item grimoire"`
-	RefID    string   `json:"refId" validate:"required,uuid_any"`
+	Kind     string   `json:"kind" validate:"trimmed_required,trimmed_oneof=minecraft_item item grimoire"`
+	RefID    string   `json:"refId" validate:"trimmed_required,trimmed_min=1,trimmed_max=200"`
 	Weight   float64  `json:"weight" validate:"gte=1,lte=100000"`
 	CountMin *float64 `json:"countMin,omitempty" validate:"omitempty,gte=1,lte=64"`
 	CountMax *float64 `json:"countMax,omitempty" validate:"omitempty,gte=1,lte=64"`
@@ -10,13 +10,15 @@ type DropRef struct {
 
 type TreasureEntry struct {
 	ID        string    `json:"id"`
-	Name      string    `json:"name"`
+	Mode      string    `json:"mode"`
+	TablePath string    `json:"tablePath"`
 	LootPools []DropRef `json:"lootPools"`
 	UpdatedAt string    `json:"updatedAt"`
 }
 
 type SaveInput struct {
-	ID        string    `json:"id" validate:"required,uuid_any"`
-	Name      string    `json:"name" validate:"trimmed_required,trimmed_min=1,trimmed_max=80"`
+	ID        string    `json:"id"`
+	Mode      string    `json:"mode" validate:"trimmed_required,trimmed_oneof=custom override"`
+	TablePath string    `json:"tablePath" validate:"trimmed_required,trimmed_min=1,trimmed_max=200"`
 	LootPools []DropRef `json:"lootPools" validate:"min=1,dive"`
 }

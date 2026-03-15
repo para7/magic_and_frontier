@@ -5,20 +5,24 @@ import (
 	"strings"
 	"testing"
 
+	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/grimoire"
+	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/treasures"
 )
 
-func TestToSpellLootTable_OmitsLoreFunction(t *testing.T) {
+func TestToSpellLootTableIncludesLoreAndNewCustomData(t *testing.T) {
 	entry := grimoire.GrimoireEntry{
-		ID:          "33333333-3333-4333-8333-333333333333",
+		ID:          "grimoire_12",
 		CastID:      100,
-		Script:      "maf:spell/firebolt",
+		CastTime:    10,
+		MPCost:      5,
+		Script:      "function maf:grimoire/grimoire_12",
 		Title:       "Firebolt",
 		Description: "Basic sample projectile spell.\nSecond line.",
 	}
-	variant := grimoire.Variant{Cast: 10, Cost: 5}
 
-	lootTable := toSpellLootTable(entry, variant)
+	lootTable := toSpellLootTable(entry)
 	data, err := json.Marshal(lootTable)
 	if err != nil {
 		t.Fatal(err)
@@ -27,26 +31,131 @@ func TestToSpellLootTable_OmitsLoreFunction(t *testing.T) {
 	if !strings.Contains(text, "set_lore") {
 		t.Fatalf("loot table should contain set_lore: %s", text)
 	}
-	if !strings.Contains(text, `"text":"Basic sample projectile spell."`) || !strings.Contains(text, `"text":"Second line."`) {
-		t.Fatalf("loot table should contain description lines: %s", text)
+	if !strings.Contains(text, `grimoire_id:\"grimoire_12\"`) {
+		t.Fatalf("loot table should contain grimoire id custom data: %s", text)
+	}
+	if !strings.Contains(text, `castid:100`) || !strings.Contains(text, `cost:5`) || !strings.Contains(text, `cast:10`) {
+		t.Fatalf("loot table should contain spell metadata: %s", text)
 	}
 }
 
-func TestToSpellGiveCommand_OmitsLoreComponent(t *testing.T) {
-	entry := grimoire.GrimoireEntry{
-		ID:          "33333333-3333-4333-8333-333333333333",
-		CastID:      100,
-		Script:      "maf:spell/firebolt",
-		Title:       "Firebolt",
-		Description: "Basic sample projectile spell.\nSecond line.",
+func TestItemCustomDataIncludesOptionalSkillTags(t *testing.T) {
+	entry := items.ItemEntry{
+		ID:     "items_4",
+		ItemID: "minecraft:stone",
+		NBT:    "{id:\"minecraft:stone\",Count:1b}",
 	}
-	variant := grimoire.Variant{Cast: 10, Cost: 5}
+	if strings.Contains(itemCustomData(entry), "maf_skill") {
+		t.Fatalf("unexpected skill tags for item without skill")
+	}
 
-	command := toSpellGiveCommand(entry, variant)
-	if !strings.Contains(command, "lore:[") {
-		t.Fatalf("give command should contain lore component: %s", command)
+	entry.SkillID = "skill_7"
+	customData := itemCustomData(entry)
+	if !strings.Contains(customData, "maf_skill:1b") || !strings.Contains(customData, `"skill_7"`) {
+		t.Fatalf("custom data should include skill tags: %s", customData)
 	}
-	if !strings.Contains(command, `{"text":"Basic sample projectile spell."}`) || !strings.Contains(command, `{"text":"Second line."}`) {
-		t.Fatalf("give command should contain description lines: %s", command)
+}
+
+func TestBuildDropLootTableSupportsMinecraftItemAndGrimoire(t *testing.T) {
+	drops := []treasures.DropRef{
+		{Kind: "minecraft_item", RefID: "minecraft:apple", Weight: 1},
+		{Kind: "grimoire", RefID: "grimoire_2", Weight: 2},
+	}
+	grimoires := map[string]grimoire.GrimoireEntry{
+		"grimoire_2": {
+			ID:       "grimoire_2",
+			CastID:   3,
+			CastTime: 8,
+			MPCost:   11,
+			Title:    "Heal",
+		},
+	}
+
+	lootTable, err := buildDropLootTable(drops, map[string]items.ItemEntry{}, grimoires, "treasure(treasure_1)")
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := json.Marshal(lootTable)
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(data)
+	if !strings.Contains(text, `"name":"minecraft:apple"`) || !strings.Contains(text, `"name":"minecraft:written_book"`) {
+		t.Fatalf("unexpected loot table: %s", text)
+	}
+}
+
+func TestToEnemyFunctionLinesUsesMobTypeAndDeathLootTable(t *testing.T) {
+	attack := 6.0
+	entry := enemies.EnemyEntry{
+		ID:        "enemy_3",
+		MobType:   "minecraft:skeleton",
+		Name:      "Guardian",
+		HP:        40,
+		Attack:    &attack,
+		DropMode:  "replace",
+		Drops:     []enemies.DropRef{{Kind: "minecraft_item", RefID: "minecraft:bone", Weight: 1}},
+		Equipment: enemies.Equipment{},
+		EnemySkillIDs: []string{
+			"enemyskill_1",
+		},
+	}
+	settings := ExportSettings{
+		Namespace: "maf",
+		Paths: ExportPaths{
+			EnemyLootDir: "data/maf/loot_table/enemy",
+		},
+	}
+
+	lines := toEnemyFunctionLines(settings, entry, map[string]items.ItemEntry{})
+	text := strings.Join(lines, "\n")
+	if !strings.Contains(text, "summon minecraft:skeleton") {
+		t.Fatalf("enemy summon should use mob type: %s", text)
+	}
+	if !strings.Contains(text, `DeathLootTable:"maf:enemy/enemy_3"`) {
+		t.Fatalf("enemy summon should reference enemy loot table: %s", text)
+	}
+	if !strings.Contains(text, `"maf_enemy_skill_enemyskill_1"`) {
+		t.Fatalf("enemy summon should encode skill tag: %s", text)
+	}
+}
+
+func TestToEnemyFunctionLinesResolvesCustomItemEquipment(t *testing.T) {
+	entry := enemies.EnemyEntry{
+		ID:       "enemy_1",
+		MobType:  "minecraft:zombie",
+		HP:       20,
+		DropMode: "replace",
+		Equipment: enemies.Equipment{
+			Mainhand: &enemies.EquipmentSlot{
+				Kind:  "item",
+				RefID: "items_3",
+				Count: 1,
+			},
+		},
+	}
+	settings := ExportSettings{
+		Namespace: "maf",
+		Paths: ExportPaths{
+			EnemyLootDir: "data/maf/loot_table/enemy",
+		},
+	}
+
+	lines := toEnemyFunctionLines(settings, entry, map[string]items.ItemEntry{
+		"items_3": {ID: "items_3", ItemID: "minecraft:iron_sword"},
+	})
+	text := strings.Join(lines, "\n")
+	if !strings.Contains(text, `id:"minecraft:iron_sword"`) {
+		t.Fatalf("enemy summon should resolve custom item refs to minecraft item ids: %s", text)
+	}
+	if strings.Contains(text, `id:"items_3"`) {
+		t.Fatalf("enemy summon should not emit internal item ids: %s", text)
+	}
+}
+
+func TestTreasureOutputPathRejectsTraversal(t *testing.T) {
+	settings := ExportSettings{OutputRoot: "/tmp/out"}
+	if _, err := treasureOutputPath(settings, "maf:loot/../escape"); err == nil {
+		t.Fatalf("expected traversal table path to be rejected")
 	}
 }
