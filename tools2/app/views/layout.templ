@@ -254,8 +254,13 @@ templ Layout(title string, currentPath string) {
 
 		.entry-actions {
 			display: flex;
+			align-items: flex-start;
 			gap: 0.5rem;
 			flex-wrap: wrap;
+		}
+
+		.entry-actions > * {
+			margin-bottom: 0;
 		}
 
 		.form-grid.two {
@@ -379,7 +384,9 @@ templ Layout(title string, currentPath string) {
 			}
 
 			.entry-actions form,
-			.sidebar-actions form {
+			.sidebar-actions form,
+			.entry-actions button,
+			.entry-actions a[role="button"] {
 				margin-bottom: 0;
 			}
 
