@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"tools2/app/internal/domain/enemies"
+	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/webui"
 )
@@ -166,7 +167,21 @@ func NameFilterTokens(value string) string {
 }
 
 func TreasureSearchBlob(entry treasures.TreasureEntry) string {
-	values := []string{entry.ID, entry.Mode, entry.TablePath, entry.UpdatedAt}
+	values := []string{entry.ID, entry.UpdatedAt}
+	for _, pool := range entry.LootPools {
+		values = append(values, pool.Kind, pool.RefID, trimFloat(pool.Weight))
+		if pool.CountMin != nil {
+			values = append(values, trimFloat(*pool.CountMin))
+		}
+		if pool.CountMax != nil {
+			values = append(values, trimFloat(*pool.CountMax))
+		}
+	}
+	return SearchBlob(values...)
+}
+
+func LootTableSearchBlob(entry loottables.LootTableEntry) string {
+	values := []string{entry.ID, entry.TablePath, entry.UpdatedAt}
 	for _, pool := range entry.LootPools {
 		values = append(values, pool.Kind, pool.RefID, trimFloat(pool.Weight))
 		if pool.CountMin != nil {
@@ -291,14 +306,23 @@ func NameSortOptions() []webui.SelectOption {
 }
 
 func TreasureFilterOptions() []webui.SelectOption {
-	return []webui.SelectOption{
-		{Value: "all", Label: "All treasures"},
-		{Value: "custom", Label: "Mode custom"},
-		{Value: "override", Label: "Mode override"},
-	}
+	return []webui.SelectOption{{Value: "all", Label: "All treasures"}}
 }
 
 func TreasureSortOptions() []webui.SelectOption {
+	return []webui.SelectOption{
+		{Value: "updated_desc", Label: "Updated desc"},
+		{Value: "updated_asc", Label: "Updated asc"},
+		{Value: "id_asc", Label: "ID asc"},
+		{Value: "id_desc", Label: "ID desc"},
+	}
+}
+
+func LootTableFilterOptions() []webui.SelectOption {
+	return []webui.SelectOption{{Value: "all", Label: "All loottables"}}
+}
+
+func LootTableSortOptions() []webui.SelectOption {
 	return []webui.SelectOption{
 		{Value: "updated_desc", Label: "Updated desc"},
 		{Value: "updated_asc", Label: "Updated asc"},

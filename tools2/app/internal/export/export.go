@@ -14,6 +14,7 @@ import (
 	"tools2/app/internal/domain/enemyskills"
 	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/treasures"
 )
@@ -49,6 +50,7 @@ type ExportStats struct {
 	EnemyFunctions      int `json:"enemyFunctions"`
 	EnemyLootTables     int `json:"enemyLootTables"`
 	TreasureLootTables  int `json:"treasureLootTables"`
+	LoottableLootTables int `json:"loottableLootTables"`
 	TotalFiles          int `json:"totalFiles"`
 }
 
@@ -68,6 +70,7 @@ type ExportParams struct {
 	EnemySkills        []enemyskills.EnemySkillEntry
 	Enemies            []enemies.EnemyEntry
 	Treasures          []treasures.TreasureEntry
+	LootTables         []loottables.LootTableEntry
 	ExportSettingsPath string
 }
 
@@ -104,6 +107,10 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
+	loottableStats, err := generateLootTableOutputs(settings, params.LootTables, params.ItemState.Items, params.GrimoireState.Entries)
+	if err != nil {
+		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
+	}
 
 	stats := &ExportStats{
 		ItemFunctions:       itemStats.ItemFunctions,
@@ -115,8 +122,9 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 		EnemyFunctions:      enemyStats.EnemyFunctions,
 		EnemyLootTables:     enemyStats.EnemyLootTables,
 		TreasureLootTables:  treasureStats.TreasureLootTables,
+		LoottableLootTables: loottableStats.LoottableLootTables,
 	}
-	stats.TotalFiles = stats.ItemFunctions + stats.ItemLootTables + stats.SpellFunctions + stats.SpellLootTables + stats.SkillFunctions + stats.EnemySkillFunctions + stats.EnemyFunctions + stats.EnemyLootTables + stats.TreasureLootTables + 2
+	stats.TotalFiles = stats.ItemFunctions + stats.ItemLootTables + stats.SpellFunctions + stats.SpellLootTables + stats.SkillFunctions + stats.EnemySkillFunctions + stats.EnemyFunctions + stats.EnemyLootTables + stats.TreasureLootTables + stats.LoottableLootTables + 2
 
 	return SaveDataResponse{
 		OK:         true,
@@ -156,6 +164,10 @@ type enemyOutputStats struct {
 
 type treasureOutputStats struct {
 	TreasureLootTables int
+}
+
+type loottableOutputStats struct {
+	LoottableLootTables int
 }
 
 func loadExportSettings(settingsPath string) (ExportSettings, error) {
@@ -445,6 +457,10 @@ func generateEnemyOutputs(settings ExportSettings, entries []enemies.EnemyEntry,
 }
 
 func generateTreasureOutputs(settings ExportSettings, entries []treasures.TreasureEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (treasureOutputStats, error) {
+	lootRoot := filepath.Join(settings.OutputRoot, settings.Paths.TreasureLootDir)
+	if err := os.MkdirAll(lootRoot, 0o755); err != nil {
+		return treasureOutputStats{}, err
+	}
 	itemsByID := map[string]items.ItemEntry{}
 	for _, entry := range itemEntries {
 		itemsByID[entry.ID] = entry
@@ -461,15 +477,39 @@ func generateTreasureOutputs(settings ExportSettings, entries []treasures.Treasu
 		if err != nil {
 			return treasureOutputStats{}, err
 		}
-		outPath, err := treasureOutputPath(settings, entry.TablePath)
-		if err != nil {
-			return treasureOutputStats{}, err
-		}
-		if err := writeJSON(outPath, lootTable); err != nil {
+		if err := writeJSON(filepath.Join(lootRoot, entry.ID+".json"), lootTable); err != nil {
 			return treasureOutputStats{}, err
 		}
 	}
 	return treasureOutputStats{TreasureLootTables: len(entries)}, nil
+}
+
+func generateLootTableOutputs(settings ExportSettings, entries []loottables.LootTableEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (loottableOutputStats, error) {
+	itemsByID := map[string]items.ItemEntry{}
+	for _, entry := range itemEntries {
+		itemsByID[entry.ID] = entry
+	}
+	grimoiresByID := map[string]grimoire.GrimoireEntry{}
+	for _, entry := range grimoireEntries {
+		grimoiresByID[entry.ID] = entry
+	}
+	for _, entry := range entries {
+		if len(entry.LootPools) == 0 {
+			return loottableOutputStats{}, fmt.Errorf("loottable(%s): lootPools must not be empty", entry.ID)
+		}
+		lootTable, err := buildDropLootTable(entry.LootPools, itemsByID, grimoiresByID, "loottable("+entry.ID+")")
+		if err != nil {
+			return loottableOutputStats{}, err
+		}
+		outPath, err := lootTableOutputPath(settings, entry.TablePath)
+		if err != nil {
+			return loottableOutputStats{}, err
+		}
+		if err := writeJSON(outPath, lootTable); err != nil {
+			return loottableOutputStats{}, err
+		}
+	}
+	return loottableOutputStats{LoottableLootTables: len(entries)}, nil
 }
 
 func toTreasureDrops(drops []enemies.DropRef) []treasures.DropRef {
@@ -767,13 +807,13 @@ func lootTableResourceID(settings ExportSettings, relativeDir, baseName string) 
 	return settings.Namespace + ":" + resourcePath + "/" + baseName
 }
 
-func treasureOutputPath(settings ExportSettings, tablePath string) (string, error) {
+func lootTableOutputPath(settings ExportSettings, tablePath string) (string, error) {
 	if !common.IsSafeNamespacedResourcePath(tablePath) {
-		return "", fmt.Errorf("invalid treasure table path: %s", tablePath)
+		return "", fmt.Errorf("invalid loot table path: %s", tablePath)
 	}
 	parts := strings.SplitN(tablePath, ":", 2)
 	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
-		return "", fmt.Errorf("invalid treasure table path: %s", tablePath)
+		return "", fmt.Errorf("invalid loot table path: %s", tablePath)
 	}
 	return filepath.Join(settings.OutputRoot, "data", parts[0], "loot_table", filepath.FromSlash(common.NormalizeResourcePath(parts[1]))+".json"), nil
 }

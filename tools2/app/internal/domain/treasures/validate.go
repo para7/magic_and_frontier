@@ -10,11 +10,6 @@ import (
 func ValidateSave(input SaveInput, itemIDs, grimoireIDs map[string]struct{}, now time.Time) common.SaveResult[TreasureEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
 	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "treasure_")
-	mode := common.NormalizeText(input.Mode)
-	tablePath := common.NormalizeText(input.TablePath)
-	if !common.IsSafeNamespacedResourcePath(tablePath) {
-		errs.Add("tablePath", "Must be a namespaced loot table path.")
-	}
 	pools := make([]DropRef, 0, len(input.LootPools))
 	for i, p := range input.LootPools {
 		kind := common.NormalizeText(p.Kind)
@@ -60,8 +55,6 @@ func ValidateSave(input SaveInput, itemIDs, grimoireIDs map[string]struct{}, now
 	}
 	entry := TreasureEntry{
 		ID:        id,
-		Mode:      mode,
-		TablePath: tablePath,
 		LootPools: pools,
 		UpdatedAt: now.UTC().Format(time.RFC3339),
 	}

@@ -13,6 +13,7 @@ import (
 	"tools2/app/internal/domain/enemyskills"
 	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/store"
@@ -41,6 +42,9 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	if deps.TreasureRepo == nil {
 		deps.TreasureRepo = defaults.TreasureRepo
 	}
+	if deps.LootTableRepo == nil {
+		deps.LootTableRepo = defaults.LootTableRepo
+	}
 	if deps.CounterRepo == nil {
 		deps.CounterRepo = defaults.CounterRepo
 	}
@@ -66,6 +70,7 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		EnemySkillRepo: deps.EnemySkillRepo,
 		EnemyRepo:      deps.EnemyRepo,
 		TreasureRepo:   deps.TreasureRepo,
+		LootTableRepo:  deps.LootTableRepo,
 		CounterRepo:    deps.CounterRepo,
 		Now:            deps.Now,
 	})
@@ -438,10 +443,6 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 			writeInternalError(w, err)
 			return
 		}
-		if conflictID := duplicateCustomTablePath(state.Entries, result.Entry.ID, result.Entry.Mode, result.Entry.TablePath); conflictID != "" {
-			writeJSON(w, http.StatusBadRequest, common.SaveValidationError[treasures.TreasureEntry](common.FieldErrors{"tablePath": "Custom loot table path is already used by " + conflictID + "."}, "Validation failed. Fix the highlighted fields."))
-			return
-		}
 		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry treasures.TreasureEntry) string { return entry.ID })
 		result.Mode = mode
 		if err := deps.TreasureRepo.SaveState(nextState); err != nil {
@@ -452,6 +453,63 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	})
 	mux.HandleFunc("DELETE /api/treasures/{id}", func(w http.ResponseWriter, r *http.Request) {
 		deleteEntry(w, r, deps.TreasureRepo, "treasure", "Treasure", func(entry treasures.TreasureEntry) string { return entry.ID })
+	})
+
+	mux.HandleFunc("GET /api/loottables", func(w http.ResponseWriter, r *http.Request) {
+		state, err := deps.LootTableRepo.LoadState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, state)
+	})
+	mux.HandleFunc("POST /api/loottables", func(w http.ResponseWriter, r *http.Request) {
+		var input loottables.SaveInput
+		if !decodeJSON(w, r, &input) {
+			return
+		}
+		if strings.TrimSpace(input.ID) == "" {
+			var err error
+			input.ID, err = appService.AllocateID("loottable")
+			if err != nil {
+				writeInternalError(w, err)
+				return
+			}
+		}
+		itemState, err := deps.ItemRepo.LoadItemState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		grimoireState, err := deps.GrimoireRepo.LoadGrimoireState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		result := loottables.ValidateSave(input, itemIDs(itemState), grimoireIDs(grimoireState), deps.Now())
+		if !result.OK {
+			writeJSON(w, http.StatusBadRequest, result)
+			return
+		}
+		state, err := deps.LootTableRepo.LoadState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		if conflictID := duplicateLootTablePath(state.Entries, result.Entry.ID, result.Entry.TablePath); conflictID != "" {
+			writeJSON(w, http.StatusBadRequest, common.SaveValidationError[loottables.LootTableEntry](common.FieldErrors{"tablePath": "Loot table path is already used by " + conflictID + "."}, "Validation failed. Fix the highlighted fields."))
+			return
+		}
+		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry loottables.LootTableEntry) string { return entry.ID })
+		result.Mode = mode
+		if err := deps.LootTableRepo.SaveState(nextState); err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, result)
+	})
+	mux.HandleFunc("DELETE /api/loottables/{id}", func(w http.ResponseWriter, r *http.Request) {
+		deleteEntry(w, r, deps.LootTableRepo, "loottable", "Loottable", func(entry loottables.LootTableEntry) string { return entry.ID })
 	})
 
 	mux.HandleFunc("POST /api/save", func(w http.ResponseWriter, r *http.Request) {
@@ -554,12 +612,9 @@ func duplicateCastID(entries []grimoire.GrimoireEntry, entryID string, castID in
 	return ""
 }
 
-func duplicateCustomTablePath(entries []treasures.TreasureEntry, entryID, mode, tablePath string) string {
-	if mode != "custom" {
-		return ""
-	}
+func duplicateLootTablePath(entries []loottables.LootTableEntry, entryID, tablePath string) string {
 	for _, entry := range entries {
-		if entry.ID != entryID && entry.Mode == "custom" && entry.TablePath == tablePath {
+		if entry.ID != entryID && entry.TablePath == tablePath {
 			return entry.ID
 		}
 	}

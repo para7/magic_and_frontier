@@ -7,6 +7,7 @@ import (
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/grimoire"
+	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/treasures"
 )
 
@@ -117,6 +118,13 @@ func mapGrimoireField(key string) string {
 }
 
 func mapTreasureField(key string) string {
+	if strings.HasPrefix(key, "lootPools.") {
+		return "lootPoolsText"
+	}
+	return key
+}
+
+func mapLootTableField(key string) string {
 	if strings.HasPrefix(key, "lootPools.") {
 		return "lootPoolsText"
 	}
@@ -268,12 +276,9 @@ func duplicateCastID(entries []grimoire.GrimoireEntry, id string, castID int) st
 	return ""
 }
 
-func duplicateCustomTablePath(entries []treasures.TreasureEntry, entryID, mode, tablePath string) string {
-	if mode != "custom" {
-		return ""
-	}
+func duplicateLootTablePath(entries []loottables.LootTableEntry, entryID, tablePath string) string {
 	for _, entry := range entries {
-		if entry.ID != entryID && entry.Mode == "custom" && entry.TablePath == tablePath {
+		if entry.ID != entryID && entry.TablePath == tablePath {
 			return entry.ID
 		}
 	}

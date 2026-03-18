@@ -35,6 +35,9 @@ func RegisterRoutes(mux *http.ServeMux, cfg config.Config, deps Dependencies) {
 	if deps.TreasureRepo == nil {
 		deps.TreasureRepo = defaults.TreasureRepo
 	}
+	if deps.LootTableRepo == nil {
+		deps.LootTableRepo = defaults.LootTableRepo
+	}
 	if deps.CounterRepo == nil {
 		deps.CounterRepo = defaults.CounterRepo
 	}
@@ -77,6 +80,13 @@ func RegisterRoutes(mux *http.ServeMux, cfg config.Config, deps Dependencies) {
 	mux.HandleFunc("GET /treasures/edit", app.treasuresEditPage)
 	mux.HandleFunc("POST /treasures/edit", app.treasuresEditSubmit)
 	mux.HandleFunc("POST /treasures/{id}/delete", app.treasuresDelete)
+
+	mux.HandleFunc("GET /loottables", app.lootTablesPage)
+	mux.HandleFunc("GET /loottables/new", app.lootTablesNewPage)
+	mux.HandleFunc("POST /loottables/new", app.lootTablesSubmit)
+	mux.HandleFunc("GET /loottables/edit", app.lootTablesEditPage)
+	mux.HandleFunc("POST /loottables/edit", app.lootTablesEditSubmit)
+	mux.HandleFunc("POST /loottables/{id}/delete", app.lootTablesDelete)
 
 	mux.HandleFunc("GET /enemies", app.enemiesPage)
 	mux.HandleFunc("GET /enemies/new", app.enemiesNewPage)

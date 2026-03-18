@@ -9,6 +9,7 @@ type CounterState struct {
 	EnemySkills int `json:"enemySkills"`
 	Enemies     int `json:"enemies"`
 	Treasures   int `json:"treasures"`
+	LootTables  int `json:"loottables"`
 	CastIDs     int `json:"castids"`
 }
 
@@ -21,6 +22,7 @@ const (
 	KindEnemySkill Kind = "enemyskill"
 	KindEnemy      Kind = "enemy"
 	KindTreasure   Kind = "treasure"
+	KindLootTable  Kind = "loottable"
 )
 
 func EmptyCounterState() CounterState {
@@ -47,6 +49,9 @@ func NextID(state CounterState, kind Kind) (CounterState, string) {
 	case KindTreasure:
 		state.Treasures++
 		return state, fmt.Sprintf("treasure_%d", state.Treasures)
+	case KindLootTable:
+		state.LootTables++
+		return state, fmt.Sprintf("loottable_%d", state.LootTables)
 	default:
 		panic("unsupported counter kind")
 	}

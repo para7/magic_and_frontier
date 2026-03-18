@@ -1,19 +1,18 @@
 {
   "entries": [
     {
-      "id": "64b9426e-882e-4c45-aea5-25d4e4405e19",
-      "name": "starter_loot",
+      "id": "treasure_1",
       "lootPools": [
         {
           "kind": "item",
-          "refId": "89f3cf77-ceb2-4355-9968-1f4e3dbf87ee",
+          "refId": "items_1",
           "weight": 70,
           "countMin": 1,
           "countMax": 3
         },
         {
           "kind": "grimoire",
-          "refId": "38bf1f6e-c6fb-4832-a750-8c34edd7703a",
+          "refId": "grimoire_1",
           "weight": 30,
           "countMin": 1,
           "countMax": 1

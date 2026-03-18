@@ -1,10 +1,9 @@
 {
   "entries": [
     {
-      "id": "3465019c-d461-48f8-8cf8-11dceb75a06c",
+      "id": "skill_1",
       "name": "Sword Slash",
       "script": "function maf:skill/sword_slash",
-      "itemId": "89f3cf77-ceb2-4355-9968-1f4e3dbf87ee",
       "updatedAt": "2026-02-23T00:00:00.000Z"
     }
   ]

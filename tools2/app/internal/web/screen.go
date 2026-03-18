@@ -98,6 +98,30 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 			GrimoireOptions: grimoireOptions(grimoireState.Entries),
 			Form:            defaultTreasureForm(),
 		})
+	case "/loottables":
+		itemState, err := a.deps.ItemRepo.LoadItemState()
+		if err != nil {
+			a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultLootTableForm()})
+			return
+		}
+		grimoireState, err := a.deps.GrimoireRepo.LoadGrimoireState()
+		if err != nil {
+			a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultLootTableForm()})
+			return
+		}
+		state, err := a.deps.LootTableRepo.LoadState()
+		if err != nil {
+			a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultLootTableForm()})
+			return
+		}
+		a.renderLootTables(w, r, webui.LootTablesPageData{
+			Meta:            lootTablesMeta(),
+			Notice:          notice,
+			Entries:         state.Entries,
+			ItemOptions:     itemOptions(itemState.Items),
+			GrimoireOptions: grimoireOptions(grimoireState.Entries),
+			Form:            defaultLootTableForm(),
+		})
 	case "/enemies":
 		state, err := a.deps.EnemyRepo.LoadState()
 		if err != nil {
@@ -212,7 +236,7 @@ func consumeFlashNotice(w http.ResponseWriter, r *http.Request) *webui.Notice {
 
 func normalizeScreenPath(value string) string {
 	switch strings.TrimSpace(value) {
-	case "/items", "/grimoire", "/skills", "/enemy-skills", "/treasures", "/enemies":
+	case "/items", "/grimoire", "/skills", "/enemy-skills", "/treasures", "/loottables", "/enemies":
 		return strings.TrimSpace(value)
 	default:
 		return "/items"

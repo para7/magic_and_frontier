@@ -49,13 +49,14 @@ func runValidate(args []string, stdout, stderr io.Writer, cfg config.Config) int
 		return 1
 	}
 
-	fmt.Fprintf(stdout, "savedata validation ok: items=%d grimoire=%d skills=%d enemy_skills=%d enemies=%d treasures=%d\n",
+	fmt.Fprintf(stdout, "savedata validation ok: items=%d grimoire=%d skills=%d enemy_skills=%d enemies=%d treasures=%d loottables=%d\n",
 		report.Counts.Items,
 		report.Counts.Grimoire,
 		report.Counts.Skills,
 		report.Counts.EnemySkills,
 		report.Counts.Enemies,
 		report.Counts.Treasures,
+		report.Counts.LootTables,
 	)
 	return 0
 }
@@ -77,7 +78,7 @@ func runExport(args []string, stdout, stderr io.Writer, cfg config.Config) int {
 		return 1
 	}
 
-	fmt.Fprintf(stdout, "datapack export completed: output=%s total_files=%d item_functions=%d item_loot=%d spell_functions=%d spell_loot=%d skills=%d enemy_skills=%d enemy_functions=%d enemy_loot=%d treasure_loot=%d\n",
+	fmt.Fprintf(stdout, "datapack export completed: output=%s total_files=%d item_functions=%d item_loot=%d spell_functions=%d spell_loot=%d skills=%d enemy_skills=%d enemy_functions=%d enemy_loot=%d treasure_loot=%d loottable_loot=%d\n",
 		result.OutputRoot,
 		result.Generated.TotalFiles,
 		result.Generated.ItemFunctions,
@@ -89,6 +90,7 @@ func runExport(args []string, stdout, stderr io.Writer, cfg config.Config) int {
 		result.Generated.EnemyFunctions,
 		result.Generated.EnemyLootTables,
 		result.Generated.TreasureLootTables,
+		result.Generated.LoottableLootTables,
 	)
 	return 0
 }

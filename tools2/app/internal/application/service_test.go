@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -14,6 +15,7 @@ import (
 	"tools2/app/internal/domain/enemyskills"
 	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/treasures"
 )
@@ -36,8 +38,11 @@ func TestValidateBundleDetectsBrokenReferences(t *testing.T) {
 			Script: "say roar",
 		}}},
 		TreasureState: common.EntryState[treasures.TreasureEntry]{Entries: []treasures.TreasureEntry{
-			{ID: "treasure_1", Mode: "custom", TablePath: "maf:loot/test", LootPools: []treasures.DropRef{{Kind: "item", RefID: "items_1", Weight: 1}}},
-			{ID: "treasure_2", Mode: "custom", TablePath: "maf:loot/test", LootPools: []treasures.DropRef{{Kind: "grimoire", RefID: "grimoire_1", Weight: 1}}},
+			{ID: "treasure_1", LootPools: []treasures.DropRef{{Kind: "item", RefID: "items_1", Weight: 1}}},
+		}},
+		LootTableState: common.EntryState[loottables.LootTableEntry]{Entries: []loottables.LootTableEntry{
+			{ID: "loottable_1", TablePath: "maf:loot/test", LootPools: []treasures.DropRef{{Kind: "item", RefID: "items_1", Weight: 1}}},
+			{ID: "loottable_2", TablePath: "maf:loot/test", LootPools: []treasures.DropRef{{Kind: "grimoire", RefID: "grimoire_1", Weight: 1}}},
 		}},
 		EnemyState: common.EntryState[enemies.EnemyEntry]{Entries: []enemies.EnemyEntry{{
 			ID:            "enemy_1",
@@ -59,7 +64,7 @@ func TestValidateBundleDetectsBrokenReferences(t *testing.T) {
 	if !strings.Contains(report.String(), "grimoire[grimoire_2].castid: Cast ID is already used by grimoire_1.") {
 		t.Fatalf("report = %s", report.String())
 	}
-	if !strings.Contains(report.String(), "treasure[treasure_2].tablePath: Custom loot table path is already used by treasure_1.") {
+	if !strings.Contains(report.String(), "loottable[loottable_2].tablePath: Loot table path is already used by loottable_1.") {
 		t.Fatalf("report = %s", report.String())
 	}
 }
@@ -98,6 +103,19 @@ func TestServiceExportDatapackRejectsInvalidSavedata(t *testing.T) {
 	}
 	if !strings.Contains(result.Details, "Referenced skill does not exist.") {
 		t.Fatalf("details = %s", result.Details)
+	}
+}
+
+func TestValidateCheckedInSavedata(t *testing.T) {
+	cfg := repoSavedataConfig(t)
+	svc := NewService(cfg, Dependencies{Now: fixedNow})
+
+	report, err := svc.ValidateAll()
+	if err != nil {
+		t.Fatalf("ValidateAll() error = %v", err)
+	}
+	if !report.OK {
+		t.Fatalf("checked-in savedata validation failed:\n%s", report.String())
 	}
 }
 
@@ -141,9 +159,40 @@ func testConfig(t *testing.T) config.Config {
 		EnemySkillStatePath: filepath.Join(root, "enemy-skill.json"),
 		EnemyStatePath:      filepath.Join(root, "enemy.json"),
 		TreasureStatePath:   filepath.Join(root, "treasure.json"),
+		LootTablesStatePath: filepath.Join(root, "loottables.json"),
 		IDCounterStatePath:  filepath.Join(root, "id-counters.json"),
 		ExportSettingsPath:  settingsPath,
 	}
+}
+
+func repoSavedataConfig(t *testing.T) config.Config {
+	t.Helper()
+
+	root := repoRoot(t)
+	savedataDir := filepath.Join(root, "savedata")
+
+	return config.Config{
+		Port:                8787,
+		ItemStatePath:       filepath.Join(savedataDir, "item.json"),
+		GrimoireStatePath:   filepath.Join(savedataDir, "grimoire.json"),
+		SkillStatePath:      filepath.Join(savedataDir, "skill.json"),
+		EnemySkillStatePath: filepath.Join(savedataDir, "enemy-skill.json"),
+		EnemyStatePath:      filepath.Join(savedataDir, "enemy.json"),
+		TreasureStatePath:   filepath.Join(savedataDir, "treasure.json"),
+		LootTablesStatePath: filepath.Join(savedataDir, "loottables.json"),
+		IDCounterStatePath:  filepath.Join(savedataDir, "id-counters.json"),
+		ExportSettingsPath:  filepath.Join(root, "..", "tools", "server", "config", "export-settings.json"),
+	}
+}
+
+func repoRoot(t *testing.T) string {
+	t.Helper()
+
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("runtime.Caller(0) failed")
+	}
+	return filepath.Clean(filepath.Join(filepath.Dir(filename), "..", "..", ".."))
 }
 
 func writeJSONFile(t *testing.T, path string, value any) {

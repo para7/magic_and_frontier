@@ -193,7 +193,13 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 	})
 
 	createJSONEntry(t, handler, "/api/treasures", map[string]any{
-		"mode":      "custom",
+		"lootPools": []map[string]any{
+			{"kind": "item", "refId": itemID, "weight": 1},
+			{"kind": "grimoire", "refId": grimoireID, "weight": 1},
+		},
+	})
+
+	createJSONEntry(t, handler, "/api/loottables", map[string]any{
 		"tablePath": "maf:treasure/test",
 		"lootPools": []map[string]any{
 			{"kind": "item", "refId": itemID, "weight": 1},
@@ -228,6 +234,7 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 		filepath.Join(root, "out", "data", "maf", "function", "skill", skillID+".mcfunction"),
 		filepath.Join(root, "out", "data", "maf", "function", "grimoire", grimoireID+".mcfunction"),
 		filepath.Join(root, "out", "data", "maf", "function", "grimoire", "selectexec.mcfunction"),
+		filepath.Join(root, "out", "data", "maf", "loot_table", "treasure", "treasure_1.json"),
 		filepath.Join(root, "out", "data", "maf", "loot_table", "treasure", "test.json"),
 		filepath.Join(root, "out", "data", "maf", "loot_table", "enemy", "enemy_1.json"),
 	}
@@ -238,17 +245,15 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 	}
 }
 
-func TestHandlerAPITreasureRejectsDuplicateCustomPath(t *testing.T) {
+func TestHandlerAPILoottableRejectsDuplicatePath(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
-	createJSONEntry(t, handler, "/api/treasures", map[string]any{
-		"mode":      "custom",
+	createJSONEntry(t, handler, "/api/loottables", map[string]any{
 		"tablePath": "maf:treasure/test",
 		"lootPools": []map[string]any{{"kind": "minecraft_item", "refId": "minecraft:apple", "weight": 1}},
 	})
 
-	rec := requestJSON(t, handler, http.MethodPost, "/api/treasures", map[string]any{
-		"mode":      "custom",
+	rec := requestJSON(t, handler, http.MethodPost, "/api/loottables", map[string]any{
 		"tablePath": "maf:treasure/test",
 		"lootPools": []map[string]any{{"kind": "minecraft_item", "refId": "minecraft:stick", "weight": 1}},
 	})
@@ -263,11 +268,10 @@ func TestHandlerAPITreasureRejectsDuplicateCustomPath(t *testing.T) {
 	}
 }
 
-func TestHandlerAPITreasureRejectsTraversalPath(t *testing.T) {
+func TestHandlerAPILoottableRejectsTraversalPath(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
-	rec := requestJSON(t, handler, http.MethodPost, "/api/treasures", map[string]any{
-		"mode":      "custom",
+	rec := requestJSON(t, handler, http.MethodPost, "/api/loottables", map[string]any{
 		"tablePath": "maf:loot/../escape",
 		"lootPools": []map[string]any{{"kind": "minecraft_item", "refId": "minecraft:apple", "weight": 1}},
 	})
@@ -395,6 +399,7 @@ func newTestHandler(t *testing.T) (http.Handler, string) {
 		EnemySkillStatePath: filepath.Join(root, "enemy-skill.json"),
 		EnemyStatePath:      filepath.Join(root, "enemy.json"),
 		TreasureStatePath:   filepath.Join(root, "treasure.json"),
+		LootTablesStatePath: filepath.Join(root, "loottables.json"),
 		IDCounterStatePath:  filepath.Join(root, "id-counters.json"),
 		ExportSettingsPath:  settingsPath,
 	}

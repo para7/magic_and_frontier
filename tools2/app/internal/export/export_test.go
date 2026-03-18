@@ -153,9 +153,9 @@ func TestToEnemyFunctionLinesResolvesCustomItemEquipment(t *testing.T) {
 	}
 }
 
-func TestTreasureOutputPathRejectsTraversal(t *testing.T) {
+func TestLootTableOutputPathRejectsTraversal(t *testing.T) {
 	settings := ExportSettings{OutputRoot: "/tmp/out"}
-	if _, err := treasureOutputPath(settings, "maf:loot/../escape"); err == nil {
+	if _, err := lootTableOutputPath(settings, "maf:loot/../escape"); err == nil {
 		t.Fatalf("expected traversal table path to be rejected")
 	}
 }

@@ -124,9 +124,6 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request, editing bool)
 	}
 	result := treasures.ValidateSave(input, itemIDSet(itemState), grimoireIDSet(grimoireState), a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapTreasureField))
-	if conflictID := duplicateCustomTablePath(state.Entries, input.ID, input.Mode, input.TablePath); conflictID != "" {
-		errors["tablePath"] = "Custom loot table path is already used by " + conflictID + "."
-	}
 	if len(errors) > 0 {
 		form.FieldErrors = errors
 		form.FormError = formErrorText(result.FormError)
@@ -191,14 +188,12 @@ func (a App) renderTreasureForm(w http.ResponseWriter, r *http.Request, data web
 }
 
 func treasuresMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Treasures", CurrentPath: "/treasures", Description: "treasure loot pools と保存先 table path を管理します。"}
+	return webui.PageMeta{Title: "Treasures", CurrentPath: "/treasures", Description: "treasure loot pools を管理します。"}
 }
 
 func defaultTreasureForm() webui.TreasureFormData {
 	return webui.TreasureFormData{
 		ID:            "",
-		Mode:          "custom",
-		TablePath:     "maf:treasure/example",
 		LootPoolsText: "item,,1,1,1",
 		FieldErrors:   map[string]string{},
 	}
@@ -225,8 +220,6 @@ func treasureEntryToForm(entry treasures.TreasureEntry) webui.TreasureFormData {
 	}
 	return webui.TreasureFormData{
 		ID:            entry.ID,
-		Mode:          entry.Mode,
-		TablePath:     entry.TablePath,
 		LootPoolsText: strings.Join(lines, "\n"),
 		FieldErrors:   map[string]string{},
 		IsEditing:     true,
@@ -236,14 +229,10 @@ func treasureEntryToForm(entry treasures.TreasureEntry) webui.TreasureFormData {
 func parseTreasureForm(r *http.Request) (webui.TreasureFormData, treasures.SaveInput, map[string]string) {
 	form := defaultTreasureForm()
 	form.ID = strings.TrimSpace(r.Form.Get("id"))
-	form.Mode = strings.TrimSpace(r.Form.Get("mode"))
-	form.TablePath = strings.TrimSpace(r.Form.Get("tablePath"))
 	form.LootPoolsText = r.Form.Get("lootPoolsText")
 	errs := map[string]string{}
 	input := treasures.SaveInput{
 		ID:        form.ID,
-		Mode:      form.Mode,
-		TablePath: form.TablePath,
 		LootPools: parseTreasurePools(errs, form.LootPoolsText),
 	}
 	return form, input, errs

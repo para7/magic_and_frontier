@@ -5,6 +5,7 @@ import (
 	"tools2/app/internal/domain/enemyskills"
 	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/treasures"
 )
@@ -21,6 +22,7 @@ func NavItems() []NavItem {
 		{Path: "/skills", Label: "Skills"},
 		{Path: "/enemy-skills", Label: "Enemy Skills"},
 		{Path: "/treasures", Label: "Treasures"},
+		{Path: "/loottables", Label: "Loottables"},
 		{Path: "/enemies", Label: "Enemies"},
 	}
 }
@@ -138,8 +140,6 @@ type EnemySkillsPageData struct {
 type TreasureFormData struct {
 	ID            string
 	ReturnTo      string
-	Mode          string
-	TablePath     string
 	LootPoolsText string
 	FieldErrors   map[string]string
 	FormError     string
@@ -153,6 +153,25 @@ type TreasuresPageData struct {
 	ItemOptions     []ReferenceOption
 	GrimoireOptions []ReferenceOption
 	Form            TreasureFormData
+}
+
+type LootTableFormData struct {
+	ID            string
+	ReturnTo      string
+	TablePath     string
+	LootPoolsText string
+	FieldErrors   map[string]string
+	FormError     string
+	IsEditing     bool
+}
+
+type LootTablesPageData struct {
+	Meta            PageMeta
+	Notice          *Notice
+	Entries         []loottables.LootTableEntry
+	ItemOptions     []ReferenceOption
+	GrimoireOptions []ReferenceOption
+	Form            LootTableFormData
 }
 
 type EnemyFormData struct {

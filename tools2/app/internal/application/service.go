@@ -12,6 +12,7 @@ import (
 	"tools2/app/internal/domain/enemyskills"
 	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/export"
@@ -26,6 +27,7 @@ type Dependencies struct {
 	EnemySkillRepo     store.EntryStateRepository[enemyskills.EnemySkillEntry]
 	EnemyRepo          store.EntryStateRepository[enemies.EnemyEntry]
 	TreasureRepo       store.EntryStateRepository[treasures.TreasureEntry]
+	LootTableRepo      store.EntryStateRepository[loottables.LootTableEntry]
 	CounterRepo        store.CounterRepository
 	ExportSettingsPath string
 	Now                func() time.Time
@@ -42,6 +44,7 @@ type StateBundle struct {
 	EnemySkillState common.EntryState[enemyskills.EnemySkillEntry]
 	EnemyState      common.EntryState[enemies.EnemyEntry]
 	TreasureState   common.EntryState[treasures.TreasureEntry]
+	LootTableState  common.EntryState[loottables.LootTableEntry]
 }
 
 type Counts struct {
@@ -51,6 +54,7 @@ type Counts struct {
 	EnemySkills int
 	Enemies     int
 	Treasures   int
+	LootTables  int
 }
 
 type ValidationIssue struct {
@@ -74,6 +78,7 @@ func DefaultDependencies(cfg config.Config) Dependencies {
 		EnemySkillRepo:     store.NewEntryStateRepository[enemyskills.EnemySkillEntry](cfg.EnemySkillStatePath),
 		EnemyRepo:          store.NewEntryStateRepository[enemies.EnemyEntry](cfg.EnemyStatePath),
 		TreasureRepo:       store.NewEntryStateRepository[treasures.TreasureEntry](cfg.TreasureStatePath),
+		LootTableRepo:      store.NewEntryStateRepository[loottables.LootTableEntry](cfg.LootTablesStatePath),
 		CounterRepo:        store.NewCounterRepository(cfg.IDCounterStatePath),
 		ExportSettingsPath: cfg.ExportSettingsPath,
 		Now:                time.Now,
@@ -99,6 +104,9 @@ func NewService(cfg config.Config, deps Dependencies) Service {
 	}
 	if deps.TreasureRepo == nil {
 		deps.TreasureRepo = defaults.TreasureRepo
+	}
+	if deps.LootTableRepo == nil {
+		deps.LootTableRepo = defaults.LootTableRepo
 	}
 	if deps.CounterRepo == nil {
 		deps.CounterRepo = defaults.CounterRepo
@@ -137,6 +145,10 @@ func (s Service) LoadStates() (StateBundle, error) {
 	if err != nil {
 		return StateBundle{}, fmt.Errorf("load treasures: %w", err)
 	}
+	lootTableState, err := s.deps.LootTableRepo.LoadState()
+	if err != nil {
+		return StateBundle{}, fmt.Errorf("load loottables: %w", err)
+	}
 	return StateBundle{
 		ItemState:       itemState,
 		GrimoireState:   grimoireState,
@@ -144,6 +156,7 @@ func (s Service) LoadStates() (StateBundle, error) {
 		EnemySkillState: enemySkillState,
 		EnemyState:      enemyState,
 		TreasureState:   treasureState,
+		LootTableState:  lootTableState,
 	}, nil
 }
 
@@ -216,6 +229,7 @@ func (s Service) ExportDatapack() export.SaveDataResponse {
 		EnemySkills:        states.EnemySkillState.Entries,
 		Enemies:            states.EnemyState.Entries,
 		Treasures:          states.TreasureState.Entries,
+		LootTables:         states.LootTableState.Entries,
 		ExportSettingsPath: s.deps.ExportSettingsPath,
 	})
 }
@@ -230,6 +244,7 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, now time.Time
 			EnemySkills: len(states.EnemySkillState.Entries),
 			Enemies:     len(states.EnemyState.Entries),
 			Treasures:   len(states.TreasureState.Entries),
+			LootTables:  len(states.LootTableState.Entries),
 		},
 	}
 	if exportSettingsPath != "" {
@@ -246,7 +261,7 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, now time.Time
 	grimoireIDs := entryIDs(states.GrimoireState.Entries, func(entry grimoire.GrimoireEntry) string { return entry.ID })
 	skillIDs := entryIDs(states.SkillState.Entries, func(entry skills.SkillEntry) string { return entry.ID })
 	enemySkillIDs := entryIDs(states.EnemySkillState.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
-	customTreasurePaths := map[string]string{}
+	customLootTablePaths := map[string]string{}
 	castIDs := map[int]string{}
 
 	for _, entry := range states.ItemState.Items {
@@ -273,17 +288,18 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, now time.Time
 	}
 	for _, entry := range states.TreasureState.Entries {
 		appendSaveIssues(&report, "treasure", entry.ID, treasures.ValidateSave(treasureToInput(entry), itemIDs, grimoireIDs, now))
-		if entry.Mode == "custom" {
-			if prevID, exists := customTreasurePaths[strings.TrimSpace(entry.TablePath)]; exists && prevID != entry.ID {
-				report.Issues = append(report.Issues, ValidationIssue{
-					Entity:  "treasure",
-					ID:      entry.ID,
-					Field:   "tablePath",
-					Message: "Custom loot table path is already used by " + prevID + ".",
-				})
-			} else {
-				customTreasurePaths[strings.TrimSpace(entry.TablePath)] = entry.ID
-			}
+	}
+	for _, entry := range states.LootTableState.Entries {
+		appendSaveIssues(&report, "loottable", entry.ID, loottables.ValidateSave(loottableToInput(entry), itemIDs, grimoireIDs, now))
+		if prevID, exists := customLootTablePaths[strings.TrimSpace(entry.TablePath)]; exists && prevID != entry.ID {
+			report.Issues = append(report.Issues, ValidationIssue{
+				Entity:  "loottable",
+				ID:      entry.ID,
+				Field:   "tablePath",
+				Message: "Loot table path is already used by " + prevID + ".",
+			})
+		} else {
+			customLootTablePaths[strings.TrimSpace(entry.TablePath)] = entry.ID
 		}
 	}
 	for _, entry := range states.EnemyState.Entries {
@@ -402,7 +418,13 @@ func enemySkillToInput(entry enemyskills.EnemySkillEntry) enemyskills.SaveInput 
 func treasureToInput(entry treasures.TreasureEntry) treasures.SaveInput {
 	return treasures.SaveInput{
 		ID:        entry.ID,
-		Mode:      entry.Mode,
+		LootPools: append([]treasures.DropRef{}, entry.LootPools...),
+	}
+}
+
+func loottableToInput(entry loottables.LootTableEntry) loottables.SaveInput {
+	return loottables.SaveInput{
+		ID:        entry.ID,
 		TablePath: entry.TablePath,
 		LootPools: append([]treasures.DropRef{}, entry.LootPools...),
 	}
