@@ -81,7 +81,7 @@ func writeFixtureConfig(t *testing.T, valid bool) config.Config {
 		},
 	}
 	writeJSON(t, settingsPath, settings)
-	writeJSON(t, filepath.Join(root, "item-state.json"), map[string]any{
+	writeJSON(t, filepath.Join(root, "item.json"), map[string]any{
 		"items": []map[string]any{{
 			"id":      "items_1",
 			"itemId":  "minecraft:apple",
@@ -98,18 +98,18 @@ func writeFixtureConfig(t *testing.T, valid bool) config.Config {
 	if !valid {
 		skillEntries = []map[string]any{}
 	}
-	writeJSON(t, filepath.Join(root, "skill-state.json"), map[string]any{
+	writeJSON(t, filepath.Join(root, "skill.json"), map[string]any{
 		"entries": skillEntries,
 	})
 
 	return config.Config{
 		Port:                8787,
-		ItemStatePath:       filepath.Join(root, "item-state.json"),
-		GrimoireStatePath:   filepath.Join(root, "grimoire-state.json"),
-		SkillStatePath:      filepath.Join(root, "skill-state.json"),
-		EnemySkillStatePath: filepath.Join(root, "enemy-skill-state.json"),
-		EnemyStatePath:      filepath.Join(root, "enemy-state.json"),
-		TreasureStatePath:   filepath.Join(root, "treasure-state.json"),
+		ItemStatePath:       filepath.Join(root, "item.json"),
+		GrimoireStatePath:   filepath.Join(root, "grimoire.json"),
+		SkillStatePath:      filepath.Join(root, "skill.json"),
+		EnemySkillStatePath: filepath.Join(root, "enemy-skill.json"),
+		EnemyStatePath:      filepath.Join(root, "enemy.json"),
+		TreasureStatePath:   filepath.Join(root, "treasure.json"),
 		IDCounterStatePath:  filepath.Join(root, "id-counters.json"),
 		ExportSettingsPath:  settingsPath,
 	}

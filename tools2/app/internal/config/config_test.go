@@ -15,15 +15,15 @@ func TestDefaultStatePath_FallsBackToParentSavedata(t *testing.T) {
 	if err := os.MkdirAll(filepath.Join(root, "savedata"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	statePath := filepath.Join(root, "savedata", "form-state.json")
+	statePath := filepath.Join(root, "savedata", "item.json")
 	if err := os.WriteFile(statePath, []byte("{}\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 
 	t.Chdir(tools2Root)
 
-	got := defaultStatePath("form-state.json")
-	want := filepath.Clean(filepath.Join("..", "savedata", "form-state.json"))
+	got := defaultStatePath("item.json")
+	want := filepath.Clean(filepath.Join("..", "savedata", "item.json"))
 	if got != want {
 		t.Fatalf("defaultStatePath = %q, want %q", got, want)
 	}
@@ -40,7 +40,30 @@ func TestDefaultStatePath_PrefersExistingLocalSavedata(t *testing.T) {
 	if err := os.MkdirAll(parentSavedata, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(localSavedata, "form-state.json"), []byte("{}\n"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(localSavedata, "item.json"), []byte("{}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(parentSavedata, "item.json"), []byte("{}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	t.Chdir(tools2Root)
+
+	got := defaultStatePath("item.json")
+	want := filepath.Clean(filepath.Join(".", "savedata", "item.json"))
+	if got != want {
+		t.Fatalf("defaultStatePath = %q, want %q", got, want)
+	}
+}
+
+func TestDefaultStatePath_DoesNotUseLegacyStateFileNames(t *testing.T) {
+	root := t.TempDir()
+	tools2Root := filepath.Join(root, "tools2")
+	parentSavedata := filepath.Join(root, "savedata")
+	if err := os.MkdirAll(parentSavedata, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(tools2Root, 0o755); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(parentSavedata, "form-state.json"), []byte("{}\n"), 0o644); err != nil {
@@ -49,8 +72,8 @@ func TestDefaultStatePath_PrefersExistingLocalSavedata(t *testing.T) {
 
 	t.Chdir(tools2Root)
 
-	got := defaultStatePath("form-state.json")
-	want := filepath.Clean(filepath.Join(".", "savedata", "form-state.json"))
+	got := defaultStatePath("item.json")
+	want := filepath.Clean(filepath.Join(".", "savedata", "item.json"))
 	if got != want {
 		t.Fatalf("defaultStatePath = %q, want %q", got, want)
 	}

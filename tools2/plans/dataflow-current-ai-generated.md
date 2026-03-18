@@ -7,12 +7,12 @@
 
 保存元 JSON:
 
-- `savedata/form-state.json` -> `items`
-- `savedata/grimoire-state.json` -> `grimoire`
-- `savedata/skill-state.json` -> `skills`
-- `savedata/enemy-skill-state.json` -> `enemy_skills`
-- `savedata/treasure-state.json` -> `treasures`
-- `savedata/enemy-state.json` -> `enemies`
+- `savedata/item.json` -> `items`
+- `savedata/grimoire.json` -> `grimoire`
+- `savedata/skill.json` -> `skills`
+- `savedata/enemy-skill.json` -> `enemy_skills`
+- `savedata/treasure.json` -> `treasures`
+- `savedata/enemy.json` -> `enemies`
 
 ### items
 
@@ -534,5 +534,5 @@ SELECT 'enemy_skill_refs.enemy_skill_id -> enemy_skills.id';
 SELECT 'defaultEnemyForm では drop_table_id = enemy.id を初期値にしている';
 
 -- 4. ただし保存構造上は enemies と treasures は別 JSON
-SELECT 'enemy-state.json と treasure-state.json を id 参照でつないでいる';
+SELECT 'enemy.json と treasure.json を id 参照でつないでいる';
 ```

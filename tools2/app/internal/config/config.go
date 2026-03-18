@@ -26,12 +26,12 @@ func Load() Config {
 
 	return Config{
 		Port:                rawPort,
-		ItemStatePath:       envOrDefault("ITEM_STATE_PATH", defaultStatePath("form-state.json")),
-		GrimoireStatePath:   envOrDefault("GRIMOIRE_STATE_PATH", defaultStatePath("grimoire-state.json")),
-		SkillStatePath:      envOrDefault("SKILL_STATE_PATH", defaultStatePath("skill-state.json")),
-		EnemySkillStatePath: envOrDefault("ENEMY_SKILL_STATE_PATH", defaultStatePath("enemy-skill-state.json")),
-		EnemyStatePath:      envOrDefault("ENEMY_STATE_PATH", defaultStatePath("enemy-state.json")),
-		TreasureStatePath:   envOrDefault("TREASURE_STATE_PATH", defaultStatePath("treasure-state.json")),
+		ItemStatePath:       envOrDefault("ITEM_STATE_PATH", defaultStatePath("item.json")),
+		GrimoireStatePath:   envOrDefault("GRIMOIRE_STATE_PATH", defaultStatePath("grimoire.json")),
+		SkillStatePath:      envOrDefault("SKILL_STATE_PATH", defaultStatePath("skill.json")),
+		EnemySkillStatePath: envOrDefault("ENEMY_SKILL_STATE_PATH", defaultStatePath("enemy-skill.json")),
+		EnemyStatePath:      envOrDefault("ENEMY_STATE_PATH", defaultStatePath("enemy.json")),
+		TreasureStatePath:   envOrDefault("TREASURE_STATE_PATH", defaultStatePath("treasure.json")),
 		IDCounterStatePath:  envOrDefault("ID_COUNTER_STATE_PATH", defaultStatePath("id-counters.json")),
 		ExportSettingsPath:  envOrDefault("EXPORT_SETTINGS_PATH", defaultExportSettingsPath()),
 	}

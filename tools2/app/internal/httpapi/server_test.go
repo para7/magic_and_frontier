@@ -389,12 +389,12 @@ func newTestHandler(t *testing.T) (http.Handler, string) {
 
 	cfg := config.Config{
 		Port:                8787,
-		ItemStatePath:       filepath.Join(root, "item-state.json"),
-		GrimoireStatePath:   filepath.Join(root, "grimoire-state.json"),
-		SkillStatePath:      filepath.Join(root, "skill-state.json"),
-		EnemySkillStatePath: filepath.Join(root, "enemy-skill-state.json"),
-		EnemyStatePath:      filepath.Join(root, "enemy-state.json"),
-		TreasureStatePath:   filepath.Join(root, "treasure-state.json"),
+		ItemStatePath:       filepath.Join(root, "item.json"),
+		GrimoireStatePath:   filepath.Join(root, "grimoire.json"),
+		SkillStatePath:      filepath.Join(root, "skill.json"),
+		EnemySkillStatePath: filepath.Join(root, "enemy-skill.json"),
+		EnemyStatePath:      filepath.Join(root, "enemy.json"),
+		TreasureStatePath:   filepath.Join(root, "treasure.json"),
 		IDCounterStatePath:  filepath.Join(root, "id-counters.json"),
 		ExportSettingsPath:  settingsPath,
 	}
