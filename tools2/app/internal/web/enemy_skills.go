@@ -22,10 +22,13 @@ func (a App) enemySkillsPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a App) enemySkillsNewPage(w http.ResponseWriter, r *http.Request) {
-	a.renderEnemySkillForm(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Form: defaultEnemySkillForm()})
+	form := defaultEnemySkillForm()
+	form.ReturnTo = queryReturnTo(r, enemySkillsMeta().CurrentPath)
+	a.renderEnemySkillForm(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Form: form})
 }
 
 func (a App) enemySkillsEditPage(w http.ResponseWriter, r *http.Request) {
+	returnTo := queryReturnTo(r, enemySkillsMeta().CurrentPath)
 	state, err := a.deps.EnemySkillRepo.LoadState()
 	if err != nil {
 		a.renderEnemySkills(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Notice: errorNotice(err.Error())})
@@ -33,7 +36,9 @@ func (a App) enemySkillsEditPage(w http.ResponseWriter, r *http.Request) {
 	}
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
 	if entry, ok := findEntry(state.Entries, id, func(entry enemyskills.EnemySkillEntry) string { return entry.ID }); ok {
-		a.renderEnemySkillForm(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Form: enemySkillEntryToForm(entry)})
+		form := enemySkillEntryToForm(entry)
+		form.ReturnTo = returnTo
+		a.renderEnemySkillForm(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Form: form})
 		return
 	}
 	a.renderEnemySkills(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Entries: state.Entries, Notice: errorNotice("Enemy skill not found.")})
@@ -49,15 +54,18 @@ func (a App) enemySkillsEditSubmit(w http.ResponseWriter, r *http.Request) {
 
 func (a App) enemySkillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	_ = r.ParseForm()
+	returnTo := submittedReturnTo(r, enemySkillsMeta().CurrentPath)
 	state, err := a.deps.EnemySkillRepo.LoadState()
 	if err != nil {
 		form := defaultEnemySkillForm()
 		form.IsEditing = editing
+		form.ReturnTo = returnTo
 		a.renderEnemySkillForm(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	form, input, parseErrs := parseEnemySkillForm(r)
 	form.IsEditing = editing
+	form.ReturnTo = returnTo
 	if editing {
 		if _, ok := findEntry(state.Entries, form.ID, func(entry enemyskills.EnemySkillEntry) string { return entry.ID }); !ok {
 			a.renderEnemySkills(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Entries: state.Entries, Notice: errorNotice("Enemy skill not found.")})
@@ -87,13 +95,15 @@ func (a App) enemySkillsSave(w http.ResponseWriter, r *http.Request, editing boo
 	}
 	notice := successNotice(noticeText("Enemy skill", mode))
 	setToast(w, notice.Text)
-	if redirectWithNotice(w, r, "/enemy-skills", notice) {
+	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
 	a.renderEnemySkills(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) enemySkillsDelete(w http.ResponseWriter, r *http.Request) {
+	_ = r.ParseForm()
+	returnTo := submittedReturnTo(r, enemySkillsMeta().CurrentPath)
 	id := strings.TrimSpace(r.PathValue("id"))
 	state, err := a.deps.EnemySkillRepo.LoadState()
 	if err != nil {
@@ -128,13 +138,14 @@ func (a App) enemySkillsDelete(w http.ResponseWriter, r *http.Request) {
 	}
 	notice := successNotice("Enemy skill deleted.")
 	setToast(w, notice.Text)
-	if redirectWithNotice(w, r, "/enemy-skills", notice) {
+	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
 	a.renderEnemySkills(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) renderEnemySkills(w http.ResponseWriter, r *http.Request, data webui.EnemySkillsPageData) {
+	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.EnemySkillsShell(data))
 		return
@@ -143,6 +154,7 @@ func (a App) renderEnemySkills(w http.ResponseWriter, r *http.Request, data webu
 }
 
 func (a App) renderEnemySkillForm(w http.ResponseWriter, r *http.Request, data webui.EnemySkillsPageData) {
+	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.EnemySkillFormShell(data))
 		return

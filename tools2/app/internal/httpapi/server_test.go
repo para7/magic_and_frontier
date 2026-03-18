@@ -71,6 +71,98 @@ func TestHandlerSSRGrimoireEditShowsReadonlyCastID(t *testing.T) {
 	}
 }
 
+func TestHandlerSSRItemsListIncludesClientControlsAndReturnTo(t *testing.T) {
+	handler, _ := newTestHandler(t)
+	skillID := createJSONEntry(t, handler, "/api/skills", map[string]any{
+		"name":   "Slash",
+		"script": "say slash",
+	})
+	itemID := createJSONEntry(t, handler, "/api/items", map[string]any{
+		"itemId":  "minecraft:apple",
+		"count":   3,
+		"skillId": skillID,
+	})
+
+	rec := request(t, handler, http.MethodGet, "/items?q=apple&page=2", nil, "")
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d", rec.Code)
+	}
+
+	body := rec.Body.String()
+	if !strings.Contains(body, `data-list-root`) || !strings.Contains(body, `data-list-search`) {
+		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, `href="/items/new?returnTo=%2Fitems%3Fq%3Dapple%26page%3D2"`) {
+		t.Fatalf("body = %s", body)
+	}
+	wantEdit := `href="/items/edit?id=` + itemID + `&amp;returnTo=%2Fitems%3Fq%3Dapple%26page%3D2"`
+	if !strings.Contains(body, wantEdit) {
+		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, `data-sort-item_id="minecraft:apple"`) {
+		t.Fatalf("body = %s", body)
+	}
+}
+
+func TestHandlerSSRSkillEditRespectsReturnToOnSaveAndFallback(t *testing.T) {
+	handler, _ := newTestHandler(t)
+	skillID := createJSONEntry(t, handler, "/api/skills", map[string]any{
+		"name":        "Slash",
+		"description": "Basic slash",
+		"script":      "say slash",
+	})
+
+	rec := request(t, handler, http.MethodGet, "/skills/edit?id="+skillID+"&returnTo=%2Fskills%3Fq%3Dslash%26page%3D2", nil, "")
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), `href="/skills?q=slash&amp;page=2">Back to list</a>`) {
+		t.Fatalf("body = %s", rec.Body.String())
+	}
+
+	rec = postForm(t, handler, "/skills/edit", url.Values{
+		"id":          {skillID},
+		"name":        {"Slash v2"},
+		"description": {"Updated"},
+		"script":      {"say slash2"},
+		"returnTo":    {"/skills?q=slash&page=2"},
+	}, http.StatusSeeOther)
+	assertRedirect(t, rec, "/skills?q=slash&page=2")
+
+	rec = postForm(t, handler, "/skills/edit", url.Values{
+		"id":          {skillID},
+		"name":        {"Slash v3"},
+		"description": {"Updated again"},
+		"script":      {"say slash3"},
+		"returnTo":    {"https://evil.example"},
+	}, http.StatusSeeOther)
+	assertRedirect(t, rec, "/skills")
+}
+
+func TestHandlerSSRItemReturnToRejectsNonListPaths(t *testing.T) {
+	handler, _ := newTestHandler(t)
+	itemID := createJSONEntry(t, handler, "/api/items", map[string]any{
+		"itemId": "minecraft:apple",
+		"count":  1,
+	})
+
+	rec := request(t, handler, http.MethodGet, "/items/edit?id="+itemID+"&returnTo=%2Fsave", nil, "")
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), `href="/items">Back to list</a>`) {
+		t.Fatalf("body = %s", rec.Body.String())
+	}
+
+	rec = postForm(t, handler, "/items/edit", url.Values{
+		"id":       {itemID},
+		"itemId":   {"minecraft:apple"},
+		"count":    {"2"},
+		"returnTo": {"/items/edit?id=" + itemID},
+	}, http.StatusSeeOther)
+	assertRedirect(t, rec, "/items")
+}
+
 func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 	handler, root := newTestHandler(t)
 

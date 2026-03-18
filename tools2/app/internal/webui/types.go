@@ -34,6 +34,7 @@ type PageMeta struct {
 	Title       string
 	CurrentPath string
 	Description string
+	CurrentURL  string
 }
 
 type ReferenceOption struct {
@@ -41,8 +42,14 @@ type ReferenceOption struct {
 	Label string
 }
 
+type SelectOption struct {
+	Value string
+	Label string
+}
+
 type ItemFormData struct {
 	ID                  string
+	ReturnTo            string
 	ItemID              string
 	Count               string
 	SkillID             string
@@ -73,6 +80,7 @@ type ItemsPageData struct {
 
 type GrimoireFormData struct {
 	ID          string
+	ReturnTo    string
 	CastID      string
 	CastTime    string
 	MPCost      string
@@ -93,6 +101,7 @@ type GrimoirePageData struct {
 
 type SkillFormData struct {
 	ID          string
+	ReturnTo    string
 	Name        string
 	Description string
 	Script      string
@@ -110,6 +119,7 @@ type SkillsPageData struct {
 
 type EnemySkillFormData struct {
 	ID          string
+	ReturnTo    string
 	Name        string
 	Description string
 	Script      string
@@ -127,6 +137,7 @@ type EnemySkillsPageData struct {
 
 type TreasureFormData struct {
 	ID            string
+	ReturnTo      string
 	Mode          string
 	TablePath     string
 	LootPoolsText string
@@ -146,6 +157,7 @@ type TreasuresPageData struct {
 
 type EnemyFormData struct {
 	ID                string
+	ReturnTo          string
 	MobType           string
 	Name              string
 	HP                string

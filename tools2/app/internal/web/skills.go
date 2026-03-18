@@ -22,10 +22,13 @@ func (a App) skillsPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a App) skillsNewPage(w http.ResponseWriter, r *http.Request) {
-	a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Form: defaultSkillForm()})
+	form := defaultSkillForm()
+	form.ReturnTo = queryReturnTo(r, skillsMeta().CurrentPath)
+	a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Form: form})
 }
 
 func (a App) skillsEditPage(w http.ResponseWriter, r *http.Request) {
+	returnTo := queryReturnTo(r, skillsMeta().CurrentPath)
 	state, err := a.deps.SkillRepo.LoadState()
 	if err != nil {
 		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
@@ -34,6 +37,7 @@ func (a App) skillsEditPage(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
 	if entry, ok := findEntry(state.Entries, id, func(entry skills.SkillEntry) string { return entry.ID }); ok {
 		form := skillEntryToForm(entry)
+		form.ReturnTo = returnTo
 		a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Form: form})
 		return
 	}
@@ -50,15 +54,18 @@ func (a App) skillsEditSubmit(w http.ResponseWriter, r *http.Request) {
 
 func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	_ = r.ParseForm()
+	returnTo := submittedReturnTo(r, skillsMeta().CurrentPath)
 	state, err := a.deps.SkillRepo.LoadState()
 	if err != nil {
 		form := defaultSkillForm()
 		form.IsEditing = editing
+		form.ReturnTo = returnTo
 		a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	form, input, parseErrs := parseSkillForm(r)
 	form.IsEditing = editing
+	form.ReturnTo = returnTo
 	if editing {
 		if _, ok := findEntry(state.Entries, form.ID, func(entry skills.SkillEntry) string { return entry.ID }); !ok {
 			a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill not found.")})
@@ -88,13 +95,15 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	}
 	notice := successNotice(noticeText("Skill", mode))
 	setToast(w, notice.Text)
-	if redirectWithNotice(w, r, "/skills", notice) {
+	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
 	a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) skillsDelete(w http.ResponseWriter, r *http.Request) {
+	_ = r.ParseForm()
+	returnTo := submittedReturnTo(r, skillsMeta().CurrentPath)
 	itemState, err := a.deps.ItemRepo.LoadItemState()
 	if err != nil {
 		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
@@ -124,13 +133,14 @@ func (a App) skillsDelete(w http.ResponseWriter, r *http.Request) {
 	}
 	notice := successNotice("Skill deleted.")
 	setToast(w, notice.Text)
-	if redirectWithNotice(w, r, "/skills", notice) {
+	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
 	a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) renderSkills(w http.ResponseWriter, r *http.Request, data webui.SkillsPageData) {
+	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.SkillsShell(data))
 		return
@@ -139,6 +149,7 @@ func (a App) renderSkills(w http.ResponseWriter, r *http.Request, data webui.Ski
 }
 
 func (a App) renderSkillForm(w http.ResponseWriter, r *http.Request, data webui.SkillsPageData) {
+	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.SkillFormShell(data))
 		return

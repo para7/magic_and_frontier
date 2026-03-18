@@ -28,15 +28,21 @@ func (a App) itemsPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a App) itemsNewPage(w http.ResponseWriter, r *http.Request) {
+	returnTo := queryReturnTo(r, itemMeta().CurrentPath)
 	skillState, err := a.deps.SkillRepo.LoadState()
 	if err != nil {
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: defaultItemForm(nil)})
+		form := defaultItemForm(nil)
+		form.ReturnTo = returnTo
+		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
-	a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: defaultItemForm(skillOptions(skillState.Entries))})
+	form := defaultItemForm(skillOptions(skillState.Entries))
+	form.ReturnTo = returnTo
+	a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
 }
 
 func (a App) itemsEditPage(w http.ResponseWriter, r *http.Request) {
+	returnTo := queryReturnTo(r, itemMeta().CurrentPath)
 	state, err := a.deps.ItemRepo.LoadItemState()
 	if err != nil {
 		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
@@ -50,6 +56,7 @@ func (a App) itemsEditPage(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
 	if entry, ok := findEntry(state.Items, id, func(entry items.ItemEntry) string { return entry.ID }); ok {
 		form := itemEntryToForm(entry, skillOptions(skillState.Entries))
+		form.ReturnTo = returnTo
 		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
 		return
 	}
@@ -66,18 +73,24 @@ func (a App) itemsEditSubmit(w http.ResponseWriter, r *http.Request) {
 
 func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	_ = r.ParseForm()
+	returnTo := submittedReturnTo(r, itemMeta().CurrentPath)
 	state, err := a.deps.ItemRepo.LoadItemState()
 	if err != nil {
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: defaultItemForm(nil)})
+		form := defaultItemForm(nil)
+		form.ReturnTo = returnTo
+		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	skillState, err := a.deps.SkillRepo.LoadState()
 	if err != nil {
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: defaultItemForm(nil)})
+		form := defaultItemForm(nil)
+		form.ReturnTo = returnTo
+		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	form, input, parseErrs := parseItemForm(r, skillState.Entries)
 	form.IsEditing = editing
+	form.ReturnTo = returnTo
 	if editing {
 		if _, ok := findEntry(state.Items, form.ID, func(entry items.ItemEntry) string { return entry.ID }); !ok {
 			a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
@@ -107,13 +120,15 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	}
 	notice := successNotice(noticeText("Item", mode))
 	setToast(w, notice.Text)
-	if redirectWithNotice(w, r, "/items", notice) {
+	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
 	a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: nextState.Items, Notice: notice})
 }
 
 func (a App) itemsDelete(w http.ResponseWriter, r *http.Request) {
+	_ = r.ParseForm()
+	returnTo := submittedReturnTo(r, itemMeta().CurrentPath)
 	id := strings.TrimSpace(r.PathValue("id"))
 	state, err := a.deps.ItemRepo.LoadItemState()
 	if err != nil {
@@ -131,13 +146,14 @@ func (a App) itemsDelete(w http.ResponseWriter, r *http.Request) {
 	}
 	notice := successNotice("Item deleted.")
 	setToast(w, notice.Text)
-	if redirectWithNotice(w, r, "/items", notice) {
+	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
 	a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: nextState.Items, Notice: notice})
 }
 
 func (a App) renderItems(w http.ResponseWriter, r *http.Request, data webui.ItemsPageData) {
+	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.ItemsShell(data))
 		return
@@ -146,6 +162,7 @@ func (a App) renderItems(w http.ResponseWriter, r *http.Request, data webui.Item
 }
 
 func (a App) renderItemForm(w http.ResponseWriter, r *http.Request, data webui.ItemsPageData) {
+	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.ItemFormShell(data))
 		return

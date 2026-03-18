@@ -24,19 +24,54 @@ templ PageScaffold(meta webui.PageMeta, notice *webui.Notice) {
 	</section>
 }
 
-templ ListToolbar(newPath string, label string) {
-	<div class="form-actions">
-		<a class="secondary" role="button" href={ newPath }>{ label }</a>
+templ ReturnToField(returnTo string) {
+	<input type="hidden" name="returnTo" value={ returnTo } data-return-to-input="true"/>
+}
+
+templ ListBrowser(currentURL string, newPath string, label string, searchPlaceholder string) {
+	<div class="list-browser" data-list-root data-current-url={ currentURL } data-page-size="25">
+		@ListToolbar(currentURL, newPath, label, searchPlaceholder)
+		{ children... }
+		<div class="list-toolbar-row compact list-pagination-bar">
+			<p class="entry-meta list-summary" data-list-summary>Showing 0-0 of 0</p>
+			<div class="list-pagination">
+				<button type="button" class="secondary outline" data-list-prev>Previous</button>
+				<span class="entry-meta" data-list-page-label>Page 1 / 1</span>
+				<button type="button" class="secondary outline" data-list-next>Next</button>
+			</div>
+		</div>
 	</div>
 }
 
-templ FormShellHeader(listPath string, title string) {
+templ ListToolbar(currentURL string, newPath string, label string, searchPlaceholder string) {
+	<div class="list-toolbar">
+		<div class="list-toolbar-row">
+			<div class="list-toolbar-controls">
+				<label class="list-control list-search">
+					Search
+					<input type="search" placeholder={ searchPlaceholder } data-list-search/>
+				</label>
+			</div>
+			<div class="form-actions">
+				<a role="button" href={ WithReturnTo(newPath, currentURL) } data-return-to-link={ newPath }>{ label }</a>
+			</div>
+		</div>
+	</div>
+}
+
+templ ListEmptyState(text string, hidden bool) {
+	<article class="entry-card list-empty-state" data-list-empty hidden?={ hidden }>
+		<p class="entry-meta" data-empty-default={ text } data-empty-filtered="条件に一致するエントリはありません。">{ text }</p>
+	</article>
+}
+
+templ FormShellHeader(listPath string, returnTo string, title string) {
 	<header>
 		<div>
 			<h2>{ title }</h2>
 		</div>
 		<div class="entry-actions">
-			<a class="secondary outline" role="button" href={ listPath }>Back to list</a>
+			<a class="secondary outline" role="button" href={ BackLink(listPath, returnTo) }>Back to list</a>
 		</div>
 	</header>
 }
@@ -54,35 +89,43 @@ templ ItemsShell(data webui.ItemsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="stack form-span-2">
-				@ListToolbar("/items/new", "Add Item")
-				<div class="entry-list">
-					for _, entry := range data.Entries {
-						<article class="entry-card">
-							<header>
-								<div>
-									<h3 class="code">{ entry.ID }</h3>
-									<p class="entry-meta">{ entry.ItemID } x{ entry.Count }</p>
-								</div>
-								<div class="entry-actions">
-									<a class="secondary outline" role="button" href={ "/items/edit?id=" + entry.ID }>Edit</a>
-									<form method="post" action={ "/items/" + entry.ID + "/delete" }>
-										<button type="submit" class="danger">Delete</button>
-									</form>
-								</div>
-							</header>
-							<dl class="kv-list">
-								<dt>Item ID</dt><dd class="code">{ entry.ItemID }</dd>
-								<dt>Count</dt><dd>{ entry.Count }</dd>
-								<dt>Skill</dt><dd class="code">{ entry.SkillID }</dd>
-								<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
-								<dt>Unbreakable</dt><dd>{ BoolText(entry.Unbreakable) }</dd>
-							</dl>
-						</article>
-					}
-					if len(data.Entries) == 0 {
-						<article class="entry-card"><p class="entry-meta">まだアイテムはありません。</p></article>
-					}
-				</div>
+				@ListBrowser(data.Meta.CurrentURL, "/items/new", "Add Item", "ID, item ID, skill ID, custom name で検索") {
+					<div class="entry-list" data-list-entries>
+						for _, entry := range data.Entries {
+							<article
+								class="entry-card"
+								data-list-item
+								data-search={ SearchBlob(entry.ID, entry.ItemID, IntText(entry.Count), entry.SkillID, entry.CustomName, entry.UpdatedAt) }
+								data-filters={ SkillFilterTokens(entry.SkillID) }
+								data-sort-updated={ entry.UpdatedAt }
+								data-sort-id={ entry.ID }
+								data-sort-item_id={ entry.ItemID }
+								data-sort-count={ IntText(entry.Count) }>
+								<header>
+									<div>
+										<h3 class="code">{ entry.ID }</h3>
+										<p class="entry-meta">{ entry.ItemID } x{ entry.Count }</p>
+									</div>
+									<div class="entry-actions">
+										<a class="secondary outline" role="button" href={ WithReturnTo("/items/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/items/edit?id=" + entry.ID }>Edit</a>
+										<form method="post" action={ "/items/" + entry.ID + "/delete" }>
+											@ReturnToField(data.Meta.CurrentURL)
+											<button type="submit" class="danger">Delete</button>
+										</form>
+									</div>
+								</header>
+								<dl class="kv-list">
+									<dt>Item ID</dt><dd class="code">{ entry.ItemID }</dd>
+									<dt>Count</dt><dd>{ entry.Count }</dd>
+									<dt>Skill</dt><dd class="code">{ entry.SkillID }</dd>
+									<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
+									<dt>Unbreakable</dt><dd>{ BoolText(entry.Unbreakable) }</dd>
+								</dl>
+							</article>
+						}
+						@ListEmptyState("まだアイテムはありません。", len(data.Entries) > 0)
+					</div>
+				}
 			</section>
 		</div>
 	</div>
@@ -101,9 +144,10 @@ templ ItemFormShell(data webui.ItemsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/items", FormTitle("Item", data.Form.IsEditing))
+				@FormShellHeader("/items", data.Form.ReturnTo, FormTitle("Item", data.Form.IsEditing))
 				<form class="form-grid two" method="post" action={ FormAction("/items", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
+					@ReturnToField(data.Form.ReturnTo)
 					<label>
 						Item ID
 						<input name="itemId" value={ data.Form.ItemID }/>
@@ -179,7 +223,7 @@ templ ItemFormShell(data webui.ItemsPageData) {
 					}
 					<div class="form-actions form-span-2">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/items">Cancel</a>
+						<a class="secondary outline" role="button" href={ BackLink("/items", data.Form.ReturnTo) }>Cancel</a>
 					</div>
 				</form>
 			</section>
@@ -200,35 +244,43 @@ templ GrimoireShell(data webui.GrimoirePageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListToolbar("/grimoire/new", "Add Entry")
-				<div class="entry-list">
-					for _, entry := range data.Entries {
-						<article class="entry-card">
-							<header>
-								<div>
-									<h3>{ entry.Title }</h3>
-									<p class="entry-meta code">{ entry.ID }</p>
-								</div>
-								<div class="entry-actions">
-									<a class="secondary outline" role="button" href={ "/grimoire/edit?id=" + entry.ID }>Edit</a>
-									<form method="post" action={ "/grimoire/" + entry.ID + "/delete" }>
-										<button type="submit" class="danger">Delete</button>
-									</form>
-								</div>
-							</header>
-							<dl class="kv-list">
-								<dt>Cast ID</dt><dd>{ entry.CastID }</dd>
-								<dt>Cast Time</dt><dd>{ entry.CastTime }</dd>
-								<dt>MP Cost</dt><dd>{ entry.MPCost }</dd>
-								<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
-							</dl>
-							<pre>{ entry.Script }</pre>
-						</article>
-					}
-					if len(data.Entries) == 0 {
-						<article class="entry-card"><p class="entry-meta">まだ魔導書エントリはありません。</p></article>
-					}
-				</div>
+				@ListBrowser(data.Meta.CurrentURL, "/grimoire/new", "Add Entry", "ID, title, description, cast 情報で検索") {
+					<div class="entry-list" data-list-entries>
+						for _, entry := range data.Entries {
+							<article
+								class="entry-card"
+								data-list-item
+								data-search={ SearchBlob(entry.ID, entry.Title, entry.Description, IntText(entry.CastID), IntText(entry.CastTime), IntText(entry.MPCost), entry.UpdatedAt) }
+								data-filters="all"
+								data-sort-updated={ entry.UpdatedAt }
+								data-sort-id={ entry.ID }
+								data-sort-title={ entry.Title }
+								data-sort-cast_id={ IntText(entry.CastID) }>
+								<header>
+									<div>
+										<h3>{ entry.Title }</h3>
+										<p class="entry-meta code">{ entry.ID }</p>
+									</div>
+									<div class="entry-actions">
+										<a class="secondary outline" role="button" href={ WithReturnTo("/grimoire/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/grimoire/edit?id=" + entry.ID }>Edit</a>
+										<form method="post" action={ "/grimoire/" + entry.ID + "/delete" }>
+											@ReturnToField(data.Meta.CurrentURL)
+											<button type="submit" class="danger">Delete</button>
+										</form>
+									</div>
+								</header>
+								<dl class="kv-list">
+									<dt>Cast ID</dt><dd>{ entry.CastID }</dd>
+									<dt>Cast Time</dt><dd>{ entry.CastTime }</dd>
+									<dt>MP Cost</dt><dd>{ entry.MPCost }</dd>
+									<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
+								</dl>
+								<pre>{ entry.Script }</pre>
+							</article>
+						}
+						@ListEmptyState("まだ魔導書エントリはありません。", len(data.Entries) > 0)
+					</div>
+				}
 			</section>
 		</div>
 	</div>
@@ -247,9 +299,10 @@ templ GrimoireFormShell(data webui.GrimoirePageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/grimoire", FormTitle("Grimoire Entry", data.Form.IsEditing))
+				@FormShellHeader("/grimoire", data.Form.ReturnTo, FormTitle("Grimoire Entry", data.Form.IsEditing))
 				<form class="form-grid" method="post" action={ FormAction("/grimoire", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
+					@ReturnToField(data.Form.ReturnTo)
 					<label>
 						ID
 						<input value={ data.Form.ID } readonly/>
@@ -290,7 +343,7 @@ templ GrimoireFormShell(data webui.GrimoirePageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/grimoire">Cancel</a>
+						<a class="secondary outline" role="button" href={ BackLink("/grimoire", data.Form.ReturnTo) }>Cancel</a>
 					</div>
 				</form>
 			</section>
@@ -311,33 +364,40 @@ templ SkillsShell(data webui.SkillsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListToolbar("/skills/new", "Add Skill")
-				<div class="entry-list">
-					for _, entry := range data.Entries {
-						<article class="entry-card">
-							<header>
-								<div>
-									<h3>{ entry.Name }</h3>
-									<p class="entry-meta code">{ entry.ID }</p>
-								</div>
-								<div class="entry-actions">
-									<a class="secondary outline" role="button" href={ "/skills/edit?id=" + entry.ID }>Edit</a>
-									<form method="post" action={ "/skills/" + entry.ID + "/delete" }>
-										<button type="submit" class="danger">Delete</button>
-									</form>
-								</div>
-							</header>
+				@ListBrowser(data.Meta.CurrentURL, "/skills/new", "Add Skill", "ID, name, description で検索") {
+					<div class="entry-list" data-list-entries>
+						for _, entry := range data.Entries {
+							<article
+								class="entry-card"
+								data-list-item
+								data-search={ SearchBlob(entry.ID, entry.Name, entry.Description, entry.UpdatedAt) }
+								data-filters={ NameFilterTokens(entry.Name) }
+								data-sort-updated={ entry.UpdatedAt }
+								data-sort-id={ entry.ID }
+								data-sort-name={ DisplayText(entry.Name, entry.ID) }>
+								<header>
+									<div>
+										<h3>{ DisplayText(entry.Name, entry.ID) }</h3>
+										<p class="entry-meta code">{ entry.ID }</p>
+									</div>
+									<div class="entry-actions">
+										<a class="secondary outline" role="button" href={ WithReturnTo("/skills/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/skills/edit?id=" + entry.ID }>Edit</a>
+										<form method="post" action={ "/skills/" + entry.ID + "/delete" }>
+											@ReturnToField(data.Meta.CurrentURL)
+											<button type="submit" class="danger">Delete</button>
+										</form>
+									</div>
+								</header>
 								<dl class="kv-list">
-								<dt>Description</dt><dd>{ entry.Description }</dd>
-								<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
-							</dl>
-							<pre>{ entry.Script }</pre>
-						</article>
-					}
-					if len(data.Entries) == 0 {
-						<article class="entry-card"><p class="entry-meta">まだスキルはありません。</p></article>
-					}
-				</div>
+									<dt>Description</dt><dd>{ entry.Description }</dd>
+									<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
+								</dl>
+								<pre>{ entry.Script }</pre>
+							</article>
+						}
+						@ListEmptyState("まだスキルはありません。", len(data.Entries) > 0)
+					</div>
+				}
 			</section>
 		</div>
 	</div>
@@ -356,9 +416,10 @@ templ SkillFormShell(data webui.SkillsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/skills", FormTitle("Skill", data.Form.IsEditing))
+				@FormShellHeader("/skills", data.Form.ReturnTo, FormTitle("Skill", data.Form.IsEditing))
 				<form class="form-grid" method="post" action={ FormAction("/skills", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
+					@ReturnToField(data.Form.ReturnTo)
 					<label>
 						Name
 						<input name="name" value={ data.Form.Name }/>
@@ -379,7 +440,7 @@ templ SkillFormShell(data webui.SkillsPageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/skills">Cancel</a>
+						<a class="secondary outline" role="button" href={ BackLink("/skills", data.Form.ReturnTo) }>Cancel</a>
 					</div>
 				</form>
 			</section>
@@ -400,33 +461,40 @@ templ EnemySkillsShell(data webui.EnemySkillsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListToolbar("/enemy-skills/new", "Add Enemy Skill")
-				<div class="entry-list">
-					for _, entry := range data.Entries {
-						<article class="entry-card">
-							<header>
-								<div>
-									<h3>{ entry.Name }</h3>
-									<p class="entry-meta code">{ entry.ID }</p>
-								</div>
-								<div class="entry-actions">
-									<a class="secondary outline" role="button" href={ "/enemy-skills/edit?id=" + entry.ID }>Edit</a>
-									<form method="post" action={ "/enemy-skills/" + entry.ID + "/delete" }>
-										<button type="submit" class="danger">Delete</button>
-									</form>
-								</div>
-							</header>
-							<dl class="kv-list">
-								<dt>Description</dt><dd>{ entry.Description }</dd>
-								<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
-							</dl>
-							<pre>{ entry.Script }</pre>
-						</article>
-					}
-					if len(data.Entries) == 0 {
-						<article class="entry-card"><p class="entry-meta">まだ敵スキルはありません。</p></article>
-					}
-				</div>
+				@ListBrowser(data.Meta.CurrentURL, "/enemy-skills/new", "Add Enemy Skill", "ID, name, description で検索") {
+					<div class="entry-list" data-list-entries>
+						for _, entry := range data.Entries {
+							<article
+								class="entry-card"
+								data-list-item
+								data-search={ SearchBlob(entry.ID, entry.Name, entry.Description, entry.UpdatedAt) }
+								data-filters={ NameFilterTokens(entry.Name) }
+								data-sort-updated={ entry.UpdatedAt }
+								data-sort-id={ entry.ID }
+								data-sort-name={ DisplayText(entry.Name, entry.ID) }>
+								<header>
+									<div>
+										<h3>{ DisplayText(entry.Name, entry.ID) }</h3>
+										<p class="entry-meta code">{ entry.ID }</p>
+									</div>
+									<div class="entry-actions">
+										<a class="secondary outline" role="button" href={ WithReturnTo("/enemy-skills/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/enemy-skills/edit?id=" + entry.ID }>Edit</a>
+										<form method="post" action={ "/enemy-skills/" + entry.ID + "/delete" }>
+											@ReturnToField(data.Meta.CurrentURL)
+											<button type="submit" class="danger">Delete</button>
+										</form>
+									</div>
+								</header>
+								<dl class="kv-list">
+									<dt>Description</dt><dd>{ entry.Description }</dd>
+									<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
+								</dl>
+								<pre>{ entry.Script }</pre>
+							</article>
+						}
+						@ListEmptyState("まだ敵スキルはありません。", len(data.Entries) > 0)
+					</div>
+				}
 			</section>
 		</div>
 	</div>
@@ -445,9 +513,10 @@ templ EnemySkillFormShell(data webui.EnemySkillsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/enemy-skills", FormTitle("Enemy Skill", data.Form.IsEditing))
+				@FormShellHeader("/enemy-skills", data.Form.ReturnTo, FormTitle("Enemy Skill", data.Form.IsEditing))
 				<form class="form-grid" method="post" action={ FormAction("/enemy-skills", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
+					@ReturnToField(data.Form.ReturnTo)
 					<label>
 						Name
 						<input name="name" value={ data.Form.Name }/>
@@ -468,7 +537,7 @@ templ EnemySkillFormShell(data webui.EnemySkillsPageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/enemy-skills">Cancel</a>
+						<a class="secondary outline" role="button" href={ BackLink("/enemy-skills", data.Form.ReturnTo) }>Cancel</a>
 					</div>
 				</form>
 			</section>
@@ -489,34 +558,42 @@ templ TreasuresShell(data webui.TreasuresPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListToolbar("/treasures/new", "Add Treasure")
-				<div class="entry-list">
-					for _, entry := range data.Entries {
-						<article class="entry-card">
-							<header>
-								<div>
-									<h3>{ entry.TablePath }</h3>
-									<p class="entry-meta code">{ entry.ID }</p>
-								</div>
-								<div class="entry-actions">
-									<a class="secondary outline" role="button" href={ "/treasures/edit?id=" + entry.ID }>Edit</a>
-									<form method="post" action={ "/treasures/" + entry.ID + "/delete" }>
-										<button type="submit" class="danger">Delete</button>
-									</form>
-								</div>
-							</header>
-							<ul class="reference-list">
-								<li class="code">mode={ entry.Mode }</li>
-								for _, pool := range entry.LootPools {
-									<li class="code">{ pool.Kind } / { pool.RefID } / weight={ pool.Weight }</li>
-								}
-							</ul>
-						</article>
-					}
-					if len(data.Entries) == 0 {
-						<article class="entry-card"><p class="entry-meta">まだ宝箱はありません。</p></article>
-					}
-				</div>
+				@ListBrowser(data.Meta.CurrentURL, "/treasures/new", "Add Treasure", "ID, table path, loot refs で検索") {
+					<div class="entry-list" data-list-entries>
+						for _, entry := range data.Entries {
+							<article
+								class="entry-card"
+								data-list-item
+								data-search={ TreasureSearchBlob(entry) }
+								data-filters={ JoinTokens("all", entry.Mode) }
+								data-sort-updated={ entry.UpdatedAt }
+								data-sort-id={ entry.ID }
+								data-sort-table_path={ entry.TablePath }>
+								<header>
+									<div>
+										<h3>{ entry.TablePath }</h3>
+										<p class="entry-meta code">{ entry.ID }</p>
+									</div>
+									<div class="entry-actions">
+										<a class="secondary outline" role="button" href={ WithReturnTo("/treasures/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/treasures/edit?id=" + entry.ID }>Edit</a>
+										<form method="post" action={ "/treasures/" + entry.ID + "/delete" }>
+											@ReturnToField(data.Meta.CurrentURL)
+											<button type="submit" class="danger">Delete</button>
+										</form>
+									</div>
+								</header>
+								<ul class="reference-list">
+									<li class="code">mode={ entry.Mode }</li>
+									<li class="code">updated={ entry.UpdatedAt }</li>
+									for _, pool := range entry.LootPools {
+										<li class="code">{ pool.Kind } / { pool.RefID } / weight={ pool.Weight }</li>
+									}
+								</ul>
+							</article>
+						}
+						@ListEmptyState("まだ宝箱はありません。", len(data.Entries) > 0)
+					</div>
+				}
 			</section>
 		</div>
 	</div>
@@ -535,9 +612,10 @@ templ TreasureFormShell(data webui.TreasuresPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/treasures", FormTitle("Treasure", data.Form.IsEditing))
+				@FormShellHeader("/treasures", data.Form.ReturnTo, FormTitle("Treasure", data.Form.IsEditing))
 				<form class="form-grid" method="post" action={ FormAction("/treasures", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
+					@ReturnToField(data.Form.ReturnTo)
 					<label>
 						Mode
 						<select name="mode">
@@ -578,7 +656,7 @@ templ TreasureFormShell(data webui.TreasuresPageData) {
 					}
 					<div class="form-actions">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/treasures">Cancel</a>
+						<a class="secondary outline" role="button" href={ BackLink("/treasures", data.Form.ReturnTo) }>Cancel</a>
 					</div>
 				</form>
 			</section>
@@ -599,37 +677,46 @@ templ EnemiesShell(data webui.EnemiesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListToolbar("/enemies/new", "Add Enemy")
-				<div class="entry-list">
-					for _, entry := range data.Entries {
-						<article class="entry-card">
-							<header>
-								<div>
-									<h3>{ entry.Name }</h3>
-									<p class="entry-meta code">{ entry.ID }</p>
-								</div>
-								<div class="entry-actions">
-									<a class="secondary outline" role="button" href={ "/enemies/edit?id=" + entry.ID }>Edit</a>
-									<form method="post" action={ "/enemies/" + entry.ID + "/delete" }>
-										<button type="submit" class="danger">Delete</button>
-									</form>
-								</div>
-							</header>
-							<dl class="kv-list">
-								<dt>Mob Type</dt><dd class="code">{ entry.MobType }</dd>
-								<dt>HP</dt><dd>{ trimFloat(entry.HP) }</dd>
-								<dt>Drop Mode</dt><dd>{ entry.DropMode }</dd>
-								<dt>Attack</dt><dd>{ FloatText(entry.Attack) }</dd>
-								<dt>Defense</dt><dd>{ FloatText(entry.Defense) }</dd>
-								<dt>Move Speed</dt><dd>{ FloatText(entry.MoveSpeed) }</dd>
-								<dt>Enemy Skills</dt><dd>{ JoinLines(entry.EnemySkillIDs) }</dd>
-							</dl>
-						</article>
-					}
-					if len(data.Entries) == 0 {
-						<article class="entry-card"><p class="entry-meta">まだ敵はありません。</p></article>
-					}
-				</div>
+				@ListBrowser(data.Meta.CurrentURL, "/enemies/new", "Add Enemy", "ID, mob type, name, drop refs で検索") {
+					<div class="entry-list" data-list-entries>
+						for _, entry := range data.Entries {
+							<article
+								class="entry-card"
+								data-list-item
+								data-search={ EnemySearchBlob(entry) }
+								data-filters={ JoinTokens("all", entry.DropMode) }
+								data-sort-updated={ entry.UpdatedAt }
+								data-sort-id={ entry.ID }
+								data-sort-mob_type={ entry.MobType }
+								data-sort-hp={ trimFloat(entry.HP) }>
+								<header>
+									<div>
+										<h3>{ DisplayText(entry.Name, entry.ID) }</h3>
+										<p class="entry-meta code">{ entry.ID }</p>
+									</div>
+									<div class="entry-actions">
+										<a class="secondary outline" role="button" href={ WithReturnTo("/enemies/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/enemies/edit?id=" + entry.ID }>Edit</a>
+										<form method="post" action={ "/enemies/" + entry.ID + "/delete" }>
+											@ReturnToField(data.Meta.CurrentURL)
+											<button type="submit" class="danger">Delete</button>
+										</form>
+									</div>
+								</header>
+								<dl class="kv-list">
+									<dt>Mob Type</dt><dd class="code">{ entry.MobType }</dd>
+									<dt>HP</dt><dd>{ trimFloat(entry.HP) }</dd>
+									<dt>Drop Mode</dt><dd>{ entry.DropMode }</dd>
+									<dt>Attack</dt><dd>{ FloatText(entry.Attack) }</dd>
+									<dt>Defense</dt><dd>{ FloatText(entry.Defense) }</dd>
+									<dt>Move Speed</dt><dd>{ FloatText(entry.MoveSpeed) }</dd>
+									<dt>Enemy Skills</dt><dd>{ JoinLines(entry.EnemySkillIDs) }</dd>
+									<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
+								</dl>
+							</article>
+						}
+						@ListEmptyState("まだ敵はありません。", len(data.Entries) > 0)
+					</div>
+				}
 			</section>
 		</div>
 	</div>
@@ -648,9 +735,10 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/enemies", FormTitle("Enemy", data.Form.IsEditing))
+				@FormShellHeader("/enemies", data.Form.ReturnTo, FormTitle("Enemy", data.Form.IsEditing))
 				<form class="form-grid two" method="post" action={ FormAction("/enemies", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
+					@ReturnToField(data.Form.ReturnTo)
 					<label>
 						Mob Type
 						<input name="mobType" value={ data.Form.MobType }/>
@@ -715,7 +803,7 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 					}
 					<div class="form-actions form-span-2">
 						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href="/enemies">Cancel</a>
+						<a class="secondary outline" role="button" href={ BackLink("/enemies", data.Form.ReturnTo) }>Cancel</a>
 					</div>
 				</form>
 			</section>

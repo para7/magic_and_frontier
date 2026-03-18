@@ -22,10 +22,13 @@ func (a App) grimoirePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a App) grimoireNewPage(w http.ResponseWriter, r *http.Request) {
-	a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Form: defaultGrimoireForm(nil)})
+	form := defaultGrimoireForm(nil)
+	form.ReturnTo = queryReturnTo(r, grimoireMeta().CurrentPath)
+	a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Form: form})
 }
 
 func (a App) grimoireEditPage(w http.ResponseWriter, r *http.Request) {
+	returnTo := queryReturnTo(r, grimoireMeta().CurrentPath)
 	state, err := a.deps.GrimoireRepo.LoadGrimoireState()
 	if err != nil {
 		a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error())})
@@ -33,7 +36,9 @@ func (a App) grimoireEditPage(w http.ResponseWriter, r *http.Request) {
 	}
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
 	if entry, ok := findEntry(state.Entries, id, func(entry grimoire.GrimoireEntry) string { return entry.ID }); ok {
-		a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Form: grimoireEntryToForm(entry)})
+		form := grimoireEntryToForm(entry)
+		form.ReturnTo = returnTo
+		a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Form: form})
 		return
 	}
 	a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Entries: state.Entries, Notice: errorNotice("Grimoire entry not found.")})
@@ -49,15 +54,18 @@ func (a App) grimoireEditSubmit(w http.ResponseWriter, r *http.Request) {
 
 func (a App) grimoireSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	_ = r.ParseForm()
+	returnTo := submittedReturnTo(r, grimoireMeta().CurrentPath)
 	state, err := a.deps.GrimoireRepo.LoadGrimoireState()
 	if err != nil {
 		form := defaultGrimoireForm(nil)
 		form.IsEditing = editing
+		form.ReturnTo = returnTo
 		a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	form, input, parseErrs := parseGrimoireForm(r)
 	form.IsEditing = editing
+	form.ReturnTo = returnTo
 	if editing {
 		existing, ok := findEntry(state.Entries, form.ID, func(entry grimoire.GrimoireEntry) string { return entry.ID })
 		if !ok {
@@ -97,13 +105,15 @@ func (a App) grimoireSave(w http.ResponseWriter, r *http.Request, editing bool) 
 	}
 	notice := successNotice(noticeText("Grimoire entry", mode))
 	setToast(w, notice.Text)
-	if redirectWithNotice(w, r, "/grimoire", notice) {
+	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
 	a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) grimoireDelete(w http.ResponseWriter, r *http.Request) {
+	_ = r.ParseForm()
+	returnTo := submittedReturnTo(r, grimoireMeta().CurrentPath)
 	id := strings.TrimSpace(r.PathValue("id"))
 	state, err := a.deps.GrimoireRepo.LoadGrimoireState()
 	if err != nil {
@@ -121,13 +131,14 @@ func (a App) grimoireDelete(w http.ResponseWriter, r *http.Request) {
 	}
 	notice := successNotice("Grimoire entry deleted.")
 	setToast(w, notice.Text)
-	if redirectWithNotice(w, r, "/grimoire", notice) {
+	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
 	a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) renderGrimoire(w http.ResponseWriter, r *http.Request, data webui.GrimoirePageData) {
+	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.GrimoireShell(data))
 		return
@@ -136,6 +147,7 @@ func (a App) renderGrimoire(w http.ResponseWriter, r *http.Request, data webui.G
 }
 
 func (a App) renderGrimoireForm(w http.ResponseWriter, r *http.Request, data webui.GrimoirePageData) {
+	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.GrimoireFormShell(data))
 		return
