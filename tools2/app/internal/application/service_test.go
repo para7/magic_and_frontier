@@ -38,11 +38,11 @@ func TestValidateBundleDetectsBrokenReferences(t *testing.T) {
 			Script: "say roar",
 		}}},
 		TreasureState: common.EntryState[treasures.TreasureEntry]{Entries: []treasures.TreasureEntry{
-			{ID: "treasure_1", LootPools: []treasures.DropRef{{Kind: "item", RefID: "items_1", Weight: 1}}},
+			{ID: "treasure_1", TablePath: "minecraft:chests/simple_dungeon", LootPools: []treasures.DropRef{{Kind: "item", RefID: "items_1", Weight: 1}}},
+			{ID: "treasure_2", TablePath: "minecraft:chests/simple_dungeon", LootPools: []treasures.DropRef{{Kind: "grimoire", RefID: "grimoire_1", Weight: 1}}},
 		}},
 		LootTableState: common.EntryState[loottables.LootTableEntry]{Entries: []loottables.LootTableEntry{
-			{ID: "loottable_1", TablePath: "maf:loot/test", LootPools: []treasures.DropRef{{Kind: "item", RefID: "items_1", Weight: 1}}},
-			{ID: "loottable_2", TablePath: "maf:loot/test", LootPools: []treasures.DropRef{{Kind: "grimoire", RefID: "grimoire_1", Weight: 1}}},
+			{ID: "loottable_1", LootPools: []treasures.DropRef{{Kind: "item", RefID: "items_1", Weight: 1}}},
 		}},
 		EnemyState: common.EntryState[enemies.EnemyEntry]{Entries: []enemies.EnemyEntry{{
 			ID:            "enemy_1",
@@ -53,7 +53,7 @@ func TestValidateBundleDetectsBrokenReferences(t *testing.T) {
 			DropMode:      "replace",
 			Drops:         []enemies.DropRef{{Kind: "item", RefID: "items_404", Weight: 1}},
 		}}},
-	}, "", fixedNow())
+	}, "", filepath.Join(repoRoot(t), "minecraft", "1.21.11", "loot_table"), fixedNow())
 
 	if report.OK {
 		t.Fatalf("expected validation failure")
@@ -64,7 +64,7 @@ func TestValidateBundleDetectsBrokenReferences(t *testing.T) {
 	if !strings.Contains(report.String(), "grimoire[grimoire_2].castid: Cast ID is already used by grimoire_1.") {
 		t.Fatalf("report = %s", report.String())
 	}
-	if !strings.Contains(report.String(), "loottable[loottable_2].tablePath: Loot table path is already used by loottable_1.") {
+	if !strings.Contains(report.String(), "treasure[treasure_2].tablePath: Loot table path is already used by treasure_1.") {
 		t.Fatalf("report = %s", report.String())
 	}
 }
@@ -152,16 +152,17 @@ func testConfig(t *testing.T) config.Config {
 	writeJSONFile(t, settingsPath, settings)
 
 	return config.Config{
-		Port:                8787,
-		ItemStatePath:       filepath.Join(root, "item.json"),
-		GrimoireStatePath:   filepath.Join(root, "grimoire.json"),
-		SkillStatePath:      filepath.Join(root, "skill.json"),
-		EnemySkillStatePath: filepath.Join(root, "enemy-skill.json"),
-		EnemyStatePath:      filepath.Join(root, "enemy.json"),
-		TreasureStatePath:   filepath.Join(root, "treasure.json"),
-		LootTablesStatePath: filepath.Join(root, "loottables.json"),
-		IDCounterStatePath:  filepath.Join(root, "id-counters.json"),
-		ExportSettingsPath:  settingsPath,
+		Port:                   8787,
+		ItemStatePath:          filepath.Join(root, "item.json"),
+		GrimoireStatePath:      filepath.Join(root, "grimoire.json"),
+		SkillStatePath:         filepath.Join(root, "skill.json"),
+		EnemySkillStatePath:    filepath.Join(root, "enemy-skill.json"),
+		EnemyStatePath:         filepath.Join(root, "enemy.json"),
+		TreasureStatePath:      filepath.Join(root, "treasure.json"),
+		LootTablesStatePath:    filepath.Join(root, "loottables.json"),
+		IDCounterStatePath:     filepath.Join(root, "id-counters.json"),
+		ExportSettingsPath:     settingsPath,
+		MinecraftLootTableRoot: writeTestMinecraftLootTableRoot(t, root),
 	}
 }
 
@@ -172,16 +173,17 @@ func repoSavedataConfig(t *testing.T) config.Config {
 	savedataDir := filepath.Join(root, "savedata")
 
 	return config.Config{
-		Port:                8787,
-		ItemStatePath:       filepath.Join(savedataDir, "item.json"),
-		GrimoireStatePath:   filepath.Join(savedataDir, "grimoire.json"),
-		SkillStatePath:      filepath.Join(savedataDir, "skill.json"),
-		EnemySkillStatePath: filepath.Join(savedataDir, "enemy-skill.json"),
-		EnemyStatePath:      filepath.Join(savedataDir, "enemy.json"),
-		TreasureStatePath:   filepath.Join(savedataDir, "treasure.json"),
-		LootTablesStatePath: filepath.Join(savedataDir, "loottables.json"),
-		IDCounterStatePath:  filepath.Join(savedataDir, "id-counters.json"),
-		ExportSettingsPath:  filepath.Join(root, "..", "tools", "server", "config", "export-settings.json"),
+		Port:                   8787,
+		ItemStatePath:          filepath.Join(savedataDir, "item.json"),
+		GrimoireStatePath:      filepath.Join(savedataDir, "grimoire.json"),
+		SkillStatePath:         filepath.Join(savedataDir, "skill.json"),
+		EnemySkillStatePath:    filepath.Join(savedataDir, "enemy-skill.json"),
+		EnemyStatePath:         filepath.Join(savedataDir, "enemy.json"),
+		TreasureStatePath:      filepath.Join(savedataDir, "treasure.json"),
+		LootTablesStatePath:    filepath.Join(savedataDir, "loottables.json"),
+		IDCounterStatePath:     filepath.Join(savedataDir, "id-counters.json"),
+		ExportSettingsPath:     filepath.Join(root, "..", "tools", "server", "config", "export-settings.json"),
+		MinecraftLootTableRoot: filepath.Join(root, "minecraft", "1.21.11", "loot_table"),
 	}
 }
 
@@ -204,4 +206,16 @@ func writeJSONFile(t *testing.T, path string, value any) {
 	if err := os.WriteFile(path, append(data, '\n'), 0o644); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func writeTestMinecraftLootTableRoot(t *testing.T, root string) string {
+	t.Helper()
+	dir := filepath.Join(root, "minecraft", "1.21.11", "loot_table", "chests")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "simple_dungeon.json"), []byte("{\"type\":\"minecraft:generic\",\"pools\":[]}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return filepath.Join(root, "minecraft", "1.21.11", "loot_table")
 }

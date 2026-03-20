@@ -124,9 +124,6 @@ func (a App) lootTablesSave(w http.ResponseWriter, r *http.Request, editing bool
 	}
 	result := loottables.ValidateSave(input, itemIDSet(itemState), grimoireIDSet(grimoireState), a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapLootTableField))
-	if conflictID := duplicateLootTablePath(state.Entries, input.ID, input.TablePath); conflictID != "" {
-		errors["tablePath"] = "Loot table path is already used by " + conflictID + "."
-	}
 	if len(errors) > 0 {
 		form.FieldErrors = errors
 		form.FormError = formErrorText(result.FormError)
@@ -191,13 +188,12 @@ func (a App) renderLootTableForm(w http.ResponseWriter, r *http.Request, data we
 }
 
 func lootTablesMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Loottables", CurrentPath: "/loottables", Description: "任意 table path に出力する loot table を管理します。"}
+	return webui.PageMeta{Title: "Loottables", CurrentPath: "/loottables", Description: "固定ディレクトリに出力する loot table を管理します。"}
 }
 
 func defaultLootTableForm() webui.LootTableFormData {
 	return webui.LootTableFormData{
 		ID:            "",
-		TablePath:     "maf:treasure/example",
 		LootPoolsText: "item,,1,1,1",
 		FieldErrors:   map[string]string{},
 	}
@@ -224,7 +220,6 @@ func lootTableEntryToForm(entry loottables.LootTableEntry) webui.LootTableFormDa
 	}
 	return webui.LootTableFormData{
 		ID:            entry.ID,
-		TablePath:     entry.TablePath,
 		LootPoolsText: strings.Join(lines, "\n"),
 		FieldErrors:   map[string]string{},
 		IsEditing:     true,
@@ -234,12 +229,10 @@ func lootTableEntryToForm(entry loottables.LootTableEntry) webui.LootTableFormDa
 func parseLootTableForm(r *http.Request) (webui.LootTableFormData, loottables.SaveInput, map[string]string) {
 	form := defaultLootTableForm()
 	form.ID = strings.TrimSpace(r.Form.Get("id"))
-	form.TablePath = strings.TrimSpace(r.Form.Get("tablePath"))
 	form.LootPoolsText = r.Form.Get("lootPoolsText")
 	errs := map[string]string{}
 	input := loottables.SaveInput{
 		ID:        form.ID,
-		TablePath: form.TablePath,
 		LootPools: parseTreasurePools(errs, form.LootPoolsText),
 	}
 	return form, input, errs

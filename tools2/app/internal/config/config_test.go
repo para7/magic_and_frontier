@@ -102,3 +102,20 @@ func TestDefaultExportSettingsPath_ResolvesSiblingToolsServerConfig(t *testing.T
 		t.Fatalf("defaultExportSettingsPath = %q, want %q", got, want)
 	}
 }
+
+func TestDefaultMinecraftLootTableRoot_PrefersExistingLocalPath(t *testing.T) {
+	root := t.TempDir()
+	tools2Root := filepath.Join(root, "tools2")
+	minecraftRoot := filepath.Join(tools2Root, "minecraft", "1.21.11", "loot_table")
+	if err := os.MkdirAll(minecraftRoot, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	t.Chdir(tools2Root)
+
+	got := defaultMinecraftLootTableRoot()
+	want := filepath.Clean(filepath.Join(".", "minecraft", "1.21.11", "loot_table"))
+	if got != want {
+		t.Fatalf("defaultMinecraftLootTableRoot = %q, want %q", got, want)
+	}
+}

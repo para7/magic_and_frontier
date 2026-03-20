@@ -16,6 +16,7 @@ import (
 	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/treasures"
+	"tools2/app/internal/mcsource"
 	"tools2/app/internal/store"
 	"tools2/app/internal/web"
 )
@@ -433,14 +434,23 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 			writeInternalError(w, err)
 			return
 		}
-		result := treasures.ValidateSave(input, itemIDs(itemState), grimoireIDs(grimoireState), deps.Now())
+		state, err := deps.TreasureRepo.LoadState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		validTablePaths, err := treasureSourcePaths(cfg.MinecraftLootTableRoot)
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		result := treasures.ValidateSave(input, itemIDs(itemState), grimoireIDs(grimoireState), validTablePaths, deps.Now())
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
 			return
 		}
-		state, err := deps.TreasureRepo.LoadState()
-		if err != nil {
-			writeInternalError(w, err)
+		if conflictID := duplicateTreasureTablePath(state.Entries, result.Entry.ID, result.Entry.TablePath); conflictID != "" {
+			writeJSON(w, http.StatusBadRequest, common.SaveValidationError[treasures.TreasureEntry](common.FieldErrors{"tablePath": "Loot table path is already used by " + conflictID + "."}, "Validation failed. Fix the highlighted fields."))
 			return
 		}
 		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry treasures.TreasureEntry) string { return entry.ID })
@@ -494,10 +504,6 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		state, err := deps.LootTableRepo.LoadState()
 		if err != nil {
 			writeInternalError(w, err)
-			return
-		}
-		if conflictID := duplicateLootTablePath(state.Entries, result.Entry.ID, result.Entry.TablePath); conflictID != "" {
-			writeJSON(w, http.StatusBadRequest, common.SaveValidationError[loottables.LootTableEntry](common.FieldErrors{"tablePath": "Loot table path is already used by " + conflictID + "."}, "Validation failed. Fix the highlighted fields."))
 			return
 		}
 		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry loottables.LootTableEntry) string { return entry.ID })
@@ -612,11 +618,23 @@ func duplicateCastID(entries []grimoire.GrimoireEntry, entryID string, castID in
 	return ""
 }
 
-func duplicateLootTablePath(entries []loottables.LootTableEntry, entryID, tablePath string) string {
+func duplicateTreasureTablePath(entries []treasures.TreasureEntry, entryID, tablePath string) string {
 	for _, entry := range entries {
 		if entry.ID != entryID && entry.TablePath == tablePath {
 			return entry.ID
 		}
 	}
 	return ""
+}
+
+func treasureSourcePaths(root string) (map[string]struct{}, error) {
+	sources, err := mcsource.ListLootTables(root)
+	if err != nil {
+		return nil, err
+	}
+	out := make(map[string]struct{}, len(sources))
+	for _, source := range sources {
+		out[source.TablePath] = struct{}{}
+	}
+	return out, nil
 }

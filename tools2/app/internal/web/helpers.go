@@ -7,7 +7,6 @@ import (
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/treasures"
 )
 
@@ -276,7 +275,7 @@ func duplicateCastID(entries []grimoire.GrimoireEntry, id string, castID int) st
 	return ""
 }
 
-func duplicateLootTablePath(entries []loottables.LootTableEntry, entryID, tablePath string) string {
+func duplicateTreasureTablePath(entries []treasures.TreasureEntry, entryID, tablePath string) string {
 	for _, entry := range entries {
 		if entry.ID != entryID && entry.TablePath == tablePath {
 			return entry.ID

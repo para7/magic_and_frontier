@@ -139,17 +139,29 @@ type EnemySkillsPageData struct {
 
 type TreasureFormData struct {
 	ID            string
+	TablePath     string
 	ReturnTo      string
 	LootPoolsText string
 	FieldErrors   map[string]string
 	FormError     string
 	IsEditing     bool
+	HasSource     bool
+	HasOverlay    bool
+}
+
+type TreasureListEntry struct {
+	ID         string
+	TablePath  string
+	LootPools  []treasures.DropRef
+	UpdatedAt  string
+	HasSource  bool
+	HasOverlay bool
 }
 
 type TreasuresPageData struct {
 	Meta            PageMeta
 	Notice          *Notice
-	Entries         []treasures.TreasureEntry
+	Entries         []TreasureListEntry
 	ItemOptions     []ReferenceOption
 	GrimoireOptions []ReferenceOption
 	Form            TreasureFormData
@@ -158,7 +170,6 @@ type TreasuresPageData struct {
 type LootTableFormData struct {
 	ID            string
 	ReturnTo      string
-	TablePath     string
 	LootPoolsText string
 	FieldErrors   map[string]string
 	FormError     string

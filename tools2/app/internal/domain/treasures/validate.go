@@ -7,9 +7,15 @@ import (
 	"tools2/app/internal/domain/common"
 )
 
-func ValidateSave(input SaveInput, itemIDs, grimoireIDs map[string]struct{}, now time.Time) common.SaveResult[TreasureEntry] {
+func ValidateSave(input SaveInput, itemIDs, grimoireIDs, validTablePaths map[string]struct{}, now time.Time) common.SaveResult[TreasureEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
 	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "treasure_")
+	tablePath := common.NormalizeText(input.TablePath)
+	if !common.IsSafeNamespacedResourcePath(tablePath) {
+		errs.Add("tablePath", "Must be a namespaced loot table path.")
+	} else if _, ok := validTablePaths[tablePath]; !ok {
+		errs.Add("tablePath", "Referenced minecraft loot table does not exist.")
+	}
 	pools := make([]DropRef, 0, len(input.LootPools))
 	for i, p := range input.LootPools {
 		kind := common.NormalizeText(p.Kind)
@@ -55,6 +61,7 @@ func ValidateSave(input SaveInput, itemIDs, grimoireIDs map[string]struct{}, now
 	}
 	entry := TreasureEntry{
 		ID:        id,
+		TablePath: tablePath,
 		LootPools: pools,
 		UpdatedAt: now.UTC().Format(time.RFC3339),
 	}

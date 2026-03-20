@@ -167,7 +167,7 @@ func NameFilterTokens(value string) string {
 }
 
 func TreasureSearchBlob(entry treasures.TreasureEntry) string {
-	values := []string{entry.ID, entry.UpdatedAt}
+	values := []string{entry.ID, entry.TablePath, entry.UpdatedAt}
 	for _, pool := range entry.LootPools {
 		values = append(values, pool.Kind, pool.RefID, trimFloat(pool.Weight))
 		if pool.CountMin != nil {
@@ -181,7 +181,7 @@ func TreasureSearchBlob(entry treasures.TreasureEntry) string {
 }
 
 func LootTableSearchBlob(entry loottables.LootTableEntry) string {
-	values := []string{entry.ID, entry.TablePath, entry.UpdatedAt}
+	values := []string{entry.ID, entry.UpdatedAt}
 	for _, pool := range entry.LootPools {
 		values = append(values, pool.Kind, pool.RefID, trimFloat(pool.Weight))
 		if pool.CountMin != nil {

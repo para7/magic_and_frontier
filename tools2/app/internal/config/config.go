@@ -17,6 +17,7 @@ type Config struct {
 	LootTablesStatePath string
 	IDCounterStatePath  string
 	ExportSettingsPath  string
+	MinecraftLootTableRoot string
 }
 
 func Load() Config {
@@ -26,16 +27,17 @@ func Load() Config {
 	}
 
 	return Config{
-		Port:                rawPort,
-		ItemStatePath:       envOrDefault("ITEM_STATE_PATH", defaultStatePath("item.json")),
-		GrimoireStatePath:   envOrDefault("GRIMOIRE_STATE_PATH", defaultStatePath("grimoire.json")),
-		SkillStatePath:      envOrDefault("SKILL_STATE_PATH", defaultStatePath("skill.json")),
-		EnemySkillStatePath: envOrDefault("ENEMY_SKILL_STATE_PATH", defaultStatePath("enemy-skill.json")),
-		EnemyStatePath:      envOrDefault("ENEMY_STATE_PATH", defaultStatePath("enemy.json")),
-		TreasureStatePath:   envOrDefault("TREASURE_STATE_PATH", defaultStatePath("treasure.json")),
-		LootTablesStatePath: envOrDefault("LOOTTABLES_STATE_PATH", defaultStatePath("loottables.json")),
-		IDCounterStatePath:  envOrDefault("ID_COUNTER_STATE_PATH", defaultStatePath("id-counters.json")),
-		ExportSettingsPath:  envOrDefault("EXPORT_SETTINGS_PATH", defaultExportSettingsPath()),
+		Port:                   rawPort,
+		ItemStatePath:          envOrDefault("ITEM_STATE_PATH", defaultStatePath("item.json")),
+		GrimoireStatePath:      envOrDefault("GRIMOIRE_STATE_PATH", defaultStatePath("grimoire.json")),
+		SkillStatePath:         envOrDefault("SKILL_STATE_PATH", defaultStatePath("skill.json")),
+		EnemySkillStatePath:    envOrDefault("ENEMY_SKILL_STATE_PATH", defaultStatePath("enemy-skill.json")),
+		EnemyStatePath:         envOrDefault("ENEMY_STATE_PATH", defaultStatePath("enemy.json")),
+		TreasureStatePath:      envOrDefault("TREASURE_STATE_PATH", defaultStatePath("treasure.json")),
+		LootTablesStatePath:    envOrDefault("LOOTTABLES_STATE_PATH", defaultStatePath("loottables.json")),
+		IDCounterStatePath:     envOrDefault("ID_COUNTER_STATE_PATH", defaultStatePath("id-counters.json")),
+		ExportSettingsPath:     envOrDefault("EXPORT_SETTINGS_PATH", defaultExportSettingsPath()),
+		MinecraftLootTableRoot: envOrDefault("MINECRAFT_LOOT_TABLE_ROOT", defaultMinecraftLootTableRoot()),
 	}
 }
 
@@ -60,6 +62,14 @@ func defaultExportSettingsPath() string {
 		filepath.Clean(filepath.Join(".", "server", "config", "export-settings.json")),
 		filepath.Clean(filepath.Join("..", "tools", "server", "config", "export-settings.json")),
 		filepath.Clean(filepath.Join(".", "tools", "server", "config", "export-settings.json")),
+	}
+	return firstExistingOrDefault(candidates)
+}
+
+func defaultMinecraftLootTableRoot() string {
+	candidates := []string{
+		filepath.Clean(filepath.Join(".", "minecraft", "1.21.11", "loot_table")),
+		filepath.Clean(filepath.Join("..", "minecraft", "1.21.11", "loot_table")),
 	}
 	return firstExistingOrDefault(candidates)
 }

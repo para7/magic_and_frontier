@@ -558,40 +558,42 @@ templ TreasuresShell(data webui.TreasuresPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListBrowser(data.Meta.CurrentURL, "/treasures/new", "Add Treasure", "ID, loot refs で検索") {
-					<div class="entry-list" data-list-entries>
-						for _, entry := range data.Entries {
-							<article
-								class="entry-card"
-								data-list-item
-								data-search={ TreasureSearchBlob(entry) }
-								data-sort-updated={ entry.UpdatedAt }
-								data-filters="all"
-								data-sort-id={ entry.ID }>
-								<header>
-									<div>
-										<h3>{ entry.ID }</h3>
+				<div class="entry-list">
+					for _, entry := range data.Entries {
+						<article class="entry-card">
+							<header>
+								<div>
+									<h3 class="code">{ entry.TablePath }</h3>
+									if entry.HasOverlay {
 										<p class="entry-meta code">{ entry.ID }</p>
-									</div>
-									<div class="entry-actions">
-										<a class="secondary outline" role="button" href={ WithReturnTo("/treasures/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/treasures/edit?id=" + entry.ID }>Edit</a>
+									} else {
+										<p class="entry-meta">overlay not saved</p>
+									}
+								</div>
+								<div class="entry-actions">
+									<a class="secondary outline" role="button" href={ WithReturnTo("/treasures/edit?tablePath="+entry.TablePath, data.Meta.CurrentURL) } data-return-to-link={ "/treasures/edit?tablePath=" + entry.TablePath }>Edit</a>
+									if entry.HasOverlay {
 										<form method="post" action={ "/treasures/" + entry.ID + "/delete" }>
 											@ReturnToField(data.Meta.CurrentURL)
 											<button type="submit" class="danger">Delete</button>
 										</form>
-									</div>
-								</header>
-								<ul class="reference-list">
-									<li class="code">updated={ entry.UpdatedAt }</li>
-									for _, pool := range entry.LootPools {
-										<li class="code">{ pool.Kind } / { pool.RefID } / weight={ pool.Weight }</li>
 									}
-								</ul>
-							</article>
-						}
-						@ListEmptyState("まだ宝箱はありません。", len(data.Entries) > 0)
-					</div>
-				}
+								</div>
+							</header>
+							<ul class="reference-list">
+								<li class="code">source={ BoolText(entry.HasSource) }</li>
+								<li class="code">overlay={ BoolText(entry.HasOverlay) }</li>
+								if entry.UpdatedAt != "" {
+									<li class="code">updated={ entry.UpdatedAt }</li>
+								}
+								for _, pool := range entry.LootPools {
+									<li class="code">{ pool.Kind } / { pool.RefID } / weight={ pool.Weight }</li>
+								}
+							</ul>
+						</article>
+					}
+					@ListEmptyState("minecraft loot table が見つかりません。", len(data.Entries) > 0)
+				</div>
 			</section>
 		</div>
 	</div>
@@ -610,10 +612,19 @@ templ TreasureFormShell(data webui.TreasuresPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/treasures", data.Form.ReturnTo, FormTitle("Treasure", data.Form.IsEditing))
-				<form class="form-grid" method="post" action={ FormAction("/treasures", data.Form.IsEditing) }>
+				@FormShellHeader("/treasures", data.Form.ReturnTo, "Treasure Overlay")
+				<form class="form-grid" method="post" action="/treasures/edit">
 					<input type="hidden" name="id" value={ data.Form.ID }/>
+					<input type="hidden" name="tablePath" value={ data.Form.TablePath }/>
 					@ReturnToField(data.Form.ReturnTo)
+					<label class="form-span-2">
+						Table Path
+						<input value={ data.Form.TablePath } readonly/>
+						@FieldErrorBox(data.Form.FieldErrors, "tablePath")
+					</label>
+					if !data.Form.HasSource {
+						<div class="field-error form-span-2">Minecraft 本体の元テーブルが見つかりません。設定かファイル配置を確認してください。</div>
+					}
 					<label class="form-span-2">
 						Loot Pools
 						<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
@@ -640,7 +651,7 @@ templ TreasureFormShell(data webui.TreasuresPageData) {
 						<div class="field-error">{ data.Form.FormError }</div>
 					}
 					<div class="form-actions">
-						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+						<button type="submit">{ SubmitLabel(data.Form.HasOverlay) }</button>
 						<a class="secondary outline" role="button" href={ BackLink("/treasures", data.Form.ReturnTo) }>Cancel</a>
 					</div>
 				</form>
@@ -671,11 +682,10 @@ templ LootTablesShell(data webui.LootTablesPageData) {
 								data-search={ LootTableSearchBlob(entry) }
 								data-filters="all"
 								data-sort-updated={ entry.UpdatedAt }
-								data-sort-id={ entry.ID }
-								data-sort-table_path={ entry.TablePath }>
+								data-sort-id={ entry.ID }>
 								<header>
 									<div>
-										<h3>{ entry.TablePath }</h3>
+										<h3>{ entry.ID }</h3>
 										<p class="entry-meta code">{ entry.ID }</p>
 									</div>
 									<div class="entry-actions">
@@ -719,11 +729,6 @@ templ LootTableFormShell(data webui.LootTablesPageData) {
 				<form class="form-grid" method="post" action={ FormAction("/loottables", data.Form.IsEditing) }>
 					<input type="hidden" name="id" value={ data.Form.ID }/>
 					@ReturnToField(data.Form.ReturnTo)
-					<label>
-						Table Path
-						<input name="tablePath" value={ data.Form.TablePath }/>
-						@FieldErrorBox(data.Form.FieldErrors, "tablePath")
-					</label>
 					<label class="form-span-2">
 						Loot Pools
 						<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>

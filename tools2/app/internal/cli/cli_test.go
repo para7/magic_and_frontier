@@ -103,16 +103,17 @@ func writeFixtureConfig(t *testing.T, valid bool) config.Config {
 	})
 
 	return config.Config{
-		Port:                8787,
-		ItemStatePath:       filepath.Join(root, "item.json"),
-		GrimoireStatePath:   filepath.Join(root, "grimoire.json"),
-		SkillStatePath:      filepath.Join(root, "skill.json"),
-		EnemySkillStatePath: filepath.Join(root, "enemy-skill.json"),
-		EnemyStatePath:      filepath.Join(root, "enemy.json"),
-		TreasureStatePath:   filepath.Join(root, "treasure.json"),
-		LootTablesStatePath: filepath.Join(root, "loottables.json"),
-		IDCounterStatePath:  filepath.Join(root, "id-counters.json"),
-		ExportSettingsPath:  settingsPath,
+		Port:                   8787,
+		ItemStatePath:          filepath.Join(root, "item.json"),
+		GrimoireStatePath:      filepath.Join(root, "grimoire.json"),
+		SkillStatePath:         filepath.Join(root, "skill.json"),
+		EnemySkillStatePath:    filepath.Join(root, "enemy-skill.json"),
+		EnemyStatePath:         filepath.Join(root, "enemy.json"),
+		TreasureStatePath:      filepath.Join(root, "treasure.json"),
+		LootTablesStatePath:    filepath.Join(root, "loottables.json"),
+		IDCounterStatePath:     filepath.Join(root, "id-counters.json"),
+		ExportSettingsPath:     settingsPath,
+		MinecraftLootTableRoot: writeMinecraftLootTableRoot(t, root),
 	}
 }
 
@@ -125,4 +126,16 @@ func writeJSON(t *testing.T, path string, value any) {
 	if err := os.WriteFile(path, append(data, '\n'), 0o644); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func writeMinecraftLootTableRoot(t *testing.T, root string) string {
+	t.Helper()
+	dir := filepath.Join(root, "minecraft", "1.21.11", "loot_table", "chests")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "simple_dungeon.json"), []byte("{\"type\":\"minecraft:generic\",\"pools\":[]}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return filepath.Join(root, "minecraft", "1.21.11", "loot_table")
 }

@@ -17,6 +17,7 @@ import (
 	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/treasures"
+	"tools2/app/internal/mcsource"
 )
 
 type ExportSettings struct {
@@ -72,6 +73,7 @@ type ExportParams struct {
 	Treasures          []treasures.TreasureEntry
 	LootTables         []loottables.LootTableEntry
 	ExportSettingsPath string
+	MinecraftLootTableRoot string
 }
 
 func ExportDatapack(params ExportParams) SaveDataResponse {
@@ -103,7 +105,7 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
-	treasureStats, err := generateTreasureOutputs(settings, params.Treasures, params.ItemState.Items, params.GrimoireState.Entries)
+	treasureStats, err := generateTreasureOutputs(settings, params.MinecraftLootTableRoot, params.Treasures, params.ItemState.Items, params.GrimoireState.Entries)
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
@@ -318,6 +320,7 @@ func writeDatapackScaffold(settings ExportSettings) error {
 		settings.Paths.EnemyFunctionDir,
 		settings.Paths.EnemyLootDir,
 		settings.Paths.TreasureLootDir,
+		filepath.Join("data", "minecraft", "loot_table"),
 		filepath.Join(settings.Paths.DebugFunctionDir, "item"),
 		filepath.Join(settings.Paths.DebugFunctionDir, "grimoire"),
 	}
@@ -456,11 +459,7 @@ func generateEnemyOutputs(settings ExportSettings, entries []enemies.EnemyEntry,
 	return enemyOutputStats{EnemyFunctions: len(entries), EnemyLootTables: len(entries)}, nil
 }
 
-func generateTreasureOutputs(settings ExportSettings, entries []treasures.TreasureEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (treasureOutputStats, error) {
-	lootRoot := filepath.Join(settings.OutputRoot, settings.Paths.TreasureLootDir)
-	if err := os.MkdirAll(lootRoot, 0o755); err != nil {
-		return treasureOutputStats{}, err
-	}
+func generateTreasureOutputs(settings ExportSettings, minecraftLootTableRoot string, entries []treasures.TreasureEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (treasureOutputStats, error) {
 	itemsByID := map[string]items.ItemEntry{}
 	for _, entry := range itemEntries {
 		itemsByID[entry.ID] = entry
@@ -473,11 +472,23 @@ func generateTreasureOutputs(settings ExportSettings, entries []treasures.Treasu
 		if len(entry.LootPools) == 0 {
 			return treasureOutputStats{}, fmt.Errorf("treasure(%s): lootPools must not be empty", entry.ID)
 		}
-		lootTable, err := buildDropLootTable(entry.LootPools, itemsByID, grimoiresByID, "treasure("+entry.ID+")")
+		baseLootTable, _, err := mcsource.LoadLootTable(minecraftLootTableRoot, entry.TablePath)
 		if err != nil {
 			return treasureOutputStats{}, err
 		}
-		if err := writeJSON(filepath.Join(lootRoot, entry.ID+".json"), lootTable); err != nil {
+		pool, err := buildDropLootPool(entry.LootPools, itemsByID, grimoiresByID, "treasure("+entry.ID+")")
+		if err != nil {
+			return treasureOutputStats{}, err
+		}
+		lootTable, err := mergeLootTablePools(baseLootTable, pool, entry.TablePath)
+		if err != nil {
+			return treasureOutputStats{}, err
+		}
+		outPath, err := lootTableOutputPath(settings, entry.TablePath)
+		if err != nil {
+			return treasureOutputStats{}, err
+		}
+		if err := writeJSON(outPath, lootTable); err != nil {
 			return treasureOutputStats{}, err
 		}
 	}
@@ -485,6 +496,10 @@ func generateTreasureOutputs(settings ExportSettings, entries []treasures.Treasu
 }
 
 func generateLootTableOutputs(settings ExportSettings, entries []loottables.LootTableEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (loottableOutputStats, error) {
+	lootRoot := filepath.Join(settings.OutputRoot, settings.Paths.TreasureLootDir)
+	if err := os.MkdirAll(lootRoot, 0o755); err != nil {
+		return loottableOutputStats{}, err
+	}
 	itemsByID := map[string]items.ItemEntry{}
 	for _, entry := range itemEntries {
 		itemsByID[entry.ID] = entry
@@ -501,11 +516,7 @@ func generateLootTableOutputs(settings ExportSettings, entries []loottables.Loot
 		if err != nil {
 			return loottableOutputStats{}, err
 		}
-		outPath, err := lootTableOutputPath(settings, entry.TablePath)
-		if err != nil {
-			return loottableOutputStats{}, err
-		}
-		if err := writeJSON(outPath, lootTable); err != nil {
+		if err := writeJSON(filepath.Join(lootRoot, entry.ID+".json"), lootTable); err != nil {
 			return loottableOutputStats{}, err
 		}
 	}
@@ -527,6 +538,17 @@ func toTreasureDrops(drops []enemies.DropRef) []treasures.DropRef {
 }
 
 func buildDropLootTable(drops []treasures.DropRef, itemsByID map[string]items.ItemEntry, grimoiresByID map[string]grimoire.GrimoireEntry, context string) (map[string]any, error) {
+	pool, err := buildDropLootPool(drops, itemsByID, grimoiresByID, context)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{
+		"type": "minecraft:generic",
+		"pools": []any{pool},
+	}, nil
+}
+
+func buildDropLootPool(drops []treasures.DropRef, itemsByID map[string]items.ItemEntry, grimoiresByID map[string]grimoire.GrimoireEntry, context string) (map[string]any, error) {
 	entries := make([]any, 0, len(drops))
 	for _, drop := range drops {
 		switch drop.Kind {
@@ -560,14 +582,25 @@ func buildDropLootTable(drops []treasures.DropRef, itemsByID map[string]items.It
 		}
 	}
 	return map[string]any{
-		"type": "minecraft:generic",
-		"pools": []any{
-			map[string]any{
-				"rolls":   1,
-				"entries": entries,
-			},
-		},
+		"rolls":   1,
+		"entries": entries,
 	}, nil
+}
+
+func mergeLootTablePools(base map[string]any, pool map[string]any, tablePath string) (map[string]any, error) {
+	if base == nil {
+		base = map[string]any{}
+	}
+	if rawPools, ok := base["pools"]; ok && rawPools != nil {
+		pools, ok := rawPools.([]any)
+		if !ok {
+			return nil, fmt.Errorf("treasure(%s): base loot table pools must be an array", tablePath)
+		}
+		base["pools"] = append(pools, pool)
+		return base, nil
+	}
+	base["pools"] = []any{pool}
+	return base, nil
 }
 
 func toEnemyFunctionLines(settings ExportSettings, entry enemies.EnemyEntry, itemsByID map[string]items.ItemEntry) []string {

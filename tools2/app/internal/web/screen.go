@@ -75,52 +75,23 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 			Form:    defaultEnemySkillForm(),
 		})
 	case "/treasures":
-		itemState, err := a.deps.ItemRepo.LoadItemState()
+		data, err := a.treasuresPageData(notice)
 		if err != nil {
 			a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), Form: defaultTreasureForm()})
 			return
 		}
-		grimoireState, err := a.deps.GrimoireRepo.LoadGrimoireState()
-		if err != nil {
-			a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), Form: defaultTreasureForm()})
-			return
-		}
-		state, err := a.deps.TreasureRepo.LoadState()
-		if err != nil {
-			a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), Form: defaultTreasureForm()})
-			return
-		}
-		a.renderTreasures(w, r, webui.TreasuresPageData{
-			Meta:            treasuresMeta(),
-			Notice:          notice,
-			Entries:         state.Entries,
-			ItemOptions:     itemOptions(itemState.Items),
-			GrimoireOptions: grimoireOptions(grimoireState.Entries),
-			Form:            defaultTreasureForm(),
-		})
+		a.renderTreasures(w, r, data)
 	case "/loottables":
-		itemState, err := a.deps.ItemRepo.LoadItemState()
-		if err != nil {
-			a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultLootTableForm()})
-			return
-		}
-		grimoireState, err := a.deps.GrimoireRepo.LoadGrimoireState()
-		if err != nil {
-			a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultLootTableForm()})
-			return
-		}
 		state, err := a.deps.LootTableRepo.LoadState()
 		if err != nil {
 			a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultLootTableForm()})
 			return
 		}
 		a.renderLootTables(w, r, webui.LootTablesPageData{
-			Meta:            lootTablesMeta(),
-			Notice:          notice,
-			Entries:         state.Entries,
-			ItemOptions:     itemOptions(itemState.Items),
-			GrimoireOptions: grimoireOptions(grimoireState.Entries),
-			Form:            defaultLootTableForm(),
+			Meta:    lootTablesMeta(),
+			Notice:  notice,
+			Entries: state.Entries,
+			Form:    defaultLootTableForm(),
 		})
 	case "/enemies":
 		state, err := a.deps.EnemyRepo.LoadState()

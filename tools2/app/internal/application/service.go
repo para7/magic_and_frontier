@@ -17,6 +17,7 @@ import (
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/export"
 	"tools2/app/internal/idseq"
+	"tools2/app/internal/mcsource"
 	"tools2/app/internal/store"
 )
 
@@ -34,6 +35,7 @@ type Dependencies struct {
 }
 
 type Service struct {
+	cfg  config.Config
 	deps Dependencies
 }
 
@@ -117,7 +119,7 @@ func NewService(cfg config.Config, deps Dependencies) Service {
 	if deps.Now == nil {
 		deps.Now = defaults.Now
 	}
-	return Service{deps: deps}
+	return Service{cfg: cfg, deps: deps}
 }
 
 func (s Service) LoadStates() (StateBundle, error) {
@@ -165,7 +167,7 @@ func (s Service) ValidateAll() (ValidationReport, error) {
 	if err != nil {
 		return ValidationReport{}, err
 	}
-	return ValidateBundle(states, s.deps.ExportSettingsPath, s.deps.Now()), nil
+	return ValidateBundle(states, s.deps.ExportSettingsPath, s.cfg.MinecraftLootTableRoot, s.deps.Now()), nil
 }
 
 func (s Service) AllocateID(kind idseq.Kind) (string, error) {
@@ -213,7 +215,7 @@ func (s Service) ExportDatapack() export.SaveDataResponse {
 		}
 	}
 
-	report := ValidateBundle(states, "", s.deps.Now())
+	report := ValidateBundle(states, "", s.cfg.MinecraftLootTableRoot, s.deps.Now())
 	if !report.OK {
 		return export.SaveDataResponse{
 			OK:      false,
@@ -231,10 +233,11 @@ func (s Service) ExportDatapack() export.SaveDataResponse {
 		Treasures:          states.TreasureState.Entries,
 		LootTables:         states.LootTableState.Entries,
 		ExportSettingsPath: s.deps.ExportSettingsPath,
+		MinecraftLootTableRoot: s.cfg.MinecraftLootTableRoot,
 	})
 }
 
-func ValidateBundle(states StateBundle, exportSettingsPath string, now time.Time) ValidationReport {
+func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLootTableRoot string, now time.Time) ValidationReport {
 	report := ValidationReport{
 		OK: true,
 		Counts: Counts{
@@ -261,8 +264,20 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, now time.Time
 	grimoireIDs := entryIDs(states.GrimoireState.Entries, func(entry grimoire.GrimoireEntry) string { return entry.ID })
 	skillIDs := entryIDs(states.SkillState.Entries, func(entry skills.SkillEntry) string { return entry.ID })
 	enemySkillIDs := entryIDs(states.EnemySkillState.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
-	customLootTablePaths := map[string]string{}
 	castIDs := map[int]string{}
+	treasureTablePaths := map[string]string{}
+	validTreasureTablePaths := map[string]struct{}{}
+	if sources, err := mcsource.ListLootTables(minecraftLootTableRoot); err != nil {
+		report.Issues = append(report.Issues, ValidationIssue{
+			Entity:  "minecraft-loot-table-root",
+			Field:   "path",
+			Message: err.Error(),
+		})
+	} else {
+		for _, source := range sources {
+			validTreasureTablePaths[source.TablePath] = struct{}{}
+		}
+	}
 
 	for _, entry := range states.ItemState.Items {
 		appendSaveIssues(&report, "item", entry.ID, items.ValidateSave(itemToInput(entry), skillIDs, now))
@@ -287,20 +302,20 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, now time.Time
 		appendSaveIssues(&report, "enemy-skill", entry.ID, enemyskills.ValidateSave(enemySkillToInput(entry), now))
 	}
 	for _, entry := range states.TreasureState.Entries {
-		appendSaveIssues(&report, "treasure", entry.ID, treasures.ValidateSave(treasureToInput(entry), itemIDs, grimoireIDs, now))
-	}
-	for _, entry := range states.LootTableState.Entries {
-		appendSaveIssues(&report, "loottable", entry.ID, loottables.ValidateSave(loottableToInput(entry), itemIDs, grimoireIDs, now))
-		if prevID, exists := customLootTablePaths[strings.TrimSpace(entry.TablePath)]; exists && prevID != entry.ID {
+		appendSaveIssues(&report, "treasure", entry.ID, treasures.ValidateSave(treasureToInput(entry), itemIDs, grimoireIDs, validTreasureTablePaths, now))
+		if prevID, exists := treasureTablePaths[strings.TrimSpace(entry.TablePath)]; exists && prevID != entry.ID {
 			report.Issues = append(report.Issues, ValidationIssue{
-				Entity:  "loottable",
+				Entity:  "treasure",
 				ID:      entry.ID,
 				Field:   "tablePath",
 				Message: "Loot table path is already used by " + prevID + ".",
 			})
 		} else {
-			customLootTablePaths[strings.TrimSpace(entry.TablePath)] = entry.ID
+			treasureTablePaths[strings.TrimSpace(entry.TablePath)] = entry.ID
 		}
+	}
+	for _, entry := range states.LootTableState.Entries {
+		appendSaveIssues(&report, "loottable", entry.ID, loottables.ValidateSave(loottableToInput(entry), itemIDs, grimoireIDs, now))
 	}
 	for _, entry := range states.EnemyState.Entries {
 		appendSaveIssues(&report, "enemy", entry.ID, enemies.ValidateSave(enemyToInput(entry), enemySkillIDs, itemIDs, grimoireIDs, now))
@@ -418,6 +433,7 @@ func enemySkillToInput(entry enemyskills.EnemySkillEntry) enemyskills.SaveInput 
 func treasureToInput(entry treasures.TreasureEntry) treasures.SaveInput {
 	return treasures.SaveInput{
 		ID:        entry.ID,
+		TablePath: entry.TablePath,
 		LootPools: append([]treasures.DropRef{}, entry.LootPools...),
 	}
 }
@@ -425,7 +441,6 @@ func treasureToInput(entry treasures.TreasureEntry) treasures.SaveInput {
 func loottableToInput(entry loottables.LootTableEntry) loottables.SaveInput {
 	return loottables.SaveInput{
 		ID:        entry.ID,
-		TablePath: entry.TablePath,
 		LootPools: append([]treasures.DropRef{}, entry.LootPools...),
 	}
 }
