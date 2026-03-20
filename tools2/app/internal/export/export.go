@@ -37,6 +37,7 @@ type ExportPaths struct {
 	EnemyFunctionDir      string `json:"enemyFunctionDir"`
 	EnemyLootDir          string `json:"enemyLootDir"`
 	TreasureLootDir       string `json:"treasureLootDir"`
+	LoottableLootDir      string `json:"loottableLootDir"`
 	DebugFunctionDir      string `json:"debugFunctionDir"`
 	MinecraftTagDir       string `json:"minecraftTagDir"`
 }
@@ -65,14 +66,14 @@ type SaveDataResponse struct {
 }
 
 type ExportParams struct {
-	ItemState          items.ItemState
-	GrimoireState      grimoire.GrimoireState
-	Skills             []skills.SkillEntry
-	EnemySkills        []enemyskills.EnemySkillEntry
-	Enemies            []enemies.EnemyEntry
-	Treasures          []treasures.TreasureEntry
-	LootTables         []loottables.LootTableEntry
-	ExportSettingsPath string
+	ItemState              items.ItemState
+	GrimoireState          grimoire.GrimoireState
+	Skills                 []skills.SkillEntry
+	EnemySkills            []enemyskills.EnemySkillEntry
+	Enemies                []enemies.EnemyEntry
+	Treasures              []treasures.TreasureEntry
+	LootTables             []loottables.LootTableEntry
+	ExportSettingsPath     string
 	MinecraftLootTableRoot string
 }
 
@@ -220,23 +221,27 @@ func loadExportSettings(settingsPath string) (ExportSettings, error) {
 	if err != nil {
 		return ExportSettings{}, err
 	}
-	skillFunctionDir, err := pathStringOrDefault(pathValues, "skillFunctionDir", filepath.ToSlash(filepath.Join("data", namespace, "function", "skill")))
+	skillFunctionDir, err := pathStringOrDefault(pathValues, "skillFunctionDir", defaultGeneratedPath(namespace, "function", "skill"))
 	if err != nil {
 		return ExportSettings{}, err
 	}
-	enemySkillFunctionDir, err := pathStringOrDefault(pathValues, "enemySkillFunctionDir", filepath.ToSlash(filepath.Join("data", namespace, "function", "enemy_skill")))
+	enemySkillFunctionDir, err := pathStringOrDefault(pathValues, "enemySkillFunctionDir", defaultGeneratedPath(namespace, "function", "enemy_skill"))
 	if err != nil {
 		return ExportSettings{}, err
 	}
-	enemyFunctionDir, err := pathStringOrDefault(pathValues, "enemyFunctionDir", filepath.ToSlash(filepath.Join("data", namespace, "function", "enemy", "spawn")))
+	enemyFunctionDir, err := pathStringOrDefault(pathValues, "enemyFunctionDir", defaultGeneratedPath(namespace, "function", "enemy"))
 	if err != nil {
 		return ExportSettings{}, err
 	}
-	enemyLootDir, err := pathStringOrDefault(pathValues, "enemyLootDir", filepath.ToSlash(filepath.Join("data", namespace, "loot_table", "enemy")))
+	enemyLootDir, err := pathStringOrDefault(pathValues, "enemyLootDir", defaultGeneratedPath(namespace, "loot_table", "enemy"))
 	if err != nil {
 		return ExportSettings{}, err
 	}
-	treasureLootDir, err := pathStringOrDefault(pathValues, "treasureLootDir", filepath.ToSlash(filepath.Join("data", namespace, "loot_table", "treasure")))
+	treasureLootDir, err := pathStringOrDefault(pathValues, "treasureLootDir", defaultGeneratedPath(namespace, "loot_table", "treasure"))
+	if err != nil {
+		return ExportSettings{}, err
+	}
+	loottableLootDir, err := pathStringOrDefault(pathValues, "loottableLootDir", defaultGeneratedPath(namespace, "loot_table", "loottable"))
 	if err != nil {
 		return ExportSettings{}, err
 	}
@@ -263,10 +268,16 @@ func loadExportSettings(settingsPath string) (ExportSettings, error) {
 			EnemyFunctionDir:      enemyFunctionDir,
 			EnemyLootDir:          enemyLootDir,
 			TreasureLootDir:       treasureLootDir,
+			LoottableLootDir:      loottableLootDir,
 			DebugFunctionDir:      debugFunctionDir,
 			MinecraftTagDir:       minecraftTagDir,
 		},
 	}, nil
+}
+
+func defaultGeneratedPath(namespace, registry string, parts ...string) string {
+	segments := append([]string{"data", namespace, registry, "generated"}, parts...)
+	return filepath.ToSlash(filepath.Join(segments...))
 }
 
 func requireString(value any, key string) (string, error) {
@@ -320,6 +331,7 @@ func writeDatapackScaffold(settings ExportSettings) error {
 		settings.Paths.EnemyFunctionDir,
 		settings.Paths.EnemyLootDir,
 		settings.Paths.TreasureLootDir,
+		settings.Paths.LoottableLootDir,
 		filepath.Join("data", "minecraft", "loot_table"),
 		filepath.Join(settings.Paths.DebugFunctionDir, "item"),
 		filepath.Join(settings.Paths.DebugFunctionDir, "grimoire"),
@@ -361,7 +373,7 @@ func generateItemOutputs(settings ExportSettings, entries []items.ItemEntry) (it
 	for _, entry := range entries {
 		if err := os.WriteFile(filepath.Join(functionRoot, entry.ID+".mcfunction"), []byte(strings.Join([]string{
 			fmt.Sprintf("# itemId=%s sourceId=%s", entry.ItemID, entry.ID),
-			fmt.Sprintf("loot give @s loot %s:item/%s", settings.Namespace, entry.ID),
+			fmt.Sprintf("loot give @s loot %s", lootTableResourceID(settings, settings.Paths.ItemLootDir, entry.ID)),
 			"",
 		}, "\n")), 0o644); err != nil {
 			return itemOutputStats{}, err
@@ -496,7 +508,7 @@ func generateTreasureOutputs(settings ExportSettings, minecraftLootTableRoot str
 }
 
 func generateLootTableOutputs(settings ExportSettings, entries []loottables.LootTableEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (loottableOutputStats, error) {
-	lootRoot := filepath.Join(settings.OutputRoot, settings.Paths.TreasureLootDir)
+	lootRoot := filepath.Join(settings.OutputRoot, settings.Paths.LoottableLootDir)
 	if err := os.MkdirAll(lootRoot, 0o755); err != nil {
 		return loottableOutputStats{}, err
 	}
@@ -543,7 +555,7 @@ func buildDropLootTable(drops []treasures.DropRef, itemsByID map[string]items.It
 		return nil, err
 	}
 	return map[string]any{
-		"type": "minecraft:generic",
+		"type":  "minecraft:generic",
 		"pools": []any{pool},
 	}, nil
 }

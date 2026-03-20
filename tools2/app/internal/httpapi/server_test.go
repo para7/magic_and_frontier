@@ -231,12 +231,12 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 	}
 
 	checkFiles := []string{
-		filepath.Join(root, "out", "data", "maf", "function", "skill", skillID+".mcfunction"),
-		filepath.Join(root, "out", "data", "maf", "function", "grimoire", grimoireID+".mcfunction"),
-		filepath.Join(root, "out", "data", "maf", "function", "grimoire", "selectexec.mcfunction"),
+		filepath.Join(root, "out", "data", "maf", "function", "generated", "skill", skillID+".mcfunction"),
+		filepath.Join(root, "out", "data", "maf", "function", "generated", "grimoire", grimoireID+".mcfunction"),
+		filepath.Join(root, "out", "data", "maf", "function", "generated", "grimoire", "selectexec.mcfunction"),
 		filepath.Join(root, "out", "data", "minecraft", "loot_table", "chests", "simple_dungeon.json"),
-		filepath.Join(root, "out", "data", "maf", "loot_table", "treasure", "loottable_1.json"),
-		filepath.Join(root, "out", "data", "maf", "loot_table", "enemy", "enemy_1.json"),
+		filepath.Join(root, "out", "data", "maf", "loot_table", "generated", "loottable", "loottable_1.json"),
+		filepath.Join(root, "out", "data", "maf", "loot_table", "generated", "enemy", "enemy_1.json"),
 	}
 	for _, path := range checkFiles {
 		if _, err := os.Stat(path); err != nil {
@@ -376,15 +376,16 @@ func newTestHandler(t *testing.T) (http.Handler, string) {
 		"namespace":        "maf",
 		"templatePackPath": "./pack-template.mcmeta",
 		"paths": map[string]any{
-			"itemFunctionDir":       "data/maf/function/item",
-			"itemLootDir":           "data/maf/loot_table/item",
-			"spellFunctionDir":      "data/maf/function/grimoire",
-			"spellLootDir":          "data/maf/loot_table/grimoire",
-			"skillFunctionDir":      "data/maf/function/skill",
-			"enemySkillFunctionDir": "data/maf/function/enemy_skill",
-			"enemyFunctionDir":      "data/maf/function/enemy/spawn",
-			"enemyLootDir":          "data/maf/loot_table/enemy",
-			"treasureLootDir":       "data/maf/loot_table/treasure",
+			"itemFunctionDir":       "data/maf/function/generated/item",
+			"itemLootDir":           "data/maf/loot_table/generated/item",
+			"spellFunctionDir":      "data/maf/function/generated/grimoire",
+			"spellLootDir":          "data/maf/loot_table/generated/grimoire",
+			"skillFunctionDir":      "data/maf/function/generated/skill",
+			"enemySkillFunctionDir": "data/maf/function/generated/enemy_skill",
+			"enemyFunctionDir":      "data/maf/function/generated/enemy",
+			"enemyLootDir":          "data/maf/loot_table/generated/enemy",
+			"treasureLootDir":       "data/maf/loot_table/generated/treasure",
+			"loottableLootDir":      "data/maf/loot_table/generated/loottable",
 			"debugFunctionDir":      "data/maf/function/debug/give",
 			"minecraftTagDir":       "data/minecraft/tags/function",
 		},

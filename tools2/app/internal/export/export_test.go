@@ -2,6 +2,8 @@ package export
 
 import (
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -85,6 +87,34 @@ func TestBuildDropLootTableSupportsMinecraftItemAndGrimoire(t *testing.T) {
 	}
 }
 
+func TestGenerateItemOutputsUsesConfiguredLootDir(t *testing.T) {
+	settings := ExportSettings{
+		OutputRoot: t.TempDir(),
+		Namespace:  "maf",
+		Paths: ExportPaths{
+			ItemFunctionDir: "data/maf/function/generated/item",
+			ItemLootDir:     "data/maf/loot_table/generated/item",
+		},
+	}
+
+	_, err := generateItemOutputs(settings, []items.ItemEntry{{
+		ID:     "items_1",
+		ItemID: "minecraft:apple",
+		Count:  2,
+	}})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data, err := os.ReadFile(filepath.Join(settings.OutputRoot, settings.Paths.ItemFunctionDir, "items_1.mcfunction"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(data), "loot give @s loot maf:generated/item/items_1") {
+		t.Fatalf("item function should reference generated loot table path: %s", string(data))
+	}
+}
+
 func TestToEnemyFunctionLinesUsesMobTypeAndDeathLootTable(t *testing.T) {
 	attack := 6.0
 	entry := enemies.EnemyEntry{
@@ -103,7 +133,7 @@ func TestToEnemyFunctionLinesUsesMobTypeAndDeathLootTable(t *testing.T) {
 	settings := ExportSettings{
 		Namespace: "maf",
 		Paths: ExportPaths{
-			EnemyLootDir: "data/maf/loot_table/enemy",
+			EnemyLootDir: "data/maf/loot_table/generated/enemy",
 		},
 	}
 
@@ -112,7 +142,7 @@ func TestToEnemyFunctionLinesUsesMobTypeAndDeathLootTable(t *testing.T) {
 	if !strings.Contains(text, "summon minecraft:skeleton") {
 		t.Fatalf("enemy summon should use mob type: %s", text)
 	}
-	if !strings.Contains(text, `DeathLootTable:"maf:enemy/enemy_3"`) {
+	if !strings.Contains(text, `DeathLootTable:"maf:generated/enemy/enemy_3"`) {
 		t.Fatalf("enemy summon should reference enemy loot table: %s", text)
 	}
 	if !strings.Contains(text, `"maf_enemy_skill_enemyskill_1"`) {
@@ -137,7 +167,7 @@ func TestToEnemyFunctionLinesResolvesCustomItemEquipment(t *testing.T) {
 	settings := ExportSettings{
 		Namespace: "maf",
 		Paths: ExportPaths{
-			EnemyLootDir: "data/maf/loot_table/enemy",
+			EnemyLootDir: "data/maf/loot_table/generated/enemy",
 		},
 	}
 

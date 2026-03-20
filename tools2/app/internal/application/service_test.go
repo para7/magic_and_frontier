@@ -136,15 +136,16 @@ func testConfig(t *testing.T) config.Config {
 		"namespace":        "maf",
 		"templatePackPath": "./pack-template.mcmeta",
 		"paths": map[string]any{
-			"itemFunctionDir":       "data/maf/function/item",
-			"itemLootDir":           "data/maf/loot_table/item",
-			"spellFunctionDir":      "data/maf/function/grimoire",
-			"spellLootDir":          "data/maf/loot_table/grimoire",
-			"skillFunctionDir":      "data/maf/function/skill",
-			"enemySkillFunctionDir": "data/maf/function/enemy_skill",
-			"enemyFunctionDir":      "data/maf/function/enemy/spawn",
-			"enemyLootDir":          "data/maf/loot_table/enemy",
-			"treasureLootDir":       "data/maf/loot_table/treasure",
+			"itemFunctionDir":       "data/maf/function/generated/item",
+			"itemLootDir":           "data/maf/loot_table/generated/item",
+			"spellFunctionDir":      "data/maf/function/generated/grimoire",
+			"spellLootDir":          "data/maf/loot_table/generated/grimoire",
+			"skillFunctionDir":      "data/maf/function/generated/skill",
+			"enemySkillFunctionDir": "data/maf/function/generated/enemy_skill",
+			"enemyFunctionDir":      "data/maf/function/generated/enemy",
+			"enemyLootDir":          "data/maf/loot_table/generated/enemy",
+			"treasureLootDir":       "data/maf/loot_table/generated/treasure",
+			"loottableLootDir":      "data/maf/loot_table/generated/loottable",
 			"debugFunctionDir":      "data/maf/function/debug/give",
 			"minecraftTagDir":       "data/minecraft/tags/function",
 		},
@@ -171,6 +172,27 @@ func repoSavedataConfig(t *testing.T) config.Config {
 
 	root := repoRoot(t)
 	savedataDir := filepath.Join(root, "savedata")
+	fixtureDir := t.TempDir()
+	settingsPath := filepath.Join(fixtureDir, "export-settings.json")
+	writeJSONFile(t, settingsPath, map[string]any{
+		"outputRoot":       "./out",
+		"namespace":        "maf",
+		"templatePackPath": "./pack-template.mcmeta",
+		"paths": map[string]any{
+			"itemFunctionDir":       "data/maf/function/generated/item",
+			"itemLootDir":           "data/maf/loot_table/generated/item",
+			"spellFunctionDir":      "data/maf/function/generated/grimoire",
+			"spellLootDir":          "data/maf/loot_table/generated/grimoire",
+			"skillFunctionDir":      "data/maf/function/generated/skill",
+			"enemySkillFunctionDir": "data/maf/function/generated/enemy_skill",
+			"enemyFunctionDir":      "data/maf/function/generated/enemy",
+			"enemyLootDir":          "data/maf/loot_table/generated/enemy",
+			"treasureLootDir":       "data/maf/loot_table/generated/treasure",
+			"loottableLootDir":      "data/maf/loot_table/generated/loottable",
+			"debugFunctionDir":      "data/maf/function/debug/give",
+			"minecraftTagDir":       "data/minecraft/tags/function",
+		},
+	})
 
 	return config.Config{
 		Port:                   8787,
@@ -182,7 +204,7 @@ func repoSavedataConfig(t *testing.T) config.Config {
 		TreasureStatePath:      filepath.Join(savedataDir, "treasure.json"),
 		LootTablesStatePath:    filepath.Join(savedataDir, "loottables.json"),
 		IDCounterStatePath:     filepath.Join(savedataDir, "id-counters.json"),
-		ExportSettingsPath:     filepath.Join(root, "..", "tools", "server", "config", "export-settings.json"),
+		ExportSettingsPath:     settingsPath,
 		MinecraftLootTableRoot: filepath.Join(root, "minecraft", "1.21.11", "loot_table"),
 	}
 }
