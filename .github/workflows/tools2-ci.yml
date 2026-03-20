@@ -1,0 +1,78 @@
+name: tools2-ci
+
+on:
+  pull_request:
+    paths:
+      - "tools2/**"
+      - ".github/workflows/tools2-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "tools2/**"
+      - ".github/workflows/tools2-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  tools2:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: tools2
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: tools2/go.mod
+          cache-dependency-path: tools2/go.sum
+
+      - name: Download modules
+        run: go mod download
+
+      - name: Generate templ files
+        run: make generate
+
+      - name: Verify generated files are committed
+        run: |
+          git diff --exit-code -- tools2/app/views || {
+            echo "Generated templ files are out of date. Run 'cd tools2 && make generate' and commit the result."
+            exit 1
+          }
+
+      - name: Tidy modules
+        run: make tidy
+
+      - name: Verify go.mod and go.sum are tidy
+        run: |
+          git diff --exit-code -- tools2/go.mod tools2/go.sum || {
+            echo "Go module files are out of date. Run 'cd tools2 && make tidy' and commit the result."
+            exit 1
+          }
+
+      - name: Format Go code
+        run: make format
+
+      - name: Verify formatting is committed
+        run: |
+          git diff --exit-code -- tools2 || {
+            echo "Go formatting changes are required. Run 'cd tools2 && make format' and commit the result."
+            exit 1
+          }
+
+      - name: Lint
+        run: make lint
+
+      - name: Build app binary
+        run: make build
+
+      - name: Build CLI binary
+        run: make build-cli
+
+      - name: Run tests
+        run: make test

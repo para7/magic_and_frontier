@@ -1,0 +1,14 @@
+{
+  "entries": [
+    {
+      "id": "grimoire_1",
+      "castid": 1,
+      "castTime": 10,
+      "mpCost": 5,
+      "script": "function maf:spell/firebolt",
+      "title": "Firebolt",
+      "description": "Basic sample projectile spell.",
+      "updatedAt": "2026-02-23T00:00:00.000Z"
+    }
+  ]
+}

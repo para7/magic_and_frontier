@@ -1,0 +1,16 @@
+package form
+
+import "tools2/app/internal/forms"
+
+templ ServerFields(v forms.ServerForm, errs forms.FieldErrors) {
+	<label for="server_host">
+		サーバーホスト
+		<input id="server_host" name="server_host" value={ v.Host } placeholder="example.local"/>
+		@FieldError(errs, "server_host")
+	</label>
+	<label for="server_port">
+		サーバーポート
+		<input id="server_port" name="server_port" value={ v.Port } placeholder="25565"/>
+		@FieldError(errs, "server_port")
+	</label>
+}

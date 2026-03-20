@@ -1,0 +1,69 @@
+package form
+
+import "tools2/app/internal/forms"
+import "tools2/app/views"
+
+templ Page(fs forms.FormSet, errs forms.FieldErrors, saved bool) {
+	@views.Layout("フォーム", "/form") {
+		<h1>設定フォーム</h1>
+		if saved {
+			<article>
+				<strong>保存しました</strong>
+			</article>
+		}
+		@FormContent(fs, errs)
+	}
+}
+
+templ FormContent(fs forms.FormSet, errs forms.FieldErrors) {
+	<form
+		id="main-form"
+		method="post"
+		action="/form"
+		hx-post="/form/validate"
+		hx-trigger="input changed delay:300ms, change changed delay:100ms"
+		hx-target="#main-form"
+		hx-swap="outerHTML focus-scroll:false"
+		hx-on::before-request="window.__restoreFocus={};window.__restoreFocus.el=document.activeElement;window.__restoreFocus.id=document.activeElement&&document.activeElement.id?document.activeElement.id:'';window.__restoreFocus.name=document.activeElement&&document.activeElement.name?document.activeElement.name:'';window.__restoreFocus.pos=document.activeElement&&document.activeElement.selectionStart!==undefined?document.activeElement.selectionStart:null"
+		hx-on::after-settle="window.__restoreFocus&&((window.__restoreFocus.id&&document.getElementById(window.__restoreFocus.id)||window.__restoreFocus.name&&document.querySelector('[name=\''+window.__restoreFocus.name+'\']'))&&((window.__restoreFocus.id&&document.getElementById(window.__restoreFocus.id)||window.__restoreFocus.name&&document.querySelector('[name=\''+window.__restoreFocus.name+'\']')).focus(),window.__restoreFocus.pos!==null&&(window.__restoreFocus.id&&document.getElementById(window.__restoreFocus.id)||window.__restoreFocus.name&&document.querySelector('[name=\''+window.__restoreFocus.name+'\']')).setSelectionRange(window.__restoreFocus.pos,window.__restoreFocus.pos)))"
+	>
+		<fieldset>
+			<legend>共通設定</legend>
+			<label for="name">
+				名前
+				<input id="name" name="name" value={ fs.Common.Name } placeholder="例: sample"/>
+				@FieldError(errs, "name")
+			</label>
+
+			<label for="type">
+				種別
+				<select id="type" name="type">
+					<option value="" selected?={ fs.Common.Type == forms.KindNone }>選択してください</option>
+					<option value="server" selected?={ fs.Common.Type == forms.KindServer }>サーバー</option>
+					<option value="storage" selected?={ fs.Common.Type == forms.KindStorage }>ストレージ</option>
+					<option value="message" selected?={ fs.Common.Type == forms.KindMessage }>メッセージ</option>
+				</select>
+				@FieldError(errs, "type")
+			</label>
+		</fieldset>
+
+		<div id="dynamic-fields">
+			switch fs.Common.Type {
+				case forms.KindServer:
+					@ServerFields(fs.Server, errs)
+				case forms.KindStorage:
+					@StorageFields(fs.Storage, errs)
+				case forms.KindMessage:
+					@MessageFields(fs.Message, errs)
+				default:
+					@EmptyFields()
+			}
+		</div>
+
+		if errs.Any() {
+			<button type="submit" disabled aria-disabled="true">保存</button>
+		} else {
+			<button type="submit">保存</button>
+		}
+	</form>
+}

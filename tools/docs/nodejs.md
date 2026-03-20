@@ -1,0 +1,5 @@
+- Rules: Use `pnpm` workspace scripts from the `tools` root.
+- Do not run `npm install`/`npx` directly in this repository.
+- Use `pnpm <script>` for root scripts and `pnpm --filter <pkg> <script>` for package scripts.
+- Add `tsc` build check as `pnpm typecheck` (`tsc --noEmit`).
+- Run `pnpm typecheck`, `pnpm lint`, and `pnpm format` as the final verification step of each task.

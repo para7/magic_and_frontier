@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "id": "items_1",
+      "itemId": "minecraft:stone",
+      "count": 1,
+      "customName": "Starter Stone",
+      "lore": "Sample item",
+      "enchantments": "",
+      "unbreakable": false,
+      "customModelData": "",
+      "repairCost": "",
+      "hideFlags": "",
+      "potionId": "",
+      "customPotionColor": "",
+      "customPotionEffects": "",
+      "attributeModifiers": "",
+      "customNbt": "",
+      "nbt": "{id:\"minecraft:stone\",Count:1b,tag:{display:{Name:'{\"text\":\"Starter Stone\"}',Lore:['{\"text\":\"Sample item\"}']}}}",
+      "updatedAt": "2026-02-23T00:00:00.000Z"
+    }
+  ]
+}
