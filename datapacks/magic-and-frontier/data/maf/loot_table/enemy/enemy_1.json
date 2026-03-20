@@ -1,0 +1,58 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "functions": [
+            {
+              "count": {
+                "max": 3,
+                "min": 1,
+                "type": "minecraft:uniform"
+              },
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{item_id:\"minecraft:stone\",source_id:\"items_1\",nbt_snapshot:\"{id:\\\"minecraft:stone\\\",Count:1b,tag:{display:{Name:'{\\\"text\\\":\\\"Starter Stone\\\"}',Lore:['{\\\"text\\\":\\\"Sample item\\\"}']}}}\"}}"
+            }
+          ],
+          "name": "minecraft:stone",
+          "type": "minecraft:item",
+          "weight": 70
+        },
+        {
+          "functions": [
+            {
+              "count": 1,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Firebolt"
+              }
+            },
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "text": "Basic sample projectile spell."
+                }
+              ]
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{grimoire_id:\"grimoire_1\",spell:{castid:1,cost:5,cast:10,title:\"Firebolt\",description:\"Basic sample projectile spell.\"}}}"
+            }
+          ],
+          "name": "minecraft:written_book",
+          "type": "minecraft:item",
+          "weight": 30
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "type": "minecraft:generic"
+}

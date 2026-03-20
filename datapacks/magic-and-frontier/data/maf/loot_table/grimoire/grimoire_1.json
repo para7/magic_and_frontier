@@ -1,0 +1,38 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "functions": [
+            {
+              "count": 1,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Firebolt"
+              }
+            },
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "text": "Basic sample projectile spell."
+                }
+              ]
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{grimoire_id:\"grimoire_1\",spell:{castid:1,cost:5,cast:10,title:\"Firebolt\",description:\"Basic sample projectile spell.\"}}}"
+            }
+          ],
+          "name": "minecraft:written_book",
+          "type": "minecraft:item"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "type": "minecraft:generic"
+}

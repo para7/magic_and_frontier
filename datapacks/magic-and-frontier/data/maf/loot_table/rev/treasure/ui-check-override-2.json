@@ -1,0 +1,58 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "functions": [
+            {
+              "count": {
+                "max": 2,
+                "min": 1,
+                "type": "minecraft:uniform"
+              },
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{item_id:\"minecraft:stone\",source_id:\"items_1\",nbt_snapshot:\"{id:\\\"minecraft:stone\\\",Count:1b,tag:{display:{Name:'{\\\"text\\\":\\\"Seed Stone\\\"}',Lore:['{\\\"text\\\":\\\"Shared seed item\\\"}']}}}\",maf_skill:1b,maf_skill_id:\"skill_1\"}}"
+            }
+          ],
+          "name": "minecraft:stone",
+          "type": "minecraft:item",
+          "weight": 12
+        },
+        {
+          "functions": [
+            {
+              "count": 1,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Seed Grimoire"
+              }
+            },
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "text": "Shared seed for UI review"
+                }
+              ]
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{grimoire_id:\"grimoire_1\",spell:{castid:1,cost:34,cast:12,title:\"Seed Grimoire\",description:\"Shared seed for UI review\"}}}"
+            }
+          ],
+          "name": "minecraft:written_book",
+          "type": "minecraft:item",
+          "weight": 7
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "type": "minecraft:generic"
+}

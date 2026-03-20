@@ -1,0 +1,1 @@
+function maf:spell/firebolt
