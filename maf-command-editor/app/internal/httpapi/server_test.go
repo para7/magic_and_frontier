@@ -14,6 +14,15 @@ import (
 
 	"tools2/app/internal/application"
 	"tools2/app/internal/config"
+	"tools2/app/internal/domain/common"
+	"tools2/app/internal/domain/enemies"
+	"tools2/app/internal/domain/enemyskills"
+	"tools2/app/internal/domain/grimoire"
+	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/loottables"
+	"tools2/app/internal/domain/skills"
+	"tools2/app/internal/domain/treasures"
+	"tools2/app/internal/export"
 )
 
 func TestHandlerHealth(t *testing.T) {
@@ -55,11 +64,11 @@ func TestHandlerSSRSkillCreate(t *testing.T) {
 
 func TestHandlerSSRGrimoireEditShowsReadonlyCastID(t *testing.T) {
 	handler, _ := newTestHandler(t)
-	grimoireID := createJSONEntry(t, handler, "/api/grimoire", map[string]any{
-		"title":    "Firebolt",
-		"script":   "say fire",
-		"castTime": 20,
-		"mpCost":   5,
+	grimoireID := createJSONEntry(t, handler, "/api/grimoire", grimoire.SaveInput{
+		Title:    "Firebolt",
+		Script:   "say fire",
+		CastTime: 20,
+		MPCost:   5,
 	})
 
 	rec := request(t, handler, http.MethodGet, "/grimoire/edit?id="+grimoireID, nil, "")
@@ -73,14 +82,14 @@ func TestHandlerSSRGrimoireEditShowsReadonlyCastID(t *testing.T) {
 
 func TestHandlerSSRItemsListIncludesClientControlsAndReturnTo(t *testing.T) {
 	handler, _ := newTestHandler(t)
-	skillID := createJSONEntry(t, handler, "/api/skills", map[string]any{
-		"name":   "Slash",
-		"script": "say slash",
+	skillID := createJSONEntry(t, handler, "/api/skills", skills.SaveInput{
+		Name:   "Slash",
+		Script: "say slash",
 	})
-	itemID := createJSONEntry(t, handler, "/api/items", map[string]any{
-		"itemId":  "minecraft:apple",
-		"count":   3,
-		"skillId": skillID,
+	itemID := createJSONEntry(t, handler, "/api/items", items.SaveInput{
+		ItemID:  "minecraft:apple",
+		Count:   3,
+		SkillID: skillID,
 	})
 
 	rec := request(t, handler, http.MethodGet, "/items?q=apple&page=2", nil, "")
@@ -106,10 +115,10 @@ func TestHandlerSSRItemsListIncludesClientControlsAndReturnTo(t *testing.T) {
 
 func TestHandlerSSRSkillEditRespectsReturnToOnSaveAndFallback(t *testing.T) {
 	handler, _ := newTestHandler(t)
-	skillID := createJSONEntry(t, handler, "/api/skills", map[string]any{
-		"name":        "Slash",
-		"description": "Basic slash",
-		"script":      "say slash",
+	skillID := createJSONEntry(t, handler, "/api/skills", skills.SaveInput{
+		Name:        "Slash",
+		Description: "Basic slash",
+		Script:      "say slash",
 	})
 
 	rec := request(t, handler, http.MethodGet, "/skills/edit?id="+skillID+"&returnTo=%2Fskills%3Fq%3Dslash%26page%3D2", nil, "")
@@ -141,9 +150,9 @@ func TestHandlerSSRSkillEditRespectsReturnToOnSaveAndFallback(t *testing.T) {
 
 func TestHandlerSSRItemReturnToRejectsNonListPaths(t *testing.T) {
 	handler, _ := newTestHandler(t)
-	itemID := createJSONEntry(t, handler, "/api/items", map[string]any{
-		"itemId": "minecraft:apple",
-		"count":  1,
+	itemID := createJSONEntry(t, handler, "/api/items", items.SaveInput{
+		ItemID: "minecraft:apple",
+		Count:  1,
 	})
 
 	rec := request(t, handler, http.MethodGet, "/items/edit?id="+itemID+"&returnTo=%2Fsave", nil, "")
@@ -166,66 +175,66 @@ func TestHandlerSSRItemReturnToRejectsNonListPaths(t *testing.T) {
 func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 	handler, root := newTestHandler(t)
 
-	skillID := createJSONEntry(t, handler, "/api/skills", map[string]any{
-		"name":        "Slash",
-		"description": "Basic slash",
-		"script":      "say slash",
+	skillID := createJSONEntry(t, handler, "/api/skills", skills.SaveInput{
+		Name:        "Slash",
+		Description: "Basic slash",
+		Script:      "say slash",
 	})
 
-	itemID := createJSONEntry(t, handler, "/api/items", map[string]any{
-		"itemId":  "minecraft:apple",
-		"count":   1,
-		"skillId": skillID,
+	itemID := createJSONEntry(t, handler, "/api/items", items.SaveInput{
+		ItemID:  "minecraft:apple",
+		Count:   1,
+		SkillID: skillID,
 	})
 
-	grimoireID := createJSONEntry(t, handler, "/api/grimoire", map[string]any{
-		"title":       "Firebolt",
-		"description": "Burn",
-		"script":      "say fire",
-		"castTime":    20,
-		"mpCost":      5,
+	grimoireID := createJSONEntry(t, handler, "/api/grimoire", grimoire.SaveInput{
+		Title:       "Firebolt",
+		Description: "Burn",
+		Script:      "say fire",
+		CastTime:    20,
+		MPCost:      5,
 	})
 
-	enemySkillID := createJSONEntry(t, handler, "/api/enemy-skills", map[string]any{
-		"name":        "Roar",
-		"description": "Loud",
-		"script":      "say roar",
+	enemySkillID := createJSONEntry(t, handler, "/api/enemy-skills", enemyskills.SaveInput{
+		Name:        "Roar",
+		Description: "Loud",
+		Script:      "say roar",
 	})
 
-	createJSONEntry(t, handler, "/api/treasures", map[string]any{
-		"tablePath": "minecraft:chests/simple_dungeon",
-		"lootPools": []map[string]any{
-			{"kind": "item", "refId": itemID, "weight": 1},
-			{"kind": "grimoire", "refId": grimoireID, "weight": 1},
+	createJSONEntry(t, handler, "/api/treasures", treasures.SaveInput{
+		TablePath: "minecraft:chests/simple_dungeon",
+		LootPools: []treasures.DropRef{
+			{Kind: "item", RefID: itemID, Weight: 1},
+			{Kind: "grimoire", RefID: grimoireID, Weight: 1},
 		},
 	})
 
-	createJSONEntry(t, handler, "/api/loottables", map[string]any{
-		"lootPools": []map[string]any{
-			{"kind": "item", "refId": itemID, "weight": 1},
-			{"kind": "grimoire", "refId": grimoireID, "weight": 1},
+	createJSONEntry(t, handler, "/api/loottables", loottables.SaveInput{
+		LootPools: []treasures.DropRef{
+			{Kind: "item", RefID: itemID, Weight: 1},
+			{Kind: "grimoire", RefID: grimoireID, Weight: 1},
 		},
 	})
 
-	createJSONEntry(t, handler, "/api/enemies", map[string]any{
-		"mobType":       "minecraft:zombie",
-		"name":          "Sample Zombie",
-		"hp":            20,
-		"dropMode":      "replace",
-		"enemySkillIds": []string{enemySkillID},
-		"drops": []map[string]any{
-			{"kind": "minecraft_item", "refId": "minecraft:rotten_flesh", "weight": 1},
+	createJSONEntry(t, handler, "/api/enemies", enemies.SaveInput{
+		MobType:       "minecraft:zombie",
+		Name:          "Sample Zombie",
+		HP:            20,
+		DropMode:      "replace",
+		EnemySkillIDs: []string{enemySkillID},
+		Drops: []enemies.DropRef{
+			{Kind: "minecraft_item", RefID: "minecraft:rotten_flesh", Weight: 1},
 		},
-		"equipment": map[string]any{
-			"mainhand": map[string]any{
-				"kind":  "minecraft_item",
-				"refId": "minecraft:iron_sword",
-				"count": 1,
+		Equipment: enemies.Equipment{
+			Mainhand: &enemies.EquipmentSlot{
+				Kind:  "minecraft_item",
+				RefID: "minecraft:iron_sword",
+				Count: 1,
 			},
 		},
 	})
 
-	rec := requestJSON(t, handler, http.MethodPost, "/api/save", map[string]any{})
+	rec := requestJSON(t, handler, http.MethodPost, "/api/save", struct{}{})
 	if rec.Code != http.StatusOK {
 		t.Fatalf("save status = %d body=%s", rec.Code, rec.Body.String())
 	}
@@ -249,22 +258,21 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 func TestHandlerAPITreasureRejectsDuplicateTablePath(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
-	createJSONEntry(t, handler, "/api/treasures", map[string]any{
-		"tablePath": "minecraft:chests/simple_dungeon",
-		"lootPools": []map[string]any{{"kind": "minecraft_item", "refId": "minecraft:apple", "weight": 1}},
+	createJSONEntry(t, handler, "/api/treasures", treasures.SaveInput{
+		TablePath: "minecraft:chests/simple_dungeon",
+		LootPools: []treasures.DropRef{{Kind: "minecraft_item", RefID: "minecraft:apple", Weight: 1}},
 	})
 
-	rec := requestJSON(t, handler, http.MethodPost, "/api/treasures", map[string]any{
-		"tablePath": "minecraft:chests/simple_dungeon",
-		"lootPools": []map[string]any{{"kind": "minecraft_item", "refId": "minecraft:stick", "weight": 1}},
+	rec := requestJSON(t, handler, http.MethodPost, "/api/treasures", treasures.SaveInput{
+		TablePath: "minecraft:chests/simple_dungeon",
+		LootPools: []treasures.DropRef{{Kind: "minecraft_item", RefID: "minecraft:stick", Weight: 1}},
 	})
 	if rec.Code != http.StatusBadRequest {
 		t.Fatalf("status = %d body=%s", rec.Code, rec.Body.String())
 	}
-	var body map[string]any
+	var body common.SaveResult[treasures.TreasureEntry]
 	decodeResponse(t, rec, &body)
-	fieldErrors := body["fieldErrors"].(map[string]any)
-	if fieldErrors["tablePath"] == nil {
+	if body.FieldErrors["tablePath"] == "" {
 		t.Fatalf("body = %#v", body)
 	}
 }
@@ -272,9 +280,9 @@ func TestHandlerAPITreasureRejectsDuplicateTablePath(t *testing.T) {
 func TestHandlerAPITreasureRejectsMissingVanillaSource(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
-	rec := requestJSON(t, handler, http.MethodPost, "/api/treasures", map[string]any{
-		"tablePath": "minecraft:chests/missing_entry",
-		"lootPools": []map[string]any{{"kind": "minecraft_item", "refId": "minecraft:apple", "weight": 1}},
+	rec := requestJSON(t, handler, http.MethodPost, "/api/treasures", treasures.SaveInput{
+		TablePath: "minecraft:chests/missing_entry",
+		LootPools: []treasures.DropRef{{Kind: "minecraft_item", RefID: "minecraft:apple", Weight: 1}},
 	})
 	if rec.Code != http.StatusBadRequest {
 		t.Fatalf("status = %d body=%s", rec.Code, rec.Body.String())
@@ -284,60 +292,64 @@ func TestHandlerAPITreasureRejectsMissingVanillaSource(t *testing.T) {
 func TestHandlerAPIGrimoireUsesServerManagedIdentity(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
-	rec := requestJSON(t, handler, http.MethodPost, "/api/grimoire", map[string]any{
-		"id":       "grimoire_999",
-		"castid":   999,
-		"title":    "Firebolt",
-		"script":   "say fire",
-		"castTime": 20,
-		"mpCost":   5,
+	rec := requestJSON(t, handler, http.MethodPost, "/api/grimoire", grimoire.SaveInput{
+		ID:       "grimoire_999",
+		CastID:   999,
+		Title:    "Firebolt",
+		Script:   "say fire",
+		CastTime: 20,
+		MPCost:   5,
 	})
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status = %d body=%s", rec.Code, rec.Body.String())
 	}
-	var body map[string]any
+	var body common.SaveResult[grimoire.GrimoireEntry]
 	decodeResponse(t, rec, &body)
-	entry := body["entry"].(map[string]any)
-	if entry["id"] != "grimoire_1" {
-		t.Fatalf("entry = %#v", entry)
+	if body.Entry == nil {
+		t.Fatalf("body = %#v", body)
 	}
-	if entry["castid"].(float64) != 1 {
-		t.Fatalf("entry = %#v", entry)
+	if body.Entry.ID != "grimoire_1" {
+		t.Fatalf("entry = %#v", body.Entry)
+	}
+	if body.Entry.CastID != 1 {
+		t.Fatalf("entry = %#v", body.Entry)
 	}
 
-	rec = requestJSON(t, handler, http.MethodPost, "/api/grimoire", map[string]any{
-		"id":       "grimoire_1",
-		"castid":   555,
-		"title":    "Firebolt v2",
-		"script":   "say fire2",
-		"castTime": 30,
-		"mpCost":   9,
+	rec = requestJSON(t, handler, http.MethodPost, "/api/grimoire", grimoire.SaveInput{
+		ID:       "grimoire_1",
+		CastID:   555,
+		Title:    "Firebolt v2",
+		Script:   "say fire2",
+		CastTime: 30,
+		MPCost:   9,
 	})
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status = %d body=%s", rec.Code, rec.Body.String())
 	}
 	decodeResponse(t, rec, &body)
-	entry = body["entry"].(map[string]any)
-	if entry["castid"].(float64) != 1 {
-		t.Fatalf("entry = %#v", entry)
+	if body.Entry == nil {
+		t.Fatalf("body = %#v", body)
 	}
-	if entry["title"] != "Firebolt v2" {
-		t.Fatalf("entry = %#v", entry)
+	if body.Entry.CastID != 1 {
+		t.Fatalf("entry = %#v", body.Entry)
+	}
+	if body.Entry.Title != "Firebolt v2" {
+		t.Fatalf("entry = %#v", body.Entry)
 	}
 }
 
 func TestHandlerAPISkillDeleteRejectsReferencedItem(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
-	skillID := createJSONEntry(t, handler, "/api/skills", map[string]any{
-		"name":        "Slash",
-		"description": "Basic slash",
-		"script":      "say slash",
+	skillID := createJSONEntry(t, handler, "/api/skills", skills.SaveInput{
+		Name:        "Slash",
+		Description: "Basic slash",
+		Script:      "say slash",
 	})
-	createJSONEntry(t, handler, "/api/items", map[string]any{
-		"itemId":  "minecraft:apple",
-		"count":   1,
-		"skillId": skillID,
+	createJSONEntry(t, handler, "/api/items", items.SaveInput{
+		ItemID:  "minecraft:apple",
+		Count:   1,
+		SkillID: skillID,
 	})
 
 	rec := request(t, handler, http.MethodDelete, "/api/skills/"+skillID, nil, "")
@@ -345,23 +357,29 @@ func TestHandlerAPISkillDeleteRejectsReferencedItem(t *testing.T) {
 		t.Fatalf("status = %d body=%s", rec.Code, rec.Body.String())
 	}
 
-	var body map[string]any
+	var body common.DeleteResult
 	decodeResponse(t, rec, &body)
-	if body["code"] != "REFERENCE_ERROR" {
+	if body.Code != "REFERENCE_ERROR" {
 		t.Fatalf("body = %#v", body)
 	}
 }
 
-func createJSONEntry(t *testing.T, handler http.Handler, path string, payload map[string]any) string {
+type entryIDOnly struct {
+	ID string `json:"id"`
+}
+
+func createJSONEntry[T any](t *testing.T, handler http.Handler, path string, payload T) string {
 	t.Helper()
 	rec := requestJSON(t, handler, http.MethodPost, path, payload)
 	if rec.Code != http.StatusOK {
 		t.Fatalf("%s status = %d body=%s", path, rec.Code, rec.Body.String())
 	}
-	var body map[string]any
+	var body common.SaveResult[entryIDOnly]
 	decodeResponse(t, rec, &body)
-	entry := body["entry"].(map[string]any)
-	return entry["id"].(string)
+	if body.Entry == nil {
+		t.Fatalf("%s response missing entry: %#v", path, body)
+	}
+	return body.Entry.ID
 }
 
 func newTestHandler(t *testing.T) (http.Handler, string) {
@@ -372,23 +390,23 @@ func newTestHandler(t *testing.T) (http.Handler, string) {
 	if err := os.WriteFile(templatePath, []byte("{\"pack\":{\"pack_format\":61,\"description\":\"test\"}}\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	settings := map[string]any{
-		"outputRoot":       "./out",
-		"namespace":        "maf",
-		"templatePackPath": "./pack-template.mcmeta",
-		"paths": map[string]any{
-			"itemFunctionDir":       "data/maf/function/generated/item",
-			"itemLootDir":           "data/maf/loot_table/generated/item",
-			"spellFunctionDir":      "data/maf/function/generated/grimoire",
-			"spellLootDir":          "data/maf/loot_table/generated/grimoire",
-			"skillFunctionDir":      "data/maf/function/generated/skill",
-			"enemySkillFunctionDir": "data/maf/function/generated/enemy_skill",
-			"enemyFunctionDir":      "data/maf/function/generated/enemy",
-			"enemyLootDir":          "data/maf/loot_table/generated/enemy",
-			"treasureLootDir":       "data/maf/loot_table/generated/treasure",
-			"loottableLootDir":      "data/maf/loot_table/generated/loottable",
-			"debugFunctionDir":      "data/maf/function/debug/give",
-			"minecraftTagDir":       "data/minecraft/tags/function",
+	settings := export.ExportSettings{
+		OutputRoot:       "./out",
+		Namespace:        "maf",
+		TemplatePackPath: "./pack-template.mcmeta",
+		Paths: export.ExportPaths{
+			ItemFunctionDir:       "data/maf/function/generated/item",
+			ItemLootDir:           "data/maf/loot_table/generated/item",
+			SpellFunctionDir:      "data/maf/function/generated/grimoire",
+			SpellLootDir:          "data/maf/loot_table/generated/grimoire",
+			SkillFunctionDir:      "data/maf/function/generated/skill",
+			EnemySkillFunctionDir: "data/maf/function/generated/enemy_skill",
+			EnemyFunctionDir:      "data/maf/function/generated/enemy",
+			EnemyLootDir:          "data/maf/loot_table/generated/enemy",
+			TreasureLootDir:       "data/maf/loot_table/generated/treasure",
+			LoottableLootDir:      "data/maf/loot_table/generated/loottable",
+			DebugFunctionDir:      "data/maf/function/debug/give",
+			MinecraftTagDir:       "data/minecraft/tags/function",
 		},
 	}
 	writeJSONFile(t, settingsPath, settings)
@@ -429,7 +447,7 @@ func request(t *testing.T, handler http.Handler, method, path string, body *byte
 	return rec
 }
 
-func requestJSON(t *testing.T, handler http.Handler, method, path string, payload any) *httptest.ResponseRecorder {
+func requestJSON[T any](t *testing.T, handler http.Handler, method, path string, payload T) *httptest.ResponseRecorder {
 	t.Helper()
 	data, err := json.Marshal(payload)
 	if err != nil {
@@ -454,14 +472,14 @@ func assertRedirect(t *testing.T, rec *httptest.ResponseRecorder, wantLocation s
 	}
 }
 
-func decodeResponse(t *testing.T, rec *httptest.ResponseRecorder, dest any) {
+func decodeResponse[T any](t *testing.T, rec *httptest.ResponseRecorder, dest *T) {
 	t.Helper()
 	if err := json.Unmarshal(rec.Body.Bytes(), dest); err != nil {
 		t.Fatalf("decode response: %v body=%s", err, rec.Body.String())
 	}
 }
 
-func writeJSONFile(t *testing.T, path string, value any) {
+func writeJSONFile[T any](t *testing.T, path string, value T) {
 	t.Helper()
 	data, err := json.MarshalIndent(value, "", "  ")
 	if err != nil {

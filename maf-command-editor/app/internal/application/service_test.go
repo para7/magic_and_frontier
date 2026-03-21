@@ -18,6 +18,7 @@ import (
 	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/treasures"
+	"tools2/app/internal/export"
 )
 
 func TestValidateBundleDetectsBrokenReferences(t *testing.T) {
@@ -131,23 +132,23 @@ func testConfig(t *testing.T) config.Config {
 	if err := os.WriteFile(templatePath, []byte("{\"pack\":{\"pack_format\":61,\"description\":\"test\"}}\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	settings := map[string]any{
-		"outputRoot":       "./out",
-		"namespace":        "maf",
-		"templatePackPath": "./pack-template.mcmeta",
-		"paths": map[string]any{
-			"itemFunctionDir":       "data/maf/function/generated/item",
-			"itemLootDir":           "data/maf/loot_table/generated/item",
-			"spellFunctionDir":      "data/maf/function/generated/grimoire",
-			"spellLootDir":          "data/maf/loot_table/generated/grimoire",
-			"skillFunctionDir":      "data/maf/function/generated/skill",
-			"enemySkillFunctionDir": "data/maf/function/generated/enemy_skill",
-			"enemyFunctionDir":      "data/maf/function/generated/enemy",
-			"enemyLootDir":          "data/maf/loot_table/generated/enemy",
-			"treasureLootDir":       "data/maf/loot_table/generated/treasure",
-			"loottableLootDir":      "data/maf/loot_table/generated/loottable",
-			"debugFunctionDir":      "data/maf/function/debug/give",
-			"minecraftTagDir":       "data/minecraft/tags/function",
+	settings := export.ExportSettings{
+		OutputRoot:       "./out",
+		Namespace:        "maf",
+		TemplatePackPath: "./pack-template.mcmeta",
+		Paths: export.ExportPaths{
+			ItemFunctionDir:       "data/maf/function/generated/item",
+			ItemLootDir:           "data/maf/loot_table/generated/item",
+			SpellFunctionDir:      "data/maf/function/generated/grimoire",
+			SpellLootDir:          "data/maf/loot_table/generated/grimoire",
+			SkillFunctionDir:      "data/maf/function/generated/skill",
+			EnemySkillFunctionDir: "data/maf/function/generated/enemy_skill",
+			EnemyFunctionDir:      "data/maf/function/generated/enemy",
+			EnemyLootDir:          "data/maf/loot_table/generated/enemy",
+			TreasureLootDir:       "data/maf/loot_table/generated/treasure",
+			LoottableLootDir:      "data/maf/loot_table/generated/loottable",
+			DebugFunctionDir:      "data/maf/function/debug/give",
+			MinecraftTagDir:       "data/minecraft/tags/function",
 		},
 	}
 	writeJSONFile(t, settingsPath, settings)
@@ -174,23 +175,23 @@ func repoSavedataConfig(t *testing.T) config.Config {
 	savedataDir := filepath.Join(root, "savedata")
 	fixtureDir := t.TempDir()
 	settingsPath := filepath.Join(fixtureDir, "export-settings.json")
-	writeJSONFile(t, settingsPath, map[string]any{
-		"outputRoot":       "./out",
-		"namespace":        "maf",
-		"templatePackPath": "./pack-template.mcmeta",
-		"paths": map[string]any{
-			"itemFunctionDir":       "data/maf/function/generated/item",
-			"itemLootDir":           "data/maf/loot_table/generated/item",
-			"spellFunctionDir":      "data/maf/function/generated/grimoire",
-			"spellLootDir":          "data/maf/loot_table/generated/grimoire",
-			"skillFunctionDir":      "data/maf/function/generated/skill",
-			"enemySkillFunctionDir": "data/maf/function/generated/enemy_skill",
-			"enemyFunctionDir":      "data/maf/function/generated/enemy",
-			"enemyLootDir":          "data/maf/loot_table/generated/enemy",
-			"treasureLootDir":       "data/maf/loot_table/generated/treasure",
-			"loottableLootDir":      "data/maf/loot_table/generated/loottable",
-			"debugFunctionDir":      "data/maf/function/debug/give",
-			"minecraftTagDir":       "data/minecraft/tags/function",
+	writeJSONFile(t, settingsPath, export.ExportSettings{
+		OutputRoot:       "./out",
+		Namespace:        "maf",
+		TemplatePackPath: "./pack-template.mcmeta",
+		Paths: export.ExportPaths{
+			ItemFunctionDir:       "data/maf/function/generated/item",
+			ItemLootDir:           "data/maf/loot_table/generated/item",
+			SpellFunctionDir:      "data/maf/function/generated/grimoire",
+			SpellLootDir:          "data/maf/loot_table/generated/grimoire",
+			SkillFunctionDir:      "data/maf/function/generated/skill",
+			EnemySkillFunctionDir: "data/maf/function/generated/enemy_skill",
+			EnemyFunctionDir:      "data/maf/function/generated/enemy",
+			EnemyLootDir:          "data/maf/loot_table/generated/enemy",
+			TreasureLootDir:       "data/maf/loot_table/generated/treasure",
+			LoottableLootDir:      "data/maf/loot_table/generated/loottable",
+			DebugFunctionDir:      "data/maf/function/debug/give",
+			MinecraftTagDir:       "data/minecraft/tags/function",
 		},
 	})
 
@@ -219,7 +220,7 @@ func repoRoot(t *testing.T) string {
 	return filepath.Clean(filepath.Join(filepath.Dir(filename), "..", "..", ".."))
 }
 
-func writeJSONFile(t *testing.T, path string, value any) {
+func writeJSONFile[T any](t *testing.T, path string, value T) {
 	t.Helper()
 	data, err := json.MarshalIndent(value, "", "  ")
 	if err != nil {

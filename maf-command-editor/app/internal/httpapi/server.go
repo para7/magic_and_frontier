@@ -23,6 +23,13 @@ import (
 
 type Dependencies = application.Dependencies
 
+type apiErrorResponse struct {
+	OK        bool   `json:"ok"`
+	Code      string `json:"code,omitempty"`
+	FormError string `json:"formError,omitempty"`
+	Details   string `json:"details,omitempty"`
+}
+
 func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	defaults := DefaultDependencies(cfg)
 	if deps.ItemRepo == nil {
@@ -122,7 +129,7 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	mux.HandleFunc("DELETE /api/items/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimSpace(r.PathValue("id"))
 		if id == "" {
-			writeJSON(w, http.StatusBadRequest, map[string]any{"ok": false, "formError": "Missing item id."})
+			writeFormError(w, http.StatusBadRequest, "Missing item id.")
 			return
 		}
 		state, err := deps.ItemRepo.LoadItemState()
@@ -192,7 +199,7 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	mux.HandleFunc("DELETE /api/grimoire/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimSpace(r.PathValue("id"))
 		if id == "" {
-			writeJSON(w, http.StatusBadRequest, map[string]any{"ok": false, "formError": "Missing grimoire id."})
+			writeFormError(w, http.StatusBadRequest, "Missing grimoire id.")
 			return
 		}
 		state, err := deps.GrimoireRepo.LoadGrimoireState()
@@ -259,7 +266,7 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		}
 		for _, entry := range itemState.Items {
 			if entry.SkillID == id {
-				writeJSON(w, http.StatusBadRequest, map[string]any{"ok": false, "code": "REFERENCE_ERROR", "formError": "Skill is referenced by item " + entry.ID + "."})
+				writeCodedError(w, http.StatusBadRequest, "REFERENCE_ERROR", "Skill is referenced by item "+entry.ID+".")
 				return
 			}
 		}
@@ -308,7 +315,7 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	mux.HandleFunc("DELETE /api/enemy-skills/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := strings.TrimSpace(r.PathValue("id"))
 		if id == "" {
-			writeJSON(w, http.StatusBadRequest, map[string]any{"ok": false, "formError": "Missing enemy skill id."})
+			writeFormError(w, http.StatusBadRequest, "Missing enemy skill id.")
 			return
 		}
 		enemyState, err := deps.EnemyRepo.LoadState()
@@ -319,11 +326,7 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		for _, enemy := range enemyState.Entries {
 			for _, skillID := range enemy.EnemySkillIDs {
 				if skillID == id {
-					writeJSON(w, http.StatusBadRequest, map[string]any{
-						"ok":        false,
-						"code":      "REFERENCE_ERROR",
-						"formError": "Enemy skill is referenced by enemy " + enemy.ID + ".",
-					})
+					writeCodedError(w, http.StatusBadRequest, "REFERENCE_ERROR", "Enemy skill is referenced by enemy "+enemy.ID+".")
 					return
 				}
 			}
@@ -537,7 +540,7 @@ func DefaultDependencies(cfg config.Config) Dependencies {
 func decodeJSON(w http.ResponseWriter, r *http.Request, dest any) bool {
 	defer r.Body.Close()
 	if err := json.NewDecoder(r.Body).Decode(dest); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]any{"ok": false, "formError": "Invalid JSON request body."})
+		writeFormError(w, http.StatusBadRequest, "Invalid JSON request body.")
 		return false
 	}
 	return true
@@ -549,8 +552,27 @@ func writeJSON(w http.ResponseWriter, status int, value any) {
 	_ = json.NewEncoder(w).Encode(value)
 }
 
+func writeFormError(w http.ResponseWriter, status int, message string) {
+	writeJSON(w, status, apiErrorResponse{
+		OK:        false,
+		FormError: message,
+	})
+}
+
+func writeCodedError(w http.ResponseWriter, status int, code, message string) {
+	writeJSON(w, status, apiErrorResponse{
+		OK:        false,
+		Code:      code,
+		FormError: message,
+	})
+}
+
 func writeInternalError(w http.ResponseWriter, err error) {
-	writeJSON(w, http.StatusInternalServerError, map[string]any{"ok": false, "formError": http.StatusText(http.StatusInternalServerError), "details": err.Error()})
+	writeJSON(w, http.StatusInternalServerError, apiErrorResponse{
+		OK:        false,
+		FormError: http.StatusText(http.StatusInternalServerError),
+		Details:   err.Error(),
+	})
 }
 
 func itemIDs(state items.ItemState) map[string]struct{} {
@@ -589,7 +611,7 @@ func findEntry[T any](entries []T, id string, idOf func(T) string) (T, bool) {
 func deleteEntry[T any](w http.ResponseWriter, r *http.Request, repo store.EntryStateRepository[T], missingLabel, notFoundLabel string, idOf func(T) string) {
 	id := strings.TrimSpace(r.PathValue("id"))
 	if id == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]any{"ok": false, "formError": "Missing " + missingLabel + " id."})
+		writeFormError(w, http.StatusBadRequest, "Missing "+missingLabel+" id.")
 		return
 	}
 	state, err := repo.LoadState()

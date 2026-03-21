@@ -9,6 +9,10 @@ import (
 	"testing"
 
 	"tools2/app/internal/config"
+	"tools2/app/internal/domain/common"
+	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/skills"
+	"tools2/app/internal/export"
 )
 
 func TestRunValidateSuccess(t *testing.T) {
@@ -62,45 +66,45 @@ func writeFixtureConfig(t *testing.T, valid bool) config.Config {
 		t.Fatal(err)
 	}
 
-	settings := map[string]any{
-		"outputRoot":       "./out",
-		"namespace":        "maf",
-		"templatePackPath": "./pack-template.mcmeta",
-		"paths": map[string]any{
-			"itemFunctionDir":       "data/maf/function/generated/item",
-			"itemLootDir":           "data/maf/loot_table/generated/item",
-			"spellFunctionDir":      "data/maf/function/generated/grimoire",
-			"spellLootDir":          "data/maf/loot_table/generated/grimoire",
-			"skillFunctionDir":      "data/maf/function/generated/skill",
-			"enemySkillFunctionDir": "data/maf/function/generated/enemy_skill",
-			"enemyFunctionDir":      "data/maf/function/generated/enemy",
-			"enemyLootDir":          "data/maf/loot_table/generated/enemy",
-			"treasureLootDir":       "data/maf/loot_table/generated/treasure",
-			"loottableLootDir":      "data/maf/loot_table/generated/loottable",
-			"debugFunctionDir":      "data/maf/function/debug/give",
-			"minecraftTagDir":       "data/minecraft/tags/function",
+	settings := export.ExportSettings{
+		OutputRoot:       "./out",
+		Namespace:        "maf",
+		TemplatePackPath: "./pack-template.mcmeta",
+		Paths: export.ExportPaths{
+			ItemFunctionDir:       "data/maf/function/generated/item",
+			ItemLootDir:           "data/maf/loot_table/generated/item",
+			SpellFunctionDir:      "data/maf/function/generated/grimoire",
+			SpellLootDir:          "data/maf/loot_table/generated/grimoire",
+			SkillFunctionDir:      "data/maf/function/generated/skill",
+			EnemySkillFunctionDir: "data/maf/function/generated/enemy_skill",
+			EnemyFunctionDir:      "data/maf/function/generated/enemy",
+			EnemyLootDir:          "data/maf/loot_table/generated/enemy",
+			TreasureLootDir:       "data/maf/loot_table/generated/treasure",
+			LoottableLootDir:      "data/maf/loot_table/generated/loottable",
+			DebugFunctionDir:      "data/maf/function/debug/give",
+			MinecraftTagDir:       "data/minecraft/tags/function",
 		},
 	}
 	writeJSON(t, settingsPath, settings)
-	writeJSON(t, filepath.Join(root, "item.json"), map[string]any{
-		"items": []map[string]any{{
-			"id":      "items_1",
-			"itemId":  "minecraft:apple",
-			"count":   1,
-			"skillId": "skill_1",
+	writeJSON(t, filepath.Join(root, "item.json"), items.ItemState{
+		Items: []items.ItemEntry{{
+			ID:      "items_1",
+			ItemID:  "minecraft:apple",
+			Count:   1,
+			SkillID: "skill_1",
 		}},
 	})
-	skillEntries := []map[string]any{{
-		"id":          "skill_1",
-		"name":        "Slash",
-		"description": "Basic slash",
-		"script":      "say slash",
+	skillEntries := []skills.SkillEntry{{
+		ID:          "skill_1",
+		Name:        "Slash",
+		Description: "Basic slash",
+		Script:      "say slash",
 	}}
 	if !valid {
-		skillEntries = []map[string]any{}
+		skillEntries = []skills.SkillEntry{}
 	}
-	writeJSON(t, filepath.Join(root, "skill.json"), map[string]any{
-		"entries": skillEntries,
+	writeJSON(t, filepath.Join(root, "skill.json"), common.EntryState[skills.SkillEntry]{
+		Entries: skillEntries,
 	})
 
 	return config.Config{
@@ -118,7 +122,7 @@ func writeFixtureConfig(t *testing.T, valid bool) config.Config {
 	}
 }
 
-func writeJSON(t *testing.T, path string, value any) {
+func writeJSON[T any](t *testing.T, path string, value T) {
 	t.Helper()
 	data, err := json.MarshalIndent(value, "", "  ")
 	if err != nil {
