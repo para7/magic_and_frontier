@@ -49,12 +49,13 @@ func runValidate(args []string, stdout, stderr io.Writer, cfg config.Config) int
 		return 1
 	}
 
-	fmt.Fprintf(stdout, "savedata validation ok: items=%d grimoire=%d skills=%d enemy_skills=%d enemies=%d treasures=%d loottables=%d\n",
+	fmt.Fprintf(stdout, "savedata validation ok: items=%d grimoire=%d skills=%d enemy_skills=%d enemies=%d spawn_tables=%d treasures=%d loottables=%d\n",
 		report.Counts.Items,
 		report.Counts.Grimoire,
 		report.Counts.Skills,
 		report.Counts.EnemySkills,
 		report.Counts.Enemies,
+		report.Counts.SpawnTables,
 		report.Counts.Treasures,
 		report.Counts.LootTables,
 	)

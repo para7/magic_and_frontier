@@ -7,6 +7,7 @@ import (
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
+	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
 )
 
@@ -21,6 +22,7 @@ func NavItems() []NavItem {
 		{Path: "/grimoire", Label: "Grimoire"},
 		{Path: "/skills", Label: "Skills"},
 		{Path: "/enemy-skills", Label: "Enemy Skills"},
+		{Path: "/spawn-tables", Label: "Spawn Tables"},
 		{Path: "/treasures", Label: "Treasures"},
 		{Path: "/loottables", Label: "Loottables"},
 		{Path: "/enemies", Label: "Enemies"},
@@ -209,4 +211,30 @@ type EnemiesPageData struct {
 	Notice  *Notice
 	Entries []enemies.EnemyEntry
 	Form    EnemyFormData
+}
+
+type SpawnTableFormData struct {
+	ID               string
+	ReturnTo         string
+	SourceMobType    string
+	Dimension        string
+	DimensionOptions []SelectOption
+	MinX             string
+	MaxX             string
+	MinY             string
+	MaxY             string
+	MinZ             string
+	MaxZ             string
+	BaseMobWeight    string
+	ReplacementsText string
+	FieldErrors      map[string]string
+	FormError        string
+	IsEditing        bool
+}
+
+type SpawnTablesPageData struct {
+	Meta    PageMeta
+	Notice  *Notice
+	Entries []spawntables.SpawnTableEntry
+	Form    SpawnTableFormData
 }

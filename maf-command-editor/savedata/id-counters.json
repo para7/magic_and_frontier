@@ -4,6 +4,7 @@
   "skills": 1,
   "enemySkills": 1,
   "enemies": 1,
+  "spawnTables": 0,
   "treasures": 0,
   "loottables": 1,
   "castids": 1

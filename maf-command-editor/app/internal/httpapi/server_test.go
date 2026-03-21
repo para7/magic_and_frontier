@@ -21,6 +21,7 @@ import (
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
+	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/export"
 )
@@ -364,6 +365,53 @@ func TestHandlerAPISkillDeleteRejectsReferencedItem(t *testing.T) {
 	}
 }
 
+func TestHandlerAPISpawnTableRejectsOverlap(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	enemyID := createJSONEntry(t, handler, "/api/enemies", enemies.SaveInput{
+		MobType:  "minecraft:zombie",
+		Name:     "Zombie",
+		HP:       20,
+		DropMode: "replace",
+		Drops:    []enemies.DropRef{{Kind: "minecraft_item", RefID: "minecraft:rotten_flesh", Weight: 1}},
+	})
+
+	createJSONEntry(t, handler, "/api/spawn-tables", spawntables.SaveInput{
+		SourceMobType: "minecraft:zombie",
+		Dimension:     "minecraft:overworld",
+		MinX:          0,
+		MaxX:          100,
+		MinY:          -64,
+		MaxY:          320,
+		MinZ:          0,
+		MaxZ:          100,
+		BaseMobWeight: 8000,
+		Replacements:  []spawntables.ReplacementEntry{{EnemyID: enemyID, Weight: 2000}},
+	})
+
+	rec := requestJSON(t, handler, http.MethodPost, "/api/spawn-tables", spawntables.SaveInput{
+		SourceMobType: "minecraft:zombie",
+		Dimension:     "minecraft:overworld",
+		MinX:          50,
+		MaxX:          150,
+		MinY:          -64,
+		MaxY:          320,
+		MinZ:          50,
+		MaxZ:          150,
+		BaseMobWeight: 9000,
+		Replacements:  []spawntables.ReplacementEntry{{EnemyID: enemyID, Weight: 1000}},
+	})
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d body=%s", rec.Code, rec.Body.String())
+	}
+
+	var body common.SaveResult[spawntables.SpawnTableEntry]
+	decodeResponse(t, rec, &body)
+	if body.FieldErrors["range"] == "" {
+		t.Fatalf("body = %#v", body)
+	}
+}
+
 type entryIDOnly struct {
 	ID string `json:"id"`
 }
@@ -418,6 +466,7 @@ func newTestHandler(t *testing.T) (http.Handler, string) {
 		SkillStatePath:         filepath.Join(root, "skill.json"),
 		EnemySkillStatePath:    filepath.Join(root, "enemy-skill.json"),
 		EnemyStatePath:         filepath.Join(root, "enemy.json"),
+		SpawnTableStatePath:    filepath.Join(root, "spawn-table.json"),
 		TreasureStatePath:      filepath.Join(root, "treasure.json"),
 		LootTablesStatePath:    filepath.Join(root, "loottables.json"),
 		IDCounterStatePath:     filepath.Join(root, "id-counters.json"),

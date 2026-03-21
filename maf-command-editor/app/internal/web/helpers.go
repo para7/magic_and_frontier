@@ -7,6 +7,7 @@ import (
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/grimoire"
+	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
 )
 
@@ -143,6 +144,16 @@ func mapEnemyField(key string) string {
 	return key
 }
 
+func mapSpawnTableField(key string) string {
+	if strings.HasPrefix(key, "replacements.") {
+		return "replacementsText"
+	}
+	if key == "range" {
+		return "replacementsText"
+	}
+	return key
+}
+
 func parseTreasurePools(errs map[string]string, value string) []treasures.DropRef {
 	lines := compactLines(value)
 	out := make([]treasures.DropRef, 0, len(lines))
@@ -242,6 +253,28 @@ func parseEnemyDrops(errs map[string]string, value string) []enemies.DropRef {
 			errs["dropsText"] = "Drop count values must be numeric when provided."
 			return nil
 		}
+	}
+	return out
+}
+
+func parseSpawnTableReplacements(errs map[string]string, value string) []spawntables.ReplacementEntry {
+	lines := compactLines(value)
+	out := make([]spawntables.ReplacementEntry, 0, len(lines))
+	for _, line := range lines {
+		parts := splitCSV(line, 2)
+		if len(parts) < 2 {
+			errs["replacementsText"] = "Each replacement line must be `enemyId,weight`."
+			return nil
+		}
+		weight, err := strconv.Atoi(parts[1])
+		if err != nil {
+			errs["replacementsText"] = "Replacement weight must be numeric."
+			return nil
+		}
+		out = append(out, spawntables.ReplacementEntry{
+			EnemyID: parts[0],
+			Weight:  weight,
+		})
 	}
 	return out
 }

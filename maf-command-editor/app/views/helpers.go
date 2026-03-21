@@ -8,6 +8,7 @@ import (
 
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/loottables"
+	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/webui"
 )
@@ -236,6 +237,26 @@ func EnemySearchBlob(entry enemies.EnemyEntry) string {
 		if drop.CountMax != nil {
 			values = append(values, trimFloat(*drop.CountMax))
 		}
+	}
+	return SearchBlob(values...)
+}
+
+func SpawnTableSearchBlob(entry spawntables.SpawnTableEntry) string {
+	values := []string{
+		entry.ID,
+		entry.SourceMobType,
+		entry.Dimension,
+		strconv.Itoa(entry.MinX),
+		strconv.Itoa(entry.MaxX),
+		strconv.Itoa(entry.MinY),
+		strconv.Itoa(entry.MaxY),
+		strconv.Itoa(entry.MinZ),
+		strconv.Itoa(entry.MaxZ),
+		strconv.Itoa(entry.BaseMobWeight),
+		entry.UpdatedAt,
+	}
+	for _, replacement := range entry.Replacements {
+		values = append(values, replacement.EnemyID, strconv.Itoa(replacement.Weight))
 	}
 	return SearchBlob(values...)
 }

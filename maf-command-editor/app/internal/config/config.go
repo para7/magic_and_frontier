@@ -11,6 +11,7 @@ type Config struct {
 	SkillStatePath         string
 	EnemySkillStatePath    string
 	EnemyStatePath         string
+	SpawnTableStatePath    string
 	TreasureStatePath      string
 	LootTablesStatePath    string
 	IDCounterStatePath     string
@@ -26,6 +27,7 @@ func Load() Config {
 		SkillStatePath:         filepath.Clean(filepath.Join("savedata", "skill.json")),
 		EnemySkillStatePath:    filepath.Clean(filepath.Join("savedata", "enemy-skill.json")),
 		EnemyStatePath:         filepath.Clean(filepath.Join("savedata", "enemy.json")),
+		SpawnTableStatePath:    filepath.Clean(filepath.Join("savedata", "spawn-table.json")),
 		TreasureStatePath:      filepath.Clean(filepath.Join("savedata", "treasure.json")),
 		LootTablesStatePath:    filepath.Clean(filepath.Join("savedata", "loottables.json")),
 		IDCounterStatePath:     filepath.Clean(filepath.Join("savedata", "id-counters.json")),

@@ -114,6 +114,7 @@ func writeFixtureConfig(t *testing.T, valid bool) config.Config {
 		SkillStatePath:         filepath.Join(root, "skill.json"),
 		EnemySkillStatePath:    filepath.Join(root, "enemy-skill.json"),
 		EnemyStatePath:         filepath.Join(root, "enemy.json"),
+		SpawnTableStatePath:    filepath.Join(root, "spawn-table.json"),
 		TreasureStatePath:      filepath.Join(root, "treasure.json"),
 		LootTablesStatePath:    filepath.Join(root, "loottables.json"),
 		IDCounterStatePath:     filepath.Join(root, "id-counters.json"),

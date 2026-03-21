@@ -2,10 +2,12 @@ package export
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -16,6 +18,7 @@ import (
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
+	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/mcsource"
 )
@@ -71,6 +74,7 @@ type ExportParams struct {
 	Skills                 []skills.SkillEntry
 	EnemySkills            []enemyskills.EnemySkillEntry
 	Enemies                []enemies.EnemyEntry
+	SpawnTables            []spawntables.SpawnTableEntry
 	Treasures              []treasures.TreasureEntry
 	LootTables             []loottables.LootTableEntry
 	ExportSettingsPath     string
@@ -110,11 +114,19 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
+	spawnTableStats, err := generateSpawnTableOutputs(settings, params.SpawnTables)
+	if err != nil {
+		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
+	}
 	treasureStats, err := generateTreasureOutputs(settings, params.MinecraftLootTableRoot, params.Treasures, params.ItemState.Items, params.GrimoireState.Entries)
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
 	loottableStats, err := generateLootTableOutputs(settings, params.LootTables, params.ItemState.Items, params.GrimoireState.Entries)
+	if err != nil {
+		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
+	}
+	tickDispatcherFiles, err := generateTickDispatcher(settings)
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
@@ -131,7 +143,7 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 		TreasureLootTables:  treasureStats.TreasureLootTables,
 		LoottableLootTables: loottableStats.LoottableLootTables,
 	}
-	stats.TotalFiles = stats.ItemFunctions + stats.ItemLootTables + stats.SpellFunctions + stats.SpellLootTables + stats.SkillFunctions + stats.EnemySkillFunctions + stats.EnemyFunctions + stats.EnemyLootTables + stats.TreasureLootTables + stats.LoottableLootTables + debugGrimoireFunctions + 3
+	stats.TotalFiles = stats.ItemFunctions + stats.ItemLootTables + stats.SpellFunctions + stats.SpellLootTables + stats.SkillFunctions + stats.EnemySkillFunctions + stats.EnemyFunctions + stats.EnemyLootTables + stats.TreasureLootTables + stats.LoottableLootTables + debugGrimoireFunctions + tickDispatcherFiles + spawnTableStats.SpawnTableFunctions
 
 	return SaveDataResponse{
 		OK:         true,
@@ -169,12 +181,20 @@ type enemyOutputStats struct {
 	EnemyLootTables int
 }
 
+type spawnTableOutputStats struct {
+	SpawnTableFunctions int
+}
+
 type treasureOutputStats struct {
 	TreasureLootTables int
 }
 
 type loottableOutputStats struct {
 	LoottableLootTables int
+}
+
+type treasureOverlayManifest struct {
+	Paths []string `json:"paths"`
 }
 
 type rawExportSettings struct {
@@ -338,13 +358,6 @@ func writeDatapackScaffold(settings ExportSettings) error {
 	if err := os.MkdirAll(settings.OutputRoot, 0o755); err != nil {
 		return err
 	}
-	templateData, err := os.ReadFile(settings.TemplatePackPath)
-	if err != nil {
-		return err
-	}
-	if err := os.WriteFile(filepath.Join(settings.OutputRoot, "pack.mcmeta"), templateData, 0o644); err != nil {
-		return err
-	}
 
 	outputDirs := []string{
 		settings.Paths.ItemFunctionDir,
@@ -357,37 +370,93 @@ func writeDatapackScaffold(settings ExportSettings) error {
 		settings.Paths.EnemyLootDir,
 		settings.Paths.TreasureLootDir,
 		settings.Paths.LoottableLootDir,
-		filepath.Join("data", "minecraft", "loot_table"),
-		filepath.Join(settings.Paths.DebugFunctionDir, "item"),
-		filepath.Join(settings.Paths.DebugFunctionDir, "grimoire"),
+		generatedTickFunctionDir(settings),
 		generatedGrimoireDebugFunctionDir(settings),
 	}
+	cleanupDirs := make([]string, 0, len(outputDirs))
 	for _, relative := range outputDirs {
+		if root, ok := generatedRootDir(relative); ok {
+			cleanupDirs = append(cleanupDirs, root)
+			continue
+		}
+		cleanupDirs = append(cleanupDirs, filepath.Clean(relative))
+	}
+	for _, relative := range uniqueSortedPaths(cleanupDirs) {
 		abs := filepath.Join(settings.OutputRoot, relative)
 		if err := os.RemoveAll(abs); err != nil {
 			return err
 		}
+	}
+	for _, relative := range uniqueSortedPaths(outputDirs) {
+		abs := filepath.Join(settings.OutputRoot, relative)
 		if err := os.MkdirAll(abs, 0o755); err != nil {
 			return err
 		}
 	}
+	return nil
+}
 
-	if err := writeFunctionTag(settings, "load", settings.Namespace+":load"); err != nil {
-		return err
+func generatedRootDir(relative string) (string, bool) {
+	normalized := filepath.ToSlash(filepath.Clean(relative))
+	if normalized == "generated" || strings.HasSuffix(normalized, "/generated") {
+		return filepath.FromSlash(normalized), true
 	}
-	return writeFunctionTag(settings, "tick", settings.Namespace+":tick")
+	if idx := strings.Index(normalized, "/generated/"); idx >= 0 {
+		return filepath.FromSlash(normalized[:idx+len("/generated")]), true
+	}
+	return "", false
+}
+
+func uniqueSortedPaths(paths []string) []string {
+	seen := map[string]struct{}{}
+	out := make([]string, 0, len(paths))
+	for _, path := range paths {
+		normalized := filepath.Clean(path)
+		if _, exists := seen[normalized]; exists {
+			continue
+		}
+		seen[normalized] = struct{}{}
+		out = append(out, normalized)
+	}
+	sort.Strings(out)
+	return out
 }
 
 func generatedGrimoireDebugFunctionDir(settings ExportSettings) string {
 	return filepath.Join("data", settings.Namespace, "function", "generated", "debug", "grimoire")
 }
 
-func writeFunctionTag(settings ExportSettings, tagName string, values ...string) error {
-	tagPath := filepath.Join(settings.OutputRoot, settings.Paths.MinecraftTagDir, tagName+".json")
-	if err := os.MkdirAll(filepath.Dir(tagPath), 0o755); err != nil {
-		return err
+func generatedTickFunctionDir(settings ExportSettings) string {
+	return filepath.Join("data", settings.Namespace, "function", "generated")
+}
+
+func generatedVHFunctionDir(settings ExportSettings) string {
+	return filepath.Join(generatedTickFunctionDir(settings), "vh")
+}
+
+func generatedVHReplacerFunctionDir(settings ExportSettings) string {
+	return filepath.Join(generatedVHFunctionDir(settings), "replacer")
+}
+
+func generatedVHReplacerRuleFunctionDir(settings ExportSettings) string {
+	return filepath.Join(generatedVHReplacerFunctionDir(settings), "rule")
+}
+
+func generateTickDispatcher(settings ExportSettings) (int, error) {
+	path := filepath.Join(settings.OutputRoot, generatedTickFunctionDir(settings), "tick.mcfunction")
+	body := strings.Join([]string{
+		"# generated by tools2: data-driven tick entrypoint",
+		fmt.Sprintf("execute as @e[type=#p7b:enemymob,tag=!maf_vh_checked] at @s run function %s", functionResourceID(settings, generatedVHReplacerFunctionDir(settings), "tick")),
+		fmt.Sprintf("execute as @e[tag=EnemySkill] at @s run function %s", functionResourceID(settings, settings.Paths.EnemySkillFunctionDir, "main")),
+		"",
+	}, "\n")
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return 0, err
 	}
-	return writeJSON(tagPath, map[string]any{"values": values})
+	if err := os.WriteFile(path, []byte(body), 0o644); err != nil {
+		return 0, err
+	}
+	return 1, nil
 }
 
 func generateItemOutputs(settings ExportSettings, entries []items.ItemEntry) (itemOutputStats, error) {
@@ -471,12 +540,85 @@ func generateEnemySkillOutputs(settings ExportSettings, entries []enemyskills.En
 	if err := os.MkdirAll(root, 0o755); err != nil {
 		return enemySkillOutputStats{}, err
 	}
+	dispatchLines := []string{"# generated by tools2: enemy skill dispatcher"}
 	for _, entry := range entries {
 		if err := os.WriteFile(filepath.Join(root, entry.ID+".mcfunction"), []byte(normalizeFunctionBody(entry.Script)), 0o644); err != nil {
 			return enemySkillOutputStats{}, err
 		}
+		dispatchLines = append(dispatchLines, fmt.Sprintf("execute if entity @s[tag=%s] run function %s", entry.ID, functionResourceID(settings, settings.Paths.EnemySkillFunctionDir, entry.ID)))
 	}
-	return enemySkillOutputStats{EnemySkillFunctions: len(entries)}, nil
+	if len(entries) == 0 {
+		dispatchLines = append(dispatchLines, "# no enemy skill entries")
+	}
+	if err := os.WriteFile(filepath.Join(root, "main.mcfunction"), []byte(strings.Join(dispatchLines, "\n")+"\n"), 0o644); err != nil {
+		return enemySkillOutputStats{}, err
+	}
+	return enemySkillOutputStats{EnemySkillFunctions: len(entries) + 1}, nil
+}
+
+func generateSpawnTableOutputs(settings ExportSettings, entries []spawntables.SpawnTableEntry) (spawnTableOutputStats, error) {
+	replacerRoot := filepath.Join(settings.OutputRoot, generatedVHReplacerFunctionDir(settings))
+	ruleRoot := filepath.Join(settings.OutputRoot, generatedVHReplacerRuleFunctionDir(settings))
+	if err := os.MkdirAll(replacerRoot, 0o755); err != nil {
+		return spawnTableOutputStats{}, err
+	}
+	if err := os.MkdirAll(ruleRoot, 0o755); err != nil {
+		return spawnTableOutputStats{}, err
+	}
+
+	tickLines := []string{"# generated by tools2: spawn replacement selector"}
+	for _, entry := range entries {
+		if err := os.WriteFile(filepath.Join(ruleRoot, entry.ID+".mcfunction"), []byte(strings.Join(spawnTableRuleLines(settings, entry), "\n")+"\n"), 0o644); err != nil {
+			return spawnTableOutputStats{}, err
+		}
+		dx := entry.MaxX - entry.MinX
+		dy := entry.MaxY - entry.MinY
+		dz := entry.MaxZ - entry.MinZ
+		tickLines = append(tickLines,
+			fmt.Sprintf("execute if entity @s[type=%s] if dimension %s if entity @s[x=%d,y=%d,z=%d,dx=%d,dy=%d,dz=%d] run function %s",
+				entry.SourceMobType,
+				entry.Dimension,
+				entry.MinX, entry.MinY, entry.MinZ,
+				dx, dy, dz,
+				functionResourceID(settings, generatedVHReplacerRuleFunctionDir(settings), entry.ID),
+			),
+		)
+	}
+	tickLines = append(tickLines, "tag @s add maf_vh_checked")
+	tickPath := filepath.Join(replacerRoot, "tick.mcfunction")
+	if err := os.WriteFile(tickPath, []byte(strings.Join(tickLines, "\n")+"\n"), 0o644); err != nil {
+		return spawnTableOutputStats{}, err
+	}
+
+	return spawnTableOutputStats{SpawnTableFunctions: len(entries) + 1}, nil
+}
+
+func spawnTableRuleLines(settings ExportSettings, entry spawntables.SpawnTableEntry) []string {
+	lines := []string{
+		fmt.Sprintf("# spawn table %s source=%s dimension=%s", entry.ID, entry.SourceMobType, entry.Dimension),
+	}
+	totalWeight := entry.BaseMobWeight
+	for _, replacement := range entry.Replacements {
+		totalWeight += replacement.Weight
+	}
+	if totalWeight <= 0 {
+		return append(lines, "tag @s add maf_vh_checked")
+	}
+	lines = append(lines, fmt.Sprintf("execute store result score rand p7_Rand1 run random value 0..%d", totalWeight-1))
+
+	start := entry.BaseMobWeight
+	for _, replacement := range entry.Replacements {
+		end := start + replacement.Weight - 1
+		if replacement.Weight > 0 {
+			lines = append(lines,
+				fmt.Sprintf("execute if score rand p7_Rand1 matches %d..%d at @s run function %s", start, end, functionResourceID(settings, settings.Paths.EnemyFunctionDir, replacement.EnemyID)),
+				fmt.Sprintf("execute if score rand p7_Rand1 matches %d..%d run kill @s", start, end),
+			)
+		}
+		start = end + 1
+	}
+	lines = append(lines, "tag @s add maf_vh_checked")
+	return lines
 }
 
 func generateEnemyOutputs(settings ExportSettings, entries []enemies.EnemyEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (enemyOutputStats, error) {
@@ -514,6 +656,11 @@ func generateEnemyOutputs(settings ExportSettings, entries []enemies.EnemyEntry,
 }
 
 func generateTreasureOutputs(settings ExportSettings, minecraftLootTableRoot string, entries []treasures.TreasureEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (treasureOutputStats, error) {
+	if err := cleanupTreasureOverlayOutputs(settings); err != nil {
+		return treasureOutputStats{}, err
+	}
+	writtenPaths := make([]string, 0, len(entries))
+
 	itemsByID := map[string]items.ItemEntry{}
 	for _, entry := range itemEntries {
 		itemsByID[entry.ID] = entry
@@ -545,6 +692,10 @@ func generateTreasureOutputs(settings ExportSettings, minecraftLootTableRoot str
 		if err := writeJSON(outPath, lootTable); err != nil {
 			return treasureOutputStats{}, err
 		}
+		writtenPaths = append(writtenPaths, outPath)
+	}
+	if err := writeTreasureOverlayManifest(settings, writtenPaths); err != nil {
+		return treasureOutputStats{}, err
 	}
 	return treasureOutputStats{TreasureLootTables: len(entries)}, nil
 }
@@ -691,9 +842,12 @@ func enemySummonNBT(lootID string, entry enemies.EnemyEntry, itemsByID map[strin
 }
 
 func enemyTags(entry enemies.EnemyEntry) []string {
-	tags := []string{jsonString("maf_enemy"), jsonString("maf_enemy_" + entry.ID)}
+	tags := []string{jsonString("maf_enemy"), jsonString("maf_enemy_" + entry.ID), jsonString("maf_vh_checked")}
+	if len(entry.EnemySkillIDs) > 0 {
+		tags = append(tags, jsonString("EnemySkill"))
+	}
 	for _, skillID := range entry.EnemySkillIDs {
-		tags = append(tags, jsonString("maf_enemy_skill_"+skillID))
+		tags = append(tags, jsonString(skillID), jsonString("maf_enemy_skill_"+skillID))
 	}
 	return tags
 }
@@ -953,6 +1107,81 @@ func writeJSON(path string, value any) error {
 		return err
 	}
 	return os.WriteFile(path, append(data, '\n'), 0o644)
+}
+
+func treasureOverlayManifestPath(settings ExportSettings) string {
+	return filepath.Join(settings.OutputRoot, ".tools2", "treasure-overrides.json")
+}
+
+func cleanupTreasureOverlayOutputs(settings ExportSettings) error {
+	manifest, err := readTreasureOverlayManifest(settings)
+	if err != nil {
+		return err
+	}
+	for _, rel := range manifest.Paths {
+		abs, err := safeOutputPath(settings.OutputRoot, rel)
+		if err != nil {
+			return err
+		}
+		if err := os.Remove(abs); err != nil && !errors.Is(err, os.ErrNotExist) {
+			return err
+		}
+	}
+	return nil
+}
+
+func readTreasureOverlayManifest(settings ExportSettings) (treasureOverlayManifest, error) {
+	path := treasureOverlayManifestPath(settings)
+	data, err := os.ReadFile(path)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return treasureOverlayManifest{}, nil
+		}
+		return treasureOverlayManifest{}, err
+	}
+	var manifest treasureOverlayManifest
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		return treasureOverlayManifest{}, fmt.Errorf("invalid treasure overlay manifest: %w", err)
+	}
+	return manifest, nil
+}
+
+func writeTreasureOverlayManifest(settings ExportSettings, absPaths []string) error {
+	manifest := treasureOverlayManifest{Paths: make([]string, 0, len(absPaths))}
+	for _, absPath := range absPaths {
+		rel, err := filepath.Rel(settings.OutputRoot, absPath)
+		if err != nil {
+			return err
+		}
+		manifest.Paths = append(manifest.Paths, filepath.ToSlash(rel))
+	}
+	sort.Strings(manifest.Paths)
+	path := treasureOverlayManifestPath(settings)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return err
+	}
+	data, err := json.MarshalIndent(manifest, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, append(data, '\n'), 0o644)
+}
+
+func safeOutputPath(outputRoot, relPath string) (string, error) {
+	normalized := filepath.Clean(filepath.FromSlash(relPath))
+	if normalized == "." {
+		return "", fmt.Errorf("invalid relative path in treasure overlay manifest: %q", relPath)
+	}
+	joined := filepath.Clean(filepath.Join(outputRoot, normalized))
+	root := filepath.Clean(outputRoot)
+	if joined == root {
+		return "", fmt.Errorf("invalid relative path in treasure overlay manifest: %q", relPath)
+	}
+	prefix := root + string(os.PathSeparator)
+	if !strings.HasPrefix(joined, prefix) {
+		return "", fmt.Errorf("path escapes output root in treasure overlay manifest: %q", relPath)
+	}
+	return joined, nil
 }
 
 func exportFailure(code, message string, err error) SaveDataResponse {

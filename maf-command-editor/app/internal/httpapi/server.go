@@ -15,6 +15,7 @@ import (
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
+	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/mcsource"
 	"tools2/app/internal/store"
@@ -47,6 +48,9 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	if deps.EnemyRepo == nil {
 		deps.EnemyRepo = defaults.EnemyRepo
 	}
+	if deps.SpawnTableRepo == nil {
+		deps.SpawnTableRepo = defaults.SpawnTableRepo
+	}
 	if deps.TreasureRepo == nil {
 		deps.TreasureRepo = defaults.TreasureRepo
 	}
@@ -77,6 +81,7 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		SkillRepo:      deps.SkillRepo,
 		EnemySkillRepo: deps.EnemySkillRepo,
 		EnemyRepo:      deps.EnemyRepo,
+		SpawnTableRepo: deps.SpawnTableRepo,
 		TreasureRepo:   deps.TreasureRepo,
 		LootTableRepo:  deps.LootTableRepo,
 		CounterRepo:    deps.CounterRepo,
@@ -404,6 +409,61 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	})
 	mux.HandleFunc("DELETE /api/enemies/{id}", func(w http.ResponseWriter, r *http.Request) {
 		deleteEntry(w, r, deps.EnemyRepo, "enemy", "Enemy", func(entry enemies.EnemyEntry) string { return entry.ID })
+	})
+
+	mux.HandleFunc("GET /api/spawn-tables", func(w http.ResponseWriter, r *http.Request) {
+		state, err := deps.SpawnTableRepo.LoadState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, state)
+	})
+	mux.HandleFunc("POST /api/spawn-tables", func(w http.ResponseWriter, r *http.Request) {
+		var input spawntables.SaveInput
+		if !decodeJSON(w, r, &input) {
+			return
+		}
+		if strings.TrimSpace(input.ID) == "" {
+			var err error
+			input.ID, err = appService.AllocateID("spawntable")
+			if err != nil {
+				writeInternalError(w, err)
+				return
+			}
+		}
+		enemyState, err := deps.EnemyRepo.LoadState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		result := spawntables.ValidateSave(input, entryIDs(enemyState.Entries, func(entry enemies.EnemyEntry) string { return entry.ID }), deps.Now())
+		if !result.OK {
+			writeJSON(w, http.StatusBadRequest, result)
+			return
+		}
+		state, err := deps.SpawnTableRepo.LoadState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		if conflictID, ok := spawntables.FirstOverlap(state.Entries, *result.Entry); ok {
+			writeJSON(w, http.StatusBadRequest, common.SaveValidationError[spawntables.SpawnTableEntry](
+				common.FieldErrors{"range": "Range overlaps with " + conflictID + "."},
+				"Validation failed. Fix the highlighted fields.",
+			))
+			return
+		}
+		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry spawntables.SpawnTableEntry) string { return entry.ID })
+		result.Mode = mode
+		if err := deps.SpawnTableRepo.SaveState(nextState); err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, result)
+	})
+	mux.HandleFunc("DELETE /api/spawn-tables/{id}", func(w http.ResponseWriter, r *http.Request) {
+		deleteEntry(w, r, deps.SpawnTableRepo, "spawn table", "Spawn table", func(entry spawntables.SpawnTableEntry) string { return entry.ID })
 	})
 
 	mux.HandleFunc("GET /api/treasures", func(w http.ResponseWriter, r *http.Request) {

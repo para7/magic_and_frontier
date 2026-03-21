@@ -110,6 +110,18 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 			Entries: state.Entries,
 			Form:    defaultEnemyForm(enemySkillState.Entries),
 		})
+	case "/spawn-tables":
+		state, err := a.deps.SpawnTableRepo.LoadState()
+		if err != nil {
+			a.renderSpawnTables(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultSpawnTableForm()})
+			return
+		}
+		a.renderSpawnTables(w, r, webui.SpawnTablesPageData{
+			Meta:    spawnTablesMeta(),
+			Notice:  notice,
+			Entries: state.Entries,
+			Form:    defaultSpawnTableForm(),
+		})
 	case "/items":
 		fallthrough
 	default:
@@ -207,7 +219,7 @@ func consumeFlashNotice(w http.ResponseWriter, r *http.Request) *webui.Notice {
 
 func normalizeScreenPath(value string) string {
 	switch strings.TrimSpace(value) {
-	case "/items", "/grimoire", "/skills", "/enemy-skills", "/treasures", "/loottables", "/enemies":
+	case "/items", "/grimoire", "/skills", "/enemy-skills", "/treasures", "/loottables", "/enemies", "/spawn-tables":
 		return strings.TrimSpace(value)
 	default:
 		return "/items"

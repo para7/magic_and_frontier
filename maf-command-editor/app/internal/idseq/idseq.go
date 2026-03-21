@@ -8,6 +8,7 @@ type CounterState struct {
 	Skills      int `json:"skills"`
 	EnemySkills int `json:"enemySkills"`
 	Enemies     int `json:"enemies"`
+	SpawnTables int `json:"spawnTables"`
 	Treasures   int `json:"treasures"`
 	LootTables  int `json:"loottables"`
 	CastIDs     int `json:"castids"`
@@ -21,6 +22,7 @@ const (
 	KindSkill      Kind = "skill"
 	KindEnemySkill Kind = "enemyskill"
 	KindEnemy      Kind = "enemy"
+	KindSpawnTable Kind = "spawntable"
 	KindTreasure   Kind = "treasure"
 	KindLootTable  Kind = "loottable"
 )
@@ -46,6 +48,9 @@ func NextID(state CounterState, kind Kind) (CounterState, string) {
 	case KindEnemy:
 		state.Enemies++
 		return state, fmt.Sprintf("enemy_%d", state.Enemies)
+	case KindSpawnTable:
+		state.SpawnTables++
+		return state, fmt.Sprintf("spawntable_%d", state.SpawnTables)
 	case KindTreasure:
 		state.Treasures++
 		return state, fmt.Sprintf("treasure_%d", state.Treasures)

@@ -14,6 +14,7 @@ import (
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
+	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/export"
 	"tools2/app/internal/idseq"
@@ -27,6 +28,7 @@ type Dependencies struct {
 	SkillRepo          store.EntryStateRepository[skills.SkillEntry]
 	EnemySkillRepo     store.EntryStateRepository[enemyskills.EnemySkillEntry]
 	EnemyRepo          store.EntryStateRepository[enemies.EnemyEntry]
+	SpawnTableRepo     store.EntryStateRepository[spawntables.SpawnTableEntry]
 	TreasureRepo       store.EntryStateRepository[treasures.TreasureEntry]
 	LootTableRepo      store.EntryStateRepository[loottables.LootTableEntry]
 	CounterRepo        store.CounterRepository
@@ -45,6 +47,7 @@ type StateBundle struct {
 	SkillState      common.EntryState[skills.SkillEntry]
 	EnemySkillState common.EntryState[enemyskills.EnemySkillEntry]
 	EnemyState      common.EntryState[enemies.EnemyEntry]
+	SpawnTableState common.EntryState[spawntables.SpawnTableEntry]
 	TreasureState   common.EntryState[treasures.TreasureEntry]
 	LootTableState  common.EntryState[loottables.LootTableEntry]
 }
@@ -55,6 +58,7 @@ type Counts struct {
 	Skills      int
 	EnemySkills int
 	Enemies     int
+	SpawnTables int
 	Treasures   int
 	LootTables  int
 }
@@ -79,6 +83,7 @@ func DefaultDependencies(cfg config.Config) Dependencies {
 		SkillRepo:          store.NewEntryStateRepository[skills.SkillEntry](cfg.SkillStatePath),
 		EnemySkillRepo:     store.NewEntryStateRepository[enemyskills.EnemySkillEntry](cfg.EnemySkillStatePath),
 		EnemyRepo:          store.NewEntryStateRepository[enemies.EnemyEntry](cfg.EnemyStatePath),
+		SpawnTableRepo:     store.NewEntryStateRepository[spawntables.SpawnTableEntry](cfg.SpawnTableStatePath),
 		TreasureRepo:       store.NewEntryStateRepository[treasures.TreasureEntry](cfg.TreasureStatePath),
 		LootTableRepo:      store.NewEntryStateRepository[loottables.LootTableEntry](cfg.LootTablesStatePath),
 		CounterRepo:        store.NewCounterRepository(cfg.IDCounterStatePath),
@@ -103,6 +108,9 @@ func NewService(cfg config.Config, deps Dependencies) Service {
 	}
 	if deps.EnemyRepo == nil {
 		deps.EnemyRepo = defaults.EnemyRepo
+	}
+	if deps.SpawnTableRepo == nil {
+		deps.SpawnTableRepo = defaults.SpawnTableRepo
 	}
 	if deps.TreasureRepo == nil {
 		deps.TreasureRepo = defaults.TreasureRepo
@@ -143,6 +151,10 @@ func (s Service) LoadStates() (StateBundle, error) {
 	if err != nil {
 		return StateBundle{}, fmt.Errorf("load enemies: %w", err)
 	}
+	spawnTableState, err := s.deps.SpawnTableRepo.LoadState()
+	if err != nil {
+		return StateBundle{}, fmt.Errorf("load spawn tables: %w", err)
+	}
 	treasureState, err := s.deps.TreasureRepo.LoadState()
 	if err != nil {
 		return StateBundle{}, fmt.Errorf("load treasures: %w", err)
@@ -157,6 +169,7 @@ func (s Service) LoadStates() (StateBundle, error) {
 		SkillState:      skillState,
 		EnemySkillState: enemySkillState,
 		EnemyState:      enemyState,
+		SpawnTableState: spawnTableState,
 		TreasureState:   treasureState,
 		LootTableState:  lootTableState,
 	}, nil
@@ -225,14 +238,15 @@ func (s Service) ExportDatapack() export.SaveDataResponse {
 		}
 	}
 	return export.ExportDatapack(export.ExportParams{
-		ItemState:          states.ItemState,
-		GrimoireState:      states.GrimoireState,
-		Skills:             states.SkillState.Entries,
-		EnemySkills:        states.EnemySkillState.Entries,
-		Enemies:            states.EnemyState.Entries,
-		Treasures:          states.TreasureState.Entries,
-		LootTables:         states.LootTableState.Entries,
-		ExportSettingsPath: s.deps.ExportSettingsPath,
+		ItemState:              states.ItemState,
+		GrimoireState:          states.GrimoireState,
+		Skills:                 states.SkillState.Entries,
+		EnemySkills:            states.EnemySkillState.Entries,
+		Enemies:                states.EnemyState.Entries,
+		SpawnTables:            states.SpawnTableState.Entries,
+		Treasures:              states.TreasureState.Entries,
+		LootTables:             states.LootTableState.Entries,
+		ExportSettingsPath:     s.deps.ExportSettingsPath,
 		MinecraftLootTableRoot: s.cfg.MinecraftLootTableRoot,
 	})
 }
@@ -246,6 +260,7 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLoot
 			Skills:      len(states.SkillState.Entries),
 			EnemySkills: len(states.EnemySkillState.Entries),
 			Enemies:     len(states.EnemyState.Entries),
+			SpawnTables: len(states.SpawnTableState.Entries),
 			Treasures:   len(states.TreasureState.Entries),
 			LootTables:  len(states.LootTableState.Entries),
 		},
@@ -264,6 +279,7 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLoot
 	grimoireIDs := entryIDs(states.GrimoireState.Entries, func(entry grimoire.GrimoireEntry) string { return entry.ID })
 	skillIDs := entryIDs(states.SkillState.Entries, func(entry skills.SkillEntry) string { return entry.ID })
 	enemySkillIDs := entryIDs(states.EnemySkillState.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
+	enemyIDs := entryIDs(states.EnemyState.Entries, func(entry enemies.EnemyEntry) string { return entry.ID })
 	castIDs := map[int]string{}
 	treasureTablePaths := map[string]string{}
 	validTreasureTablePaths := map[string]struct{}{}
@@ -319,6 +335,23 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLoot
 	}
 	for _, entry := range states.EnemyState.Entries {
 		appendSaveIssues(&report, "enemy", entry.ID, enemies.ValidateSave(enemyToInput(entry), enemySkillIDs, itemIDs, grimoireIDs, now))
+	}
+	for _, entry := range states.SpawnTableState.Entries {
+		appendSaveIssues(&report, "spawn-table", entry.ID, spawntables.ValidateSave(spawnTableToInput(entry), enemyIDs, now))
+	}
+	for _, pair := range spawntables.AllOverlaps(states.SpawnTableState.Entries) {
+		report.Issues = append(report.Issues, ValidationIssue{
+			Entity:  "spawn-table",
+			ID:      pair[0],
+			Field:   "range",
+			Message: "Range overlaps with " + pair[1] + ".",
+		})
+		report.Issues = append(report.Issues, ValidationIssue{
+			Entity:  "spawn-table",
+			ID:      pair[1],
+			Field:   "range",
+			Message: "Range overlaps with " + pair[0] + ".",
+		})
 	}
 
 	report.OK = len(report.Issues) == 0
@@ -458,6 +491,22 @@ func enemyToInput(entry enemies.EnemyEntry) enemies.SaveInput {
 		EnemySkillIDs: append([]string{}, entry.EnemySkillIDs...),
 		DropMode:      entry.DropMode,
 		Drops:         append([]enemies.DropRef{}, entry.Drops...),
+	}
+}
+
+func spawnTableToInput(entry spawntables.SpawnTableEntry) spawntables.SaveInput {
+	return spawntables.SaveInput{
+		ID:            entry.ID,
+		SourceMobType: entry.SourceMobType,
+		Dimension:     entry.Dimension,
+		MinX:          entry.MinX,
+		MaxX:          entry.MaxX,
+		MinY:          entry.MinY,
+		MaxY:          entry.MaxY,
+		MinZ:          entry.MinZ,
+		MaxZ:          entry.MaxZ,
+		BaseMobWeight: entry.BaseMobWeight,
+		Replacements:  append([]spawntables.ReplacementEntry{}, entry.Replacements...),
 	}
 }
 
