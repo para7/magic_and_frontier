@@ -127,7 +127,7 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 		TreasureLootTables:  treasureStats.TreasureLootTables,
 		LoottableLootTables: loottableStats.LoottableLootTables,
 	}
-	stats.TotalFiles = stats.ItemFunctions + stats.ItemLootTables + stats.SpellFunctions + stats.SpellLootTables + stats.SkillFunctions + stats.EnemySkillFunctions + stats.EnemyFunctions + stats.EnemyLootTables + stats.TreasureLootTables + stats.LoottableLootTables + 2
+	stats.TotalFiles = stats.ItemFunctions + stats.ItemLootTables + stats.SpellFunctions + stats.SpellLootTables + stats.SkillFunctions + stats.EnemySkillFunctions + stats.EnemyFunctions + stats.EnemyLootTables + stats.TreasureLootTables + stats.LoottableLootTables + 3
 
 	return SaveDataResponse{
 		OK:         true,
@@ -346,19 +346,18 @@ func writeDatapackScaffold(settings ExportSettings) error {
 		}
 	}
 
-	loadTagPath := filepath.Join(settings.OutputRoot, settings.Paths.MinecraftTagDir, "load.json")
-	if err := os.MkdirAll(filepath.Dir(loadTagPath), 0o755); err != nil {
+	if err := writeFunctionTag(settings, "load", settings.Namespace+":load"); err != nil {
 		return err
 	}
-	if err := writeJSON(loadTagPath, map[string]any{"values": []string{settings.Namespace + ":load"}}); err != nil {
-		return err
-	}
+	return writeFunctionTag(settings, "tick", settings.Namespace+":tick")
+}
 
-	loadFuncPath := filepath.Join(settings.OutputRoot, "data", settings.Namespace, "function", "load.mcfunction")
-	if err := os.MkdirAll(filepath.Dir(loadFuncPath), 0o755); err != nil {
+func writeFunctionTag(settings ExportSettings, tagName string, values ...string) error {
+	tagPath := filepath.Join(settings.OutputRoot, settings.Paths.MinecraftTagDir, tagName+".json")
+	if err := os.MkdirAll(filepath.Dir(tagPath), 0o755); err != nil {
 		return err
 	}
-	return os.WriteFile(loadFuncPath, []byte(fmt.Sprintf("tellraw @a [{\"text\":\"enabled datapack: %s\"}]\n", settings.Namespace)), 0o644)
+	return writeJSON(tagPath, map[string]any{"values": values})
 }
 
 func generateItemOutputs(settings ExportSettings, entries []items.ItemEntry) (itemOutputStats, error) {
@@ -744,7 +743,7 @@ func toItemLootEntry(entry items.ItemEntry, min, max *float64) map[string]any {
 		"type": "minecraft:item",
 		"name": entry.ItemID,
 		"functions": []any{
-			map[string]any{"function": "minecraft:set_count", "count": toCountValue(min, max)},
+			map[string]any{"function": "minecraft:set_count", "add": false, "count": toCountValue(min, max)},
 			map[string]any{"function": "minecraft:set_custom_data", "tag": itemCustomData(entry)},
 		},
 	}
@@ -752,11 +751,11 @@ func toItemLootEntry(entry items.ItemEntry, min, max *float64) map[string]any {
 
 func toSpellLootEntry(entry grimoire.GrimoireEntry, min, max *float64) map[string]any {
 	functions := []any{
-		map[string]any{"function": "minecraft:set_count", "count": toCountValue(min, max)},
-		map[string]any{"function": "minecraft:set_name", "name": map[string]any{"text": entry.Title}},
+		map[string]any{"function": "minecraft:set_count", "add": false, "count": toCountValue(min, max)},
+		map[string]any{"function": "minecraft:set_name", "name": map[string]any{"text": entry.Title}, "target": "item_name"},
 	}
 	if lore := toLoreComponents(entry.Description); len(lore) > 0 {
-		functions = append(functions, map[string]any{"function": "minecraft:set_lore", "lore": lore})
+		functions = append(functions, map[string]any{"function": "minecraft:set_lore", "mode": "append", "lore": lore})
 	}
 	functions = append(functions, map[string]any{"function": "minecraft:set_custom_data", "tag": spellCustomData(entry)})
 	return map[string]any{

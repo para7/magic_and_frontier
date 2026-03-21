@@ -5,6 +5,7 @@
         {
           "functions": [
             {
+              "add": false,
               "count": {
                 "max": 3,
                 "min": 1,
@@ -24,6 +25,7 @@
         {
           "functions": [
             {
+              "add": false,
               "count": 1,
               "function": "minecraft:set_count"
             },
@@ -31,7 +33,8 @@
               "function": "minecraft:set_name",
               "name": {
                 "text": "Firebolt"
-              }
+              },
+              "target": "item_name"
             },
             {
               "function": "minecraft:set_lore",
@@ -39,7 +42,8 @@
                 {
                   "text": "Basic sample projectile spell."
                 }
-              ]
+              ],
+              "mode": "append"
             },
             {
               "function": "minecraft:set_custom_data",

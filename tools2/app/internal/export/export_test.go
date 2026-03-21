@@ -33,6 +33,12 @@ func TestToSpellLootTableIncludesLoreAndNewCustomData(t *testing.T) {
 	if !strings.Contains(text, "set_lore") {
 		t.Fatalf("loot table should contain set_lore: %s", text)
 	}
+	if !strings.Contains(text, `"mode":"append"`) {
+		t.Fatalf("loot table should contain lore mode: %s", text)
+	}
+	if !strings.Contains(text, `"target":"item_name"`) {
+		t.Fatalf("loot table should contain item_name target: %s", text)
+	}
 	if !strings.Contains(text, `grimoire_id:\"grimoire_12\"`) {
 		t.Fatalf("loot table should contain grimoire id custom data: %s", text)
 	}
