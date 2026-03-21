@@ -58,5 +58,5 @@
       "rolls": 1
     }
   ],
-  "type": "minecraft:entity"
+  "type": "minecraft:generic"
 }

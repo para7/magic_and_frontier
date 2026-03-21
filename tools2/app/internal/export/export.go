@@ -402,7 +402,7 @@ func generateGrimoireOutputs(settings ExportSettings, entries []grimoire.Grimoir
 		if err := writeJSON(filepath.Join(lootRoot, entry.ID+".json"), toSpellLootTable(entry)); err != nil {
 			return spellOutputStats{}, err
 		}
-		dispatchLines = append(dispatchLines, fmt.Sprintf("execute if entity @s[scores={mafCastID=%d}] run function %s", entry.CastID, functionResourceID(settings, settings.Paths.SpellFunctionDir, entry.ID)))
+		dispatchLines = append(dispatchLines, fmt.Sprintf("execute if entity @s[scores={mafEffectID=%d}] run function %s", entry.CastID, functionResourceID(settings, settings.Paths.SpellFunctionDir, entry.ID)))
 	}
 	if err := os.WriteFile(filepath.Join(functionRoot, "selectexec.mcfunction"), []byte(strings.Join(dispatchLines, "\n")+"\n"), 0o644); err != nil {
 		return spellOutputStats{}, err
