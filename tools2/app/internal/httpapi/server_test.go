@@ -234,6 +234,7 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 		filepath.Join(root, "out", "data", "maf", "function", "generated", "skill", skillID+".mcfunction"),
 		filepath.Join(root, "out", "data", "maf", "function", "generated", "grimoire", grimoireID+".mcfunction"),
 		filepath.Join(root, "out", "data", "maf", "function", "generated", "grimoire", "selectexec.mcfunction"),
+		filepath.Join(root, "out", "data", "maf", "function", "generated", "debug", "grimoire", grimoireID+".mcfunction"),
 		filepath.Join(root, "out", "data", "minecraft", "loot_table", "chests", "simple_dungeon.json"),
 		filepath.Join(root, "out", "data", "maf", "loot_table", "generated", "loottable", "loottable_1.json"),
 		filepath.Join(root, "out", "data", "maf", "loot_table", "generated", "enemy", "enemy_1.json"),

@@ -195,3 +195,82 @@ func TestLootTableOutputPathRejectsTraversal(t *testing.T) {
 		t.Fatalf("expected traversal table path to be rejected")
 	}
 }
+
+func TestGrimoireDebugGiveCommandIncludesCustomDataAndLore(t *testing.T) {
+	entry := grimoire.GrimoireEntry{
+		ID:          "grimoire_12",
+		CastID:      100,
+		CastTime:    10,
+		MPCost:      5,
+		Title:       `Mage's "Fire"`,
+		Description: "Line 1\nLine 2",
+	}
+
+	command := grimoireDebugGiveCommand(entry)
+	if !strings.HasPrefix(command, "give @s minecraft:written_book[") || !strings.HasSuffix(command, "] 1") {
+		t.Fatalf("unexpected command shape: %s", command)
+	}
+	if !strings.Contains(command, "item_name='{\"text\":\"Mage\\'s \\\"Fire\\\"\"}'") {
+		t.Fatalf("item_name should be escaped safely: %s", command)
+	}
+	if !strings.Contains(command, "lore=['{\"text\":\"Line 1\"}','{\"text\":\"Line 2\"}']") {
+		t.Fatalf("lore should include split lines: %s", command)
+	}
+	if !strings.Contains(command, `custom_data={maf:{grimoire_id:"grimoire_12",spell:{castid:100,cost:5,cast:10,title:"Mage's \"Fire\"",description:"Line 1\nLine 2"}}}`) {
+		t.Fatalf("custom_data should include spell payload: %s", command)
+	}
+}
+
+func TestGrimoireDebugGiveCommandOmitsLoreWhenDescriptionEmpty(t *testing.T) {
+	entry := grimoire.GrimoireEntry{
+		ID:          "grimoire_1",
+		CastID:      1,
+		CastTime:    20,
+		MPCost:      5,
+		Title:       "Firebolt",
+		Description: "",
+	}
+
+	command := grimoireDebugGiveCommand(entry)
+	if strings.Contains(command, "lore=[") {
+		t.Fatalf("lore should be omitted when description is empty: %s", command)
+	}
+}
+
+func TestGenerateGrimoireDebugFunctionsCreatesPerEntryFile(t *testing.T) {
+	settings := ExportSettings{
+		OutputRoot: t.TempDir(),
+		Namespace:  "maf",
+	}
+	entries := []grimoire.GrimoireEntry{
+		{
+			ID:          "grimoire_1",
+			CastID:      1,
+			CastTime:    20,
+			MPCost:      5,
+			Title:       "Firebolt",
+			Description: "Basic sample projectile spell.",
+		},
+	}
+
+	count, err := generateGrimoireDebugFunctions(settings, entries)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if count != 1 {
+		t.Fatalf("generated count = %d, want 1", count)
+	}
+
+	path := filepath.Join(settings.OutputRoot, "data", "maf", "function", "generated", "debug", "grimoire", "grimoire_1.mcfunction")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := strings.TrimSpace(string(data))
+	if !strings.HasPrefix(text, "give @s minecraft:written_book[") {
+		t.Fatalf("debug file should use direct give command: %s", text)
+	}
+	if !strings.Contains(text, `custom_data={maf:{grimoire_id:"grimoire_1",spell:{castid:1,cost:5,cast:20,title:"Firebolt",description:"Basic sample projectile spell."}}}`) {
+		t.Fatalf("debug file should include spell custom_data: %s", text)
+	}
+}

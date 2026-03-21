@@ -94,6 +94,10 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
+	debugGrimoireFunctions, err := generateGrimoireDebugFunctions(settings, params.GrimoireState.Entries)
+	if err != nil {
+		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
+	}
 	skillStats, err := generateSkillOutputs(settings, params.Skills)
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
@@ -127,7 +131,7 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 		TreasureLootTables:  treasureStats.TreasureLootTables,
 		LoottableLootTables: loottableStats.LoottableLootTables,
 	}
-	stats.TotalFiles = stats.ItemFunctions + stats.ItemLootTables + stats.SpellFunctions + stats.SpellLootTables + stats.SkillFunctions + stats.EnemySkillFunctions + stats.EnemyFunctions + stats.EnemyLootTables + stats.TreasureLootTables + stats.LoottableLootTables + 3
+	stats.TotalFiles = stats.ItemFunctions + stats.ItemLootTables + stats.SpellFunctions + stats.SpellLootTables + stats.SkillFunctions + stats.EnemySkillFunctions + stats.EnemyFunctions + stats.EnemyLootTables + stats.TreasureLootTables + stats.LoottableLootTables + debugGrimoireFunctions + 3
 
 	return SaveDataResponse{
 		OK:         true,
@@ -335,6 +339,7 @@ func writeDatapackScaffold(settings ExportSettings) error {
 		filepath.Join("data", "minecraft", "loot_table"),
 		filepath.Join(settings.Paths.DebugFunctionDir, "item"),
 		filepath.Join(settings.Paths.DebugFunctionDir, "grimoire"),
+		generatedGrimoireDebugFunctionDir(settings),
 	}
 	for _, relative := range outputDirs {
 		abs := filepath.Join(settings.OutputRoot, relative)
@@ -350,6 +355,10 @@ func writeDatapackScaffold(settings ExportSettings) error {
 		return err
 	}
 	return writeFunctionTag(settings, "tick", settings.Namespace+":tick")
+}
+
+func generatedGrimoireDebugFunctionDir(settings ExportSettings) string {
+	return filepath.Join("data", settings.Namespace, "function", "generated", "debug", "grimoire")
 }
 
 func writeFunctionTag(settings ExportSettings, tagName string, values ...string) error {
@@ -408,6 +417,19 @@ func generateGrimoireOutputs(settings ExportSettings, entries []grimoire.Grimoir
 		return spellOutputStats{}, err
 	}
 	return spellOutputStats{SpellFunctions: len(entries) + 1, SpellLootTables: len(entries)}, nil
+}
+
+func generateGrimoireDebugFunctions(settings ExportSettings, entries []grimoire.GrimoireEntry) (int, error) {
+	root := filepath.Join(settings.OutputRoot, generatedGrimoireDebugFunctionDir(settings))
+	if err := os.MkdirAll(root, 0o755); err != nil {
+		return 0, err
+	}
+	for _, entry := range entries {
+		if err := os.WriteFile(filepath.Join(root, entry.ID+".mcfunction"), []byte(grimoireDebugGiveCommand(entry)+"\n"), 0o644); err != nil {
+			return 0, err
+		}
+	}
+	return len(entries), nil
 }
 
 func generateSkillOutputs(settings ExportSettings, entries []skills.SkillEntry) (skillOutputStats, error) {
@@ -779,6 +801,21 @@ func itemCustomData(entry items.ItemEntry) string {
 
 func spellCustomData(entry grimoire.GrimoireEntry) string {
 	return fmt.Sprintf("{maf:{grimoire_id:%s,spell:{castid:%d,cost:%d,cast:%d,title:%s,description:%s}}}", jsonString(entry.ID), entry.CastID, entry.MPCost, entry.CastTime, jsonString(entry.Title), jsonString(entry.Description))
+}
+
+func grimoireDebugGiveCommand(entry grimoire.GrimoireEntry) string {
+	parts := []string{
+		fmt.Sprintf("item_name=%s", singleQuotedJSON(map[string]any{"text": entry.Title})),
+	}
+	if loreLines := linesToLoreValues(entry.Description); len(loreLines) > 0 {
+		loreParts := make([]string, 0, len(loreLines))
+		for _, line := range loreLines {
+			loreParts = append(loreParts, singleQuotedJSON(map[string]any{"text": line}))
+		}
+		parts = append(parts, "lore=["+strings.Join(loreParts, ",")+"]")
+	}
+	parts = append(parts, "custom_data="+spellCustomData(entry))
+	return fmt.Sprintf("give @s minecraft:written_book[%s] 1", strings.Join(parts, ","))
 }
 
 func toLoreComponents(value string) []any {
