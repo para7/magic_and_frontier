@@ -1,0 +1,145 @@
+package views
+
+templ layoutScripts() {
+			<script>
+				document.addEventListener("DOMContentLoaded", () => {
+					const defaultQueryKeys = ["q", "page"];
+
+					const setOrDelete = (params, key, value) => {
+						if (value === "") {
+							params.delete(key);
+							return;
+						}
+						params.set(key, value);
+					};
+
+					const updateReturnToTargets = (root) => {
+						const returnTo = window.location.pathname + window.location.search;
+						root.querySelectorAll("[data-return-to-link]").forEach((link) => {
+							const base = link.getAttribute("data-return-to-link");
+							if (!base) {
+								return;
+							}
+							const next = new URL(base, window.location.origin);
+							next.searchParams.set("returnTo", returnTo);
+							link.setAttribute("href", next.pathname + next.search);
+						});
+						root.querySelectorAll("[data-return-to-input]").forEach((input) => {
+							input.value = returnTo;
+						});
+					};
+
+					document.querySelectorAll("[data-list-root]").forEach((root) => {
+						const list = root.querySelector("[data-list-entries]");
+						const cards = Array.from(root.querySelectorAll("[data-list-item]"));
+						const empty = root.querySelector("[data-list-empty]");
+						const emptyText = empty ? empty.querySelector("[data-empty-default]") : null;
+						const searchInput = root.querySelector("[data-list-search]");
+						const summary = root.querySelector("[data-list-summary]");
+						const pageLabel = root.querySelector("[data-list-page-label]");
+						const prevButton = root.querySelector("[data-list-prev]");
+						const nextButton = root.querySelector("[data-list-next]");
+						const pageSize = Math.max(Number.parseInt(root.getAttribute("data-page-size") || "25", 10) || 25, 1);
+						const params = new URLSearchParams(window.location.search);
+						const state = {
+							q: params.get("q") || "",
+							page: Number.parseInt(params.get("page") || "1", 10),
+						};
+
+						if (!Number.isFinite(state.page) || state.page < 1) {
+							state.page = 1;
+						}
+
+						const syncControls = () => {
+							if (searchInput) {
+								searchInput.value = state.q;
+							}
+						};
+
+						const syncURL = () => {
+							const nextParams = new URLSearchParams(window.location.search);
+							defaultQueryKeys.forEach((key) => nextParams.delete(key));
+							setOrDelete(nextParams, "q", state.q.trim());
+							setOrDelete(nextParams, "page", state.page > 1 ? String(state.page) : "");
+							const query = nextParams.toString();
+							const nextURL = query === "" ? window.location.pathname : `${window.location.pathname}?${query}`;
+							window.history.replaceState({}, "", nextURL);
+						};
+
+						const apply = () => {
+							const tokens = state.q
+								.toLowerCase()
+								.trim()
+								.split(/\s+/)
+								.filter(Boolean);
+							const matched = cards.filter((card) => {
+								const search = (card.getAttribute("data-search") || "").toLowerCase();
+								return tokens.every((token) => search.includes(token));
+							});
+
+							const total = matched.length;
+							const totalPages = Math.max(1, Math.ceil(total / pageSize));
+							state.page = Math.min(Math.max(state.page, 1), totalPages);
+							const start = total === 0 ? 0 : (state.page - 1) * pageSize;
+							const end = Math.min(start + pageSize, total);
+							const visible = new Set(matched.slice(start, end));
+
+							matched.slice(start, end).forEach((card) => {
+								list.appendChild(card);
+							});
+							cards.forEach((card) => {
+								card.hidden = !visible.has(card);
+							});
+
+							if (emptyText) {
+								emptyText.textContent = total === 0 && cards.length > 0 ? emptyText.getAttribute("data-empty-filtered") || "" : emptyText.getAttribute("data-empty-default") || "";
+							}
+							if (empty) {
+								empty.hidden = total !== 0;
+							}
+							if (summary) {
+								const rangeStart = total === 0 ? 0 : start + 1;
+								summary.textContent = `Showing ${rangeStart}-${end} of ${total}`;
+							}
+							if (pageLabel) {
+								pageLabel.textContent = `Page ${state.page} / ${totalPages}`;
+							}
+							if (prevButton) {
+								prevButton.disabled = state.page <= 1;
+							}
+							if (nextButton) {
+								nextButton.disabled = state.page >= totalPages || total === 0;
+							}
+
+							syncControls();
+							syncURL();
+							updateReturnToTargets(root);
+						};
+
+						if (searchInput) {
+							searchInput.addEventListener("input", (event) => {
+								state.q = event.target.value;
+								state.page = 1;
+								apply();
+							});
+						}
+						if (prevButton) {
+							prevButton.addEventListener("click", () => {
+								if (state.page > 1) {
+									state.page -= 1;
+									apply();
+								}
+							});
+						}
+						if (nextButton) {
+							nextButton.addEventListener("click", () => {
+								state.page += 1;
+								apply();
+							});
+						}
+
+						apply();
+					});
+				});
+			</script>
+}
