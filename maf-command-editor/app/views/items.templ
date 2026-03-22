@@ -133,14 +133,20 @@ templ ItemFormShell(data webui.ItemsPageData) {
 								<details class="enchantments-details" open?={ data.Form.ShowEnchantmentsDetail }>
 									<summary>Select enchantments ({ IntText(data.Form.SelectedEnchantments) })</summary>
 									<div class="enchantments-list">
-										for _, option := range data.Form.EnchantmentOptions {
-											<label class="enchantment-row">
-												<input type="checkbox" name="enchantmentIds" value={ option.ID } checked?={ option.Checked }/>
-												<span>{ option.Label }</span>
-												<span class="code enchantment-id">{ option.ID }</span>
-												<input class="input-xs enchantment-level" type="number" name={ option.LevelFieldName } value={ option.Level } min="1" max="255" step="1"/>
-												<span class="enchantment-level-max">/ { IntText(option.MaxLevel) }</span>
-											</label>
+										for _, category := range EnchantmentCategories(data.Form.EnchantmentOptions) {
+											<section class="enchantments-category">
+												<h4 class="enchantments-category-title">{ category }</h4>
+												<div class="enchantments-category-list">
+													for _, option := range EnchantmentsByCategory(data.Form.EnchantmentOptions, category) {
+														<label class="enchantment-row">
+															<input type="checkbox" name="enchantmentIds" value={ option.ID } checked?={ option.Checked }/>
+															<span>{ option.Label }</span>
+															<input class="input-xs enchantment-level" type="number" name={ option.LevelFieldName } value={ option.Level } min="0" max="255" step="1"/>
+															<span class="enchantment-level-max">/ { IntText(option.MaxLevel) }</span>
+														</label>
+													}
+												</div>
+											</section>
 										}
 									</div>
 								</details>

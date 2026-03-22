@@ -25,10 +25,44 @@ func TestItemFormEnchantmentsFromText(t *testing.T) {
 	if !mending.Checked || mending.Level != "1" {
 		t.Fatalf("mending = %#v", mending)
 	}
+	if mending.Category != "Durability" {
+		t.Fatalf("mending category = %q", mending.Category)
+	}
 
 	unbreaking := findEnchantmentOption(t, options, "minecraft:unbreaking")
-	if unbreaking.Checked || unbreaking.Level != "3" {
+	if unbreaking.Checked || unbreaking.Level != "0" {
 		t.Fatalf("unbreaking = %#v", unbreaking)
+	}
+}
+
+func TestItemFormEnchantmentsCategoryOrder(t *testing.T) {
+	options, _ := itemFormEnchantmentsFromText("")
+
+	want := []string{
+		"Armor",
+		"Movement/Environment",
+		"Weapon",
+		"Bow",
+		"Crossbow",
+		"Bow/Crossbow",
+		"Trident",
+		"Tools",
+		"Durability",
+		"Fishing",
+		"Cursed",
+	}
+
+	got := make([]string, 0, len(want))
+	seen := map[string]bool{}
+	for _, option := range options {
+		if option.Category == "" || seen[option.Category] {
+			continue
+		}
+		seen[option.Category] = true
+		got = append(got, option.Category)
+	}
+	if strings.Join(got, "|") != strings.Join(want, "|") {
+		t.Fatalf("categories = %#v", got)
 	}
 }
 
@@ -50,13 +84,16 @@ func TestItemFormEnchantmentsFromRequest(t *testing.T) {
 	if selected != 2 {
 		t.Fatalf("selected = %d", selected)
 	}
-	if enchantments != "minecraft:sharpness 5\nminecraft:unbreaking 3" {
+	if enchantments != "minecraft:sharpness 5\nminecraft:unbreaking 0" {
 		t.Fatalf("enchantments = %q", enchantments)
 	}
 
 	sharpness := findEnchantmentOption(t, options, "minecraft:sharpness")
 	if !sharpness.Checked || sharpness.Level != "5" {
 		t.Fatalf("sharpness = %#v", sharpness)
+	}
+	if sharpness.Category != "Weapon" {
+		t.Fatalf("sharpness category = %q", sharpness.Category)
 	}
 
 	mending := findEnchantmentOption(t, options, "minecraft:mending")

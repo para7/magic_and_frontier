@@ -3,7 +3,6 @@ package web
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"unicode"
 
@@ -11,54 +10,65 @@ import (
 )
 
 type itemEnchantmentDef struct {
+	Category string
 	Key      string
 	MaxLevel int
 }
 
 var itemEnchantmentCatalog = []itemEnchantmentDef{
-	{Key: "aqua_affinity", MaxLevel: 1},
-	{Key: "bane_of_arthropods", MaxLevel: 5},
-	{Key: "binding_curse", MaxLevel: 1},
-	{Key: "blast_protection", MaxLevel: 4},
-	{Key: "breach", MaxLevel: 4},
-	{Key: "channeling", MaxLevel: 1},
-	{Key: "density", MaxLevel: 5},
-	{Key: "depth_strider", MaxLevel: 3},
-	{Key: "efficiency", MaxLevel: 5},
-	{Key: "feather_falling", MaxLevel: 4},
-	{Key: "fire_aspect", MaxLevel: 2},
-	{Key: "fire_protection", MaxLevel: 4},
-	{Key: "flame", MaxLevel: 1},
-	{Key: "fortune", MaxLevel: 3},
-	{Key: "frost_walker", MaxLevel: 2},
-	{Key: "impaling", MaxLevel: 5},
-	{Key: "infinity", MaxLevel: 1},
-	{Key: "knockback", MaxLevel: 2},
-	{Key: "looting", MaxLevel: 3},
-	{Key: "loyalty", MaxLevel: 3},
-	{Key: "luck_of_the_sea", MaxLevel: 3},
-	{Key: "lunge", MaxLevel: 3},
-	{Key: "lure", MaxLevel: 3},
-	{Key: "mending", MaxLevel: 1},
-	{Key: "multishot", MaxLevel: 1},
-	{Key: "piercing", MaxLevel: 4},
-	{Key: "power", MaxLevel: 5},
-	{Key: "projectile_protection", MaxLevel: 4},
-	{Key: "protection", MaxLevel: 4},
-	{Key: "punch", MaxLevel: 2},
-	{Key: "quick_charge", MaxLevel: 3},
-	{Key: "respiration", MaxLevel: 3},
-	{Key: "riptide", MaxLevel: 3},
-	{Key: "sharpness", MaxLevel: 5},
-	{Key: "silk_touch", MaxLevel: 1},
-	{Key: "smite", MaxLevel: 5},
-	{Key: "soul_speed", MaxLevel: 3},
-	{Key: "sweeping_edge", MaxLevel: 3},
-	{Key: "swift_sneak", MaxLevel: 3},
-	{Key: "thorns", MaxLevel: 3},
-	{Key: "unbreaking", MaxLevel: 3},
-	{Key: "vanishing_curse", MaxLevel: 1},
-	{Key: "wind_burst", MaxLevel: 3},
+	{Category: "Armor", Key: "blast_protection", MaxLevel: 4},
+	{Category: "Armor", Key: "feather_falling", MaxLevel: 4},
+	{Category: "Armor", Key: "fire_protection", MaxLevel: 4},
+	{Category: "Armor", Key: "projectile_protection", MaxLevel: 4},
+	{Category: "Armor", Key: "protection", MaxLevel: 4},
+	{Category: "Armor", Key: "thorns", MaxLevel: 3},
+
+	{Category: "Movement/Environment", Key: "aqua_affinity", MaxLevel: 1},
+	{Category: "Movement/Environment", Key: "depth_strider", MaxLevel: 3},
+	{Category: "Movement/Environment", Key: "frost_walker", MaxLevel: 2},
+	{Category: "Movement/Environment", Key: "respiration", MaxLevel: 3},
+	{Category: "Movement/Environment", Key: "soul_speed", MaxLevel: 3},
+	{Category: "Movement/Environment", Key: "swift_sneak", MaxLevel: 3},
+
+	{Category: "Weapon", Key: "bane_of_arthropods", MaxLevel: 5},
+	{Category: "Weapon", Key: "breach", MaxLevel: 4},
+	{Category: "Weapon", Key: "density", MaxLevel: 5},
+	{Category: "Weapon", Key: "fire_aspect", MaxLevel: 2},
+	{Category: "Weapon", Key: "knockback", MaxLevel: 2},
+	{Category: "Weapon", Key: "looting", MaxLevel: 3},
+	{Category: "Weapon", Key: "sharpness", MaxLevel: 5},
+	{Category: "Weapon", Key: "smite", MaxLevel: 5},
+	{Category: "Weapon", Key: "sweeping_edge", MaxLevel: 3},
+	{Category: "Weapon", Key: "wind_burst", MaxLevel: 3},
+	{Category: "Weapon", Key: "lunge", MaxLevel: 3},
+
+	{Category: "Bow", Key: "flame", MaxLevel: 1},
+	{Category: "Bow", Key: "power", MaxLevel: 5},
+	{Category: "Bow", Key: "punch", MaxLevel: 2},
+
+	{Category: "Crossbow", Key: "quick_charge", MaxLevel: 3},
+
+	{Category: "Bow/Crossbow", Key: "multishot", MaxLevel: 1},
+	{Category: "Bow/Crossbow", Key: "piercing", MaxLevel: 4},
+	{Category: "Bow/Crossbow", Key: "infinity", MaxLevel: 1},
+
+	{Category: "Trident", Key: "channeling", MaxLevel: 1},
+	{Category: "Trident", Key: "impaling", MaxLevel: 5},
+	{Category: "Trident", Key: "loyalty", MaxLevel: 3},
+	{Category: "Trident", Key: "riptide", MaxLevel: 3},
+
+	{Category: "Tools", Key: "efficiency", MaxLevel: 5},
+	{Category: "Tools", Key: "fortune", MaxLevel: 3},
+	{Category: "Tools", Key: "silk_touch", MaxLevel: 1},
+
+	{Category: "Durability", Key: "mending", MaxLevel: 1},
+	{Category: "Durability", Key: "unbreaking", MaxLevel: 3},
+
+	{Category: "Fishing", Key: "luck_of_the_sea", MaxLevel: 3},
+	{Category: "Fishing", Key: "lure", MaxLevel: 3},
+
+	{Category: "Cursed", Key: "binding_curse", MaxLevel: 1},
+	{Category: "Cursed", Key: "vanishing_curse", MaxLevel: 1},
 }
 
 func itemFormEnchantmentsFromText(text string) ([]webui.ItemEnchantmentOption, int) {
@@ -91,7 +101,7 @@ func itemFormEnchantmentsFromRequest(r *http.Request) (string, []webui.ItemEncha
 		id := itemEnchantmentID(def.Key)
 		level := strings.TrimSpace(r.Form.Get(itemEnchantmentLevelFieldName(def.Key)))
 		if level == "" {
-			level = strconv.Itoa(def.MaxLevel)
+			level = "0"
 		}
 		levels[id] = level
 		if selected[id] {
@@ -109,7 +119,7 @@ func buildItemEnchantmentOptions(selected map[string]bool, levels map[string]str
 
 	for _, def := range itemEnchantmentCatalog {
 		id := itemEnchantmentID(def.Key)
-		level := strconv.Itoa(def.MaxLevel)
+		level := "0"
 		if raw := strings.TrimSpace(levels[id]); raw != "" {
 			level = raw
 		}
@@ -119,6 +129,7 @@ func buildItemEnchantmentOptions(selected map[string]bool, levels map[string]str
 		}
 		options = append(options, webui.ItemEnchantmentOption{
 			ID:             id,
+			Category:       def.Category,
 			Key:            def.Key,
 			Label:          itemEnchantmentLabel(def.Key),
 			MaxLevel:       def.MaxLevel,

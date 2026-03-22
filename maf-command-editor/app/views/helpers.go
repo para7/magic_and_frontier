@@ -29,6 +29,30 @@ func HasValue(values []string, want string) bool {
 	return false
 }
 
+func EnchantmentCategories(options []webui.ItemEnchantmentOption) []string {
+	categories := make([]string, 0, len(options))
+	seen := map[string]bool{}
+	for _, option := range options {
+		category := strings.TrimSpace(option.Category)
+		if category == "" || seen[category] {
+			continue
+		}
+		seen[category] = true
+		categories = append(categories, category)
+	}
+	return categories
+}
+
+func EnchantmentsByCategory(options []webui.ItemEnchantmentOption, category string) []webui.ItemEnchantmentOption {
+	filtered := make([]webui.ItemEnchantmentOption, 0, len(options))
+	for _, option := range options {
+		if option.Category == category {
+			filtered = append(filtered, option)
+		}
+	}
+	return filtered
+}
+
 func NoticeClass(notice *webui.Notice) string {
 	if notice == nil || notice.Kind == "" {
 		return "notice-info"

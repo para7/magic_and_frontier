@@ -193,8 +193,27 @@ func TestHandlerSSRItemFormShowsEnchantmentControls(t *testing.T) {
 	if !strings.Contains(body, `name="enchantmentIds" value="minecraft:sharpness"`) {
 		t.Fatalf("body = %s", body)
 	}
+	if strings.Contains(body, `class="code enchantment-id"`) {
+		t.Fatalf("body = %s", body)
+	}
 	if !strings.Contains(body, `name="enchantmentLevel.sharpness"`) {
 		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, `class="enchantments-category-title">Armor</h4>`) {
+		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, `class="enchantments-category-title">Weapon</h4>`) {
+		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, `class="enchantments-category-title">Durability</h4>`) {
+		t.Fatalf("body = %s", body)
+	}
+
+	armorAt := strings.Index(body, `class="enchantments-category-title">Armor</h4>`)
+	weaponAt := strings.Index(body, `class="enchantments-category-title">Weapon</h4>`)
+	durabilityAt := strings.Index(body, `class="enchantments-category-title">Durability</h4>`)
+	if !(armorAt < weaponAt && weaponAt < durabilityAt) {
+		t.Fatalf("unexpected enchantment category order: armor=%d weapon=%d durability=%d", armorAt, weaponAt, durabilityAt)
 	}
 }
 

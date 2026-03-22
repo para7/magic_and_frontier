@@ -701,11 +701,37 @@ templ layoutStyles() {
 
 		.enchantments-list {
 			display: grid;
-			gap: 1px;
+			gap: 6px;
 			margin-top: 2px;
 			max-height: 260px;
 			overflow: auto;
 			padding-bottom: 2px;
+		}
+
+		.enchantments-category {
+			border-top: 1px solid color-mix(in srgb, var(--line), transparent 35%);
+			display: grid;
+			gap: 2px;
+			padding-top: 4px;
+		}
+
+		.enchantments-category:first-child {
+			border-top: none;
+			padding-top: 0;
+		}
+
+		.enchantments-category-title {
+			color: var(--muted);
+			font-size: 11px;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			margin: 0;
+			text-transform: uppercase;
+		}
+
+		.enchantments-category-list {
+			display: grid;
+			gap: 1px;
 		}
 
 		.enchantment-row {
@@ -714,7 +740,7 @@ templ layoutStyles() {
 			column-gap: 6px;
 			display: grid;
 			font-size: 13px;
-			grid-template-columns: auto minmax(90px, 180px) minmax(150px, 1fr) 82px auto;
+			grid-template-columns: auto minmax(120px, 1fr) 82px auto;
 			margin: 0;
 			min-height: 24px;
 			text-align: left;
@@ -722,13 +748,6 @@ templ layoutStyles() {
 
 		.enchantment-row input[type="checkbox"] {
 			margin-top: 0;
-		}
-
-		.enchantment-id {
-			color: var(--muted);
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
 		}
 
 		.enchantment-level {

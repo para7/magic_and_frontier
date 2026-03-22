@@ -53,6 +53,7 @@ type SelectOption struct {
 
 type ItemEnchantmentOption struct {
 	ID             string
+	Category       string
 	Key            string
 	Label          string
 	MaxLevel       int
