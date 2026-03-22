@@ -73,7 +73,7 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/enemies", data.Form.ReturnTo, FormTitle("Enemy", data.Form.IsEditing))
+				@FormShellHeader(FormTitle("Enemy", data.Form.IsEditing))
 				<form method="post" action={ FormAction("/enemies", data.Form.IsEditing) }>
 					@ReturnToField(data.Form.ReturnTo)
 					<div class="form-blocks">
@@ -90,39 +90,39 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 							</label>
 							<label>
 								Mob Type
-								<input name="mobType" value={ data.Form.MobType }/>
+								<input class="input-medium" name="mobType" value={ data.Form.MobType }/>
 								@FieldErrorBox(data.Form.FieldErrors, "mobType")
 							</label>
 							<label>
 								Name
-								<input name="name" value={ data.Form.Name }/>
+								<input class="input-medium" name="name" value={ data.Form.Name }/>
 								@FieldErrorBox(data.Form.FieldErrors, "name")
 							</label>
 						</div>
 						<div class="form-block stack">
 							<label>
 								HP
-								<input name="hp" value={ data.Form.HP }/>
+								<input class="input-short" name="hp" value={ data.Form.HP }/>
 								@FieldErrorBox(data.Form.FieldErrors, "hp")
 							</label>
 							<label>
 								Attack
-								<input name="attack" value={ data.Form.Attack }/>
+								<input class="input-short" name="attack" value={ data.Form.Attack }/>
 								@FieldErrorBox(data.Form.FieldErrors, "attack")
 							</label>
 							<label>
 								Defense
-								<input name="defense" value={ data.Form.Defense }/>
+								<input class="input-short" name="defense" value={ data.Form.Defense }/>
 								@FieldErrorBox(data.Form.FieldErrors, "defense")
 							</label>
 							<label>
 								Move Speed
-								<input name="moveSpeed" value={ data.Form.MoveSpeed }/>
+								<input class="input-short" name="moveSpeed" value={ data.Form.MoveSpeed }/>
 								@FieldErrorBox(data.Form.FieldErrors, "moveSpeed")
 							</label>
 							<label>
 								Drop Mode
-								<select name="dropMode">
+								<select class="select-medium" name="dropMode">
 									<option value="replace" selected?={ data.Form.DropMode == "replace" }>replace</option>
 									<option value="append" selected?={ data.Form.DropMode == "append" }>append</option>
 								</select>
@@ -142,13 +142,11 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 							<label>
 								Equipment
 								<textarea name="equipmentText">{ data.Form.EquipmentText }</textarea>
-								<small>1行につき `slot,kind,refId,count,dropChance`。slot は `mainhand,offhand,head,chest,legs,feet`。</small>
 								@FieldErrorBox(data.Form.FieldErrors, "equipmentText")
 							</label>
 							<label>
 								Drops
 								<textarea name="dropsText">{ data.Form.DropsText }</textarea>
-								<small>1行につき `kind,refId,weight,countMin,countMax`。kind は `minecraft_item`,`item`,`grimoire`。</small>
 								@FieldErrorBox(data.Form.FieldErrors, "dropsText")
 							</label>
 						</div>
@@ -157,8 +155,8 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 						<div class="field-error">{ data.Form.FormError }</div>
 					}
 					<div class="form-actions">
-						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href={ BackLink("/enemies", data.Form.ReturnTo) }>Cancel</a>
+							<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+							<a class="secondary outline" role="button" href={ BackLink("/enemies", data.Form.ReturnTo) }>キャンセル</a>
 					</div>
 				</form>
 			</section>

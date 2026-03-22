@@ -15,15 +15,19 @@ templ FieldErrorBox(errs map[string]string, key string) {
 }
 
 templ PageScaffold(meta webui.PageMeta, notice *webui.Notice) {
-	<section class="panel">
-		<div class="page-header">
-			<h1>{ meta.Title }</h1>
-			if meta.Description != "" {
-				<p>{ meta.Description }</p>
-			}
-		</div>
-		{ children... }
-	</section>
+	<div class="page">
+		<section class="tool-section">
+			<div class="page-header">
+				<h1 class="section-title">{ meta.Title }</h1>
+				if meta.Description != "" {
+					<p>{ meta.Description }</p>
+				}
+			</div>
+			<div class="panel">
+				{ children... }
+			</div>
+		</section>
+	</div>
 }
 
 templ ReturnToField(returnTo string) {
@@ -67,13 +71,10 @@ templ ListEmptyState(text string, hidden bool) {
 	</article>
 }
 
-templ FormShellHeader(listPath string, returnTo string, title string) {
-	<header>
+templ FormShellHeader(title string) {
+	<header class="section-header">
 		<div>
-			<h2>{ title }</h2>
-		</div>
-		<div class="entry-actions">
-			<a class="secondary outline" role="button" href={ BackLink(listPath, returnTo) }>Back to list</a>
+			<h2 class="section-title">{ title }</h2>
 		</div>
 	</header>
 }

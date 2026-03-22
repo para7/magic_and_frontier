@@ -67,7 +67,7 @@ templ EnemySkillFormShell(data webui.EnemySkillsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/enemy-skills", data.Form.ReturnTo, FormTitle("Enemy Skill", data.Form.IsEditing))
+				@FormShellHeader(FormTitle("Enemy Skill", data.Form.IsEditing))
 				<form method="post" action={ FormAction("/enemy-skills", data.Form.IsEditing) }>
 					@ReturnToField(data.Form.ReturnTo)
 					<div class="form-blocks">
@@ -84,7 +84,7 @@ templ EnemySkillFormShell(data webui.EnemySkillsPageData) {
 							</label>
 							<label>
 								Name
-								<input name="name" value={ data.Form.Name }/>
+								<input class="input-medium" name="name" value={ data.Form.Name }/>
 								@FieldErrorBox(data.Form.FieldErrors, "name")
 							</label>
 						</div>
@@ -105,8 +105,8 @@ templ EnemySkillFormShell(data webui.EnemySkillsPageData) {
 						<div class="field-error">{ data.Form.FormError }</div>
 					}
 					<div class="form-actions">
-						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href={ BackLink("/enemy-skills", data.Form.ReturnTo) }>Cancel</a>
+							<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+							<a class="secondary outline" role="button" href={ BackLink("/enemy-skills", data.Form.ReturnTo) }>キャンセル</a>
 					</div>
 				</form>
 			</section>

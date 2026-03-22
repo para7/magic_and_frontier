@@ -67,7 +67,7 @@ templ LootTableFormShell(data webui.LootTablesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/loottables", data.Form.ReturnTo, FormTitle("Loottable", data.Form.IsEditing))
+				@FormShellHeader(FormTitle("Loottable", data.Form.IsEditing))
 				<form method="post" action={ FormAction("/loottables", data.Form.IsEditing) }>
 					@ReturnToField(data.Form.ReturnTo)
 					<div class="form-blocks">
@@ -85,7 +85,6 @@ templ LootTableFormShell(data webui.LootTablesPageData) {
 							<label>
 								Loot Pools
 								<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
-								<small>1行につき `kind,refId,weight,countMin,countMax`。kind は `minecraft_item`,`item`,`grimoire`。</small>
 								@FieldErrorBox(data.Form.FieldErrors, "lootPoolsText")
 							</label>
 						</div>
@@ -112,8 +111,8 @@ templ LootTableFormShell(data webui.LootTablesPageData) {
 						<div class="field-error">{ data.Form.FormError }</div>
 					}
 					<div class="form-actions">
-						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href={ BackLink("/loottables", data.Form.ReturnTo) }>Cancel</a>
+							<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+							<a class="secondary outline" role="button" href={ BackLink("/loottables", data.Form.ReturnTo) }>キャンセル</a>
 					</div>
 				</form>
 			</section>

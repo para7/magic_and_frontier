@@ -69,7 +69,7 @@ templ TreasureFormShell(data webui.TreasuresPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/treasures", data.Form.ReturnTo, "Treasure Overlay")
+				@FormShellHeader("Treasure Overlay")
 				<form method="post" action="/treasures/edit">
 					<input type="hidden" name="tablePath" value={ data.Form.TablePath }/>
 					@ReturnToField(data.Form.ReturnTo)
@@ -96,7 +96,6 @@ templ TreasureFormShell(data webui.TreasuresPageData) {
 							<label>
 								Loot Pools
 								<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
-								<small>1行につき `kind,refId,weight,countMin,countMax`。kind は `minecraft_item`,`item`,`grimoire`。</small>
 								@FieldErrorBox(data.Form.FieldErrors, "lootPoolsText")
 							</label>
 						</div>
@@ -123,8 +122,8 @@ templ TreasureFormShell(data webui.TreasuresPageData) {
 						<div class="field-error">{ data.Form.FormError }</div>
 					}
 					<div class="form-actions">
-						<button type="submit">{ SubmitLabel(data.Form.HasOverlay) }</button>
-						<a class="secondary outline" role="button" href={ BackLink("/treasures", data.Form.ReturnTo) }>Cancel</a>
+							<button type="submit">{ SubmitLabel(data.Form.HasOverlay) }</button>
+							<a class="secondary outline" role="button" href={ BackLink("/treasures", data.Form.ReturnTo) }>キャンセル</a>
 					</div>
 				</form>
 			</section>

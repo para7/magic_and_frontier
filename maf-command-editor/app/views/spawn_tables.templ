@@ -70,7 +70,7 @@ templ SpawnTableFormShell(data webui.SpawnTablesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/spawn-tables", data.Form.ReturnTo, FormTitle("Spawn Table", data.Form.IsEditing))
+				@FormShellHeader(FormTitle("Spawn Table", data.Form.IsEditing))
 				<form method="post" action={ FormAction("/spawn-tables", data.Form.IsEditing) }>
 					@ReturnToField(data.Form.ReturnTo)
 					<div class="form-blocks">
@@ -87,12 +87,12 @@ templ SpawnTableFormShell(data webui.SpawnTablesPageData) {
 							</label>
 							<label>
 								Source Mob Type
-								<input name="sourceMobType" value={ data.Form.SourceMobType }/>
+								<input class="input-medium" name="sourceMobType" value={ data.Form.SourceMobType }/>
 								@FieldErrorBox(data.Form.FieldErrors, "sourceMobType")
 							</label>
 							<label>
 								Dimension
-								<select name="dimension">
+								<select class="select-medium" name="dimension">
 									for _, option := range data.Form.DimensionOptions {
 										<option value={ option.Value } selected?={ option.Value == data.Form.Dimension }>{ option.Label }</option>
 									}
@@ -104,37 +104,37 @@ templ SpawnTableFormShell(data webui.SpawnTablesPageData) {
 							<div class="form-grid two">
 								<label>
 									Min X
-									<input name="minX" value={ data.Form.MinX }/>
+									<input class="input-xs" name="minX" value={ data.Form.MinX }/>
 									@FieldErrorBox(data.Form.FieldErrors, "minX")
 								</label>
 								<label>
 									Max X
-									<input name="maxX" value={ data.Form.MaxX }/>
+									<input class="input-xs" name="maxX" value={ data.Form.MaxX }/>
 									@FieldErrorBox(data.Form.FieldErrors, "maxX")
 								</label>
 								<label>
 									Min Y
-									<input name="minY" value={ data.Form.MinY }/>
+									<input class="input-xs" name="minY" value={ data.Form.MinY }/>
 									@FieldErrorBox(data.Form.FieldErrors, "minY")
 								</label>
 								<label>
 									Max Y
-									<input name="maxY" value={ data.Form.MaxY }/>
+									<input class="input-xs" name="maxY" value={ data.Form.MaxY }/>
 									@FieldErrorBox(data.Form.FieldErrors, "maxY")
 								</label>
 								<label>
 									Min Z
-									<input name="minZ" value={ data.Form.MinZ }/>
+									<input class="input-xs" name="minZ" value={ data.Form.MinZ }/>
 									@FieldErrorBox(data.Form.FieldErrors, "minZ")
 								</label>
 								<label>
 									Max Z
-									<input name="maxZ" value={ data.Form.MaxZ }/>
+									<input class="input-xs" name="maxZ" value={ data.Form.MaxZ }/>
 									@FieldErrorBox(data.Form.FieldErrors, "maxZ")
 								</label>
 								<label class="form-span-2">
 									Base Mob Weight
-									<input name="baseMobWeight" value={ data.Form.BaseMobWeight }/>
+									<input class="input-xs" name="baseMobWeight" value={ data.Form.BaseMobWeight }/>
 									@FieldErrorBox(data.Form.FieldErrors, "baseMobWeight")
 								</label>
 							</div>
@@ -143,7 +143,6 @@ templ SpawnTableFormShell(data webui.SpawnTablesPageData) {
 							<label>
 								Replacements
 								<textarea name="replacementsText">{ data.Form.ReplacementsText }</textarea>
-								<small>1行につき `enemyId,weight`。</small>
 								@FieldErrorBox(data.Form.FieldErrors, "replacementsText")
 							</label>
 						</div>
@@ -152,8 +151,8 @@ templ SpawnTableFormShell(data webui.SpawnTablesPageData) {
 						<div class="field-error">{ data.Form.FormError }</div>
 					}
 					<div class="form-actions">
-						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href={ BackLink("/spawn-tables", data.Form.ReturnTo) }>Cancel</a>
+							<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+							<a class="secondary outline" role="button" href={ BackLink("/spawn-tables", data.Form.ReturnTo) }>キャンセル</a>
 					</div>
 				</form>
 			</section>

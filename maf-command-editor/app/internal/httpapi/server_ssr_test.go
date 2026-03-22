@@ -132,7 +132,7 @@ func TestHandlerSSRSkillEditRespectsReturnToOnSaveAndFallback(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status = %d", rec.Code)
 	}
-	if !strings.Contains(rec.Body.String(), `href="/skills?q=slash&amp;page=2">Back to list</a>`) {
+	if !strings.Contains(rec.Body.String(), `href="/skills?q=slash&amp;page=2">キャンセル</a>`) {
 		t.Fatalf("body = %s", rec.Body.String())
 	}
 
@@ -166,7 +166,7 @@ func TestHandlerSSRItemReturnToRejectsNonListPaths(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("status = %d", rec.Code)
 	}
-	if !strings.Contains(rec.Body.String(), `href="/items">Back to list</a>`) {
+	if !strings.Contains(rec.Body.String(), `href="/items">キャンセル</a>`) {
 		t.Fatalf("body = %s", rec.Body.String())
 	}
 

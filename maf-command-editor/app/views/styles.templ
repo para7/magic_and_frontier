@@ -21,6 +21,15 @@ templ layoutStyles() {
 		color-scheme: dark;
 		--header-height: 32px;
 		--sidebar-width: 160px;
+		--page-max-width: 1280px;
+		--page-padding-y: 6px;
+		--page-padding-x: 10px;
+		--panel-padding: 18px;
+		--section-gap: 8px;
+		--title-panel-gap: 2px;
+		--form-width: 560px;
+		--form-label-width: 150px;
+		--control-height: 28px;
 		--surface-1: #11141a;
 		--surface-2: #181d26;
 		--surface-3: #1e2430;
@@ -307,27 +316,34 @@ templ layoutStyles() {
 	.content {
 		margin-left: var(--sidebar-width);
 		min-height: calc(100dvh - var(--header-height));
-		padding: 8px 10px 12px;
+		padding: var(--page-padding-y) var(--page-padding-x);
 	}
 
 	/* ===== Panel ===== */
+	.page {
+		margin: 0 auto;
+		max-width: var(--page-max-width);
+	}
+
+	.tool-section {
+		margin-bottom: var(--section-gap);
+	}
+
 	.panel {
 		background: var(--surface-2);
 		border: 1px solid var(--line);
 		border-radius: var(--radius);
-		padding: 8px;
+		padding: var(--panel-padding);
 	}
 
 	.page-header {
-		border-bottom: 1px solid var(--line);
-		margin-bottom: 6px;
-		padding-bottom: 4px;
+		margin-bottom: var(--title-panel-gap);
 	}
 
 	.page-header h1 {
 		font-size: 1rem;
 		line-height: 1.25;
-		margin-bottom: 2px;
+		margin-bottom: 0;
 	}
 
 	.page-header p {
@@ -343,7 +359,7 @@ templ layoutStyles() {
 	.feature-grid {
 		align-items: start;
 		display: grid;
-		gap: 8px;
+		gap: var(--section-gap);
 		grid-template-columns: minmax(0, 1fr);
 	}
 
@@ -371,10 +387,10 @@ templ layoutStyles() {
 	}
 
 	.list-toolbar-row {
-		align-items: flex-end;
+		align-items: center;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 6px;
+		gap: 2px;
 		justify-content: space-between;
 	}
 
@@ -418,7 +434,7 @@ templ layoutStyles() {
 		align-items: center;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px;
+		gap: 2px;
 	}
 
 	.list-empty-state {
@@ -476,11 +492,11 @@ templ layoutStyles() {
 	.stack,
 	.form-grid {
 		display: grid;
-		gap: 6px;
+		gap: 4px;
 	}
 
 	.form-grid.two {
-		grid-template-columns: repeat(4, minmax(0, 1fr));
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	.form-span-2 {
@@ -488,14 +504,16 @@ templ layoutStyles() {
 	}
 
 	.form-blocks {
-		align-items: flex-start;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
+		display: grid;
+		gap: 4px;
+		margin: 0 auto;
+		max-width: 100%;
+		width: var(--form-width);
 	}
 
 	.form-block {
-		flex: 1 1 300px;
+		display: grid;
+		gap: 4px;
 		min-width: 0;
 	}
 
@@ -504,13 +522,155 @@ templ layoutStyles() {
 	}
 
 	.form-actions {
+		align-items: center;
 		display: flex;
-		flex-wrap: wrap;
-		gap: 4px;
+		flex-wrap: nowrap;
+		gap: 2px;
 	}
 
 	.form-actions>* {
 		margin-bottom: 0;
+	}
+
+	form>.form-actions {
+		margin-left: auto;
+		margin-right: auto;
+		max-width: 100%;
+		width: var(--form-width);
+	}
+
+	.list-toolbar .form-actions {
+		margin: 0;
+		max-width: none;
+		width: auto;
+	}
+
+	.section-header {
+		align-items: center;
+		display: flex;
+		justify-content: space-between;
+		margin: 0 0 var(--title-panel-gap);
+	}
+
+	.section-title {
+		margin: 0;
+	}
+
+	.form-block.stack>label,
+	.form-grid>label {
+		align-items: center;
+		column-gap: 2px;
+		display: grid;
+		grid-template-columns: var(--form-label-width) minmax(0, 1fr);
+		margin: 0;
+		min-height: var(--control-height);
+		text-align: right;
+	}
+
+	.form-block.stack>label>input:not([type="checkbox"]),
+	.form-block.stack>label>select,
+	.form-block.stack>label>textarea,
+	.form-block.stack>label>small,
+	.form-block.stack>label>.field-error,
+	.form-grid>label>input:not([type="checkbox"]),
+	.form-grid>label>select,
+	.form-grid>label>textarea,
+	.form-grid>label>small,
+	.form-grid>label>.field-error {
+		grid-column: 2;
+		margin-top: 0;
+		text-align: left;
+	}
+
+	.form-block.stack>label>input[type="checkbox"],
+	.form-grid>label>input[type="checkbox"] {
+		grid-column: 2;
+		justify-self: start;
+		margin-top: 0;
+		width: auto;
+	}
+
+	.form-block.stack>label>input:not([type="checkbox"]),
+	.form-block.stack>label>select,
+	.form-grid>label>input:not([type="checkbox"]),
+	.form-grid>label>select {
+		max-width: 340px;
+	}
+
+	.form-block.stack>label>textarea,
+	.form-grid>label>textarea {
+		max-width: 460px;
+		width: 100%;
+	}
+
+	.form-block.stack>label>small,
+	.form-grid>label>small {
+		color: var(--muted);
+		font-size: 0.8rem;
+	}
+
+	.form-block.stack>label>.field-error,
+	.form-grid>label>.field-error {
+		margin-top: 0;
+	}
+
+	.input,
+	.select,
+	.icon-btn,
+	.action-btn {
+		height: var(--control-height);
+	}
+
+	.input-xs {
+		max-width: 82px;
+		width: 82px;
+	}
+
+	.input-short {
+		max-width: 84px;
+		width: 84px;
+	}
+
+	.input-medium {
+		max-width: 160px;
+		width: 160px;
+	}
+
+	.input-long {
+		max-width: 460px;
+		width: 100%;
+	}
+
+	.select-medium {
+		max-width: 165px;
+		width: 165px;
+	}
+
+	.select-wide {
+		max-width: 340px;
+		width: 340px;
+	}
+
+	.panel-inline {
+		padding-bottom: 8px;
+		padding-top: 8px;
+	}
+
+	.action-bar {
+		align-items: center;
+		display: flex;
+		gap: 2px;
+		width: 100%;
+	}
+
+	.select-item {
+		max-width: 430px;
+		width: 430px;
+	}
+
+	.input-filter {
+		max-width: 80px;
+		width: 80px;
 	}
 
 	/* ===== KV List ===== */
@@ -571,18 +731,6 @@ templ layoutStyles() {
 	.helper-text {
 		color: var(--muted);
 		font-size: 0.85rem;
-	}
-
-	.checkbox-label {
-		align-items: center;
-		display: flex;
-		gap: 4px;
-		margin-bottom: 0;
-	}
-
-	.checkbox-label input {
-		width: auto;
-		margin-bottom: 0;
 	}
 
 </style>

@@ -67,7 +67,7 @@ templ ItemFormShell(data webui.ItemsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/items", data.Form.ReturnTo, FormTitle("Item", data.Form.IsEditing))
+				@FormShellHeader(FormTitle("Item", data.Form.IsEditing))
 				<form method="post" action={ FormAction("/items", data.Form.IsEditing) }>
 					@ReturnToField(data.Form.ReturnTo)
 					<div class="form-blocks">
@@ -89,7 +89,7 @@ templ ItemFormShell(data webui.ItemsPageData) {
 							</label>
 							<label>
 								Skill
-								<select name="skillId">
+								<select class="select-medium" name="skillId">
 									<option value="">No skill</option>
 									for _, option := range data.Form.SkillOptions {
 										<option value={ option.ID } selected?={ option.ID == data.Form.SkillID }>{ option.Label }</option>
@@ -99,7 +99,7 @@ templ ItemFormShell(data webui.ItemsPageData) {
 							</label>
 							<label>
 								Custom Name
-								<input name="customName" value={ data.Form.CustomName }/>
+								<input class="input-medium" name="customName" value={ data.Form.CustomName }/>
 							</label>
 							<label>
 								Potion ID
@@ -109,23 +109,23 @@ templ ItemFormShell(data webui.ItemsPageData) {
 						<div class="form-block stack">
 							<label>
 								CustomModelData
-								<input name="customModelData" value={ data.Form.CustomModelData }/>
+								<input class="input-short" name="customModelData" value={ data.Form.CustomModelData }/>
 							</label>
 							<label>
 								RepairCost
-								<input name="repairCost" value={ data.Form.RepairCost }/>
+								<input class="input-short" name="repairCost" value={ data.Form.RepairCost }/>
 							</label>
 							<label>
 								HideFlags
-								<input name="hideFlags" value={ data.Form.HideFlags }/>
+								<input class="input-short" name="hideFlags" value={ data.Form.HideFlags }/>
 							</label>
 							<label>
 								CustomPotionColor
-								<input name="customPotionColor" value={ data.Form.CustomPotionColor }/>
+								<input class="input-short" name="customPotionColor" value={ data.Form.CustomPotionColor }/>
 							</label>
-							<label class="checkbox-label">
+							<label>
+								Unbreakable
 								<input type="checkbox" name="unbreakable" checked?={ data.Form.Unbreakable }/>
-								<span>Unbreakable</span>
 							</label>
 						</div>
 						<div class="form-block stack">
@@ -136,7 +136,6 @@ templ ItemFormShell(data webui.ItemsPageData) {
 							<label>
 								Enchantments
 								<textarea name="enchantments">{ data.Form.Enchantments }</textarea>
-								<small>1行につき `namespace:enchantment level` を1件入力します。</small>
 							</label>
 							<label>
 								CustomPotionEffects
@@ -159,8 +158,8 @@ templ ItemFormShell(data webui.ItemsPageData) {
 						<div class="field-error">{ data.Form.FormError }</div>
 					}
 					<div class="form-actions">
-						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href={ BackLink("/items", data.Form.ReturnTo) }>Cancel</a>
+							<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+							<a class="secondary outline" role="button" href={ BackLink("/items", data.Form.ReturnTo) }>キャンセル</a>
 					</div>
 				</form>
 			</section>

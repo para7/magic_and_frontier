@@ -70,7 +70,7 @@ templ GrimoireFormShell(data webui.GrimoirePageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/grimoire", data.Form.ReturnTo, FormTitle("Grimoire Entry", data.Form.IsEditing))
+				@FormShellHeader(FormTitle("Grimoire Entry", data.Form.IsEditing))
 				<form method="post" action={ FormAction("/grimoire", data.Form.IsEditing) }>
 					@ReturnToField(data.Form.ReturnTo)
 					<div class="form-blocks">
@@ -88,26 +88,26 @@ templ GrimoireFormShell(data webui.GrimoirePageData) {
 							<label>
 								Cast ID
 								if data.Form.IsEditing {
-									<input name="castid" value={ data.Form.CastID } readonly/>
+									<input class="input-short" name="castid" value={ data.Form.CastID } readonly/>
 								} else {
-									<input name="castid" value={ data.Form.CastID }/>
+									<input class="input-short" name="castid" value={ data.Form.CastID }/>
 									<small>1以上の整数</small>
 								}
 								@FieldErrorBox(data.Form.FieldErrors, "castid")
 							</label>
 							<label>
 								Cast Time
-								<input name="castTime" value={ data.Form.CastTime }/>
+								<input class="input-short" name="castTime" value={ data.Form.CastTime }/>
 								@FieldErrorBox(data.Form.FieldErrors, "castTime")
 							</label>
 							<label>
 								MP Cost
-								<input name="mpCost" value={ data.Form.MPCost }/>
+								<input class="input-short" name="mpCost" value={ data.Form.MPCost }/>
 								@FieldErrorBox(data.Form.FieldErrors, "mpCost")
 							</label>
 							<label>
 								Title
-								<input name="title" value={ data.Form.Title }/>
+								<input class="input-medium" name="title" value={ data.Form.Title }/>
 								@FieldErrorBox(data.Form.FieldErrors, "title")
 							</label>
 						</div>
@@ -127,8 +127,8 @@ templ GrimoireFormShell(data webui.GrimoirePageData) {
 						<div class="field-error">{ data.Form.FormError }</div>
 					}
 					<div class="form-actions">
-						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-						<a class="secondary outline" role="button" href={ BackLink("/grimoire", data.Form.ReturnTo) }>Cancel</a>
+							<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+							<a class="secondary outline" role="button" href={ BackLink("/grimoire", data.Form.ReturnTo) }>キャンセル</a>
 					</div>
 				</form>
 			</section>
