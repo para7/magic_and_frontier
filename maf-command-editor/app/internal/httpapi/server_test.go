@@ -428,7 +428,7 @@ func createJSONEntry[T any](t *testing.T, handler http.Handler, path string, pay
 func newTestHandler(t *testing.T) (http.Handler, string) {
 	t.Helper()
 	root := t.TempDir()
-	settingsPath := filepath.Join(root, "export-settings.json")
+	settingsPath := filepath.Join(root, "export_settings.json")
 	templatePath := filepath.Join(root, "pack-template.mcmeta")
 	if err := os.WriteFile(templatePath, []byte("{\"pack\":{\"pack_format\":61,\"description\":\"test\"}}\n"), 0o644); err != nil {
 		t.Fatal(err)
@@ -459,12 +459,12 @@ func newTestHandler(t *testing.T) (http.Handler, string) {
 		ItemStatePath:          filepath.Join(root, "item.json"),
 		GrimoireStatePath:      filepath.Join(root, "grimoire.json"),
 		SkillStatePath:         filepath.Join(root, "skill.json"),
-		EnemySkillStatePath:    filepath.Join(root, "enemy-skill.json"),
+		EnemySkillStatePath:    filepath.Join(root, "enemy_skill.json"),
 		EnemyStatePath:         filepath.Join(root, "enemy.json"),
-		SpawnTableStatePath:    filepath.Join(root, "spawn-table.json"),
+		SpawnTableStatePath:    filepath.Join(root, "spawn_table.json"),
 		TreasureStatePath:      filepath.Join(root, "treasure.json"),
 		LootTablesStatePath:    filepath.Join(root, "loottables.json"),
-		IDCounterStatePath:     filepath.Join(root, "id-counters.json"),
+		IDCounterStatePath:     filepath.Join(root, "id_counters.json"),
 		ExportSettingsPath:     settingsPath,
 		MinecraftLootTableRoot: writeMinecraftLootTableRoot(t, root),
 	}

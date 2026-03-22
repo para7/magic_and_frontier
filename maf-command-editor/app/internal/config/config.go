@@ -25,13 +25,13 @@ func Load() Config {
 		ItemStatePath:          filepath.Clean(filepath.Join("savedata", "item.json")),
 		GrimoireStatePath:      filepath.Clean(filepath.Join("savedata", "grimoire.json")),
 		SkillStatePath:         filepath.Clean(filepath.Join("savedata", "skill.json")),
-		EnemySkillStatePath:    filepath.Clean(filepath.Join("savedata", "enemy-skill.json")),
+		EnemySkillStatePath:    filepath.Clean(filepath.Join("savedata", "enemy_skill.json")),
 		EnemyStatePath:         filepath.Clean(filepath.Join("savedata", "enemy.json")),
-		SpawnTableStatePath:    filepath.Clean(filepath.Join("savedata", "spawn-table.json")),
+		SpawnTableStatePath:    filepath.Clean(filepath.Join("savedata", "spawn_table.json")),
 		TreasureStatePath:      filepath.Clean(filepath.Join("savedata", "treasure.json")),
 		LootTablesStatePath:    filepath.Clean(filepath.Join("savedata", "loottables.json")),
-		IDCounterStatePath:     filepath.Clean(filepath.Join("savedata", "id-counters.json")),
-		ExportSettingsPath:     filepath.Clean(filepath.Join("config", "export-settings.json")),
+		IDCounterStatePath:     filepath.Clean(filepath.Join("savedata", "id_counters.json")),
+		ExportSettingsPath:     filepath.Clean(filepath.Join("config", "export_settings.json")),
 		MinecraftLootTableRoot: filepath.Clean(filepath.Join("minecraft", "1.21.11", "loot_table")),
 	}
 }

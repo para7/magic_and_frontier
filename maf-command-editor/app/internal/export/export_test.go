@@ -280,7 +280,7 @@ func TestGenerateGrimoireDebugFunctionsCreatesPerEntryFile(t *testing.T) {
 
 func TestExportDatapackKeepsStaticFilesAndWritesGeneratedTick(t *testing.T) {
 	root := t.TempDir()
-	settingsPath := filepath.Join(root, "export-settings.json")
+	settingsPath := filepath.Join(root, "export_settings.json")
 	settings := ExportSettings{
 		OutputRoot:       "./out",
 		Namespace:        "maf",

@@ -268,7 +268,7 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLoot
 	if exportSettingsPath != "" {
 		if err := export.ValidateSettings(exportSettingsPath); err != nil {
 			report.Issues = append(report.Issues, ValidationIssue{
-				Entity:  "export-settings",
+				Entity:  "export_settings",
 				Field:   "path",
 				Message: err.Error(),
 			})
@@ -285,7 +285,7 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLoot
 	validTreasureTablePaths := map[string]struct{}{}
 	if sources, err := mcsource.ListLootTables(minecraftLootTableRoot); err != nil {
 		report.Issues = append(report.Issues, ValidationIssue{
-			Entity:  "minecraft-loot-table-root",
+			Entity:  "minecraft_loot_table_root",
 			Field:   "path",
 			Message: err.Error(),
 		})
@@ -315,7 +315,7 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLoot
 		appendSaveIssues(&report, "skill", entry.ID, skills.ValidateSave(skillToInput(entry), now))
 	}
 	for _, entry := range states.EnemySkillState.Entries {
-		appendSaveIssues(&report, "enemy-skill", entry.ID, enemyskills.ValidateSave(enemySkillToInput(entry), now))
+		appendSaveIssues(&report, "enemy_skill", entry.ID, enemyskills.ValidateSave(enemySkillToInput(entry), now))
 	}
 	for _, entry := range states.TreasureState.Entries {
 		appendSaveIssues(&report, "treasure", entry.ID, treasures.ValidateSave(treasureToInput(entry), itemIDs, grimoireIDs, validTreasureTablePaths, now))
@@ -337,17 +337,17 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLoot
 		appendSaveIssues(&report, "enemy", entry.ID, enemies.ValidateSave(enemyToInput(entry), enemySkillIDs, itemIDs, grimoireIDs, now))
 	}
 	for _, entry := range states.SpawnTableState.Entries {
-		appendSaveIssues(&report, "spawn-table", entry.ID, spawntables.ValidateSave(spawnTableToInput(entry), enemyIDs, now))
+		appendSaveIssues(&report, "spawn_table", entry.ID, spawntables.ValidateSave(spawnTableToInput(entry), enemyIDs, now))
 	}
 	for _, pair := range spawntables.AllOverlaps(states.SpawnTableState.Entries) {
 		report.Issues = append(report.Issues, ValidationIssue{
-			Entity:  "spawn-table",
+			Entity:  "spawn_table",
 			ID:      pair[0],
 			Field:   "range",
 			Message: "Range overlaps with " + pair[1] + ".",
 		})
 		report.Issues = append(report.Issues, ValidationIssue{
-			Entity:  "spawn-table",
+			Entity:  "spawn_table",
 			ID:      pair[1],
 			Field:   "range",
 			Message: "Range overlaps with " + pair[0] + ".",

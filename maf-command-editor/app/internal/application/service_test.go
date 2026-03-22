@@ -127,7 +127,7 @@ func fixedNow() time.Time {
 func testConfig(t *testing.T) config.Config {
 	t.Helper()
 	root := t.TempDir()
-	settingsPath := filepath.Join(root, "export-settings.json")
+	settingsPath := filepath.Join(root, "export_settings.json")
 	templatePath := filepath.Join(root, "pack-template.mcmeta")
 	if err := os.WriteFile(templatePath, []byte("{\"pack\":{\"pack_format\":61,\"description\":\"test\"}}\n"), 0o644); err != nil {
 		t.Fatal(err)
@@ -158,12 +158,12 @@ func testConfig(t *testing.T) config.Config {
 		ItemStatePath:          filepath.Join(root, "item.json"),
 		GrimoireStatePath:      filepath.Join(root, "grimoire.json"),
 		SkillStatePath:         filepath.Join(root, "skill.json"),
-		EnemySkillStatePath:    filepath.Join(root, "enemy-skill.json"),
+		EnemySkillStatePath:    filepath.Join(root, "enemy_skill.json"),
 		EnemyStatePath:         filepath.Join(root, "enemy.json"),
-		SpawnTableStatePath:    filepath.Join(root, "spawn-table.json"),
+		SpawnTableStatePath:    filepath.Join(root, "spawn_table.json"),
 		TreasureStatePath:      filepath.Join(root, "treasure.json"),
 		LootTablesStatePath:    filepath.Join(root, "loottables.json"),
-		IDCounterStatePath:     filepath.Join(root, "id-counters.json"),
+		IDCounterStatePath:     filepath.Join(root, "id_counters.json"),
 		ExportSettingsPath:     settingsPath,
 		MinecraftLootTableRoot: writeTestMinecraftLootTableRoot(t, root),
 	}
@@ -175,7 +175,7 @@ func repoSavedataConfig(t *testing.T) config.Config {
 	root := repoRoot(t)
 	savedataDir := filepath.Join(root, "savedata")
 	fixtureDir := t.TempDir()
-	settingsPath := filepath.Join(fixtureDir, "export-settings.json")
+	settingsPath := filepath.Join(fixtureDir, "export_settings.json")
 	writeJSONFile(t, settingsPath, export.ExportSettings{
 		OutputRoot:       "./out",
 		Namespace:        "maf",
@@ -201,12 +201,12 @@ func repoSavedataConfig(t *testing.T) config.Config {
 		ItemStatePath:          filepath.Join(savedataDir, "item.json"),
 		GrimoireStatePath:      filepath.Join(savedataDir, "grimoire.json"),
 		SkillStatePath:         filepath.Join(savedataDir, "skill.json"),
-		EnemySkillStatePath:    filepath.Join(savedataDir, "enemy-skill.json"),
+		EnemySkillStatePath:    filepath.Join(savedataDir, "enemy_skill.json"),
 		EnemyStatePath:         filepath.Join(savedataDir, "enemy.json"),
-		SpawnTableStatePath:    filepath.Join(savedataDir, "spawn-table.json"),
+		SpawnTableStatePath:    filepath.Join(savedataDir, "spawn_table.json"),
 		TreasureStatePath:      filepath.Join(savedataDir, "treasure.json"),
 		LootTablesStatePath:    filepath.Join(savedataDir, "loottables.json"),
-		IDCounterStatePath:     filepath.Join(savedataDir, "id-counters.json"),
+		IDCounterStatePath:     filepath.Join(savedataDir, "id_counters.json"),
 		ExportSettingsPath:     settingsPath,
 		MinecraftLootTableRoot: filepath.Join(root, "minecraft", "1.21.11", "loot_table"),
 	}

@@ -1,5 +1,5 @@
 {
-  "outputRoot": "../../datapacks/magic-and-frontier",
+  "outputRoot": "../../datapacks/magic_and_frontier",
   "namespace": "maf",
   "templatePackPath": "./pack-template.mcmeta",
   "paths": {
