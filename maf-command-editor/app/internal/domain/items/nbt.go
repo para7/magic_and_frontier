@@ -9,6 +9,12 @@ import (
 
 func buildItemNBT(input SaveInput) (string, string) {
 	tagParts := make([]string, 0, 16)
+	formKeys := make(map[string]bool)
+
+	addTag := func(key, value string) {
+		tagParts = append(tagParts, key+":"+value)
+		formKeys[key] = true
+	}
 
 	displayParts := make([]string, 0, 2)
 	if name := strings.TrimSpace(input.CustomName); name != "" {
@@ -29,7 +35,7 @@ func buildItemNBT(input SaveInput) (string, string) {
 		displayParts = append(displayParts, fmt.Sprintf("Lore:[%s]", strings.Join(lore, ",")))
 	}
 	if len(displayParts) > 0 {
-		tagParts = append(tagParts, fmt.Sprintf("display:{%s}", strings.Join(displayParts, ",")))
+		addTag("display", fmt.Sprintf("{%s}", strings.Join(displayParts, ",")))
 	}
 
 	if ench := strings.TrimSpace(input.Enchantments); ench != "" {
@@ -51,36 +57,41 @@ func buildItemNBT(input SaveInput) (string, string) {
 			parts = append(parts, fmt.Sprintf("{id:%q,lvl:%ds}", fields[0], level))
 		}
 		if len(parts) > 0 {
-			tagParts = append(tagParts, fmt.Sprintf("Enchantments:[%s]", strings.Join(parts, ",")))
+			addTag("Enchantments", fmt.Sprintf("[%s]", strings.Join(parts, ",")))
 		}
 	}
 
 	if input.Unbreakable {
 		tagParts = append(tagParts, "Unbreakable:1b")
+		formKeys["Unbreakable"] = true
 	}
 	if v := strings.TrimSpace(input.CustomModelData); v != "" {
-		tagParts = append(tagParts, "CustomModelData:"+v)
+		addTag("CustomModelData", v)
 	}
 	if v := strings.TrimSpace(input.RepairCost); v != "" {
-		tagParts = append(tagParts, "RepairCost:"+v)
+		addTag("RepairCost", v)
 	}
 	if v := strings.TrimSpace(input.HideFlags); v != "" {
-		tagParts = append(tagParts, "HideFlags:"+v)
+		addTag("HideFlags", v)
 	}
 	if v := strings.Trim(strings.TrimSpace(input.PotionID), `"`); v != "" {
-		tagParts = append(tagParts, fmt.Sprintf("Potion:%q", v))
+		addTag("Potion", fmt.Sprintf("%q", v))
 	}
 	if v := strings.TrimSpace(input.CustomPotionColor); v != "" {
-		tagParts = append(tagParts, "CustomPotionColor:"+v)
+		addTag("CustomPotionColor", v)
 	}
 	if v := normalizeListValue(input.CustomPotionEffects); v != "" {
-		tagParts = append(tagParts, "CustomPotionEffects:"+v)
+		addTag("CustomPotionEffects", v)
 	}
 	if v := normalizeListValue(input.AttributeModifiers); v != "" {
-		tagParts = append(tagParts, "AttributeModifiers:"+v)
+		addTag("AttributeModifiers", v)
 	}
 	if v := normalizeCustomNbtFragment(input.CustomNBT); v != "" {
-		tagParts = append(tagParts, v)
+		for _, entry := range splitSNBTEntries(v) {
+			if !formKeys[entry.Key] {
+				tagParts = append(tagParts, entry.Raw)
+			}
+		}
 	}
 
 	itemParts := []string{
@@ -96,6 +107,79 @@ func buildItemNBT(input SaveInput) (string, string) {
 func toNbtText(value string) string {
 	raw, _ := json.Marshal(map[string]string{"text": value})
 	return "'" + strings.ReplaceAll(string(raw), "'", "\\'") + "'"
+}
+
+type snbtEntry struct {
+	Key string
+	Raw string
+}
+
+// splitSNBTEntries splits a normalized SNBT fragment (outer braces already removed)
+// into top-level key:value entries, respecting nested braces, brackets, and quoted strings.
+func splitSNBTEntries(fragment string) []snbtEntry {
+	fragment = strings.TrimSpace(fragment)
+	if fragment == "" {
+		return nil
+	}
+	var entries []snbtEntry
+	depth := 0
+	inDouble := false
+	inSingle := false
+	escaped := false
+	start := 0
+
+	for i := 0; i < len(fragment); i++ {
+		ch := fragment[i]
+		if escaped {
+			escaped = false
+			continue
+		}
+		if ch == '\\' && inDouble {
+			escaped = true
+			continue
+		}
+		if ch == '"' && !inSingle {
+			inDouble = !inDouble
+			continue
+		}
+		if ch == '\'' && !inDouble {
+			inSingle = !inSingle
+			continue
+		}
+		if inDouble || inSingle {
+			continue
+		}
+		switch ch {
+		case '{', '[':
+			depth++
+		case '}', ']':
+			depth--
+		case ',':
+			if depth == 0 {
+				if entry, ok := parseSnbtEntry(fragment[start:i]); ok {
+					entries = append(entries, entry)
+				}
+				start = i + 1
+			}
+		}
+	}
+	if entry, ok := parseSnbtEntry(fragment[start:]); ok {
+		entries = append(entries, entry)
+	}
+	return entries
+}
+
+func parseSnbtEntry(s string) (snbtEntry, bool) {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return snbtEntry{}, false
+	}
+	colon := strings.Index(s, ":")
+	if colon < 0 {
+		return snbtEntry{Raw: s, Key: s}, true
+	}
+	key := strings.TrimSpace(s[:colon])
+	return snbtEntry{Key: key, Raw: s}, true
 }
 
 func normalizeCustomNbtFragment(value string) string {
