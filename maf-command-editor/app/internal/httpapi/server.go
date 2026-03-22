@@ -57,9 +57,6 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	if deps.LootTableRepo == nil {
 		deps.LootTableRepo = defaults.LootTableRepo
 	}
-	if deps.CounterRepo == nil {
-		deps.CounterRepo = defaults.CounterRepo
-	}
 	if deps.ExportSettingsPath == "" {
 		deps.ExportSettingsPath = defaults.ExportSettingsPath
 	}
@@ -84,7 +81,6 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		SpawnTableRepo: deps.SpawnTableRepo,
 		TreasureRepo:   deps.TreasureRepo,
 		LootTableRepo:  deps.LootTableRepo,
-		CounterRepo:    deps.CounterRepo,
 		Now:            deps.Now,
 	})
 
@@ -173,12 +169,6 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 			writeDuplicateIDValidationError[grimoire.GrimoireEntry](w)
 			return
 		}
-		castID, allocErr := appService.AllocateCastID()
-		if allocErr != nil {
-			writeInternalError(w, allocErr)
-			return
-		}
-		input.CastID = castID
 		result := grimoire.ValidateSave(input, deps.Now())
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)

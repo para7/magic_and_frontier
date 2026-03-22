@@ -17,7 +17,6 @@ import (
 	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/export"
-	"tools2/app/internal/idseq"
 	"tools2/app/internal/mcsource"
 	"tools2/app/internal/store"
 )
@@ -31,7 +30,6 @@ type Dependencies struct {
 	SpawnTableRepo     store.EntryStateRepository[spawntables.SpawnTableEntry]
 	TreasureRepo       store.EntryStateRepository[treasures.TreasureEntry]
 	LootTableRepo      store.EntryStateRepository[loottables.LootTableEntry]
-	CounterRepo        store.CounterRepository
 	ExportSettingsPath string
 	Now                func() time.Time
 }
@@ -86,7 +84,6 @@ func DefaultDependencies(cfg config.Config) Dependencies {
 		SpawnTableRepo:     store.NewEntryStateRepository[spawntables.SpawnTableEntry](cfg.SpawnTableStatePath),
 		TreasureRepo:       store.NewEntryStateRepository[treasures.TreasureEntry](cfg.TreasureStatePath),
 		LootTableRepo:      store.NewEntryStateRepository[loottables.LootTableEntry](cfg.LootTablesStatePath),
-		CounterRepo:        store.NewCounterRepository(cfg.IDCounterStatePath),
 		ExportSettingsPath: cfg.ExportSettingsPath,
 		Now:                time.Now,
 	}
@@ -117,9 +114,6 @@ func NewService(cfg config.Config, deps Dependencies) Service {
 	}
 	if deps.LootTableRepo == nil {
 		deps.LootTableRepo = defaults.LootTableRepo
-	}
-	if deps.CounterRepo == nil {
-		deps.CounterRepo = defaults.CounterRepo
 	}
 	if deps.ExportSettingsPath == "" {
 		deps.ExportSettingsPath = defaults.ExportSettingsPath
@@ -181,18 +175,6 @@ func (s Service) ValidateAll() (ValidationReport, error) {
 		return ValidationReport{}, err
 	}
 	return ValidateBundle(states, s.deps.ExportSettingsPath, s.cfg.MinecraftLootTableRoot, s.deps.Now()), nil
-}
-
-func (s Service) AllocateCastID() (int, error) {
-	state, err := s.deps.CounterRepo.LoadCounterState()
-	if err != nil {
-		return 0, err
-	}
-	next, castID := idseq.NextCastID(state)
-	if err := s.deps.CounterRepo.SaveCounterState(next); err != nil {
-		return 0, err
-	}
-	return castID, nil
 }
 
 func (s Service) ExportDatapack() export.SaveDataResponse {

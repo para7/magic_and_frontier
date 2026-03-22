@@ -85,10 +85,14 @@ templ GrimoireFormShell(data webui.GrimoirePageData) {
 						</label>
 						<label>
 							Cast ID
-						<input name="castid" value={ data.Form.CastID } readonly/>
-						<small>Assigned by the server.</small>
-						@FieldErrorBox(data.Form.FieldErrors, "castid")
-					</label>
+							if data.Form.IsEditing {
+								<input name="castid" value={ data.Form.CastID } readonly/>
+							} else {
+								<input name="castid" value={ data.Form.CastID }/>
+								<small>1以上の整数</small>
+							}
+							@FieldErrorBox(data.Form.FieldErrors, "castid")
+						</label>
 					<label>
 						Cast Time
 						<input name="castTime" value={ data.Form.CastTime }/>

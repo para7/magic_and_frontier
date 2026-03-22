@@ -41,9 +41,6 @@ func RegisterRoutes(mux *http.ServeMux, cfg config.Config, deps Dependencies) {
 	if deps.LootTableRepo == nil {
 		deps.LootTableRepo = defaults.LootTableRepo
 	}
-	if deps.CounterRepo == nil {
-		deps.CounterRepo = defaults.CounterRepo
-	}
 	if deps.Now == nil {
 		deps.Now = time.Now
 	}

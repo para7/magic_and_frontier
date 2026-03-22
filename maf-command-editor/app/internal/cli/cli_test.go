@@ -116,7 +116,6 @@ func writeFixtureConfig(t *testing.T, valid bool) config.Config {
 		SpawnTableStatePath:    filepath.Join(root, "spawn_table.json"),
 		TreasureStatePath:      filepath.Join(root, "treasure.json"),
 		LootTablesStatePath:    filepath.Join(root, "loottables.json"),
-		IDCounterStatePath:     filepath.Join(root, "id_counters.json"),
 		ExportSettingsPath:     settingsPath,
 		MinecraftLootTableRoot: writeMinecraftLootTableRoot(t, root),
 	}

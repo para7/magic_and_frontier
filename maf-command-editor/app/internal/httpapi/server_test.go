@@ -68,6 +68,7 @@ func TestHandlerSSRGrimoireEditShowsReadonlyCastID(t *testing.T) {
 	handler, _ := newTestHandler(t)
 	grimoireID := createJSONEntry(t, handler, "/api/grimoire", grimoire.SaveInput{
 		ID:       "grimoire_1",
+		CastID:   1,
 		Title:    "Firebolt",
 		Script:   "say fire",
 		CastTime: 20,
@@ -80,6 +81,73 @@ func TestHandlerSSRGrimoireEditShowsReadonlyCastID(t *testing.T) {
 	}
 	if !strings.Contains(rec.Body.String(), `name="castid" value="1" readonly`) {
 		t.Fatalf("body = %s", rec.Body.String())
+	}
+}
+
+func TestHandlerSSRGrimoireNewShowsEditableCastID(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	rec := request(t, handler, http.MethodGet, "/grimoire/new", nil, "")
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d", rec.Code)
+	}
+	body := rec.Body.String()
+	if !strings.Contains(body, `name="castid" value=""`) {
+		t.Fatalf("body = %s", body)
+	}
+	if strings.Contains(body, `name="castid" value="" readonly`) {
+		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, "1以上の整数") {
+		t.Fatalf("body = %s", body)
+	}
+}
+
+func TestHandlerSSRGrimoireCreateRejectsNonNumericCastID(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	rec := postForm(t, handler, "/grimoire/new", url.Values{
+		"id":       {"grimoire_1"},
+		"castid":   {"abc"},
+		"castTime": {"20"},
+		"mpCost":   {"5"},
+		"title":    {"Firebolt"},
+		"script":   {"say fire"},
+	}, http.StatusOK)
+	body := rec.Body.String()
+	if !strings.Contains(body, "Must be a number.") {
+		t.Fatalf("body = %s", body)
+	}
+}
+
+func TestHandlerSSRGrimoireCreateDuplicateIDDoesNotShowCastIDValidationError(t *testing.T) {
+	handler, _ := newTestHandler(t)
+	createJSONEntry(t, handler, "/api/grimoire", grimoire.SaveInput{
+		ID:       "grimoire_1",
+		CastID:   1,
+		Title:    "Existing",
+		Script:   "say existing",
+		CastTime: 20,
+		MPCost:   5,
+	})
+
+	rec := postForm(t, handler, "/grimoire/new", url.Values{
+		"id":       {"grimoire_1"},
+		"castid":   {"999"},
+		"castTime": {"20"},
+		"mpCost":   {"5"},
+		"title":    {"Duplicate"},
+		"script":   {"say dup"},
+	}, http.StatusOK)
+	body := rec.Body.String()
+	if !strings.Contains(body, "この ID は既に使用されています。") {
+		t.Fatalf("body = %s", body)
+	}
+	if strings.Contains(body, "Must satisfy gte 1.") {
+		t.Fatalf("body = %s", body)
+	}
+	if strings.Contains(body, "Must be a number.") {
+		t.Fatalf("body = %s", body)
 	}
 }
 
@@ -211,6 +279,7 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 
 	grimoireID := createJSONEntry(t, handler, "/api/grimoire", grimoire.SaveInput{
 		ID:          "grimoire_1",
+		CastID:      100,
 		Title:       "Firebolt",
 		Description: "Burn",
 		Script:      "say fire",
@@ -319,7 +388,7 @@ func TestHandlerAPITreasureRejectsMissingVanillaSource(t *testing.T) {
 	}
 }
 
-func TestHandlerAPIGrimoireUsesServerManagedCastID(t *testing.T) {
+func TestHandlerAPIGrimoireUsesClientProvidedCastID(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
 	rec := requestJSON(t, handler, http.MethodPost, "/api/grimoire", grimoire.SaveInput{
@@ -341,7 +410,7 @@ func TestHandlerAPIGrimoireUsesServerManagedCastID(t *testing.T) {
 	if body.Entry.ID != "grimoire_999" {
 		t.Fatalf("entry = %#v", body.Entry)
 	}
-	if body.Entry.CastID != 1 {
+	if body.Entry.CastID != 999 {
 		t.Fatalf("entry = %#v", body.Entry)
 	}
 
@@ -362,6 +431,36 @@ func TestHandlerAPIGrimoireUsesServerManagedCastID(t *testing.T) {
 		t.Fatalf("body = %#v", body)
 	}
 	if body.FieldErrors["id"] == "" {
+		t.Fatalf("body = %#v", body)
+	}
+}
+
+func TestHandlerAPIGrimoireRejectsDuplicateCastID(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	createJSONEntry(t, handler, "/api/grimoire", grimoire.SaveInput{
+		ID:       "grimoire_1",
+		CastID:   7,
+		Title:    "Firebolt",
+		Script:   "say fire",
+		CastTime: 20,
+		MPCost:   5,
+	})
+
+	rec := requestJSON(t, handler, http.MethodPost, "/api/grimoire", grimoire.SaveInput{
+		ID:       "grimoire_2",
+		CastID:   7,
+		Title:    "Icebolt",
+		Script:   "say ice",
+		CastTime: 20,
+		MPCost:   5,
+	})
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d body=%s", rec.Code, rec.Body.String())
+	}
+	var body common.SaveResult[grimoire.GrimoireEntry]
+	decodeResponse(t, rec, &body)
+	if body.FieldErrors["castid"] == "" {
 		t.Fatalf("body = %#v", body)
 	}
 }
@@ -525,7 +624,6 @@ func newTestHandler(t *testing.T) (http.Handler, string) {
 		SpawnTableStatePath:    filepath.Join(root, "spawn_table.json"),
 		TreasureStatePath:      filepath.Join(root, "treasure.json"),
 		LootTablesStatePath:    filepath.Join(root, "loottables.json"),
-		IDCounterStatePath:     filepath.Join(root, "id_counters.json"),
 		ExportSettingsPath:     settingsPath,
 		MinecraftLootTableRoot: writeMinecraftLootTableRoot(t, root),
 	}

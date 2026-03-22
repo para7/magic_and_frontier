@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	"tools2/app/internal/application"
 	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/webui"
 	"tools2/app/views"
@@ -76,17 +75,16 @@ func (a App) grimoireSave(w http.ResponseWriter, r *http.Request, editing bool) 
 		input.CastID = existing.CastID
 		form.ID = existing.ID
 		form.CastID = strconv.Itoa(existing.CastID)
-	} else if _, ok := findEntry(state.Entries, form.ID, func(entry grimoire.GrimoireEntry) string { return entry.ID }); ok {
-		parseErrs["id"] = "この ID は既に使用されています。"
-	}
-	if !editing {
-		castID, allocErr := application.NewService(a.cfg, a.deps).AllocateCastID()
-		if allocErr != nil {
-			a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(allocErr.Error()), Form: form})
-			return
+	} else {
+		castID, parseErr := strconv.Atoi(form.CastID)
+		if parseErr != nil {
+			parseErrs["castid"] = "Must be a number."
+		} else {
+			input.CastID = castID
 		}
-		input.CastID = castID
-		form.CastID = strconv.Itoa(castID)
+		if _, ok := findEntry(state.Entries, form.ID, func(entry grimoire.GrimoireEntry) string { return entry.ID }); ok {
+			parseErrs["id"] = "この ID は既に使用されています。"
+		}
 	}
 	result := grimoire.ValidateSave(input, a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapGrimoireField))
@@ -195,7 +193,7 @@ func parseGrimoireForm(r *http.Request) (webui.GrimoireFormData, grimoire.SaveIn
 	errs := map[string]string{}
 	input := grimoire.SaveInput{
 		ID:          form.ID,
-		CastID:      parseRequiredInt(errs, "castid", form.CastID),
+		CastID:      0,
 		CastTime:    parseRequiredInt(errs, "castTime", form.CastTime),
 		MPCost:      parseRequiredInt(errs, "mpCost", form.MPCost),
 		Script:      form.Script,

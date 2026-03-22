@@ -70,25 +70,6 @@ func TestValidateBundleDetectsBrokenReferences(t *testing.T) {
 	}
 }
 
-func TestServiceAllocateCastID(t *testing.T) {
-	cfg := testConfig(t)
-	svc := NewService(cfg, Dependencies{Now: fixedNow})
-	castID, err := svc.AllocateCastID()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if castID != 1 {
-		t.Fatalf("castID = %d", castID)
-	}
-	nextCastID, err := svc.AllocateCastID()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if nextCastID != 2 {
-		t.Fatalf("nextCastID = %d", nextCastID)
-	}
-}
-
 func TestServiceExportDatapackRejectsInvalidSavedata(t *testing.T) {
 	cfg := testConfig(t)
 	writeJSONFile(t, cfg.ItemStatePath, items.ItemState{Items: []items.ItemEntry{
@@ -163,7 +144,6 @@ func testConfig(t *testing.T) config.Config {
 		SpawnTableStatePath:    filepath.Join(root, "spawn_table.json"),
 		TreasureStatePath:      filepath.Join(root, "treasure.json"),
 		LootTablesStatePath:    filepath.Join(root, "loottables.json"),
-		IDCounterStatePath:     filepath.Join(root, "id_counters.json"),
 		ExportSettingsPath:     settingsPath,
 		MinecraftLootTableRoot: writeTestMinecraftLootTableRoot(t, root),
 	}
@@ -206,7 +186,6 @@ func repoSavedataConfig(t *testing.T) config.Config {
 		SpawnTableStatePath:    filepath.Join(savedataDir, "spawn_table.json"),
 		TreasureStatePath:      filepath.Join(savedataDir, "treasure.json"),
 		LootTablesStatePath:    filepath.Join(savedataDir, "loottables.json"),
-		IDCounterStatePath:     filepath.Join(savedataDir, "id_counters.json"),
 		ExportSettingsPath:     settingsPath,
 		MinecraftLootTableRoot: filepath.Join(root, "minecraft", "1.21.11", "loot_table"),
 	}
