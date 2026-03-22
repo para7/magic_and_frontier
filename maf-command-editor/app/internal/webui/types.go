@@ -55,7 +55,6 @@ type ItemFormData struct {
 	ID                  string
 	ReturnTo            string
 	ItemID              string
-	Count               string
 	SkillID             string
 	SkillOptions        []ReferenceOption
 	CustomName          string

@@ -158,7 +158,7 @@ func (a App) renderSkillForm(w http.ResponseWriter, r *http.Request, data webui.
 }
 
 func skillsMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Skills", CurrentPath: "/skills", Description: "スキルの script と説明を管理します。item から参照されます。"}
+	return webui.PageMeta{Title: "Skills", CurrentPath: "/skills"}
 }
 
 func defaultSkillForm() webui.SkillFormData {

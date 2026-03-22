@@ -165,7 +165,7 @@ func (a App) renderSpawnTableForm(w http.ResponseWriter, r *http.Request, data w
 }
 
 func spawnTablesMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Spawn Tables", CurrentPath: "/spawn-tables", Description: "source mob + dimension + xyz range ごとの敵置換テーブルを管理します。"}
+	return webui.PageMeta{Title: "Spawn Tables", CurrentPath: "/spawn-tables"}
 }
 
 func defaultSpawnTableForm() webui.SpawnTableFormData {

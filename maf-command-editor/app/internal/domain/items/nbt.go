@@ -85,7 +85,7 @@ func buildItemNBT(input SaveInput) (string, string) {
 
 	itemParts := []string{
 		fmt.Sprintf("id:%q", strings.TrimSpace(input.ItemID)),
-		fmt.Sprintf("Count:%db", input.Count),
+		"Count:1b",
 	}
 	if len(tagParts) > 0 {
 		itemParts = append(itemParts, fmt.Sprintf("tag:{%s}", strings.Join(tagParts, ",")))

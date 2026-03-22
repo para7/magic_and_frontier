@@ -416,7 +416,6 @@ func itemToInput(entry items.ItemEntry) items.SaveInput {
 	return items.SaveInput{
 		ID:                  entry.ID,
 		ItemID:              entry.ItemID,
-		Count:               entry.Count,
 		SkillID:             entry.SkillID,
 		CustomName:          entry.CustomName,
 		Lore:                entry.Lore,

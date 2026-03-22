@@ -90,7 +90,6 @@ func writeFixtureConfig(t *testing.T, valid bool) config.Config {
 		Items: []items.ItemEntry{{
 			ID:      "items_1",
 			ItemID:  "minecraft:apple",
-			Count:   1,
 			SkillID: "skill_1",
 		}},
 	})

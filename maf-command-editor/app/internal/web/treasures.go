@@ -293,7 +293,7 @@ func buildTreasureListEntries(entries []treasures.TreasureEntry, sources []mcsou
 }
 
 func treasuresMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Treasures", CurrentPath: "/treasures", Description: "Minecraft 本体 loot table に追記する overlay を管理します。"}
+	return webui.PageMeta{Title: "Treasures", CurrentPath: "/treasures"}
 }
 
 func defaultTreasureForm() webui.TreasureFormData {

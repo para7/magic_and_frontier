@@ -163,7 +163,7 @@ func (a App) renderEnemySkillForm(w http.ResponseWriter, r *http.Request, data w
 }
 
 func enemySkillsMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Enemy Skills", CurrentPath: "/enemy-skills", Description: "再利用可能な enemy-skill script と説明を管理します。"}
+	return webui.PageMeta{Title: "Enemy Skills", CurrentPath: "/enemy-skills"}
 }
 
 func defaultEnemySkillForm() webui.EnemySkillFormData {

@@ -185,7 +185,7 @@ func (a App) renderEnemyForm(w http.ResponseWriter, r *http.Request, data webui.
 }
 
 func enemiesMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Enemies", CurrentPath: "/enemies", Description: "enemy の mob type、装備、drop mode、直接ドロップを管理します。"}
+	return webui.PageMeta{Title: "Enemies", CurrentPath: "/enemies"}
 }
 
 func defaultEnemyForm(entries []enemyskills.EnemySkillEntry) webui.EnemyFormData {

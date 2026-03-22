@@ -12,7 +12,6 @@ func TestValidateSaveSuccessCases(t *testing.T) {
 	result := ValidateSave(SaveInput{
 		ID:     "items_1",
 		ItemID: " minecraft:stone ",
-		Count:  1,
 	}, map[string]struct{}{}, now)
 	if !result.OK || result.Entry == nil {
 		t.Fatalf("expected success, got %+v", result)
@@ -33,9 +32,9 @@ func TestValidateSaveValidationErrors(t *testing.T) {
 		skillIDs  map[string]struct{}
 		wantField string
 	}{
-		{name: "invalid id", input: SaveInput{ID: "bad", ItemID: "minecraft:stone", Count: 1}, skillIDs: map[string]struct{}{}, wantField: "id"},
-		{name: "invalid enchantment line", input: SaveInput{ID: "items_1", ItemID: "minecraft:stone", Count: 1, Enchantments: "minecraft:sharpness"}, skillIDs: map[string]struct{}{}, wantField: "enchantments"},
-		{name: "missing skill", input: SaveInput{ID: "items_1", ItemID: "minecraft:stone", Count: 1, SkillID: "skill_2"}, skillIDs: map[string]struct{}{}, wantField: "skillId"},
+		{name: "invalid id", input: SaveInput{ID: "bad", ItemID: "minecraft:stone"}, skillIDs: map[string]struct{}{}, wantField: "id"},
+		{name: "invalid enchantment line", input: SaveInput{ID: "items_1", ItemID: "minecraft:stone", Enchantments: "minecraft:sharpness"}, skillIDs: map[string]struct{}{}, wantField: "enchantments"},
+		{name: "missing skill", input: SaveInput{ID: "items_1", ItemID: "minecraft:stone", SkillID: "skill_2"}, skillIDs: map[string]struct{}{}, wantField: "skillId"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -89,7 +89,6 @@ func TestHandlerSSRItemsListIncludesClientControlsAndReturnTo(t *testing.T) {
 	})
 	itemID := createJSONEntry(t, handler, "/api/items", items.SaveInput{
 		ItemID:  "minecraft:apple",
-		Count:   3,
 		SkillID: skillID,
 	})
 
@@ -153,7 +152,6 @@ func TestHandlerSSRItemReturnToRejectsNonListPaths(t *testing.T) {
 	handler, _ := newTestHandler(t)
 	itemID := createJSONEntry(t, handler, "/api/items", items.SaveInput{
 		ItemID: "minecraft:apple",
-		Count:  1,
 	})
 
 	rec := request(t, handler, http.MethodGet, "/items/edit?id="+itemID+"&returnTo=%2Fsave", nil, "")
@@ -167,7 +165,6 @@ func TestHandlerSSRItemReturnToRejectsNonListPaths(t *testing.T) {
 	rec = postForm(t, handler, "/items/edit", url.Values{
 		"id":       {itemID},
 		"itemId":   {"minecraft:apple"},
-		"count":    {"2"},
 		"returnTo": {"/items/edit?id=" + itemID},
 	}, http.StatusSeeOther)
 	assertRedirect(t, rec, "/items")
@@ -184,7 +181,6 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 
 	itemID := createJSONEntry(t, handler, "/api/items", items.SaveInput{
 		ItemID:  "minecraft:apple",
-		Count:   1,
 		SkillID: skillID,
 	})
 
@@ -349,7 +345,6 @@ func TestHandlerAPISkillDeleteRejectsReferencedItem(t *testing.T) {
 	})
 	createJSONEntry(t, handler, "/api/items", items.SaveInput{
 		ItemID:  "minecraft:apple",
-		Count:   1,
 		SkillID: skillID,
 	})
 

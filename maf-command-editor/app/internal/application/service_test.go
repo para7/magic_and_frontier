@@ -24,7 +24,7 @@ import (
 func TestValidateBundleDetectsBrokenReferences(t *testing.T) {
 	report := ValidateBundle(StateBundle{
 		ItemState: items.ItemState{Items: []items.ItemEntry{
-			{ID: "items_1", ItemID: "minecraft:apple", Count: 1, SkillID: "skill_9"},
+			{ID: "items_1", ItemID: "minecraft:apple", SkillID: "skill_9"},
 		}},
 		GrimoireState: grimoire.GrimoireState{Entries: []grimoire.GrimoireEntry{
 			{ID: "grimoire_1", CastID: 1, CastTime: 10, MPCost: 5, Script: "say cast", Title: "Spell"},
@@ -92,7 +92,7 @@ func TestServiceAllocateGrimoireIdentity(t *testing.T) {
 func TestServiceExportDatapackRejectsInvalidSavedata(t *testing.T) {
 	cfg := testConfig(t)
 	writeJSONFile(t, cfg.ItemStatePath, items.ItemState{Items: []items.ItemEntry{
-		{ID: "items_1", ItemID: "minecraft:apple", Count: 1, SkillID: "skill_999"},
+		{ID: "items_1", ItemID: "minecraft:apple", SkillID: "skill_999"},
 	}})
 	svc := NewService(cfg, Dependencies{Now: fixedNow})
 	result := svc.ExportDatapack()

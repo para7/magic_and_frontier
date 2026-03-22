@@ -18,7 +18,9 @@ templ PageScaffold(meta webui.PageMeta, notice *webui.Notice) {
 	<section class="panel">
 		<div class="page-header">
 			<h1>{ meta.Title }</h1>
-			<p>{ meta.Description }</p>
+			if meta.Description != "" {
+				<p>{ meta.Description }</p>
+			}
 		</div>
 		{ children... }
 	</section>
@@ -92,36 +94,33 @@ templ ItemsShell(data webui.ItemsPageData) {
 				@ListBrowser(data.Meta.CurrentURL, "/items/new", "Add Item", "ID, item ID, skill ID, custom name で検索") {
 					<div class="entry-list" data-list-entries>
 						for _, entry := range data.Entries {
-							<article
-								class="entry-card"
-								data-list-item
-								data-search={ SearchBlob(entry.ID, entry.ItemID, IntText(entry.Count), entry.SkillID, entry.CustomName, entry.UpdatedAt) }
-								data-filters={ SkillFilterTokens(entry.SkillID) }
-								data-sort-updated={ entry.UpdatedAt }
-								data-sort-id={ entry.ID }
-								data-sort-item_id={ entry.ItemID }
-								data-sort-count={ IntText(entry.Count) }>
-								<header>
-									<div>
-										<h3 class="code">{ entry.ID }</h3>
-										<p class="entry-meta">{ entry.ItemID } x{ entry.Count }</p>
-									</div>
-									<div class="entry-actions">
-										<a class="secondary outline" role="button" href={ WithReturnTo("/items/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/items/edit?id=" + entry.ID }>Edit</a>
+								<article
+									class="entry-card"
+									data-list-item
+									data-search={ SearchBlob(entry.ID, entry.ItemID, entry.SkillID, entry.CustomName, entry.UpdatedAt) }
+									data-filters={ SkillFilterTokens(entry.SkillID) }
+									data-sort-updated={ entry.UpdatedAt }
+									data-sort-id={ entry.ID }
+									data-sort-item_id={ entry.ItemID }>
+									<header>
+										<div>
+											<h3 class="code">{ entry.ID }</h3>
+											<p class="entry-meta">{ entry.ItemID }</p>
+										</div>
+										<div class="entry-actions">
+											<a class="secondary outline" role="button" href={ WithReturnTo("/items/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/items/edit?id=" + entry.ID }>Edit</a>
 										<form method="post" action={ "/items/" + entry.ID + "/delete" }>
 											@ReturnToField(data.Meta.CurrentURL)
 											<button type="submit" class="danger">Delete</button>
 										</form>
 									</div>
-								</header>
-								<dl class="kv-list">
-									<dt>Item ID</dt><dd class="code">{ entry.ItemID }</dd>
-									<dt>Count</dt><dd>{ entry.Count }</dd>
-									<dt>Skill</dt><dd class="code">{ entry.SkillID }</dd>
-									<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
-									<dt>Unbreakable</dt><dd>{ BoolText(entry.Unbreakable) }</dd>
-								</dl>
-							</article>
+									</header>
+									<dl class="kv-list">
+										<dt>Name</dt><dd>{ entry.CustomName }</dd>
+										<dt>Item ID</dt><dd class="code">{ entry.ItemID }</dd>
+										<dt>Skill</dt><dd class="code">{ entry.SkillID }</dd>
+									</dl>
+								</article>
 						}
 						@ListEmptyState("まだアイテムはありません。", len(data.Entries) > 0)
 					</div>
@@ -153,15 +152,10 @@ templ ItemFormShell(data webui.ItemsPageData) {
 						<input name="itemId" value={ data.Form.ItemID }/>
 						@FieldErrorBox(data.Form.FieldErrors, "itemId")
 					</label>
-					<label>
-						Count
-						<input name="count" value={ data.Form.Count }/>
-						@FieldErrorBox(data.Form.FieldErrors, "count")
-					</label>
-					<label>
-						Skill
-						<select name="skillId">
-							<option value="">No skill</option>
+						<label>
+							Skill
+							<select name="skillId">
+								<option value="">No skill</option>
 							for _, option := range data.Form.SkillOptions {
 								<option value={ option.ID } selected?={ option.ID == data.Form.SkillID }>{ option.Label }</option>
 							}

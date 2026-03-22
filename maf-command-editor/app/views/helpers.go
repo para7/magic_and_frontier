@@ -285,8 +285,6 @@ func ItemsSortOptions() []webui.SelectOption {
 		{Value: "id_desc", Label: "ID desc"},
 		{Value: "item_id_asc", Label: "Item ID asc"},
 		{Value: "item_id_desc", Label: "Item ID desc"},
-		{Value: "count_desc", Label: "Count desc"},
-		{Value: "count_asc", Label: "Count asc"},
 	}
 }
 

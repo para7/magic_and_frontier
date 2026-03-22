@@ -188,7 +188,7 @@ func (a App) renderLootTableForm(w http.ResponseWriter, r *http.Request, data we
 }
 
 func lootTablesMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Loottables", CurrentPath: "/loottables", Description: "固定ディレクトリに出力する loot table を管理します。"}
+	return webui.PageMeta{Title: "Loottables", CurrentPath: "/loottables"}
 }
 
 func defaultLootTableForm() webui.LootTableFormData {

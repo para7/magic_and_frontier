@@ -107,7 +107,6 @@ func TestGenerateItemOutputsUsesConfiguredLootDir(t *testing.T) {
 	_, err := generateItemOutputs(settings, []items.ItemEntry{{
 		ID:     "items_1",
 		ItemID: "minecraft:apple",
-		Count:  2,
 	}})
 	if err != nil {
 		t.Fatal(err)

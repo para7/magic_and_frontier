@@ -27,7 +27,6 @@ func ValidateSave(input SaveInput, skillIDs map[string]struct{}, now time.Time) 
 	entry := ItemEntry{
 		ID:                  id,
 		ItemID:              common.NormalizeText(input.ItemID),
-		Count:               input.Count,
 		SkillID:             skillID,
 		CustomName:          common.OptionalText(input.CustomName),
 		Lore:                common.OptionalText(input.Lore),

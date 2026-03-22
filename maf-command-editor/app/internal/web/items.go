@@ -2,7 +2,6 @@ package web
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"tools2/app/internal/application"
@@ -178,7 +177,6 @@ func defaultItemForm(options []webui.ReferenceOption) webui.ItemFormData {
 	return webui.ItemFormData{
 		ID:                  "",
 		ItemID:              "minecraft:stone",
-		Count:               "1",
 		SkillOptions:        options,
 		FieldErrors:         map[string]string{},
 		CustomName:          "",
@@ -199,7 +197,6 @@ func itemEntryToForm(entry items.ItemEntry, options []webui.ReferenceOption) web
 	return webui.ItemFormData{
 		ID:                  entry.ID,
 		ItemID:              entry.ItemID,
-		Count:               strconv.Itoa(entry.Count),
 		SkillID:             entry.SkillID,
 		SkillOptions:        options,
 		CustomName:          entry.CustomName,
@@ -223,7 +220,6 @@ func parseItemForm(r *http.Request, skills []skills.SkillEntry) (webui.ItemFormD
 	form := defaultItemForm(skillOptions(skills))
 	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.ItemID = strings.TrimSpace(r.Form.Get("itemId"))
-	form.Count = strings.TrimSpace(r.Form.Get("count"))
 	form.SkillID = strings.TrimSpace(r.Form.Get("skillId"))
 	form.CustomName = r.Form.Get("customName")
 	form.Lore = r.Form.Get("lore")
@@ -241,7 +237,6 @@ func parseItemForm(r *http.Request, skills []skills.SkillEntry) (webui.ItemFormD
 	input := items.SaveInput{
 		ID:                  form.ID,
 		ItemID:              form.ItemID,
-		Count:               parseRequiredInt(errs, "count", form.Count),
 		SkillID:             form.SkillID,
 		CustomName:          form.CustomName,
 		Lore:                form.Lore,

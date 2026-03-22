@@ -476,7 +476,7 @@ func generateItemOutputs(settings ExportSettings, entries []items.ItemEntry) (it
 		}, "\n")), 0o644); err != nil {
 			return itemOutputStats{}, err
 		}
-		if err := writeJSON(filepath.Join(lootRoot, entry.ID+".json"), toItemLootTable(entry, entry.Count)); err != nil {
+		if err := writeJSON(filepath.Join(lootRoot, entry.ID+".json"), toItemLootTable(entry)); err != nil {
 			return itemOutputStats{}, err
 		}
 	}
@@ -920,8 +920,8 @@ func toSpellLootTable(entry grimoire.GrimoireEntry) map[string]any {
 	}
 }
 
-func toItemLootTable(entry items.ItemEntry, count int) map[string]any {
-	value := float64(count)
+func toItemLootTable(entry items.ItemEntry) map[string]any {
+	value := float64(1)
 	return map[string]any{
 		"type": "minecraft:generic",
 		"pools": []any{

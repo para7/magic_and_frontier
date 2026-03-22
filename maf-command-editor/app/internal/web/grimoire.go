@@ -156,7 +156,7 @@ func (a App) renderGrimoireForm(w http.ResponseWriter, r *http.Request, data web
 }
 
 func grimoireMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Grimoire", CurrentPath: "/grimoire", Description: "呪文エントリを管理します。cast time と MP cost は単一値です。"}
+	return webui.PageMeta{Title: "Grimoire", CurrentPath: "/grimoire"}
 }
 
 func defaultGrimoireForm(_ []grimoire.GrimoireEntry) webui.GrimoireFormData {
