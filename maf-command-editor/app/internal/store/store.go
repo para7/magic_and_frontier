@@ -9,6 +9,7 @@ import (
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/domain/items"
+	"tools2/app/internal/idseq"
 )
 
 type ItemStateRepository interface {
@@ -26,6 +27,11 @@ type EntryStateRepository[T any] interface {
 	SaveState(common.EntryState[T]) error
 }
 
+type CounterRepository interface {
+	LoadCounterState() (idseq.CounterState, error)
+	SaveCounterState(idseq.CounterState) error
+}
+
 type itemRepository struct {
 	path string
 }
@@ -35,6 +41,10 @@ type grimoireRepository struct {
 }
 
 type entryRepository[T any] struct {
+	path string
+}
+
+type counterRepository struct {
 	path string
 }
 
@@ -48,6 +58,10 @@ func NewGrimoireStateRepository(path string) GrimoireStateRepository {
 
 func NewEntryStateRepository[T any](path string) EntryStateRepository[T] {
 	return entryRepository[T]{path: path}
+}
+
+func NewCounterRepository(path string) CounterRepository {
+	return counterRepository{path: path}
 }
 
 func (r itemRepository) LoadItemState() (items.ItemState, error) {
@@ -113,6 +127,22 @@ func (r entryRepository[T]) SaveState(state common.EntryState[T]) error {
 	if state.Entries == nil {
 		state.Entries = []T{}
 	}
+	return writeJSON(r.path, state)
+}
+
+func (r counterRepository) LoadCounterState() (idseq.CounterState, error) {
+	var state idseq.CounterState
+	err := readJSON(r.path, &state)
+	if err == nil {
+		return state, nil
+	}
+	if errors.Is(err, os.ErrNotExist) {
+		return idseq.EmptyCounterState(), nil
+	}
+	return idseq.CounterState{}, err
+}
+
+func (r counterRepository) SaveCounterState(state idseq.CounterState) error {
 	return writeJSON(r.path, state)
 }
 
