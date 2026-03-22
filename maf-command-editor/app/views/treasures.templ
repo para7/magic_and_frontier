@@ -69,12 +69,21 @@ templ TreasureFormShell(data webui.TreasuresPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/treasures", data.Form.ReturnTo, "Treasure Overlay")
-				<form class="form-grid" method="post" action="/treasures/edit">
-					<input type="hidden" name="id" value={ data.Form.ID }/>
-					<input type="hidden" name="tablePath" value={ data.Form.TablePath }/>
-					@ReturnToField(data.Form.ReturnTo)
-					<label class="form-span-2">
+					@FormShellHeader("/treasures", data.Form.ReturnTo, "Treasure Overlay")
+					<form class="form-grid" method="post" action="/treasures/edit">
+						<label>
+							ID
+							if data.Form.IsEditing {
+								<input name="id" value={ data.Form.ID } readonly/>
+							} else {
+								<input name="id" value={ data.Form.ID }/>
+								<small>例: treasure_1（treasure_ + 連番）</small>
+							}
+							@FieldErrorBox(data.Form.FieldErrors, "id")
+						</label>
+						<input type="hidden" name="tablePath" value={ data.Form.TablePath }/>
+						@ReturnToField(data.Form.ReturnTo)
+						<label class="form-span-2">
 						Table Path
 						<input value={ data.Form.TablePath } readonly/>
 						@FieldErrorBox(data.Form.FieldErrors, "tablePath")

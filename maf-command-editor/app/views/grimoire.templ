@@ -70,17 +70,21 @@ templ GrimoireFormShell(data webui.GrimoirePageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/grimoire", data.Form.ReturnTo, FormTitle("Grimoire Entry", data.Form.IsEditing))
-				<form class="form-grid" method="post" action={ FormAction("/grimoire", data.Form.IsEditing) }>
-					<input type="hidden" name="id" value={ data.Form.ID }/>
-					@ReturnToField(data.Form.ReturnTo)
-					<label>
-						ID
-						<input value={ data.Form.ID } readonly/>
-						<small>Assigned by the server.</small>
-					</label>
-					<label>
-						Cast ID
+					@FormShellHeader("/grimoire", data.Form.ReturnTo, FormTitle("Grimoire Entry", data.Form.IsEditing))
+					<form class="form-grid" method="post" action={ FormAction("/grimoire", data.Form.IsEditing) }>
+						@ReturnToField(data.Form.ReturnTo)
+						<label>
+							ID
+							if data.Form.IsEditing {
+								<input name="id" value={ data.Form.ID } readonly/>
+							} else {
+								<input name="id" value={ data.Form.ID }/>
+								<small>例: grimoire_1（grimoire_ + 連番）</small>
+							}
+							@FieldErrorBox(data.Form.FieldErrors, "id")
+						</label>
+						<label>
+							Cast ID
 						<input name="castid" value={ data.Form.CastID } readonly/>
 						<small>Assigned by the server.</small>
 						@FieldErrorBox(data.Form.FieldErrors, "castid")

@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"tools2/app/internal/application"
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/webui"
@@ -71,14 +70,8 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 			a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill not found.")})
 			return
 		}
-	} else if strings.TrimSpace(input.ID) == "" {
-		id, allocErr := application.NewService(a.cfg, a.deps).AllocateID("skill")
-		if allocErr != nil {
-			a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(allocErr.Error()), Form: form})
-			return
-		}
-		input.ID = id
-		form.ID = id
+	} else if _, ok := findEntry(state.Entries, form.ID, func(entry skills.SkillEntry) string { return entry.ID }); ok {
+		parseErrs["id"] = "この ID は既に使用されています。"
 	}
 	result := skills.ValidateSave(input, a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, result.FieldErrors)

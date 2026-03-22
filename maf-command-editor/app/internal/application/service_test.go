@@ -70,22 +70,22 @@ func TestValidateBundleDetectsBrokenReferences(t *testing.T) {
 	}
 }
 
-func TestServiceAllocateGrimoireIdentity(t *testing.T) {
+func TestServiceAllocateCastID(t *testing.T) {
 	cfg := testConfig(t)
 	svc := NewService(cfg, Dependencies{Now: fixedNow})
-	id, castID, err := svc.AllocateGrimoireIdentity()
+	castID, err := svc.AllocateCastID()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if id != "grimoire_1" || castID != 1 {
-		t.Fatalf("got %s %d", id, castID)
+	if castID != 1 {
+		t.Fatalf("castID = %d", castID)
 	}
-	nextID, err := svc.AllocateID("items")
+	nextCastID, err := svc.AllocateCastID()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if nextID != "items_1" {
-		t.Fatalf("nextID = %s", nextID)
+	if nextCastID != 2 {
+		t.Fatalf("nextCastID = %d", nextCastID)
 	}
 }
 

@@ -67,12 +67,21 @@ templ EnemySkillFormShell(data webui.EnemySkillsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/enemy-skills", data.Form.ReturnTo, FormTitle("Enemy Skill", data.Form.IsEditing))
-				<form class="form-grid" method="post" action={ FormAction("/enemy-skills", data.Form.IsEditing) }>
-					<input type="hidden" name="id" value={ data.Form.ID }/>
-					@ReturnToField(data.Form.ReturnTo)
-					<label>
-						Name
+					@FormShellHeader("/enemy-skills", data.Form.ReturnTo, FormTitle("Enemy Skill", data.Form.IsEditing))
+					<form class="form-grid" method="post" action={ FormAction("/enemy-skills", data.Form.IsEditing) }>
+						<label>
+							ID
+							if data.Form.IsEditing {
+								<input name="id" value={ data.Form.ID } readonly/>
+							} else {
+								<input name="id" value={ data.Form.ID }/>
+								<small>例: enemyskill_1（enemyskill_ + 連番）</small>
+							}
+							@FieldErrorBox(data.Form.FieldErrors, "id")
+						</label>
+						@ReturnToField(data.Form.ReturnTo)
+						<label>
+							Name
 						<input name="name" value={ data.Form.Name }/>
 						@FieldErrorBox(data.Form.FieldErrors, "name")
 					</label>

@@ -51,6 +51,7 @@ func TestHandlerSSRSkillCreate(t *testing.T) {
 	}
 
 	rec = postForm(t, handler, "/skills/new", url.Values{
+		"id":          {"skill_1"},
 		"name":        {"Slash"},
 		"description": {"Basic skill"},
 		"script":      {"say slash"},
@@ -66,6 +67,7 @@ func TestHandlerSSRSkillCreate(t *testing.T) {
 func TestHandlerSSRGrimoireEditShowsReadonlyCastID(t *testing.T) {
 	handler, _ := newTestHandler(t)
 	grimoireID := createJSONEntry(t, handler, "/api/grimoire", grimoire.SaveInput{
+		ID:       "grimoire_1",
 		Title:    "Firebolt",
 		Script:   "say fire",
 		CastTime: 20,
@@ -81,13 +83,32 @@ func TestHandlerSSRGrimoireEditShowsReadonlyCastID(t *testing.T) {
 	}
 }
 
+func TestHandlerSSRTreasureCreateValidationKeepsIDEditable(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	rec := postForm(t, handler, "/treasures/edit", url.Values{
+		"id":            {"bad"},
+		"tablePath":     {"minecraft:chests/simple_dungeon"},
+		"lootPoolsText": {"minecraft_item,minecraft:apple,1,,"},
+	}, http.StatusOK)
+	body := rec.Body.String()
+	if !strings.Contains(body, `name="id" value="bad"`) {
+		t.Fatalf("body = %s", body)
+	}
+	if strings.Contains(body, `name="id" value="bad" readonly`) {
+		t.Fatalf("body = %s", body)
+	}
+}
+
 func TestHandlerSSRItemsListIncludesClientControlsAndReturnTo(t *testing.T) {
 	handler, _ := newTestHandler(t)
 	skillID := createJSONEntry(t, handler, "/api/skills", skills.SaveInput{
+		ID:     "skill_1",
 		Name:   "Slash",
 		Script: "say slash",
 	})
 	itemID := createJSONEntry(t, handler, "/api/items", items.SaveInput{
+		ID:      "items_1",
 		ItemID:  "minecraft:apple",
 		SkillID: skillID,
 	})
@@ -116,6 +137,7 @@ func TestHandlerSSRItemsListIncludesClientControlsAndReturnTo(t *testing.T) {
 func TestHandlerSSRSkillEditRespectsReturnToOnSaveAndFallback(t *testing.T) {
 	handler, _ := newTestHandler(t)
 	skillID := createJSONEntry(t, handler, "/api/skills", skills.SaveInput{
+		ID:          "skill_1",
 		Name:        "Slash",
 		Description: "Basic slash",
 		Script:      "say slash",
@@ -151,6 +173,7 @@ func TestHandlerSSRSkillEditRespectsReturnToOnSaveAndFallback(t *testing.T) {
 func TestHandlerSSRItemReturnToRejectsNonListPaths(t *testing.T) {
 	handler, _ := newTestHandler(t)
 	itemID := createJSONEntry(t, handler, "/api/items", items.SaveInput{
+		ID:     "items_1",
 		ItemID: "minecraft:apple",
 	})
 
@@ -174,17 +197,20 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 	handler, root := newTestHandler(t)
 
 	skillID := createJSONEntry(t, handler, "/api/skills", skills.SaveInput{
+		ID:          "skill_1",
 		Name:        "Slash",
 		Description: "Basic slash",
 		Script:      "say slash",
 	})
 
 	itemID := createJSONEntry(t, handler, "/api/items", items.SaveInput{
+		ID:      "items_1",
 		ItemID:  "minecraft:apple",
 		SkillID: skillID,
 	})
 
 	grimoireID := createJSONEntry(t, handler, "/api/grimoire", grimoire.SaveInput{
+		ID:          "grimoire_1",
 		Title:       "Firebolt",
 		Description: "Burn",
 		Script:      "say fire",
@@ -193,12 +219,14 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 	})
 
 	enemySkillID := createJSONEntry(t, handler, "/api/enemy-skills", enemyskills.SaveInput{
+		ID:          "enemyskill_1",
 		Name:        "Roar",
 		Description: "Loud",
 		Script:      "say roar",
 	})
 
 	createJSONEntry(t, handler, "/api/treasures", treasures.SaveInput{
+		ID:        "treasure_1",
 		TablePath: "minecraft:chests/simple_dungeon",
 		LootPools: []treasures.DropRef{
 			{Kind: "item", RefID: itemID, Weight: 1},
@@ -207,6 +235,7 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 	})
 
 	createJSONEntry(t, handler, "/api/loottables", loottables.SaveInput{
+		ID: "loottable_1",
 		LootPools: []treasures.DropRef{
 			{Kind: "item", RefID: itemID, Weight: 1},
 			{Kind: "grimoire", RefID: grimoireID, Weight: 1},
@@ -214,6 +243,7 @@ func TestHandlerAPIHappyPathAndSave(t *testing.T) {
 	})
 
 	createJSONEntry(t, handler, "/api/enemies", enemies.SaveInput{
+		ID:            "enemy_1",
 		MobType:       "minecraft:zombie",
 		Name:          "Sample Zombie",
 		HP:            20,
@@ -256,11 +286,13 @@ func TestHandlerAPITreasureRejectsDuplicateTablePath(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
 	createJSONEntry(t, handler, "/api/treasures", treasures.SaveInput{
+		ID:        "treasure_1",
 		TablePath: "minecraft:chests/simple_dungeon",
 		LootPools: []treasures.DropRef{{Kind: "minecraft_item", RefID: "minecraft:apple", Weight: 1}},
 	})
 
 	rec := requestJSON(t, handler, http.MethodPost, "/api/treasures", treasures.SaveInput{
+		ID:        "treasure_2",
 		TablePath: "minecraft:chests/simple_dungeon",
 		LootPools: []treasures.DropRef{{Kind: "minecraft_item", RefID: "minecraft:stick", Weight: 1}},
 	})
@@ -278,6 +310,7 @@ func TestHandlerAPITreasureRejectsMissingVanillaSource(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
 	rec := requestJSON(t, handler, http.MethodPost, "/api/treasures", treasures.SaveInput{
+		ID:        "treasure_1",
 		TablePath: "minecraft:chests/missing_entry",
 		LootPools: []treasures.DropRef{{Kind: "minecraft_item", RefID: "minecraft:apple", Weight: 1}},
 	})
@@ -286,7 +319,7 @@ func TestHandlerAPITreasureRejectsMissingVanillaSource(t *testing.T) {
 	}
 }
 
-func TestHandlerAPIGrimoireUsesServerManagedIdentity(t *testing.T) {
+func TestHandlerAPIGrimoireUsesServerManagedCastID(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
 	rec := requestJSON(t, handler, http.MethodPost, "/api/grimoire", grimoire.SaveInput{
@@ -305,7 +338,7 @@ func TestHandlerAPIGrimoireUsesServerManagedIdentity(t *testing.T) {
 	if body.Entry == nil {
 		t.Fatalf("body = %#v", body)
 	}
-	if body.Entry.ID != "grimoire_1" {
+	if body.Entry.ID != "grimoire_999" {
 		t.Fatalf("entry = %#v", body.Entry)
 	}
 	if body.Entry.CastID != 1 {
@@ -313,25 +346,48 @@ func TestHandlerAPIGrimoireUsesServerManagedIdentity(t *testing.T) {
 	}
 
 	rec = requestJSON(t, handler, http.MethodPost, "/api/grimoire", grimoire.SaveInput{
-		ID:       "grimoire_1",
+		ID:       "grimoire_999",
 		CastID:   555,
 		Title:    "Firebolt v2",
 		Script:   "say fire2",
 		CastTime: 30,
 		MPCost:   9,
 	})
-	if rec.Code != http.StatusOK {
+	if rec.Code != http.StatusBadRequest {
 		t.Fatalf("status = %d body=%s", rec.Code, rec.Body.String())
 	}
+	body = common.SaveResult[grimoire.GrimoireEntry]{}
 	decodeResponse(t, rec, &body)
-	if body.Entry == nil {
+	if body.Entry != nil {
 		t.Fatalf("body = %#v", body)
 	}
-	if body.Entry.CastID != 1 {
-		t.Fatalf("entry = %#v", body.Entry)
+	if body.FieldErrors["id"] == "" {
+		t.Fatalf("body = %#v", body)
 	}
-	if body.Entry.Title != "Firebolt v2" {
-		t.Fatalf("entry = %#v", body.Entry)
+}
+
+func TestHandlerAPISkillRejectsDuplicateID(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	createJSONEntry(t, handler, "/api/skills", skills.SaveInput{
+		ID:     "skill_1",
+		Name:   "Slash",
+		Script: "say slash",
+	})
+
+	rec := requestJSON(t, handler, http.MethodPost, "/api/skills", skills.SaveInput{
+		ID:     "skill_1",
+		Name:   "Slash v2",
+		Script: "say slash2",
+	})
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d body=%s", rec.Code, rec.Body.String())
+	}
+
+	var body common.SaveResult[skills.SkillEntry]
+	decodeResponse(t, rec, &body)
+	if body.FieldErrors["id"] == "" {
+		t.Fatalf("body = %#v", body)
 	}
 }
 
@@ -339,11 +395,13 @@ func TestHandlerAPISkillDeleteRejectsReferencedItem(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
 	skillID := createJSONEntry(t, handler, "/api/skills", skills.SaveInput{
+		ID:          "skill_1",
 		Name:        "Slash",
 		Description: "Basic slash",
 		Script:      "say slash",
 	})
 	createJSONEntry(t, handler, "/api/items", items.SaveInput{
+		ID:      "items_1",
 		ItemID:  "minecraft:apple",
 		SkillID: skillID,
 	})
@@ -364,6 +422,7 @@ func TestHandlerAPISpawnTableRejectsOverlap(t *testing.T) {
 	handler, _ := newTestHandler(t)
 
 	enemyID := createJSONEntry(t, handler, "/api/enemies", enemies.SaveInput{
+		ID:       "enemy_1",
 		MobType:  "minecraft:zombie",
 		Name:     "Zombie",
 		HP:       20,
@@ -372,6 +431,7 @@ func TestHandlerAPISpawnTableRejectsOverlap(t *testing.T) {
 	})
 
 	createJSONEntry(t, handler, "/api/spawn-tables", spawntables.SaveInput{
+		ID:            "spawntable_1",
 		SourceMobType: "minecraft:zombie",
 		Dimension:     "minecraft:overworld",
 		MinX:          0,
@@ -385,6 +445,7 @@ func TestHandlerAPISpawnTableRejectsOverlap(t *testing.T) {
 	})
 
 	rec := requestJSON(t, handler, http.MethodPost, "/api/spawn-tables", spawntables.SaveInput{
+		ID:            "spawntable_2",
 		SourceMobType: "minecraft:zombie",
 		Dimension:     "minecraft:overworld",
 		MinX:          50,

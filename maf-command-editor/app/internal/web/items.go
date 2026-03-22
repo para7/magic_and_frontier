@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"tools2/app/internal/application"
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/webui"
@@ -95,14 +94,8 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 			a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
 			return
 		}
-	} else if strings.TrimSpace(input.ID) == "" {
-		id, allocErr := application.NewService(a.cfg, a.deps).AllocateID("items")
-		if allocErr != nil {
-			a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(allocErr.Error()), Form: form})
-			return
-		}
-		input.ID = id
-		form.ID = id
+	} else if _, ok := findEntry(state.Items, form.ID, func(entry items.ItemEntry) string { return entry.ID }); ok {
+		parseErrs["id"] = "この ID は既に使用されています。"
 	}
 	result := items.ValidateSave(input, toIDSet(skillState.Entries, func(entry skills.SkillEntry) string { return entry.ID }), a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, result.FieldErrors)

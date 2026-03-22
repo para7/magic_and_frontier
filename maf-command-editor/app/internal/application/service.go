@@ -183,29 +183,16 @@ func (s Service) ValidateAll() (ValidationReport, error) {
 	return ValidateBundle(states, s.deps.ExportSettingsPath, s.cfg.MinecraftLootTableRoot, s.deps.Now()), nil
 }
 
-func (s Service) AllocateID(kind idseq.Kind) (string, error) {
+func (s Service) AllocateCastID() (int, error) {
 	state, err := s.deps.CounterRepo.LoadCounterState()
 	if err != nil {
-		return "", err
+		return 0, err
 	}
-	next, id := idseq.NextID(state, kind)
+	next, castID := idseq.NextCastID(state)
 	if err := s.deps.CounterRepo.SaveCounterState(next); err != nil {
-		return "", err
+		return 0, err
 	}
-	return id, nil
-}
-
-func (s Service) AllocateGrimoireIdentity() (string, int, error) {
-	state, err := s.deps.CounterRepo.LoadCounterState()
-	if err != nil {
-		return "", 0, err
-	}
-	next, id := idseq.NextID(state, idseq.KindGrimoire)
-	next, castID := idseq.NextCastID(next)
-	if err := s.deps.CounterRepo.SaveCounterState(next); err != nil {
-		return "", 0, err
-	}
-	return id, castID, nil
+	return castID, nil
 }
 
 func (s Service) ExportDatapack() export.SaveDataResponse {

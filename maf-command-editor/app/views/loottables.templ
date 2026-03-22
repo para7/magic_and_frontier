@@ -67,12 +67,21 @@ templ LootTableFormShell(data webui.LootTablesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/loottables", data.Form.ReturnTo, FormTitle("Loottable", data.Form.IsEditing))
-				<form class="form-grid" method="post" action={ FormAction("/loottables", data.Form.IsEditing) }>
-					<input type="hidden" name="id" value={ data.Form.ID }/>
-					@ReturnToField(data.Form.ReturnTo)
-					<label class="form-span-2">
-						Loot Pools
+					@FormShellHeader("/loottables", data.Form.ReturnTo, FormTitle("Loottable", data.Form.IsEditing))
+					<form class="form-grid" method="post" action={ FormAction("/loottables", data.Form.IsEditing) }>
+						<label>
+							ID
+							if data.Form.IsEditing {
+								<input name="id" value={ data.Form.ID } readonly/>
+							} else {
+								<input name="id" value={ data.Form.ID }/>
+								<small>例: loottable_1（loottable_ + 連番）</small>
+							}
+							@FieldErrorBox(data.Form.FieldErrors, "id")
+						</label>
+						@ReturnToField(data.Form.ReturnTo)
+						<label class="form-span-2">
+							Loot Pools
 						<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
 						<small>1行につき `kind,refId,weight,countMin,countMax`。kind は `minecraft_item`,`item`,`grimoire`。</small>
 						@FieldErrorBox(data.Form.FieldErrors, "lootPoolsText")

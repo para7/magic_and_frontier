@@ -6,10 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"tools2/app/internal/idseq"
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/domain/items"
+	"tools2/app/internal/idseq"
 )
 
 type ItemStateRepository interface {

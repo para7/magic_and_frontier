@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	"tools2/app/internal/application"
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/spawntables"
@@ -82,14 +81,8 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 			a.renderSpawnTables(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice("Spawn table not found.")})
 			return
 		}
-	} else if strings.TrimSpace(input.ID) == "" {
-		id, allocErr := application.NewService(a.cfg, a.deps).AllocateID("spawntable")
-		if allocErr != nil {
-			a.renderSpawnTableForm(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(allocErr.Error()), Form: form})
-			return
-		}
-		input.ID = id
-		form.ID = id
+	} else if _, ok := findEntry(state.Entries, form.ID, func(entry spawntables.SpawnTableEntry) string { return entry.ID }); ok {
+		parseErrs["id"] = "この ID は既に使用されています。"
 	}
 
 	result := spawntables.ValidateSave(input, toIDSet(enemyState.Entries, func(entry enemies.EnemyEntry) string { return entry.ID }), a.deps.Now())

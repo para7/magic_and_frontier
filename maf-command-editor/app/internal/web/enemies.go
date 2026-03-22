@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	"tools2/app/internal/application"
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/enemyskills"
@@ -110,14 +109,8 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 			a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Entries: enemyState.Entries, Notice: errorNotice("Enemy not found.")})
 			return
 		}
-	} else if strings.TrimSpace(input.ID) == "" {
-		id, allocErr := application.NewService(a.cfg, a.deps).AllocateID("enemy")
-		if allocErr != nil {
-			a.renderEnemyForm(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(allocErr.Error()), Form: form})
-			return
-		}
-		input.ID = id
-		form.ID = id
+	} else if _, ok := findEntry(enemyState.Entries, form.ID, func(entry enemies.EnemyEntry) string { return entry.ID }); ok {
+		parseErrs["id"] = "この ID は既に使用されています。"
 	}
 	result := enemies.ValidateSave(input, enemySkillIDSet(enemySkillState), itemIDSet(itemState), grimoireIDSet(grimoireState), a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapEnemyField))

@@ -111,12 +111,9 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 			writeInternalError(w, err)
 			return
 		}
-		if strings.TrimSpace(input.ID) == "" {
-			input.ID, err = appService.AllocateID("items")
-			if err != nil {
-				writeInternalError(w, err)
-				return
-			}
+		if _, ok := findEntry(state.Items, strings.TrimSpace(input.ID), func(entry items.ItemEntry) string { return entry.ID }); ok {
+			writeDuplicateIDValidationError[items.ItemEntry](w)
+			return
 		}
 		result := items.ValidateSave(input, entryIDs(skillState.Entries, func(entry skills.SkillEntry) string { return entry.ID }), deps.Now())
 		if !result.OK {
@@ -172,18 +169,16 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 			writeInternalError(w, err)
 			return
 		}
-		if existing, ok := findEntry(state.Entries, strings.TrimSpace(input.ID), func(entry grimoire.GrimoireEntry) string { return entry.ID }); ok {
-			input.ID = existing.ID
-			input.CastID = existing.CastID
-		} else {
-			id, castID, allocErr := appService.AllocateGrimoireIdentity()
-			if allocErr != nil {
-				writeInternalError(w, allocErr)
-				return
-			}
-			input.ID = id
-			input.CastID = castID
+		if _, ok := findEntry(state.Entries, strings.TrimSpace(input.ID), func(entry grimoire.GrimoireEntry) string { return entry.ID }); ok {
+			writeDuplicateIDValidationError[grimoire.GrimoireEntry](w)
+			return
 		}
+		castID, allocErr := appService.AllocateCastID()
+		if allocErr != nil {
+			writeInternalError(w, allocErr)
+			return
+		}
+		input.CastID = castID
 		result := grimoire.ValidateSave(input, deps.Now())
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
@@ -242,12 +237,9 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 			writeInternalError(w, err)
 			return
 		}
-		if strings.TrimSpace(input.ID) == "" {
-			input.ID, err = appService.AllocateID("skill")
-			if err != nil {
-				writeInternalError(w, err)
-				return
-			}
+		if _, ok := findEntry(state.Entries, strings.TrimSpace(input.ID), func(entry skills.SkillEntry) string { return entry.ID }); ok {
+			writeDuplicateIDValidationError[skills.SkillEntry](w)
+			return
 		}
 		result := skills.ValidateSave(input, deps.Now())
 		if !result.OK {
@@ -291,22 +283,18 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		var err error
-		if strings.TrimSpace(input.ID) == "" {
-			input.ID, err = appService.AllocateID("enemyskill")
-			if err != nil {
-				writeInternalError(w, err)
-				return
-			}
+		state, err := deps.EnemySkillRepo.LoadState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		if _, ok := findEntry(state.Entries, strings.TrimSpace(input.ID), func(entry enemyskills.EnemySkillEntry) string { return entry.ID }); ok {
+			writeDuplicateIDValidationError[enemyskills.EnemySkillEntry](w)
+			return
 		}
 		result := enemyskills.ValidateSave(input, deps.Now())
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
-			return
-		}
-		state, err := deps.EnemySkillRepo.LoadState()
-		if err != nil {
-			writeInternalError(w, err)
 			return
 		}
 		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
@@ -366,13 +354,14 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		if strings.TrimSpace(input.ID) == "" {
-			var err error
-			input.ID, err = appService.AllocateID("enemy")
-			if err != nil {
-				writeInternalError(w, err)
-				return
-			}
+		state, err := deps.EnemyRepo.LoadState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		if _, ok := findEntry(state.Entries, strings.TrimSpace(input.ID), func(entry enemies.EnemyEntry) string { return entry.ID }); ok {
+			writeDuplicateIDValidationError[enemies.EnemyEntry](w)
+			return
 		}
 		enemySkillState, err := deps.EnemySkillRepo.LoadState()
 		if err != nil {
@@ -392,11 +381,6 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		result := enemies.ValidateSave(input, entryIDs(enemySkillState.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID }), itemIDs(itemState), grimoireIDs(grimoireState), deps.Now())
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
-			return
-		}
-		state, err := deps.EnemyRepo.LoadState()
-		if err != nil {
-			writeInternalError(w, err)
 			return
 		}
 		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry enemies.EnemyEntry) string { return entry.ID })
@@ -424,13 +408,14 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		if strings.TrimSpace(input.ID) == "" {
-			var err error
-			input.ID, err = appService.AllocateID("spawntable")
-			if err != nil {
-				writeInternalError(w, err)
-				return
-			}
+		state, err := deps.SpawnTableRepo.LoadState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		if _, ok := findEntry(state.Entries, strings.TrimSpace(input.ID), func(entry spawntables.SpawnTableEntry) string { return entry.ID }); ok {
+			writeDuplicateIDValidationError[spawntables.SpawnTableEntry](w)
+			return
 		}
 		enemyState, err := deps.EnemyRepo.LoadState()
 		if err != nil {
@@ -440,11 +425,6 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		result := spawntables.ValidateSave(input, entryIDs(enemyState.Entries, func(entry enemies.EnemyEntry) string { return entry.ID }), deps.Now())
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
-			return
-		}
-		state, err := deps.SpawnTableRepo.LoadState()
-		if err != nil {
-			writeInternalError(w, err)
 			return
 		}
 		if conflictID, ok := spawntables.FirstOverlap(state.Entries, *result.Entry); ok {
@@ -479,14 +459,6 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		if strings.TrimSpace(input.ID) == "" {
-			var err error
-			input.ID, err = appService.AllocateID("treasure")
-			if err != nil {
-				writeInternalError(w, err)
-				return
-			}
-		}
 		itemState, err := deps.ItemRepo.LoadItemState()
 		if err != nil {
 			writeInternalError(w, err)
@@ -500,6 +472,10 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		state, err := deps.TreasureRepo.LoadState()
 		if err != nil {
 			writeInternalError(w, err)
+			return
+		}
+		if _, ok := findEntry(state.Entries, strings.TrimSpace(input.ID), func(entry treasures.TreasureEntry) string { return entry.ID }); ok {
+			writeDuplicateIDValidationError[treasures.TreasureEntry](w)
 			return
 		}
 		validTablePaths, err := treasureSourcePaths(cfg.MinecraftLootTableRoot)
@@ -541,13 +517,10 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		if strings.TrimSpace(input.ID) == "" {
-			var err error
-			input.ID, err = appService.AllocateID("loottable")
-			if err != nil {
-				writeInternalError(w, err)
-				return
-			}
+		state, err := deps.LootTableRepo.LoadState()
+		if err != nil {
+			writeInternalError(w, err)
+			return
 		}
 		itemState, err := deps.ItemRepo.LoadItemState()
 		if err != nil {
@@ -559,14 +532,13 @@ func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 			writeInternalError(w, err)
 			return
 		}
+		if _, ok := findEntry(state.Entries, strings.TrimSpace(input.ID), func(entry loottables.LootTableEntry) string { return entry.ID }); ok {
+			writeDuplicateIDValidationError[loottables.LootTableEntry](w)
+			return
+		}
 		result := loottables.ValidateSave(input, itemIDs(itemState), grimoireIDs(grimoireState), deps.Now())
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
-			return
-		}
-		state, err := deps.LootTableRepo.LoadState()
-		if err != nil {
-			writeInternalError(w, err)
 			return
 		}
 		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry loottables.LootTableEntry) string { return entry.ID })
@@ -633,6 +605,13 @@ func writeInternalError(w http.ResponseWriter, err error) {
 		FormError: http.StatusText(http.StatusInternalServerError),
 		Details:   err.Error(),
 	})
+}
+
+func writeDuplicateIDValidationError[T any](w http.ResponseWriter) {
+	writeJSON(w, http.StatusBadRequest, common.SaveValidationError[T](
+		common.FieldErrors{"id": "この ID は既に使用されています。"},
+		"Validation failed. Fix the highlighted fields.",
+	))
 }
 
 func itemIDs(state items.ItemState) map[string]struct{} {

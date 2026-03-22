@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"tools2/app/internal/application"
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/mcsource"
@@ -120,7 +119,8 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 	form, input, parseErrs := parseTreasureForm(r)
 	form.ReturnTo = returnTo
 	form.HasSource = hasTreasureSource(sourcePaths, input.TablePath)
-	if existing, ok := findTreasureByTablePath(state.Entries, input.TablePath); ok {
+	existing, hasOverlay := findTreasureByTablePath(state.Entries, input.TablePath)
+	if hasOverlay {
 		form.HasOverlay = true
 		form.IsEditing = true
 		if strings.TrimSpace(input.ID) == "" {
@@ -128,20 +128,11 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 			form.ID = existing.ID
 		}
 	}
-	if strings.TrimSpace(input.ID) != "" {
-		if _, ok := findEntry(state.Entries, input.ID, func(entry treasures.TreasureEntry) string { return entry.ID }); !ok {
-			data := treasureListPageData(state, nil, noticeWithError("Treasure not found."))
-			a.renderTreasures(w, r, data)
-			return
-		}
-	} else {
-		id, allocErr := application.NewService(a.cfg, a.deps).AllocateID("treasure")
-		if allocErr != nil {
-			a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(allocErr.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
-			return
-		}
-		input.ID = id
-		form.ID = id
+	if form.IsEditing {
+		input.ID = existing.ID
+		form.ID = existing.ID
+	} else if _, ok := findEntry(state.Entries, input.ID, func(entry treasures.TreasureEntry) string { return entry.ID }); ok {
+		parseErrs["id"] = "この ID は既に使用されています。"
 	}
 	result := treasures.ValidateSave(input, itemIDSet(itemState), grimoireIDSet(grimoireState), sourcePaths, a.deps.Now())
 	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapTreasureField))
@@ -151,8 +142,8 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 	if len(errors) > 0 {
 		form.FieldErrors = errors
 		form.FormError = formErrorText(result.FormError)
-		form.HasOverlay = strings.TrimSpace(form.ID) != ""
-		form.IsEditing = form.HasOverlay
+		form.HasOverlay = hasOverlay
+		form.IsEditing = hasOverlay
 		a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}

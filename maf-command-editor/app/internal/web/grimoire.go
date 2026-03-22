@@ -76,15 +76,16 @@ func (a App) grimoireSave(w http.ResponseWriter, r *http.Request, editing bool) 
 		input.CastID = existing.CastID
 		form.ID = existing.ID
 		form.CastID = strconv.Itoa(existing.CastID)
-	} else {
-		id, castID, allocErr := application.NewService(a.cfg, a.deps).AllocateGrimoireIdentity()
+	} else if _, ok := findEntry(state.Entries, form.ID, func(entry grimoire.GrimoireEntry) string { return entry.ID }); ok {
+		parseErrs["id"] = "この ID は既に使用されています。"
+	}
+	if !editing {
+		castID, allocErr := application.NewService(a.cfg, a.deps).AllocateCastID()
 		if allocErr != nil {
 			a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(allocErr.Error()), Form: form})
 			return
 		}
-		input.ID = id
 		input.CastID = castID
-		form.ID = id
 		form.CastID = strconv.Itoa(castID)
 	}
 	result := grimoire.ValidateSave(input, a.deps.Now())

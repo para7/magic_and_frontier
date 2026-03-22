@@ -70,12 +70,21 @@ templ SpawnTableFormShell(data webui.SpawnTablesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/spawn-tables", data.Form.ReturnTo, FormTitle("Spawn Table", data.Form.IsEditing))
-				<form class="form-grid two" method="post" action={ FormAction("/spawn-tables", data.Form.IsEditing) }>
-					<input type="hidden" name="id" value={ data.Form.ID }/>
-					@ReturnToField(data.Form.ReturnTo)
-					<label>
-						Source Mob Type
+					@FormShellHeader("/spawn-tables", data.Form.ReturnTo, FormTitle("Spawn Table", data.Form.IsEditing))
+					<form class="form-grid two" method="post" action={ FormAction("/spawn-tables", data.Form.IsEditing) }>
+						<label>
+							ID
+							if data.Form.IsEditing {
+								<input name="id" value={ data.Form.ID } readonly/>
+							} else {
+								<input name="id" value={ data.Form.ID }/>
+								<small>例: spawntable_1（spawntable_ + 連番）</small>
+							}
+							@FieldErrorBox(data.Form.FieldErrors, "id")
+						</label>
+						@ReturnToField(data.Form.ReturnTo)
+						<label>
+							Source Mob Type
 						<input name="sourceMobType" value={ data.Form.SourceMobType }/>
 						@FieldErrorBox(data.Form.FieldErrors, "sourceMobType")
 					</label>

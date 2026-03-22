@@ -73,12 +73,21 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@FormShellHeader("/enemies", data.Form.ReturnTo, FormTitle("Enemy", data.Form.IsEditing))
-				<form class="form-grid two" method="post" action={ FormAction("/enemies", data.Form.IsEditing) }>
-					<input type="hidden" name="id" value={ data.Form.ID }/>
-					@ReturnToField(data.Form.ReturnTo)
-					<label>
-						Mob Type
+					@FormShellHeader("/enemies", data.Form.ReturnTo, FormTitle("Enemy", data.Form.IsEditing))
+					<form class="form-grid two" method="post" action={ FormAction("/enemies", data.Form.IsEditing) }>
+						<label>
+							ID
+							if data.Form.IsEditing {
+								<input name="id" value={ data.Form.ID } readonly/>
+							} else {
+								<input name="id" value={ data.Form.ID }/>
+								<small>例: enemy_1（enemy_ + 連番）</small>
+							}
+							@FieldErrorBox(data.Form.FieldErrors, "id")
+						</label>
+						@ReturnToField(data.Form.ReturnTo)
+						<label>
+							Mob Type
 						<input name="mobType" value={ data.Form.MobType }/>
 						@FieldErrorBox(data.Form.FieldErrors, "mobType")
 					</label>
