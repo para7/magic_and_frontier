@@ -80,9 +80,9 @@ func DisplayText(value string, fallback string) string {
 
 func SubmitLabel(editing bool) string {
 	if editing {
-		return "Update"
+		return "更新"
 	}
-	return "Create"
+	return "新規追加"
 }
 
 func FormTitle(label string, editing bool) string {

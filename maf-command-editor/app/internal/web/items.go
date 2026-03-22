@@ -163,7 +163,7 @@ func (a App) renderItemForm(w http.ResponseWriter, r *http.Request, data webui.I
 }
 
 func itemMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Items", CurrentPath: "/items", Description: "アイテム出力を作成・管理します。複雑な NBT 項目はこの移行段階ではテキストのまま扱います。"}
+	return webui.PageMeta{Title: "Items", CurrentPath: "/items"}
 }
 
 func defaultItemForm(options []webui.ReferenceOption) webui.ItemFormData {

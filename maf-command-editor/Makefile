@@ -62,3 +62,13 @@ run-cli:
 dev: run
 
 check: generate tidy format lint build test
+
+PORT=8787
+kill-port:
+	@pids=$$(lsof -t -i :$(PORT) 2>/dev/null); \
+	if [ -z "$$pids" ]; then \
+		echo "No process is using port $(PORT)"; \
+	else \
+		echo "Killing PID(s): $$pids on port $(PORT)"; \
+		kill $$pids; \
+	fi

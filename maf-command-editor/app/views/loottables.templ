@@ -15,7 +15,7 @@ templ LootTablesShell(data webui.LootTablesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListBrowser(data.Meta.CurrentURL, "/loottables/new", "Add Loottable", "ID, table path, loot refs で検索") {
+				@ListBrowser(data.Meta.CurrentURL, "/loottables/new", "新規追加", "ID, table path, loot refs で検索") {
 					<div class="entry-list" data-list-entries>
 						for _, entry := range data.Entries {
 							<article
@@ -31,10 +31,10 @@ templ LootTablesShell(data webui.LootTablesPageData) {
 										<p class="entry-meta code">{ entry.ID }</p>
 									</div>
 									<div class="entry-actions">
-										<a class="secondary outline" role="button" href={ WithReturnTo("/loottables/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/loottables/edit?id=" + entry.ID }>Edit</a>
+										<a class="secondary outline" role="button" href={ WithReturnTo("/loottables/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/loottables/edit?id=" + entry.ID }>編集</a>
 										<form method="post" action={ "/loottables/" + entry.ID + "/delete" }>
 											@ReturnToField(data.Meta.CurrentURL)
-											<button type="submit" class="danger">Delete</button>
+											<button type="submit" class="danger">削除</button>
 										</form>
 									</div>
 								</header>
@@ -67,40 +67,46 @@ templ LootTableFormShell(data webui.LootTablesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-					@FormShellHeader("/loottables", data.Form.ReturnTo, FormTitle("Loottable", data.Form.IsEditing))
-					<form class="form-grid" method="post" action={ FormAction("/loottables", data.Form.IsEditing) }>
-						<label>
-							ID
-							if data.Form.IsEditing {
-								<input name="id" value={ data.Form.ID } readonly/>
-							} else {
-								<input name="id" value={ data.Form.ID }/>
-								<small>例: loottable_1（loottable_ + 連番）</small>
-							}
-							@FieldErrorBox(data.Form.FieldErrors, "id")
-						</label>
-						@ReturnToField(data.Form.ReturnTo)
-						<label class="form-span-2">
-							Loot Pools
-						<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
-						<small>1行につき `kind,refId,weight,countMin,countMax`。kind は `minecraft_item`,`item`,`grimoire`。</small>
-						@FieldErrorBox(data.Form.FieldErrors, "lootPoolsText")
-					</label>
-					<div>
-						<small>Item refs</small>
-						<ul class="reference-list">
-							for _, option := range data.ItemOptions {
-								<li class="code">{ option.ID } - { option.Label }</li>
-							}
-						</ul>
-					</div>
-					<div>
-						<small>Grimoire refs</small>
-						<ul class="reference-list">
-							for _, option := range data.GrimoireOptions {
-								<li class="code">{ option.ID } - { option.Label }</li>
-							}
-						</ul>
+				@FormShellHeader("/loottables", data.Form.ReturnTo, FormTitle("Loottable", data.Form.IsEditing))
+				<form method="post" action={ FormAction("/loottables", data.Form.IsEditing) }>
+					@ReturnToField(data.Form.ReturnTo)
+					<div class="form-blocks">
+						<div class="form-block stack">
+							<label>
+								ID
+								if data.Form.IsEditing {
+									<input name="id" value={ data.Form.ID } readonly/>
+								} else {
+									<input name="id" value={ data.Form.ID }/>
+									<small>例: loottable_1（loottable_ + 連番）</small>
+								}
+								@FieldErrorBox(data.Form.FieldErrors, "id")
+							</label>
+							<label>
+								Loot Pools
+								<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
+								<small>1行につき `kind,refId,weight,countMin,countMax`。kind は `minecraft_item`,`item`,`grimoire`。</small>
+								@FieldErrorBox(data.Form.FieldErrors, "lootPoolsText")
+							</label>
+						</div>
+						<div class="form-block stack">
+							<div>
+								<small>Item refs</small>
+								<ul class="reference-list">
+									for _, option := range data.ItemOptions {
+										<li class="code">{ option.ID } - { option.Label }</li>
+									}
+								</ul>
+							</div>
+							<div>
+								<small>Grimoire refs</small>
+								<ul class="reference-list">
+									for _, option := range data.GrimoireOptions {
+										<li class="code">{ option.ID } - { option.Label }</li>
+									}
+								</ul>
+							</div>
+						</div>
 					</div>
 					if data.Form.FormError != "" {
 						<div class="field-error">{ data.Form.FormError }</div>
