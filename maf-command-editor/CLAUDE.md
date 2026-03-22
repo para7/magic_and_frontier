@@ -12,7 +12,7 @@ Minecraft local server is run with docker, ../compose.yml .
 
 ## old projects info
 
-以前のプロジェクト情報が必要なら /tmp で git clone をするなどして内容を確認して。本プロジェクトの /tmp にもある。
+必要なら、/tmp で git clone をするなどして内容を確認して。
 
 project1: https://github.com/para7/Minecraft_Datapack
 project2: https://github.com/para7/magic_and_frontier

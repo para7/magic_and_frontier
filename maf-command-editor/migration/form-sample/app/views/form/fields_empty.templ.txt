@@ -1,5 +1,0 @@
-package form
-
-templ EmptyFields() {
-	<p><em>種別を選択すると、入力項目が表示されます。</em></p>
-}

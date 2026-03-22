@@ -1,0 +1,118 @@
+package views
+
+import "tools2/app/internal/webui"
+
+templ TreasuresPage(data webui.TreasuresPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@TreasuresShell(data)
+		}
+	}
+}
+
+templ TreasuresShell(data webui.TreasuresPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="form-span-2">
+				<div class="entry-list">
+					for _, entry := range data.Entries {
+						<article class="entry-card">
+							<header>
+								<div>
+									<h3 class="code">{ entry.TablePath }</h3>
+									if entry.HasOverlay {
+										<p class="entry-meta code">{ entry.ID }</p>
+									} else {
+										<p class="entry-meta">overlay not saved</p>
+									}
+								</div>
+								<div class="entry-actions">
+									<a class="secondary outline" role="button" href={ WithReturnTo("/treasures/edit?tablePath="+entry.TablePath, data.Meta.CurrentURL) } data-return-to-link={ "/treasures/edit?tablePath=" + entry.TablePath }>Edit</a>
+									if entry.HasOverlay {
+										<form method="post" action={ "/treasures/" + entry.ID + "/delete" }>
+											@ReturnToField(data.Meta.CurrentURL)
+											<button type="submit" class="danger">Delete</button>
+										</form>
+									}
+								</div>
+							</header>
+							<ul class="reference-list">
+								<li class="code">source={ BoolText(entry.HasSource) }</li>
+								<li class="code">overlay={ BoolText(entry.HasOverlay) }</li>
+								if entry.UpdatedAt != "" {
+									<li class="code">updated={ entry.UpdatedAt }</li>
+								}
+								for _, pool := range entry.LootPools {
+									<li class="code">{ pool.Kind } / { pool.RefID } / weight={ pool.Weight }</li>
+								}
+							</ul>
+						</article>
+					}
+					@ListEmptyState("minecraft loot table が見つかりません。", len(data.Entries) > 0)
+				</div>
+			</section>
+		</div>
+	</div>
+}
+
+templ TreasureFormPage(data webui.TreasuresPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@TreasureFormShell(data)
+		}
+	}
+}
+
+templ TreasureFormShell(data webui.TreasuresPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="form-span-2">
+				@FormShellHeader("/treasures", data.Form.ReturnTo, "Treasure Overlay")
+				<form class="form-grid" method="post" action="/treasures/edit">
+					<input type="hidden" name="id" value={ data.Form.ID }/>
+					<input type="hidden" name="tablePath" value={ data.Form.TablePath }/>
+					@ReturnToField(data.Form.ReturnTo)
+					<label class="form-span-2">
+						Table Path
+						<input value={ data.Form.TablePath } readonly/>
+						@FieldErrorBox(data.Form.FieldErrors, "tablePath")
+					</label>
+					if !data.Form.HasSource {
+						<div class="field-error form-span-2">Minecraft 本体の元テーブルが見つかりません。設定かファイル配置を確認してください。</div>
+					}
+					<label class="form-span-2">
+						Loot Pools
+						<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
+						<small>1行につき `kind,refId,weight,countMin,countMax`。kind は `minecraft_item`,`item`,`grimoire`。</small>
+						@FieldErrorBox(data.Form.FieldErrors, "lootPoolsText")
+					</label>
+					<div>
+						<small>Item refs</small>
+						<ul class="reference-list">
+							for _, option := range data.ItemOptions {
+								<li class="code">{ option.ID } - { option.Label }</li>
+							}
+						</ul>
+					</div>
+					<div>
+						<small>Grimoire refs</small>
+						<ul class="reference-list">
+							for _, option := range data.GrimoireOptions {
+								<li class="code">{ option.ID } - { option.Label }</li>
+							}
+						</ul>
+					</div>
+					if data.Form.FormError != "" {
+						<div class="field-error">{ data.Form.FormError }</div>
+					}
+					<div class="form-actions">
+						<button type="submit">{ SubmitLabel(data.Form.HasOverlay) }</button>
+						<a class="secondary outline" role="button" href={ BackLink("/treasures", data.Form.ReturnTo) }>Cancel</a>
+					</div>
+				</form>
+			</section>
+		</div>
+	</div>
+}
