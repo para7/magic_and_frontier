@@ -1,1 +1,1 @@
-tellraw @a [{"text":"enabled datapack: maf"}]
+execute unless data storage maf:runtime initialized run function maf:load/bootstrap

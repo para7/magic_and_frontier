@@ -1,0 +1,1 @@
+give @s minecraft:written_book[item_name='{"text":"Firebolt"}',lore=['{"text":"Basic sample projectile spell."}'],custom_data={maf:{grimoire_id:"grimoire_1",spell:{castid:1,cost:5,cast:10,title:"Firebolt",description:"Basic sample projectile spell."}}}] 1

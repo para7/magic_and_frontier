@@ -5,6 +5,7 @@
         {
           "functions": [
             {
+              "add": false,
               "count": 1,
               "function": "minecraft:set_count"
             },
