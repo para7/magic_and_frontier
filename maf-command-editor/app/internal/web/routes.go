@@ -16,6 +16,8 @@ type App struct {
 }
 
 func RegisterRoutes(mux *http.ServeMux, cfg config.Config, deps Dependencies) {
+	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("app/static"))))
+
 	defaults := application.DefaultDependencies(cfg)
 	if deps.ItemRepo == nil {
 		deps.ItemRepo = defaults.ItemRepo

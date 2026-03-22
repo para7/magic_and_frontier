@@ -1,0 +1,58 @@
+/* ===== KV List ===== */
+.kv-list {
+	display: grid;
+	font-size: 0.85rem;
+	gap: 1px 6px;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	margin: 0;
+}
+
+.reference-list {
+	display: grid;
+	gap: 1px;
+	margin: 2px 0 0;
+	padding-left: 1rem;
+}
+
+/* ===== Notices ===== */
+.notice {
+	background: rgb(255 255 255 / 2%);
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	margin-bottom: 6px;
+	padding: 4px 8px;
+}
+
+.notice-success,
+.notice-error,
+.notice-info {
+	border-left: 3px solid transparent;
+}
+
+.notice-success {
+	border-left-color: var(--ok);
+}
+
+.notice-error {
+	border-left-color: var(--danger);
+}
+
+.notice-info {
+	border-left-color: var(--accent);
+}
+
+.field-error {
+	color: var(--danger);
+	font-size: 0.85rem;
+	margin-top: -2px;
+}
+
+/* ===== Misc ===== */
+.code {
+	font-family: var(--font-mono);
+}
+
+.entry-meta {
+	color: var(--muted);
+	font-size: 0.85rem;
+}

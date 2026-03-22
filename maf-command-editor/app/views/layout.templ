@@ -12,7 +12,11 @@ templ Layout(title string, currentPath string) {
 			<title>{ title }</title>
 				<script src="https://unpkg.com/htmx.org@2.0.4"></script>
 			@layoutScripts()
-			@layoutStyles()
+			<link rel="stylesheet" href="/static/css/base.css"/>
+			<link rel="stylesheet" href="/static/css/layout.css"/>
+			<link rel="stylesheet" href="/static/css/list.css"/>
+			<link rel="stylesheet" href="/static/css/form.css"/>
+			<link rel="stylesheet" href="/static/css/components.css"/>
 		</head>
 		<body>
 			<header>

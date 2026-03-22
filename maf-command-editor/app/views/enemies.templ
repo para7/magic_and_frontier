@@ -134,14 +134,14 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 								</select>
 								@FieldErrorBox(data.Form.FieldErrors, "enemySkillIds")
 							</label>
-							<label>
+							<label class="wide">
 								Equipment
-								<textarea name="equipmentText">{ data.Form.EquipmentText }</textarea>
+								<textarea name="equipmentText" rows="10">{ data.Form.EquipmentText }</textarea>
 								@FieldErrorBox(data.Form.FieldErrors, "equipmentText")
 							</label>
-							<label>
+							<label class="wide">
 								Drops
-								<textarea name="dropsText">{ data.Form.DropsText }</textarea>
+								<textarea name="dropsText" rows="10">{ data.Form.DropsText }</textarea>
 								@FieldErrorBox(data.Form.FieldErrors, "dropsText")
 							</label>
 						</div>

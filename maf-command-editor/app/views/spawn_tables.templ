@@ -140,9 +140,9 @@ templ SpawnTableFormShell(data webui.SpawnTablesPageData) {
 							</div>
 						</div>
 						<div class="form-block stack">
-							<label>
+							<label class="wide">
 								Replacements
-								<textarea name="replacementsText">{ data.Form.ReplacementsText }</textarea>
+								<textarea name="replacementsText" rows="10">{ data.Form.ReplacementsText }</textarea>
 								@FieldErrorBox(data.Form.FieldErrors, "replacementsText")
 							</label>
 						</div>

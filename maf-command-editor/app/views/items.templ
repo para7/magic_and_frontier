@@ -124,7 +124,7 @@ templ ItemFormShell(data webui.ItemsPageData) {
 							</label>
 						</div>
 						<div class="form-block stack">
-							<label>
+							<label class="wide">
 								Lore
 								<textarea name="lore">{ data.Form.Lore }</textarea>
 							</label>
@@ -152,19 +152,19 @@ templ ItemFormShell(data webui.ItemsPageData) {
 								</details>
 								@FieldErrorBox(data.Form.FieldErrors, "enchantments")
 							</div>
-							<label>
+							<label class="wide">
 								CustomPotionEffects
-								<textarea name="customPotionEffects">{ data.Form.CustomPotionEffects }</textarea>
+								<textarea name="customPotionEffects" rows="10">{ data.Form.CustomPotionEffects }</textarea>
 							</label>
 						</div>
 						<div class="form-block stack">
-							<label>
+							<label class="wide">
 								AttributeModifiers
-								<textarea name="attributeModifiers">{ data.Form.AttributeModifiers }</textarea>
+								<textarea name="attributeModifiers" rows="10">{ data.Form.AttributeModifiers }</textarea>
 							</label>
-							<label>
+							<label class="wide">
 								Custom NBT
-								<textarea name="customNbt">{ data.Form.CustomNBT }</textarea>
+								<textarea name="customNbt" rows="10">{ data.Form.CustomNBT }</textarea>
 							</label>
 						</div>
 					</div>

@@ -76,9 +76,9 @@ templ TreasureFormShell(data webui.TreasuresPageData) {
 							if !data.Form.HasSource {
 								<div class="field-error">Minecraft 本体の元テーブルが見つかりません。設定かファイル配置を確認してください。</div>
 							}
-							<label>
+							<label class="wide">
 								Loot Pools
-								<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
+								<textarea name="lootPoolsText" rows="10">{ data.Form.LootPoolsText }</textarea>
 								@FieldErrorBox(data.Form.FieldErrors, "lootPoolsText")
 							</label>
 						</div>

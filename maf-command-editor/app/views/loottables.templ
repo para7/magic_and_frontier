@@ -81,9 +81,9 @@ templ LootTableFormShell(data webui.LootTablesPageData) {
 								<input class="input-long" name="memo" value={ data.Form.Memo }/>
 								@FieldErrorBox(data.Form.FieldErrors, "memo")
 							</label>
-							<label>
+							<label class="wide">
 								Loot Pools
-								<textarea name="lootPoolsText">{ data.Form.LootPoolsText }</textarea>
+								<textarea name="lootPoolsText" rows="10">{ data.Form.LootPoolsText }</textarea>
 								@FieldErrorBox(data.Form.FieldErrors, "lootPoolsText")
 							</label>
 						</div>

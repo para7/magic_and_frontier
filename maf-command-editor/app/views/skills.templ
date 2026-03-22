@@ -93,14 +93,14 @@ templ SkillFormShell(data webui.SkillsPageData) {
 							</label>
 						</div>
 						<div class="form-block stack">
-							<label>
+							<label class="wide">
 								Description
 								<textarea name="description">{ data.Form.Description }</textarea>
 								@FieldErrorBox(data.Form.FieldErrors, "description")
 							</label>
-							<label>
+							<label class="wide">
 								Script
-								<textarea name="script">{ data.Form.Script }</textarea>
+								<textarea name="script" rows="10">{ data.Form.Script }</textarea>
 								@FieldErrorBox(data.Form.FieldErrors, "script")
 							</label>
 						</div>
