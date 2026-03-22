@@ -4,6 +4,7 @@ templ layoutScripts() {
 			<script>
 				document.addEventListener("DOMContentLoaded", () => {
 					const defaultQueryKeys = ["q", "page"];
+					const deleteConfirmMessage = "削除してもよろしいですか？";
 
 					const setOrDelete = (params, key, value) => {
 						if (value === "") {
@@ -12,6 +13,28 @@ templ layoutScripts() {
 						}
 						params.set(key, value);
 					};
+
+					const shouldConfirmDelete = (form) => {
+						if (!(form instanceof HTMLFormElement)) {
+							return false;
+						}
+						if ((form.getAttribute("method") || "").toLowerCase() !== "post") {
+							return false;
+						}
+						const action = form.getAttribute("action") || "";
+						const actionURL = new URL(action, window.location.origin);
+						return actionURL.pathname.endsWith("/delete");
+					};
+
+					document.addEventListener("submit", (event) => {
+						const form = event.target;
+						if (!shouldConfirmDelete(form)) {
+							return;
+						}
+						if (!window.confirm(deleteConfirmMessage)) {
+							event.preventDefault();
+						}
+					});
 
 					const updateReturnToTargets = (root) => {
 						const returnTo = window.location.pathname + window.location.search;

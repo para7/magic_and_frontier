@@ -119,6 +119,29 @@ func TestHandlerSSRItemsListIncludesClientControlsAndReturnTo(t *testing.T) {
 	}
 }
 
+func TestHandlerSSRIncludesDeleteConfirmScript(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	rec := request(t, handler, http.MethodGet, "/items", nil, "")
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d", rec.Code)
+	}
+
+	body := rec.Body.String()
+	if !strings.Contains(body, `document.addEventListener("submit", (event) => {`) {
+		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, `actionURL.pathname.endsWith("/delete")`) {
+		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, `window.confirm(deleteConfirmMessage)`) {
+		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, `削除してもよろしいですか？`) {
+		t.Fatalf("body = %s", body)
+	}
+}
+
 func TestHandlerSSRSkillEditRespectsReturnToOnSaveAndFallback(t *testing.T) {
 	handler, _ := newTestHandler(t)
 	skillID := createJSONEntry(t, handler, "/api/skills", skills.SaveInput{
