@@ -177,3 +177,42 @@ func TestHandlerSSRItemReturnToRejectsNonListPaths(t *testing.T) {
 	}, http.StatusSeeOther)
 	assertRedirect(t, rec, "/items")
 }
+
+func TestHandlerSSRItemFormShowsEnchantmentControls(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	rec := request(t, handler, http.MethodGet, "/items/new", nil, "")
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d", rec.Code)
+	}
+
+	body := rec.Body.String()
+	if !strings.Contains(body, `class="enchantments-details"`) {
+		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, `name="enchantmentIds" value="minecraft:sharpness"`) {
+		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, `name="enchantmentLevel.sharpness"`) {
+		t.Fatalf("body = %s", body)
+	}
+}
+
+func TestHandlerSSRItemFormOpensEnchantmentsOnValidationError(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	rec := postForm(t, handler, "/items/new", url.Values{
+		"id":                         {"items_1"},
+		"itemId":                     {"minecraft:stone"},
+		"enchantmentIds":             {"minecraft:sharpness"},
+		"enchantmentLevel.sharpness": {"abc"},
+	}, http.StatusOK)
+
+	body := rec.Body.String()
+	if !strings.Contains(body, `class="enchantments-details" open`) {
+		t.Fatalf("body = %s", body)
+	}
+	if !strings.Contains(body, "Invalid enchantment line:") {
+		t.Fatalf("body = %s", body)
+	}
+}

@@ -47,6 +47,7 @@ func skillToInput(entry skills.SkillEntry) skills.SaveInput {
 	return skills.SaveInput{
 		ID:          entry.ID,
 		Name:        entry.Name,
+		SkillType:   entry.SkillType,
 		Description: entry.Description,
 		Script:      entry.Script,
 	}
@@ -72,6 +73,7 @@ func treasureToInput(entry treasures.TreasureEntry) treasures.SaveInput {
 func loottableToInput(entry loottables.LootTableEntry) loottables.SaveInput {
 	return loottables.SaveInput{
 		ID:        entry.ID,
+		Memo:      entry.Memo,
 		LootPools: append([]treasures.DropRef{}, entry.LootPools...),
 	}
 }
@@ -82,6 +84,7 @@ func enemyToInput(entry enemies.EnemyEntry) enemies.SaveInput {
 		MobType:       entry.MobType,
 		Name:          entry.Name,
 		HP:            entry.HP,
+		Memo:          entry.Memo,
 		Attack:        entry.Attack,
 		Defense:       entry.Defense,
 		MoveSpeed:     entry.MoveSpeed,

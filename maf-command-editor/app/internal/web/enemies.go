@@ -198,6 +198,7 @@ func enemyEntryToForm(entry enemies.EnemyEntry, options []webui.ReferenceOption)
 		MobType:           entry.MobType,
 		Name:              entry.Name,
 		HP:                strconv.FormatFloat(entry.HP, 'f', -1, 64),
+		Memo:              entry.Memo,
 		DropMode:          entry.DropMode,
 		EnemySkillIDs:     append([]string{}, entry.EnemySkillIDs...),
 		EnemySkillOptions: options,
@@ -224,6 +225,7 @@ func parseEnemyForm(r *http.Request, enemySkillEntries []enemyskills.EnemySkillE
 	form.MobType = strings.TrimSpace(r.Form.Get("mobType"))
 	form.Name = r.Form.Get("name")
 	form.HP = strings.TrimSpace(r.Form.Get("hp"))
+	form.Memo = r.Form.Get("memo")
 	form.Attack = strings.TrimSpace(r.Form.Get("attack"))
 	form.Defense = strings.TrimSpace(r.Form.Get("defense"))
 	form.MoveSpeed = strings.TrimSpace(r.Form.Get("moveSpeed"))
@@ -238,6 +240,7 @@ func parseEnemyForm(r *http.Request, enemySkillEntries []enemyskills.EnemySkillE
 		MobType:       form.MobType,
 		Name:          form.Name,
 		HP:            parseRequiredFloat(errs, "hp", form.HP),
+		Memo:          form.Memo,
 		Attack:        parseOptionalFloat(errs, "attack", form.Attack),
 		Defense:       parseOptionalFloat(errs, "defense", form.Defense),
 		MoveSpeed:     parseOptionalFloat(errs, "moveSpeed", form.MoveSpeed),

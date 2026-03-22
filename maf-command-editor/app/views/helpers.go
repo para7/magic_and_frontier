@@ -78,6 +78,56 @@ func DisplayText(value string, fallback string) string {
 	return value
 }
 
+func BracketText(value string) string {
+	return "【" + strings.TrimSpace(value) + "】"
+}
+
+func ItemListTitle(itemID string, name string) string {
+	title := BracketText(itemID)
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return title
+	}
+	return title + " " + name
+}
+
+func EnemyListTitle(mobType string, name string) string {
+	title := BracketText(mobType)
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return title
+	}
+	return title + name
+}
+
+func JoinCompactWithComma(values ...string) string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		value = strings.TrimSpace(value)
+		if value != "" {
+			out = append(out, value)
+		}
+	}
+	if len(out) == 0 {
+		return "-"
+	}
+	return strings.Join(out, ", ")
+}
+
+func JoinCompactWithSpace(values ...string) string {
+	out := make([]string, 0, len(values))
+	for _, value := range values {
+		value = strings.TrimSpace(value)
+		if value != "" {
+			out = append(out, value)
+		}
+	}
+	if len(out) == 0 {
+		return "-"
+	}
+	return strings.Join(out, " ")
+}
+
 func SubmitLabel(editing bool) string {
 	if editing {
 		return "更新"
@@ -200,6 +250,7 @@ func EnemySearchBlob(entry enemies.EnemyEntry) string {
 		entry.ID,
 		entry.MobType,
 		entry.Name,
+		entry.Memo,
 		entry.DropMode,
 		entry.UpdatedAt,
 		trimFloat(entry.HP),

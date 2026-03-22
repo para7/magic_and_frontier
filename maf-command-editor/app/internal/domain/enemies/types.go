@@ -29,6 +29,7 @@ type EnemyEntry struct {
 	MobType       string    `json:"mobType"`
 	Name          string    `json:"name,omitempty"`
 	HP            float64   `json:"hp"`
+	Memo          string    `json:"memo,omitempty"`
 	Attack        *float64  `json:"attack,omitempty"`
 	Defense       *float64  `json:"defense,omitempty"`
 	MoveSpeed     *float64  `json:"moveSpeed,omitempty"`
@@ -44,6 +45,7 @@ type SaveInput struct {
 	MobType       string    `json:"mobType" validate:"trimmed_required,trimmed_min=3,trimmed_max=120"`
 	Name          string    `json:"name" validate:"trimmed_max=80"`
 	HP            float64   `json:"hp" validate:"gte=1,lte=100000"`
+	Memo          string    `json:"memo" validate:"trimmed_max=400"`
 	Attack        *float64  `json:"attack,omitempty" validate:"omitempty,gte=0,lte=100000"`
 	Defense       *float64  `json:"defense,omitempty" validate:"omitempty,gte=0,lte=100000"`
 	MoveSpeed     *float64  `json:"moveSpeed,omitempty" validate:"omitempty,gte=0,lte=100000"`

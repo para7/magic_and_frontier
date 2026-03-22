@@ -59,6 +59,9 @@ func treasureSourcePaths(root string) (map[string]struct{}, error) {
 	}
 	out := make(map[string]struct{}, len(sources))
 	for _, source := range sources {
+		if !treasures.IsSupportedTablePath(source.TablePath) {
+			continue
+		}
 		out[source.TablePath] = struct{}{}
 	}
 	return out, nil

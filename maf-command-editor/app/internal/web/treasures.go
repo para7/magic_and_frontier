@@ -243,6 +243,9 @@ func (a App) loadTreasureCatalog() (common.EntryState[treasures.TreasureEntry], 
 	}
 	sourcePaths := map[string]struct{}{}
 	for _, source := range sources {
+		if !treasures.IsSupportedTablePath(source.TablePath) {
+			continue
+		}
 		sourcePaths[source.TablePath] = struct{}{}
 	}
 	return state, sources, sourcePaths, nil
@@ -257,19 +260,18 @@ func treasureListPageData(state common.EntryState[treasures.TreasureEntry], sour
 }
 
 func buildTreasureListEntries(entries []treasures.TreasureEntry, sources []mcsource.LootTableSource) []webui.TreasureListEntry {
+	_ = sources
 	merged := map[string]webui.TreasureListEntry{}
-	for _, source := range sources {
-		merged[source.TablePath] = webui.TreasureListEntry{
-			TablePath: source.TablePath,
-			HasSource: true,
-		}
-	}
 	for _, entry := range entries {
+		if !treasures.IsSupportedTablePath(entry.TablePath) {
+			continue
+		}
 		listEntry := merged[entry.TablePath]
 		listEntry.ID = entry.ID
 		listEntry.TablePath = entry.TablePath
 		listEntry.LootPools = append([]treasures.DropRef{}, entry.LootPools...)
 		listEntry.UpdatedAt = entry.UpdatedAt
+		listEntry.HasSource = true
 		listEntry.HasOverlay = true
 		merged[entry.TablePath] = listEntry
 	}

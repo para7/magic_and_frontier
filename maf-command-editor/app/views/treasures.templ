@@ -20,36 +20,19 @@ templ TreasuresShell(data webui.TreasuresPageData) {
 						<article class="entry-card">
 							<header>
 								<div>
-									<h3 class="code">{ entry.TablePath }</h3>
-									if entry.HasOverlay {
-										<p class="entry-meta code">{ entry.ID }</p>
-									} else {
-										<p class="entry-meta">overlay not saved</p>
-									}
+									<h3 class="entry-line code">{ BracketText(entry.ID) }</h3>
 								</div>
 								<div class="entry-actions">
-									<a class="secondary outline" role="button" href={ WithReturnTo("/treasures/edit?tablePath="+entry.TablePath, data.Meta.CurrentURL) } data-return-to-link={ "/treasures/edit?tablePath=" + entry.TablePath }>編集</a>
-									if entry.HasOverlay {
-										<form method="post" action={ "/treasures/" + entry.ID + "/delete" }>
-											@ReturnToField(data.Meta.CurrentURL)
-											<button type="submit" class="danger">削除</button>
-										</form>
-									}
+									<a class="secondary outline" role="button" href={ WithReturnTo("/treasures/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/treasures/edit?id=" + entry.ID }>編集</a>
+									<form method="post" action={ "/treasures/" + entry.ID + "/delete" }>
+										@ReturnToField(data.Meta.CurrentURL)
+										<button type="submit" class="danger">削除</button>
+									</form>
 								</div>
 							</header>
-							<ul class="reference-list">
-								<li class="code">source={ BoolText(entry.HasSource) }</li>
-								<li class="code">overlay={ BoolText(entry.HasOverlay) }</li>
-								if entry.UpdatedAt != "" {
-									<li class="code">updated={ entry.UpdatedAt }</li>
-								}
-								for _, pool := range entry.LootPools {
-									<li class="code">{ pool.Kind } / { pool.RefID } / weight={ pool.Weight }</li>
-								}
-							</ul>
 						</article>
 					}
-					@ListEmptyState("minecraft loot table が見つかりません。", len(data.Entries) > 0)
+					@ListEmptyState("まだ treasure はありません。", len(data.Entries) > 0)
 				</div>
 			</section>
 		</div>

@@ -5,6 +5,7 @@
       "mobType": "minecraft:zombie",
       "name": "Sample Zombie",
       "hp": 40,
+      "memo": "",
       "attack": 6,
       "defense": 2,
       "moveSpeed": 0.22,

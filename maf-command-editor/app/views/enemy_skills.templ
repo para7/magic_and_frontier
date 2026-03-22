@@ -15,7 +15,7 @@ templ EnemySkillsShell(data webui.EnemySkillsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListBrowser(data.Meta.CurrentURL, "/enemy-skills/new", "新規追加", "ID, name, description で検索") {
+				@ListBrowser(data.Meta.CurrentURL, "/enemy-skills/new", "新規追加", "id, name, description で検索") {
 					<div class="entry-list" data-list-entries>
 						for _, entry := range data.Entries {
 							<article
@@ -28,8 +28,8 @@ templ EnemySkillsShell(data webui.EnemySkillsPageData) {
 								data-sort-name={ DisplayText(entry.Name, entry.ID) }>
 								<header>
 									<div>
-										<h3>{ DisplayText(entry.Name, entry.ID) }</h3>
-										<p class="entry-meta code">{ entry.ID }</p>
+										<h3 class="entry-line code">{ BracketText(entry.ID) + " " + DisplayText(entry.Name, "-") }</h3>
+										<p class="entry-meta entry-line">{ DisplayText(entry.Description, "-") }</p>
 									</div>
 									<div class="entry-actions">
 										<a class="secondary outline" role="button" href={ WithReturnTo("/enemy-skills/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/enemy-skills/edit?id=" + entry.ID }>編集</a>
@@ -39,11 +39,6 @@ templ EnemySkillsShell(data webui.EnemySkillsPageData) {
 										</form>
 									</div>
 								</header>
-								<dl class="kv-list">
-									<dt>Description</dt><dd>{ entry.Description }</dd>
-									<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
-								</dl>
-								<pre>{ entry.Script }</pre>
 							</article>
 						}
 						@ListEmptyState("まだ敵スキルはありません。", len(data.Entries) > 0)

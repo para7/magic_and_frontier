@@ -2,6 +2,7 @@
   "entries": [
     {
       "id": "loottable_1",
+      "memo": "",
       "lootPools": [
         {
           "kind": "item",

@@ -15,36 +15,31 @@ templ ItemsShell(data webui.ItemsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="stack form-span-2">
-				@ListBrowser(data.Meta.CurrentURL, "/items/new", "新規追加", "ID, item ID, skill ID, custom name で検索") {
+				@ListBrowser(data.Meta.CurrentURL, "/items/new", "新規追加", "itemid, name, skill で検索") {
 					<div class="entry-list" data-list-entries>
 						for _, entry := range data.Entries {
-								<article
-									class="entry-card"
-									data-list-item
-									data-search={ SearchBlob(entry.ID, entry.ItemID, entry.SkillID, entry.CustomName, entry.UpdatedAt) }
-									data-filters={ SkillFilterTokens(entry.SkillID) }
-									data-sort-updated={ entry.UpdatedAt }
-									data-sort-id={ entry.ID }
-									data-sort-item_id={ entry.ItemID }>
-									<header>
-										<div>
-											<h3 class="code">{ entry.ID }</h3>
-											<p class="entry-meta">{ entry.ItemID }</p>
-										</div>
-										<div class="entry-actions">
-											<a class="secondary outline" role="button" href={ WithReturnTo("/items/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/items/edit?id=" + entry.ID }>編集</a>
+							<article
+								class="entry-card"
+								data-list-item
+								data-search={ SearchBlob(entry.ID, entry.ItemID, entry.SkillID, entry.CustomName, entry.UpdatedAt) }
+								data-filters={ SkillFilterTokens(entry.SkillID) }
+								data-sort-updated={ entry.UpdatedAt }
+								data-sort-id={ entry.ID }
+								data-sort-item_id={ entry.ItemID }>
+								<header>
+									<div>
+										<h3 class="entry-line code">{ ItemListTitle(entry.ItemID, entry.CustomName) }</h3>
+											<p class="entry-meta entry-line code">{ JoinCompactWithComma(entry.ItemID, DisplayText(entry.SkillID, "-")) }</p>
+									</div>
+									<div class="entry-actions">
+										<a class="secondary outline" role="button" href={ WithReturnTo("/items/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/items/edit?id=" + entry.ID }>編集</a>
 										<form method="post" action={ "/items/" + entry.ID + "/delete" }>
 											@ReturnToField(data.Meta.CurrentURL)
 											<button type="submit" class="danger">削除</button>
 										</form>
 									</div>
-									</header>
-									<dl class="kv-list">
-										<dt>Name</dt><dd>{ entry.CustomName }</dd>
-										<dt>Item ID</dt><dd class="code">{ entry.ItemID }</dd>
-										<dt>Skill</dt><dd class="code">{ entry.SkillID }</dd>
-									</dl>
-								</article>
+								</header>
+							</article>
 						}
 						@ListEmptyState("まだアイテムはありません。", len(data.Entries) > 0)
 					</div>
@@ -133,10 +128,24 @@ templ ItemFormShell(data webui.ItemsPageData) {
 								Lore
 								<textarea name="lore">{ data.Form.Lore }</textarea>
 							</label>
-							<label>
-								Enchantments
-								<textarea name="enchantments">{ data.Form.Enchantments }</textarea>
-							</label>
+							<div class="enchantments-field">
+								<div class="enchantments-field-label">Enchantments</div>
+								<details class="enchantments-details" open?={ data.Form.ShowEnchantmentsDetail }>
+									<summary>Select enchantments ({ IntText(data.Form.SelectedEnchantments) })</summary>
+									<div class="enchantments-list">
+										for _, option := range data.Form.EnchantmentOptions {
+											<label class="enchantment-row">
+												<input type="checkbox" name="enchantmentIds" value={ option.ID } checked?={ option.Checked }/>
+												<span>{ option.Label }</span>
+												<span class="code enchantment-id">{ option.ID }</span>
+												<input class="input-xs enchantment-level" type="number" name={ option.LevelFieldName } value={ option.Level } min="1" max="255" step="1"/>
+												<span class="enchantment-level-max">/ { IntText(option.MaxLevel) }</span>
+											</label>
+										}
+									</div>
+								</details>
+								@FieldErrorBox(data.Form.FieldErrors, "enchantments")
+							</div>
 							<label>
 								CustomPotionEffects
 								<textarea name="customPotionEffects">{ data.Form.CustomPotionEffects }</textarea>
@@ -158,8 +167,8 @@ templ ItemFormShell(data webui.ItemsPageData) {
 						<div class="field-error">{ data.Form.FormError }</div>
 					}
 					<div class="form-actions">
-							<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
-							<a class="secondary outline" role="button" href={ BackLink("/items", data.Form.ReturnTo) }>キャンセル</a>
+						<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+						<a class="secondary outline" role="button" href={ BackLink("/items", data.Form.ReturnTo) }>キャンセル</a>
 					</div>
 				</form>
 			</section>

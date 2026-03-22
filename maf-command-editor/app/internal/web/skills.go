@@ -155,13 +155,17 @@ func skillsMeta() webui.PageMeta {
 }
 
 func defaultSkillForm() webui.SkillFormData {
-	return webui.SkillFormData{FieldErrors: map[string]string{}}
+	return webui.SkillFormData{
+		SkillType:   "sword",
+		FieldErrors: map[string]string{},
+	}
 }
 
 func skillEntryToForm(entry skills.SkillEntry) webui.SkillFormData {
 	return webui.SkillFormData{
 		ID:          entry.ID,
 		Name:        entry.Name,
+		SkillType:   entry.SkillType,
 		Description: entry.Description,
 		Script:      entry.Script,
 		FieldErrors: map[string]string{},
@@ -173,12 +177,14 @@ func parseSkillForm(r *http.Request) (webui.SkillFormData, skills.SaveInput, map
 	form := defaultSkillForm()
 	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.Name = r.Form.Get("name")
+	form.SkillType = strings.TrimSpace(r.Form.Get("skilltype"))
 	form.Description = r.Form.Get("description")
 	form.Script = r.Form.Get("script")
 	errs := map[string]string{}
 	input := skills.SaveInput{
 		ID:          form.ID,
 		Name:        form.Name,
+		SkillType:   form.SkillType,
 		Description: form.Description,
 		Script:      form.Script,
 	}

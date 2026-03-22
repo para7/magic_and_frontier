@@ -90,6 +90,7 @@ func ValidateSave(input SaveInput, enemySkillIDs, itemIDs, grimoireIDs map[strin
 		MobType:       common.NormalizeText(input.MobType),
 		Name:          common.OptionalText(input.Name),
 		HP:            input.HP,
+		Memo:          common.OptionalText(input.Memo),
 		Attack:        input.Attack,
 		Defense:       input.Defense,
 		MoveSpeed:     input.MoveSpeed,

@@ -50,6 +50,19 @@ func TestHandlerAPITreasureRejectsMissingVanillaSource(t *testing.T) {
 	}
 }
 
+func TestHandlerAPITreasureRejectsNonChestTablePath(t *testing.T) {
+	handler, _ := newTestHandler(t)
+
+	rec := requestJSON(t, handler, http.MethodPost, "/api/treasures", treasures.SaveInput{
+		ID:        "treasure_1",
+		TablePath: "minecraft:blocks/stone",
+		LootPools: []treasures.DropRef{{Kind: "minecraft_item", RefID: "minecraft:apple", Weight: 1}},
+	})
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d body=%s", rec.Code, rec.Body.String())
+	}
+}
+
 func TestHandlerAPIGrimoireUsesServerManagedCastID(t *testing.T) {
 	handler, _ := newTestHandler(t)
 

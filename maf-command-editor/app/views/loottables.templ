@@ -15,20 +15,20 @@ templ LootTablesShell(data webui.LootTablesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListBrowser(data.Meta.CurrentURL, "/loottables/new", "新規追加", "ID, table path, loot refs で検索") {
+				@ListBrowser(data.Meta.CurrentURL, "/loottables/new", "新規追加", "id, memo で検索") {
 					<div class="entry-list" data-list-entries>
 						for _, entry := range data.Entries {
 							<article
 								class="entry-card"
 								data-list-item
-								data-search={ LootTableSearchBlob(entry) }
+								data-search={ SearchBlob(entry.ID, entry.Memo, LootTableSearchBlob(entry)) }
 								data-filters="all"
 								data-sort-updated={ entry.UpdatedAt }
 								data-sort-id={ entry.ID }>
 								<header>
 									<div>
-										<h3>{ entry.ID }</h3>
-										<p class="entry-meta code">{ entry.ID }</p>
+										<h3 class="entry-line code">{ BracketText(entry.ID) }</h3>
+										<p class="entry-meta entry-line">{ DisplayText(entry.Memo, "-") }</p>
 									</div>
 									<div class="entry-actions">
 										<a class="secondary outline" role="button" href={ WithReturnTo("/loottables/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/loottables/edit?id=" + entry.ID }>編集</a>
@@ -38,12 +38,6 @@ templ LootTablesShell(data webui.LootTablesPageData) {
 										</form>
 									</div>
 								</header>
-								<ul class="reference-list">
-									<li class="code">updated={ entry.UpdatedAt }</li>
-									for _, pool := range entry.LootPools {
-										<li class="code">{ pool.Kind } / { pool.RefID } / weight={ pool.Weight }</li>
-									}
-								</ul>
 							</article>
 						}
 						@ListEmptyState("まだ loottable はありません。", len(data.Entries) > 0)
@@ -81,6 +75,11 @@ templ LootTableFormShell(data webui.LootTablesPageData) {
 									<small>例: loottable_1（loottable_ + 連番）</small>
 								}
 								@FieldErrorBox(data.Form.FieldErrors, "id")
+							</label>
+							<label>
+								Memo
+								<input class="input-long" name="memo" value={ data.Form.Memo }/>
+								@FieldErrorBox(data.Form.FieldErrors, "memo")
 							</label>
 							<label>
 								Loot Pools

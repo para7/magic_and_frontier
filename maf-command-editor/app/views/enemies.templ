@@ -15,7 +15,7 @@ templ EnemiesShell(data webui.EnemiesPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListBrowser(data.Meta.CurrentURL, "/enemies/new", "新規追加", "ID, mob type, name, drop refs で検索") {
+				@ListBrowser(data.Meta.CurrentURL, "/enemies/new", "新規追加", "mob type, name, hp, memo で検索") {
 					<div class="entry-list" data-list-entries>
 						for _, entry := range data.Entries {
 							<article
@@ -29,8 +29,8 @@ templ EnemiesShell(data webui.EnemiesPageData) {
 								data-sort-hp={ trimFloat(entry.HP) }>
 								<header>
 									<div>
-										<h3>{ DisplayText(entry.Name, entry.ID) }</h3>
-										<p class="entry-meta code">{ entry.ID }</p>
+										<h3 class="entry-line code">{ EnemyListTitle(entry.MobType, entry.Name) }</h3>
+										<p class="entry-meta entry-line">{ JoinCompactWithSpace(trimFloat(entry.HP), entry.Memo) }</p>
 									</div>
 									<div class="entry-actions">
 										<a class="secondary outline" role="button" href={ WithReturnTo("/enemies/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/enemies/edit?id=" + entry.ID }>編集</a>
@@ -40,16 +40,6 @@ templ EnemiesShell(data webui.EnemiesPageData) {
 										</form>
 									</div>
 								</header>
-								<dl class="kv-list">
-									<dt>Mob Type</dt><dd class="code">{ entry.MobType }</dd>
-									<dt>HP</dt><dd>{ trimFloat(entry.HP) }</dd>
-									<dt>Drop Mode</dt><dd>{ entry.DropMode }</dd>
-									<dt>Attack</dt><dd>{ FloatText(entry.Attack) }</dd>
-									<dt>Defense</dt><dd>{ FloatText(entry.Defense) }</dd>
-									<dt>Move Speed</dt><dd>{ FloatText(entry.MoveSpeed) }</dd>
-									<dt>Enemy Skills</dt><dd>{ JoinLines(entry.EnemySkillIDs) }</dd>
-									<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
-								</dl>
 							</article>
 						}
 						@ListEmptyState("まだ敵はありません。", len(data.Entries) > 0)
@@ -104,6 +94,11 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 								HP
 								<input class="input-short" name="hp" value={ data.Form.HP }/>
 								@FieldErrorBox(data.Form.FieldErrors, "hp")
+							</label>
+							<label>
+								Memo
+								<input class="input-long" name="memo" value={ data.Form.Memo }/>
+								@FieldErrorBox(data.Form.FieldErrors, "memo")
 							</label>
 							<label>
 								Attack

@@ -10,24 +10,40 @@ func TestValidateSaveSuccess(t *testing.T) {
 	result := ValidateSave(SaveInput{
 		ID:          "skill_1",
 		Name:        " Slash ",
+		SkillType:   " bow ",
 		Description: " desc ",
 		Script:      "say slash",
 	}, now)
 	if !result.OK || result.Entry == nil {
 		t.Fatalf("expected success, got %+v", result)
 	}
-	if result.Entry.Name != "Slash" || result.Entry.Description != "desc" {
+	if result.Entry.Name != "Slash" || result.Entry.Description != "desc" || result.Entry.SkillType != "bow" {
+		t.Fatalf("entry = %#v", result.Entry)
+	}
+}
+
+func TestValidateSaveDefaultsSkillType(t *testing.T) {
+	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
+	result := ValidateSave(SaveInput{
+		ID:     "skill_1",
+		Name:   "Slash",
+		Script: "say slash",
+	}, now)
+	if !result.OK || result.Entry == nil {
+		t.Fatalf("expected success, got %+v", result)
+	}
+	if result.Entry.SkillType != "sword" {
 		t.Fatalf("entry = %#v", result.Entry)
 	}
 }
 
 func TestValidateSaveErrors(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
-	result := ValidateSave(SaveInput{ID: "bad", Script: " "}, now)
+	result := ValidateSave(SaveInput{ID: "bad", SkillType: "gun", Script: " "}, now)
 	if result.OK {
 		t.Fatalf("expected validation error")
 	}
-	if result.FieldErrors["id"] == "" || result.FieldErrors["script"] == "" {
+	if result.FieldErrors["id"] == "" || result.FieldErrors["script"] == "" || result.FieldErrors["skilltype"] == "" {
 		t.Fatalf("fieldErrors = %#v", result.FieldErrors)
 	}
 }

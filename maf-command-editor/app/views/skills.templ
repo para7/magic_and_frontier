@@ -15,21 +15,21 @@ templ SkillsShell(data webui.SkillsPageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListBrowser(data.Meta.CurrentURL, "/skills/new", "新規追加", "ID, name, description で検索") {
+				@ListBrowser(data.Meta.CurrentURL, "/skills/new", "新規追加", "id, name, type, description で検索") {
 					<div class="entry-list" data-list-entries>
 						for _, entry := range data.Entries {
 							<article
 								class="entry-card"
 								data-list-item
-								data-search={ SearchBlob(entry.ID, entry.Name, entry.Description, entry.UpdatedAt) }
+								data-search={ SearchBlob(entry.ID, entry.Name, entry.SkillType, entry.Description, entry.UpdatedAt) }
 								data-filters={ NameFilterTokens(entry.Name) }
 								data-sort-updated={ entry.UpdatedAt }
 								data-sort-id={ entry.ID }
 								data-sort-name={ DisplayText(entry.Name, entry.ID) }>
 								<header>
 									<div>
-										<h3>{ DisplayText(entry.Name, entry.ID) }</h3>
-										<p class="entry-meta code">{ entry.ID }</p>
+										<h3 class="entry-line code">{ BracketText(entry.ID) + " " + DisplayText(entry.Name, "-") }</h3>
+										<p class="entry-meta entry-line code">{ JoinCompactWithSpace(entry.SkillType, entry.Description) }</p>
 									</div>
 									<div class="entry-actions">
 										<a class="secondary outline" role="button" href={ WithReturnTo("/skills/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/skills/edit?id=" + entry.ID }>編集</a>
@@ -39,11 +39,6 @@ templ SkillsShell(data webui.SkillsPageData) {
 										</form>
 									</div>
 								</header>
-								<dl class="kv-list">
-									<dt>Description</dt><dd>{ entry.Description }</dd>
-									<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
-								</dl>
-								<pre>{ entry.Script }</pre>
 							</article>
 						}
 						@ListEmptyState("まだスキルはありません。", len(data.Entries) > 0)
@@ -86,6 +81,15 @@ templ SkillFormShell(data webui.SkillsPageData) {
 								Name
 								<input class="input-medium" name="name" value={ data.Form.Name }/>
 								@FieldErrorBox(data.Form.FieldErrors, "name")
+							</label>
+							<label>
+								Skill Type
+								<select class="select-medium" name="skilltype">
+									<option value="sword" selected?={ data.Form.SkillType == "sword" }>sword</option>
+									<option value="bow" selected?={ data.Form.SkillType == "bow" }>bow</option>
+									<option value="axe" selected?={ data.Form.SkillType == "axe" }>axe</option>
+								</select>
+								@FieldErrorBox(data.Form.FieldErrors, "skilltype")
 							</label>
 						</div>
 						<div class="form-block stack">

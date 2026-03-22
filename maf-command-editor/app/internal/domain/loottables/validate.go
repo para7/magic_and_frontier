@@ -56,6 +56,7 @@ func ValidateSave(input SaveInput, itemIDs, grimoireIDs map[string]struct{}, now
 	}
 	entry := LootTableEntry{
 		ID:        id,
+		Memo:      common.OptionalText(input.Memo),
 		LootPools: pools,
 		UpdatedAt: now.UTC().Format(time.RFC3339),
 	}

@@ -187,6 +187,7 @@ func lootTablesMeta() webui.PageMeta {
 func defaultLootTableForm() webui.LootTableFormData {
 	return webui.LootTableFormData{
 		ID:            "",
+		Memo:          "",
 		LootPoolsText: "item,,1,1,1",
 		FieldErrors:   map[string]string{},
 	}
@@ -213,6 +214,7 @@ func lootTableEntryToForm(entry loottables.LootTableEntry) webui.LootTableFormDa
 	}
 	return webui.LootTableFormData{
 		ID:            entry.ID,
+		Memo:          entry.Memo,
 		LootPoolsText: strings.Join(lines, "\n"),
 		FieldErrors:   map[string]string{},
 		IsEditing:     true,
@@ -222,10 +224,12 @@ func lootTableEntryToForm(entry loottables.LootTableEntry) webui.LootTableFormDa
 func parseLootTableForm(r *http.Request) (webui.LootTableFormData, loottables.SaveInput, map[string]string) {
 	form := defaultLootTableForm()
 	form.ID = strings.TrimSpace(r.Form.Get("id"))
+	form.Memo = r.Form.Get("memo")
 	form.LootPoolsText = r.Form.Get("lootPoolsText")
 	errs := map[string]string{}
 	input := loottables.SaveInput{
 		ID:        form.ID,
+		Memo:      form.Memo,
 		LootPools: parseTreasurePools(errs, form.LootPoolsText),
 	}
 	return form, input, errs

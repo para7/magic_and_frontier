@@ -101,6 +101,7 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	errors := mergeFieldErrors(parseErrs, result.FieldErrors)
 	if len(errors) > 0 {
 		form.FieldErrors = errors
+		form.ShowEnchantmentsDetail = errors["enchantments"] != ""
 		form.FormError = formErrorText(result.FormError)
 		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
 		return
@@ -167,45 +168,51 @@ func itemMeta() webui.PageMeta {
 }
 
 func defaultItemForm(options []webui.ReferenceOption) webui.ItemFormData {
+	enchantmentOptions, selectedEnchantments := itemFormEnchantmentsFromText("")
 	return webui.ItemFormData{
-		ID:                  "",
-		ItemID:              "minecraft:stone",
-		SkillOptions:        options,
-		FieldErrors:         map[string]string{},
-		CustomName:          "",
-		Lore:                "",
-		Enchantments:        "",
-		CustomModelData:     "",
-		RepairCost:          "",
-		HideFlags:           "",
-		PotionID:            "",
-		CustomPotionColor:   "",
-		CustomPotionEffects: "",
-		AttributeModifiers:  "",
-		CustomNBT:           "",
+		ID:                   "",
+		ItemID:               "minecraft:stone",
+		SkillOptions:         options,
+		FieldErrors:          map[string]string{},
+		CustomName:           "",
+		Lore:                 "",
+		Enchantments:         "",
+		CustomModelData:      "",
+		RepairCost:           "",
+		HideFlags:            "",
+		PotionID:             "",
+		CustomPotionColor:    "",
+		CustomPotionEffects:  "",
+		AttributeModifiers:   "",
+		CustomNBT:            "",
+		EnchantmentOptions:   enchantmentOptions,
+		SelectedEnchantments: selectedEnchantments,
 	}
 }
 
 func itemEntryToForm(entry items.ItemEntry, options []webui.ReferenceOption) webui.ItemFormData {
+	enchantmentOptions, selectedEnchantments := itemFormEnchantmentsFromText(entry.Enchantments)
 	return webui.ItemFormData{
-		ID:                  entry.ID,
-		ItemID:              entry.ItemID,
-		SkillID:             entry.SkillID,
-		SkillOptions:        options,
-		CustomName:          entry.CustomName,
-		Lore:                entry.Lore,
-		Enchantments:        entry.Enchantments,
-		Unbreakable:         entry.Unbreakable,
-		CustomModelData:     entry.CustomModelData,
-		RepairCost:          entry.RepairCost,
-		HideFlags:           entry.HideFlags,
-		PotionID:            entry.PotionID,
-		CustomPotionColor:   entry.CustomPotionColor,
-		CustomPotionEffects: entry.CustomPotionEffects,
-		AttributeModifiers:  entry.AttributeModifiers,
-		CustomNBT:           entry.CustomNBT,
-		FieldErrors:         map[string]string{},
-		IsEditing:           true,
+		ID:                   entry.ID,
+		ItemID:               entry.ItemID,
+		SkillID:              entry.SkillID,
+		SkillOptions:         options,
+		CustomName:           entry.CustomName,
+		Lore:                 entry.Lore,
+		Enchantments:         entry.Enchantments,
+		Unbreakable:          entry.Unbreakable,
+		CustomModelData:      entry.CustomModelData,
+		RepairCost:           entry.RepairCost,
+		HideFlags:            entry.HideFlags,
+		PotionID:             entry.PotionID,
+		CustomPotionColor:    entry.CustomPotionColor,
+		CustomPotionEffects:  entry.CustomPotionEffects,
+		AttributeModifiers:   entry.AttributeModifiers,
+		CustomNBT:            entry.CustomNBT,
+		EnchantmentOptions:   enchantmentOptions,
+		SelectedEnchantments: selectedEnchantments,
+		FieldErrors:          map[string]string{},
+		IsEditing:            true,
 	}
 }
 
@@ -216,7 +223,7 @@ func parseItemForm(r *http.Request, skills []skills.SkillEntry) (webui.ItemFormD
 	form.SkillID = strings.TrimSpace(r.Form.Get("skillId"))
 	form.CustomName = r.Form.Get("customName")
 	form.Lore = r.Form.Get("lore")
-	form.Enchantments = r.Form.Get("enchantments")
+	form.Enchantments, form.EnchantmentOptions, form.SelectedEnchantments = itemFormEnchantmentsFromRequest(r)
 	form.Unbreakable = r.Form.Get("unbreakable") != ""
 	form.CustomModelData = r.Form.Get("customModelData")
 	form.RepairCost = r.Form.Get("repairCost")

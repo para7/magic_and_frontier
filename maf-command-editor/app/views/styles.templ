@@ -445,7 +445,7 @@ templ layoutStyles() {
 	.entry-card {
 		background: transparent;
 		border-bottom: 1px solid var(--line);
-		padding: 4px 0;
+		padding: 3px 0;
 	}
 
 	.entry-card:first-child {
@@ -453,15 +453,23 @@ templ layoutStyles() {
 	}
 
 	.entry-card header {
-		align-items: start;
+		align-items: center;
 		display: flex;
 		gap: 8px;
 		justify-content: space-between;
-		margin-bottom: 3px;
+		margin-bottom: 0;
 	}
 
 	.entry-card h3 {
-		margin-bottom: 1px;
+		margin-bottom: 0;
+	}
+
+	.entry-line {
+		display: block;
+		max-width: min(100%, 760px);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.entry-card pre {
@@ -646,15 +654,97 @@ templ layoutStyles() {
 		width: 165px;
 	}
 
-	.select-wide {
-		max-width: 340px;
-		width: 340px;
-	}
+		.select-wide {
+			max-width: 340px;
+			width: 340px;
+		}
 
-	.panel-inline {
-		padding-bottom: 8px;
-		padding-top: 8px;
-	}
+		.enchantments-field {
+			align-items: start;
+			column-gap: 2px;
+			display: grid;
+			grid-template-columns: var(--form-label-width) minmax(0, 1fr);
+			margin: 0;
+		}
+
+		.enchantments-field-label {
+			color: var(--muted);
+			font-size: 14px;
+			line-height: var(--control-height);
+			text-align: right;
+		}
+
+		.enchantments-field>.field-error {
+			grid-column: 2;
+			margin-top: 2px;
+			text-align: left;
+		}
+
+		.enchantments-details {
+			background: #121722;
+			border: 1px solid var(--line);
+			border-radius: var(--radius);
+			grid-column: 2;
+			max-width: 460px;
+			padding: 2px 6px;
+			width: 100%;
+		}
+
+		.enchantments-details>summary {
+			color: var(--text);
+			cursor: pointer;
+			font-size: 13px;
+			list-style-position: inside;
+			padding: 2px 0;
+			user-select: none;
+		}
+
+		.enchantments-list {
+			display: grid;
+			gap: 1px;
+			margin-top: 2px;
+			max-height: 260px;
+			overflow: auto;
+			padding-bottom: 2px;
+		}
+
+		.enchantment-row {
+			align-items: center;
+			color: var(--text);
+			column-gap: 6px;
+			display: grid;
+			font-size: 13px;
+			grid-template-columns: auto minmax(90px, 180px) minmax(150px, 1fr) 82px auto;
+			margin: 0;
+			min-height: 24px;
+			text-align: left;
+		}
+
+		.enchantment-row input[type="checkbox"] {
+			margin-top: 0;
+		}
+
+		.enchantment-id {
+			color: var(--muted);
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.enchantment-level {
+			max-width: 82px;
+			width: 82px;
+		}
+
+		.enchantment-level-max {
+			color: var(--muted);
+			font-size: 12px;
+		}
+
+		.panel-inline {
+			padding-bottom: 8px;
+			padding-top: 8px;
+		}
 
 	.action-bar {
 		align-items: center;

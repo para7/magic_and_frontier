@@ -51,27 +51,40 @@ type SelectOption struct {
 	Label string
 }
 
+type ItemEnchantmentOption struct {
+	ID             string
+	Key            string
+	Label          string
+	MaxLevel       int
+	Checked        bool
+	Level          string
+	LevelFieldName string
+}
+
 type ItemFormData struct {
-	ID                  string
-	ReturnTo            string
-	ItemID              string
-	SkillID             string
-	SkillOptions        []ReferenceOption
-	CustomName          string
-	Lore                string
-	Enchantments        string
-	Unbreakable         bool
-	CustomModelData     string
-	RepairCost          string
-	HideFlags           string
-	PotionID            string
-	CustomPotionColor   string
-	CustomPotionEffects string
-	AttributeModifiers  string
-	CustomNBT           string
-	FieldErrors         map[string]string
-	FormError           string
-	IsEditing           bool
+	ID                     string
+	ReturnTo               string
+	ItemID                 string
+	SkillID                string
+	SkillOptions           []ReferenceOption
+	CustomName             string
+	Lore                   string
+	Enchantments           string
+	Unbreakable            bool
+	CustomModelData        string
+	RepairCost             string
+	HideFlags              string
+	PotionID               string
+	CustomPotionColor      string
+	CustomPotionEffects    string
+	AttributeModifiers     string
+	CustomNBT              string
+	EnchantmentOptions     []ItemEnchantmentOption
+	SelectedEnchantments   int
+	ShowEnchantmentsDetail bool
+	FieldErrors            map[string]string
+	FormError              string
+	IsEditing              bool
 }
 
 type ItemsPageData struct {
@@ -106,6 +119,7 @@ type SkillFormData struct {
 	ID          string
 	ReturnTo    string
 	Name        string
+	SkillType   string
 	Description string
 	Script      string
 	FieldErrors map[string]string
@@ -170,6 +184,7 @@ type TreasuresPageData struct {
 
 type LootTableFormData struct {
 	ID            string
+	Memo          string
 	ReturnTo      string
 	LootPoolsText string
 	FieldErrors   map[string]string
@@ -192,6 +207,7 @@ type EnemyFormData struct {
 	MobType           string
 	Name              string
 	HP                string
+	Memo              string
 	Attack            string
 	Defense           string
 	MoveSpeed         string

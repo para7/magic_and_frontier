@@ -13,6 +13,8 @@ func ValidateSave(input SaveInput, itemIDs, grimoireIDs, validTablePaths map[str
 	tablePath := common.NormalizeText(input.TablePath)
 	if !common.IsSafeNamespacedResourcePath(tablePath) {
 		errs.Add("tablePath", "Must be a namespaced loot table path.")
+	} else if !IsSupportedTablePath(tablePath) {
+		errs.Add("tablePath", "Treasure tablePath must be under minecraft:chests/.")
 	} else if _, ok := validTablePaths[tablePath]; !ok {
 		errs.Add("tablePath", "Referenced minecraft loot table does not exist.")
 	}

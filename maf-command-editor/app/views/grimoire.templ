@@ -15,7 +15,7 @@ templ GrimoireShell(data webui.GrimoirePageData) {
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
 			<section class="form-span-2">
-				@ListBrowser(data.Meta.CurrentURL, "/grimoire/new", "新規追加", "ID, title, description, cast 情報で検索") {
+				@ListBrowser(data.Meta.CurrentURL, "/grimoire/new", "新規追加", "id, name, cast 情報で検索") {
 					<div class="entry-list" data-list-entries>
 						for _, entry := range data.Entries {
 							<article
@@ -29,8 +29,8 @@ templ GrimoireShell(data webui.GrimoirePageData) {
 								data-sort-cast_id={ IntText(entry.CastID) }>
 								<header>
 									<div>
-										<h3>{ entry.Title }</h3>
-										<p class="entry-meta code">{ entry.ID }</p>
+										<h3 class="entry-line code">{ BracketText(entry.ID) + " " + DisplayText(entry.Title, "-") }</h3>
+										<p class="entry-meta entry-line code">{ JoinCompactWithComma(IntText(entry.CastTime), IntText(entry.MPCost)) }</p>
 									</div>
 									<div class="entry-actions">
 										<a class="secondary outline" role="button" href={ WithReturnTo("/grimoire/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/grimoire/edit?id=" + entry.ID }>編集</a>
@@ -40,13 +40,6 @@ templ GrimoireShell(data webui.GrimoirePageData) {
 										</form>
 									</div>
 								</header>
-								<dl class="kv-list">
-									<dt>Cast ID</dt><dd>{ entry.CastID }</dd>
-									<dt>Cast Time</dt><dd>{ entry.CastTime }</dd>
-									<dt>MP Cost</dt><dd>{ entry.MPCost }</dd>
-									<dt>Updated</dt><dd>{ entry.UpdatedAt }</dd>
-								</dl>
-								<pre>{ entry.Script }</pre>
 							</article>
 						}
 						@ListEmptyState("まだ魔導書エントリはありません。", len(data.Entries) > 0)
