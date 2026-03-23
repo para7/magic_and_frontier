@@ -19,26 +19,23 @@ type apiRouter struct {
 
 func NewHandler(cfg config.Config, deps Dependencies) http.Handler {
 	deps = normalizeDependencies(cfg, deps)
+	service := application.NewService(cfg, deps)
+	master, err := service.Master()
+	if err != nil {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			writeInternalError(w, err)
+		})
+	}
+	deps.Master = master
 	app := apiRouter{
 		cfg:     cfg,
 		deps:    deps,
-		service: application.NewService(cfg, deps),
+		service: service,
 	}
 
 	mux := http.NewServeMux()
 	app.registerSystemRoutes(mux)
-	web.RegisterRoutes(mux, cfg, web.Dependencies{
-		ItemRepo:       deps.ItemRepo,
-		GrimoireRepo:   deps.GrimoireRepo,
-		SkillRepo:      deps.SkillRepo,
-		EnemySkillRepo: deps.EnemySkillRepo,
-		EnemyRepo:      deps.EnemyRepo,
-		SpawnTableRepo: deps.SpawnTableRepo,
-		TreasureRepo:   deps.TreasureRepo,
-		LootTableRepo:  deps.LootTableRepo,
-		CounterRepo:    deps.CounterRepo,
-		Now:            deps.Now,
-	})
+	web.RegisterRoutes(mux, cfg, deps)
 	app.registerItemRoutes(mux)
 	app.registerGrimoireRoutes(mux)
 	app.registerSkillRoutes(mux)

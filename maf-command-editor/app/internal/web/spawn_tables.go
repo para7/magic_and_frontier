@@ -1,12 +1,13 @@
 package web
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/enemies"
+	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/webui"
 	"tools2/app/views"
@@ -14,7 +15,7 @@ import (
 
 func (a App) spawnTablesPage(w http.ResponseWriter, r *http.Request) {
 	notice := consumeFlashNotice(w, r)
-	state, err := a.deps.SpawnTableRepo.LoadState()
+	state, err := a.loadSpawnTableStateFromMaster()
 	if err != nil {
 		a.renderSpawnTables(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -30,7 +31,7 @@ func (a App) spawnTablesNewPage(w http.ResponseWriter, r *http.Request) {
 
 func (a App) spawnTablesEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, spawnTablesMeta().CurrentPath)
-	state, err := a.deps.SpawnTableRepo.LoadState()
+	state, err := a.loadSpawnTableStateFromMaster()
 	if err != nil {
 		a.renderSpawnTables(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -56,7 +57,7 @@ func (a App) spawnTablesEditSubmit(w http.ResponseWriter, r *http.Request) {
 func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, spawnTablesMeta().CurrentPath)
-	state, err := a.deps.SpawnTableRepo.LoadState()
+	master, err := a.masterOrErr()
 	if err != nil {
 		form := defaultSpawnTableForm()
 		form.IsEditing = editing
@@ -64,7 +65,7 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 		a.renderSpawnTableForm(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
-	enemyState, err := a.deps.EnemyRepo.LoadState()
+	state, err := a.loadSpawnTableStateFromMaster()
 	if err != nil {
 		form := defaultSpawnTableForm()
 		form.IsEditing = editing
@@ -72,7 +73,6 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 		a.renderSpawnTableForm(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
-
 	form, input, parseErrs := parseSpawnTableForm(r)
 	form.IsEditing = editing
 	form.ReturnTo = returnTo
@@ -85,23 +85,39 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 		parseErrs["id"] = "この ID は既に使用されています。"
 	}
 
-	result := spawntables.ValidateSave(input, toIDSet(enemyState.Entries, func(entry enemies.EnemyEntry) string { return entry.ID }), a.deps.Now())
-	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapSpawnTableField))
-	if len(errors) > 0 {
-		form.FieldErrors = errors
+	result := master.SpawnTables().Validate(input, master)
+	fieldErrs := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapSpawnTableField))
+	if len(fieldErrs) > 0 {
+		form.FieldErrors = fieldErrs
 		form.FormError = formErrorText(result.FormError)
 		a.renderSpawnTableForm(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
 		return
 	}
-	if conflictID, ok := spawntables.FirstOverlap(state.Entries, *result.Entry); ok {
-		form.FieldErrors = map[string]string{"replacementsText": "Range overlaps with " + conflictID + "."}
-		form.FormError = formErrorText("Validation failed. Fix the highlighted fields.")
-		a.renderSpawnTableForm(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
+	mode := common.SaveModeCreated
+	if editing {
+		mode = common.SaveModeUpdated
+		if err := master.SpawnTables().Update(*result.Entry, master); err != nil {
+			form.FormError = formErrorText(err.Error())
+			a.renderSpawnTableForm(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
+			return
+		}
+	} else {
+		if err := master.SpawnTables().Create(*result.Entry, master); err != nil {
+			if errors.Is(err, dmaster.ErrDuplicateID) {
+				form.FieldErrors = mergeFieldErrors(form.FieldErrors, map[string]string{"id": "この ID は既に使用されています。"})
+			} else {
+				form.FormError = formErrorText(err.Error())
+			}
+			a.renderSpawnTableForm(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
+			return
+		}
+	}
+	if err := master.SpawnTables().Save(); err != nil {
+		a.renderSpawnTableForm(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
-
-	nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry spawntables.SpawnTableEntry) string { return entry.ID })
-	if err := a.deps.SpawnTableRepo.SaveState(nextState); err != nil {
+	nextState, err := a.loadSpawnTableStateFromMaster()
+	if err != nil {
 		a.renderSpawnTableForm(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
@@ -116,18 +132,27 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 func (a App) spawnTablesDelete(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, spawnTablesMeta().CurrentPath)
-	state, err := a.deps.SpawnTableRepo.LoadState()
+	master, err := a.masterOrErr()
+	if err != nil {
+		a.renderSpawnTables(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
+		return
+	}
+	state, err := a.loadSpawnTableStateFromMaster()
 	if err != nil {
 		a.renderSpawnTables(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.PathValue("id"))
-	nextState, ok := common.DeleteEntries(state, id, func(entry spawntables.SpawnTableEntry) string { return entry.ID })
-	if !ok {
+	if err := master.SpawnTables().Delete(id, master); err != nil {
 		a.renderSpawnTables(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice("Spawn table not found.")})
 		return
 	}
-	if err := a.deps.SpawnTableRepo.SaveState(nextState); err != nil {
+	if err := master.SpawnTables().Save(); err != nil {
+		a.renderSpawnTables(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		return
+	}
+	nextState, err := a.loadSpawnTableStateFromMaster()
+	if err != nil {
 		a.renderSpawnTables(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}

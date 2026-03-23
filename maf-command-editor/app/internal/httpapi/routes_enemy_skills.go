@@ -1,16 +1,18 @@
 package httpapi
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemyskills"
+	dmaster "tools2/app/internal/domain/master"
 )
 
 func (a apiRouter) registerEnemySkillRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/enemy-skills", func(w http.ResponseWriter, r *http.Request) {
-		state, err := a.deps.EnemySkillRepo.LoadState()
+		state, err := a.enemySkillState()
 		if err != nil {
 			writeInternalError(w, err)
 			return
@@ -22,7 +24,12 @@ func (a apiRouter) registerEnemySkillRoutes(mux *http.ServeMux) {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		state, err := a.deps.EnemySkillRepo.LoadState()
+		master, err := a.masterOrErr()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		state, err := a.enemySkillState()
 		if err != nil {
 			writeInternalError(w, err)
 			return
@@ -31,14 +38,22 @@ func (a apiRouter) registerEnemySkillRoutes(mux *http.ServeMux) {
 			writeDuplicateIDValidationError[enemyskills.EnemySkillEntry](w)
 			return
 		}
-		result := enemyskills.ValidateSave(input, a.deps.Now())
+		result := master.EnemySkills().Validate(input, master)
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
 			return
 		}
-		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
+		if err := master.EnemySkills().Create(*result.Entry, master); err != nil {
+			if errors.Is(err, dmaster.ErrDuplicateID) {
+				writeDuplicateIDValidationError[enemyskills.EnemySkillEntry](w)
+				return
+			}
+			writeCodedError(w, http.StatusBadRequest, "VALIDATION_FAILED", err.Error())
+			return
+		}
+		mode := common.SaveModeCreated
 		result.Mode = mode
-		if err := a.deps.EnemySkillRepo.SaveState(nextState); err != nil {
+		if err := master.EnemySkills().Save(); err != nil {
 			writeInternalError(w, err)
 			return
 		}
@@ -50,7 +65,7 @@ func (a apiRouter) registerEnemySkillRoutes(mux *http.ServeMux) {
 			writeFormError(w, http.StatusBadRequest, "Missing enemy skill id.")
 			return
 		}
-		enemyState, err := a.deps.EnemyRepo.LoadState()
+		enemyState, err := a.enemyState()
 		if err != nil {
 			writeInternalError(w, err)
 			return
@@ -63,17 +78,16 @@ func (a apiRouter) registerEnemySkillRoutes(mux *http.ServeMux) {
 				}
 			}
 		}
-		state, err := a.deps.EnemySkillRepo.LoadState()
+		master, err := a.masterOrErr()
 		if err != nil {
 			writeInternalError(w, err)
 			return
 		}
-		nextState, ok := common.DeleteEntries(state, id, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
-		if !ok {
+		if err := master.EnemySkills().Delete(id, master); err != nil {
 			writeJSON(w, http.StatusNotFound, common.DeleteNotFound("Enemy skill"))
 			return
 		}
-		if err := a.deps.EnemySkillRepo.SaveState(nextState); err != nil {
+		if err := master.EnemySkills().Save(); err != nil {
 			writeInternalError(w, err)
 			return
 		}

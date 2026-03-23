@@ -1,17 +1,18 @@
 package httpapi
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/items"
-	"tools2/app/internal/domain/skills"
+	dmaster "tools2/app/internal/domain/master"
 )
 
 func (a apiRouter) registerItemRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/items", func(w http.ResponseWriter, r *http.Request) {
-		state, err := a.deps.ItemRepo.LoadItemState()
+		state, err := a.itemState()
 		if err != nil {
 			writeInternalError(w, err)
 			return
@@ -23,12 +24,12 @@ func (a apiRouter) registerItemRoutes(mux *http.ServeMux) {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		state, err := a.deps.ItemRepo.LoadItemState()
+		master, err := a.masterOrErr()
 		if err != nil {
 			writeInternalError(w, err)
 			return
 		}
-		skillState, err := a.deps.SkillRepo.LoadState()
+		state, err := a.itemState()
 		if err != nil {
 			writeInternalError(w, err)
 			return
@@ -37,14 +38,22 @@ func (a apiRouter) registerItemRoutes(mux *http.ServeMux) {
 			writeDuplicateIDValidationError[items.ItemEntry](w)
 			return
 		}
-		result := items.ValidateSave(input, entryIDs(skillState.Entries, func(entry skills.SkillEntry) string { return entry.ID }), a.deps.Now())
+		result := master.Items().Validate(input, master)
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
 			return
 		}
-		nextState, mode := items.Upsert(state, *result.Entry)
+		mode := common.SaveModeCreated
+		if err := master.Items().Create(*result.Entry, master); err != nil {
+			if errors.Is(err, dmaster.ErrDuplicateID) {
+				writeDuplicateIDValidationError[items.ItemEntry](w)
+				return
+			}
+			writeCodedError(w, http.StatusBadRequest, "VALIDATION_FAILED", err.Error())
+			return
+		}
 		result.Mode = mode
-		if err := a.deps.ItemRepo.SaveItemState(nextState); err != nil {
+		if err := master.Items().Save(); err != nil {
 			writeInternalError(w, err)
 			return
 		}
@@ -56,17 +65,16 @@ func (a apiRouter) registerItemRoutes(mux *http.ServeMux) {
 			writeFormError(w, http.StatusBadRequest, "Missing item id.")
 			return
 		}
-		state, err := a.deps.ItemRepo.LoadItemState()
+		master, err := a.masterOrErr()
 		if err != nil {
 			writeInternalError(w, err)
 			return
 		}
-		nextState, ok := items.Delete(state, id)
-		if !ok {
+		if err := master.Items().Delete(id, master); err != nil {
 			writeJSON(w, http.StatusNotFound, common.DeleteNotFound("Item"))
 			return
 		}
-		if err := a.deps.ItemRepo.SaveItemState(nextState); err != nil {
+		if err := master.Items().Save(); err != nil {
 			writeInternalError(w, err)
 			return
 		}

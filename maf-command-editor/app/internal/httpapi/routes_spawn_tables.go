@@ -1,17 +1,18 @@
 package httpapi
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
 	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/enemies"
+	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/domain/spawntables"
 )
 
 func (a apiRouter) registerSpawnTableRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/spawn-tables", func(w http.ResponseWriter, r *http.Request) {
-		state, err := a.deps.SpawnTableRepo.LoadState()
+		state, err := a.spawnTableState()
 		if err != nil {
 			writeInternalError(w, err)
 			return
@@ -23,7 +24,12 @@ func (a apiRouter) registerSpawnTableRoutes(mux *http.ServeMux) {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		state, err := a.deps.SpawnTableRepo.LoadState()
+		master, err := a.masterOrErr()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		state, err := a.spawnTableState()
 		if err != nil {
 			writeInternalError(w, err)
 			return
@@ -32,32 +38,46 @@ func (a apiRouter) registerSpawnTableRoutes(mux *http.ServeMux) {
 			writeDuplicateIDValidationError[spawntables.SpawnTableEntry](w)
 			return
 		}
-		enemyState, err := a.deps.EnemyRepo.LoadState()
-		if err != nil {
-			writeInternalError(w, err)
-			return
-		}
-		result := spawntables.ValidateSave(input, entryIDs(enemyState.Entries, func(entry enemies.EnemyEntry) string { return entry.ID }), a.deps.Now())
+		result := master.SpawnTables().Validate(input, master)
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
 			return
 		}
-		if conflictID, ok := spawntables.FirstOverlap(state.Entries, *result.Entry); ok {
-			writeJSON(w, http.StatusBadRequest, common.SaveValidationError[spawntables.SpawnTableEntry](
-				common.FieldErrors{"range": "Range overlaps with " + conflictID + "."},
-				"Validation failed. Fix the highlighted fields.",
-			))
+		if err := master.SpawnTables().Create(*result.Entry, master); err != nil {
+			if errors.Is(err, dmaster.ErrDuplicateID) {
+				writeDuplicateIDValidationError[spawntables.SpawnTableEntry](w)
+				return
+			}
+			writeCodedError(w, http.StatusBadRequest, "VALIDATION_FAILED", err.Error())
 			return
 		}
-		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry spawntables.SpawnTableEntry) string { return entry.ID })
+		mode := common.SaveModeCreated
 		result.Mode = mode
-		if err := a.deps.SpawnTableRepo.SaveState(nextState); err != nil {
+		if err := master.SpawnTables().Save(); err != nil {
 			writeInternalError(w, err)
 			return
 		}
 		writeJSON(w, http.StatusOK, result)
 	})
 	mux.HandleFunc("DELETE /api/spawn-tables/{id}", func(w http.ResponseWriter, r *http.Request) {
-		deleteEntry(w, r, a.deps.SpawnTableRepo, "spawn table", "Spawn table", func(entry spawntables.SpawnTableEntry) string { return entry.ID })
+		id := strings.TrimSpace(r.PathValue("id"))
+		if id == "" {
+			writeFormError(w, http.StatusBadRequest, "Missing spawn table id.")
+			return
+		}
+		master, err := a.masterOrErr()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		if err := master.SpawnTables().Delete(id, master); err != nil {
+			writeJSON(w, http.StatusNotFound, common.DeleteNotFound("Spawn table"))
+			return
+		}
+		if err := master.SpawnTables().Save(); err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, common.DeleteSuccess(id))
 	})
 }

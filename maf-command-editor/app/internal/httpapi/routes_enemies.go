@@ -1,17 +1,18 @@
 package httpapi
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/enemyskills"
+	dmaster "tools2/app/internal/domain/master"
 )
 
 func (a apiRouter) registerEnemyRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/enemies", func(w http.ResponseWriter, r *http.Request) {
-		state, err := a.deps.EnemyRepo.LoadState()
+		state, err := a.enemyState()
 		if err != nil {
 			writeInternalError(w, err)
 			return
@@ -23,7 +24,12 @@ func (a apiRouter) registerEnemyRoutes(mux *http.ServeMux) {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		state, err := a.deps.EnemyRepo.LoadState()
+		master, err := a.masterOrErr()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		state, err := a.enemyState()
 		if err != nil {
 			writeInternalError(w, err)
 			return
@@ -32,35 +38,46 @@ func (a apiRouter) registerEnemyRoutes(mux *http.ServeMux) {
 			writeDuplicateIDValidationError[enemies.EnemyEntry](w)
 			return
 		}
-		enemySkillState, err := a.deps.EnemySkillRepo.LoadState()
-		if err != nil {
-			writeInternalError(w, err)
-			return
-		}
-		itemState, err := a.deps.ItemRepo.LoadItemState()
-		if err != nil {
-			writeInternalError(w, err)
-			return
-		}
-		grimoireState, err := a.deps.GrimoireRepo.LoadGrimoireState()
-		if err != nil {
-			writeInternalError(w, err)
-			return
-		}
-		result := enemies.ValidateSave(input, entryIDs(enemySkillState.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID }), itemIDs(itemState), grimoireIDs(grimoireState), a.deps.Now())
+		result := master.Enemies().Validate(input, master)
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
 			return
 		}
-		nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry enemies.EnemyEntry) string { return entry.ID })
+		if err := master.Enemies().Create(*result.Entry, master); err != nil {
+			if errors.Is(err, dmaster.ErrDuplicateID) {
+				writeDuplicateIDValidationError[enemies.EnemyEntry](w)
+				return
+			}
+			writeCodedError(w, http.StatusBadRequest, "VALIDATION_FAILED", err.Error())
+			return
+		}
+		mode := common.SaveModeCreated
 		result.Mode = mode
-		if err := a.deps.EnemyRepo.SaveState(nextState); err != nil {
+		if err := master.Enemies().Save(); err != nil {
 			writeInternalError(w, err)
 			return
 		}
 		writeJSON(w, http.StatusOK, result)
 	})
 	mux.HandleFunc("DELETE /api/enemies/{id}", func(w http.ResponseWriter, r *http.Request) {
-		deleteEntry(w, r, a.deps.EnemyRepo, "enemy", "Enemy", func(entry enemies.EnemyEntry) string { return entry.ID })
+		id := strings.TrimSpace(r.PathValue("id"))
+		if id == "" {
+			writeFormError(w, http.StatusBadRequest, "Missing enemy id.")
+			return
+		}
+		master, err := a.masterOrErr()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		if err := master.Enemies().Delete(id, master); err != nil {
+			writeJSON(w, http.StatusNotFound, common.DeleteNotFound("Enemy"))
+			return
+		}
+		if err := master.Enemies().Save(); err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, common.DeleteSuccess(id))
 	})
 }

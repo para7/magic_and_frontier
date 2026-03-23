@@ -1,16 +1,18 @@
 package httpapi
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/grimoire"
+	dmaster "tools2/app/internal/domain/master"
 )
 
 func (a apiRouter) registerGrimoireRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/grimoire", func(w http.ResponseWriter, r *http.Request) {
-		state, err := a.deps.GrimoireRepo.LoadGrimoireState()
+		state, err := a.grimoireState()
 		if err != nil {
 			writeInternalError(w, err)
 			return
@@ -22,7 +24,12 @@ func (a apiRouter) registerGrimoireRoutes(mux *http.ServeMux) {
 		if !decodeJSON(w, r, &input) {
 			return
 		}
-		state, err := a.deps.GrimoireRepo.LoadGrimoireState()
+		master, err := a.masterOrErr()
+		if err != nil {
+			writeInternalError(w, err)
+			return
+		}
+		state, err := a.grimoireState()
 		if err != nil {
 			writeInternalError(w, err)
 			return
@@ -37,18 +44,22 @@ func (a apiRouter) registerGrimoireRoutes(mux *http.ServeMux) {
 			return
 		}
 		input.CastID = castID
-		result := grimoire.ValidateSave(input, a.deps.Now())
+		result := master.Grimoires().Validate(input, master)
 		if !result.OK {
 			writeJSON(w, http.StatusBadRequest, result)
 			return
 		}
-		if conflictID := duplicateCastID(state.Entries, result.Entry.ID, result.Entry.CastID); conflictID != "" {
-			writeJSON(w, http.StatusBadRequest, common.SaveValidationError[grimoire.GrimoireEntry](common.FieldErrors{"castid": "Cast ID is already used by " + conflictID + "."}, "Validation failed. Fix the highlighted fields."))
+		if err := master.Grimoires().Create(*result.Entry, master); err != nil {
+			if errors.Is(err, dmaster.ErrDuplicateID) {
+				writeDuplicateIDValidationError[grimoire.GrimoireEntry](w)
+				return
+			}
+			writeCodedError(w, http.StatusBadRequest, "VALIDATION_FAILED", err.Error())
 			return
 		}
-		nextState, mode := grimoire.Upsert(state, *result.Entry)
+		mode := common.SaveModeCreated
 		result.Mode = mode
-		if err := a.deps.GrimoireRepo.SaveGrimoireState(nextState); err != nil {
+		if err := master.Grimoires().Save(); err != nil {
 			writeInternalError(w, err)
 			return
 		}
@@ -60,17 +71,16 @@ func (a apiRouter) registerGrimoireRoutes(mux *http.ServeMux) {
 			writeFormError(w, http.StatusBadRequest, "Missing grimoire id.")
 			return
 		}
-		state, err := a.deps.GrimoireRepo.LoadGrimoireState()
+		master, err := a.masterOrErr()
 		if err != nil {
 			writeInternalError(w, err)
 			return
 		}
-		nextState, ok := grimoire.Delete(state, id)
-		if !ok {
+		if err := master.Grimoires().Delete(id, master); err != nil {
 			writeJSON(w, http.StatusNotFound, common.DeleteNotFound("Grimoire"))
 			return
 		}
-		if err := a.deps.GrimoireRepo.SaveGrimoireState(nextState); err != nil {
+		if err := master.Grimoires().Save(); err != nil {
 			writeInternalError(w, err)
 			return
 		}

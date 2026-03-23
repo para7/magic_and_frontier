@@ -1,6 +1,7 @@
 package web
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -8,13 +9,14 @@ import (
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/enemyskills"
+	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/webui"
 	"tools2/app/views"
 )
 
 func (a App) enemiesPage(w http.ResponseWriter, r *http.Request) {
 	notice := consumeFlashNotice(w, r)
-	state, err := a.deps.EnemyRepo.LoadState()
+	state, err := a.loadEnemyStateFromMaster()
 	if err != nil {
 		a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -24,7 +26,7 @@ func (a App) enemiesPage(w http.ResponseWriter, r *http.Request) {
 
 func (a App) enemiesNewPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, enemiesMeta().CurrentPath)
-	enemySkillState, err := a.deps.EnemySkillRepo.LoadState()
+	enemySkillState, err := a.loadEnemySkillStateFromMaster()
 	if err != nil {
 		form := defaultEnemyForm(nil)
 		form.ReturnTo = returnTo
@@ -38,12 +40,12 @@ func (a App) enemiesNewPage(w http.ResponseWriter, r *http.Request) {
 
 func (a App) enemiesEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, enemiesMeta().CurrentPath)
-	state, err := a.deps.EnemyRepo.LoadState()
+	state, err := a.loadEnemyStateFromMaster()
 	if err != nil {
 		a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	enemySkillState, err := a.deps.EnemySkillRepo.LoadState()
+	enemySkillState, err := a.loadEnemySkillStateFromMaster()
 	if err != nil {
 		a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -69,7 +71,7 @@ func (a App) enemiesEditSubmit(w http.ResponseWriter, r *http.Request) {
 func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, enemiesMeta().CurrentPath)
-	enemyState, err := a.deps.EnemyRepo.LoadState()
+	master, err := a.masterOrErr()
 	if err != nil {
 		form := defaultEnemyForm(nil)
 		form.IsEditing = editing
@@ -77,7 +79,7 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 		a.renderEnemyForm(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
-	enemySkillState, err := a.deps.EnemySkillRepo.LoadState()
+	enemyState, err := a.loadEnemyStateFromMaster()
 	if err != nil {
 		form := defaultEnemyForm(nil)
 		form.IsEditing = editing
@@ -85,17 +87,9 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 		a.renderEnemyForm(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
-	itemState, err := a.deps.ItemRepo.LoadItemState()
+	enemySkillState, err := a.loadEnemySkillStateFromMaster()
 	if err != nil {
-		form := defaultEnemyForm(enemySkillState.Entries)
-		form.IsEditing = editing
-		form.ReturnTo = returnTo
-		a.renderEnemyForm(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
-		return
-	}
-	grimoireState, err := a.deps.GrimoireRepo.LoadGrimoireState()
-	if err != nil {
-		form := defaultEnemyForm(enemySkillState.Entries)
+		form := defaultEnemyForm(nil)
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
 		a.renderEnemyForm(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
@@ -112,16 +106,39 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	} else if _, ok := findEntry(enemyState.Entries, form.ID, func(entry enemies.EnemyEntry) string { return entry.ID }); ok {
 		parseErrs["id"] = "この ID は既に使用されています。"
 	}
-	result := enemies.ValidateSave(input, enemySkillIDSet(enemySkillState), itemIDSet(itemState), grimoireIDSet(grimoireState), a.deps.Now())
-	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapEnemyField))
-	if len(errors) > 0 {
-		form.FieldErrors = errors
+	result := master.Enemies().Validate(input, master)
+	fieldErrs := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapEnemyField))
+	if len(fieldErrs) > 0 {
+		form.FieldErrors = fieldErrs
 		form.FormError = formErrorText(result.FormError)
 		a.renderEnemyForm(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Form: form})
 		return
 	}
-	nextState, mode := common.UpsertEntries(enemyState, *result.Entry, func(entry enemies.EnemyEntry) string { return entry.ID })
-	if err := a.deps.EnemyRepo.SaveState(nextState); err != nil {
+	mode := common.SaveModeCreated
+	if editing {
+		mode = common.SaveModeUpdated
+		if err := master.Enemies().Update(*result.Entry, master); err != nil {
+			form.FormError = formErrorText(err.Error())
+			a.renderEnemyForm(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Form: form})
+			return
+		}
+	} else {
+		if err := master.Enemies().Create(*result.Entry, master); err != nil {
+			if errors.Is(err, dmaster.ErrDuplicateID) {
+				form.FieldErrors = mergeFieldErrors(form.FieldErrors, map[string]string{"id": "この ID は既に使用されています。"})
+			} else {
+				form.FormError = formErrorText(err.Error())
+			}
+			a.renderEnemyForm(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Form: form})
+			return
+		}
+	}
+	if err := master.Enemies().Save(); err != nil {
+		a.renderEnemyForm(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		return
+	}
+	nextState, err := a.loadEnemyStateFromMaster()
+	if err != nil {
 		a.renderEnemyForm(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
@@ -136,18 +153,27 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 func (a App) enemiesDelete(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, enemiesMeta().CurrentPath)
-	state, err := a.deps.EnemyRepo.LoadState()
+	master, err := a.masterOrErr()
+	if err != nil {
+		a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
+		return
+	}
+	state, err := a.loadEnemyStateFromMaster()
 	if err != nil {
 		a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.PathValue("id"))
-	nextState, ok := common.DeleteEntries(state, id, func(entry enemies.EnemyEntry) string { return entry.ID })
-	if !ok {
+	if err := master.Enemies().Delete(id, master); err != nil {
 		a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: errorNotice("Enemy not found.")})
 		return
 	}
-	if err := a.deps.EnemyRepo.SaveState(nextState); err != nil {
+	if err := master.Enemies().Save(); err != nil {
+		a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		return
+	}
+	nextState, err := a.loadEnemyStateFromMaster()
+	if err != nil {
 		a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}

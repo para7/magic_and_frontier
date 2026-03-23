@@ -1,12 +1,14 @@
 package web
 
 import (
+	"errors"
 	"net/http"
 	"sort"
 	"strconv"
 	"strings"
 
 	"tools2/app/internal/domain/common"
+	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/mcsource"
 	"tools2/app/internal/webui"
@@ -29,12 +31,12 @@ func (a App) treasuresNewPage(w http.ResponseWriter, r *http.Request) {
 
 func (a App) treasuresEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, treasuresMeta().CurrentPath)
-	itemState, err := a.deps.ItemRepo.LoadItemState()
+	itemState, err := a.loadItemStateFromMaster()
 	if err != nil {
 		a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	grimoireState, err := a.deps.GrimoireRepo.LoadGrimoireState()
+	grimoireState, err := a.loadGrimoireStateFromMaster()
 	if err != nil {
 		a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -95,14 +97,21 @@ func (a App) treasuresEditSubmit(w http.ResponseWriter, r *http.Request) {
 func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, treasuresMeta().CurrentPath)
-	itemState, err := a.deps.ItemRepo.LoadItemState()
+	master, err := a.masterOrErr()
 	if err != nil {
 		form := defaultTreasureForm()
 		form.ReturnTo = returnTo
 		a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
-	grimoireState, err := a.deps.GrimoireRepo.LoadGrimoireState()
+	itemState, err := a.loadItemStateFromMaster()
+	if err != nil {
+		form := defaultTreasureForm()
+		form.ReturnTo = returnTo
+		a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), Form: form})
+		return
+	}
+	grimoireState, err := a.loadGrimoireStateFromMaster()
 	if err != nil {
 		form := defaultTreasureForm()
 		form.ReturnTo = returnTo
@@ -134,21 +143,36 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 	} else if _, ok := findEntry(state.Entries, input.ID, func(entry treasures.TreasureEntry) string { return entry.ID }); ok {
 		parseErrs["id"] = "この ID は既に使用されています。"
 	}
-	result := treasures.ValidateSave(input, itemIDSet(itemState), grimoireIDSet(grimoireState), sourcePaths, a.deps.Now())
-	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapTreasureField))
-	if conflictID := duplicateTreasureTablePath(state.Entries, input.ID, strings.TrimSpace(input.TablePath)); conflictID != "" {
-		errors["tablePath"] = "Loot table path is already used by " + conflictID + "."
-	}
-	if len(errors) > 0 {
-		form.FieldErrors = errors
+	result := master.Treasures().Validate(input, master)
+	fieldErrs := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapTreasureField))
+	if len(fieldErrs) > 0 {
+		form.FieldErrors = fieldErrs
 		form.FormError = formErrorText(result.FormError)
 		form.HasOverlay = hasOverlay
 		form.IsEditing = hasOverlay
 		a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
-	nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry treasures.TreasureEntry) string { return entry.ID })
-	if err := a.deps.TreasureRepo.SaveState(nextState); err != nil {
+	mode := common.SaveModeCreated
+	if form.IsEditing {
+		mode = common.SaveModeUpdated
+		if err := master.Treasures().Update(*result.Entry, master); err != nil {
+			form.FormError = formErrorText(err.Error())
+			a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+			return
+		}
+	} else {
+		if err := master.Treasures().Create(*result.Entry, master); err != nil {
+			if errors.Is(err, dmaster.ErrDuplicateID) {
+				form.FieldErrors = mergeFieldErrors(form.FieldErrors, map[string]string{"id": "この ID は既に使用されています。"})
+			} else {
+				form.FormError = formErrorText(err.Error())
+			}
+			a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+			return
+		}
+	}
+	if err := master.Treasures().Save(); err != nil {
 		a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
@@ -168,14 +192,13 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 func (a App) treasuresDelete(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, treasuresMeta().CurrentPath)
-	state, err := a.deps.TreasureRepo.LoadState()
+	master, err := a.masterOrErr()
 	if err != nil {
 		a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.PathValue("id"))
-	nextState, ok := common.DeleteEntries(state, id, func(entry treasures.TreasureEntry) string { return entry.ID })
-	if !ok {
+	if err := master.Treasures().Delete(id, master); err != nil {
 		data, dataErr := a.treasuresPageData(errorNotice("Treasure not found."))
 		if dataErr != nil {
 			a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(dataErr.Error())})
@@ -184,7 +207,7 @@ func (a App) treasuresDelete(w http.ResponseWriter, r *http.Request) {
 		a.renderTreasures(w, r, data)
 		return
 	}
-	if err := a.deps.TreasureRepo.SaveState(nextState); err != nil {
+	if err := master.Treasures().Save(); err != nil {
 		data, dataErr := a.treasuresPageData(errorNotice(err.Error()))
 		if dataErr != nil {
 			a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(dataErr.Error())})
@@ -233,7 +256,7 @@ func (a App) treasuresPageData(notice *webui.Notice) (webui.TreasuresPageData, e
 }
 
 func (a App) loadTreasureCatalog() (common.EntryState[treasures.TreasureEntry], []mcsource.LootTableSource, map[string]struct{}, error) {
-	state, err := a.deps.TreasureRepo.LoadState()
+	state, err := a.loadTreasureStateFromMaster()
 	if err != nil {
 		return common.EntryState[treasures.TreasureEntry]{}, nil, nil, err
 	}

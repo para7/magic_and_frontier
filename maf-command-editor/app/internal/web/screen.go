@@ -39,7 +39,7 @@ func (a App) renderSaveResponse(w http.ResponseWriter, r *http.Request, currentP
 func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath string, notice *webui.Notice) {
 	switch normalizeScreenPath(currentPath) {
 	case "/grimoire":
-		state, err := a.deps.GrimoireRepo.LoadGrimoireState()
+		state, err := a.loadGrimoireStateFromMaster()
 		if err != nil {
 			a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error()), Form: defaultGrimoireForm(nil)})
 			return
@@ -51,7 +51,7 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 			Form:    defaultGrimoireForm(state.Entries),
 		})
 	case "/skills":
-		state, err := a.deps.SkillRepo.LoadState()
+		state, err := a.loadSkillStateFromMaster()
 		if err != nil {
 			a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: defaultSkillForm()})
 			return
@@ -63,7 +63,7 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 			Form:    defaultSkillForm(),
 		})
 	case "/enemy-skills":
-		state, err := a.deps.EnemySkillRepo.LoadState()
+		state, err := a.loadEnemySkillStateFromMaster()
 		if err != nil {
 			a.renderEnemySkills(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Notice: errorNotice(err.Error()), Form: defaultEnemySkillForm()})
 			return
@@ -82,7 +82,7 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 		}
 		a.renderTreasures(w, r, data)
 	case "/loottables":
-		state, err := a.deps.LootTableRepo.LoadState()
+		state, err := a.loadLootTableStateFromMaster()
 		if err != nil {
 			a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultLootTableForm()})
 			return
@@ -94,12 +94,12 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 			Form:    defaultLootTableForm(),
 		})
 	case "/enemies":
-		state, err := a.deps.EnemyRepo.LoadState()
+		state, err := a.loadEnemyStateFromMaster()
 		if err != nil {
 			a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: defaultEnemyForm(nil)})
 			return
 		}
-		enemySkillState, err := a.deps.EnemySkillRepo.LoadState()
+		enemySkillState, err := a.loadEnemySkillStateFromMaster()
 		if err != nil {
 			a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: defaultEnemyForm(nil)})
 			return
@@ -111,7 +111,7 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 			Form:    defaultEnemyForm(enemySkillState.Entries),
 		})
 	case "/spawn-tables":
-		state, err := a.deps.SpawnTableRepo.LoadState()
+		state, err := a.loadSpawnTableStateFromMaster()
 		if err != nil {
 			a.renderSpawnTables(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultSpawnTableForm()})
 			return
@@ -125,7 +125,7 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 	case "/items":
 		fallthrough
 	default:
-		state, err := a.deps.ItemRepo.LoadItemState()
+		state, err := a.loadItemStateFromMaster()
 		if err != nil {
 			a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: defaultItemForm(nil)})
 			return

@@ -1,10 +1,12 @@
 package web
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
 	"tools2/app/internal/domain/common"
+	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/webui"
 	"tools2/app/views"
@@ -12,7 +14,7 @@ import (
 
 func (a App) skillsPage(w http.ResponseWriter, r *http.Request) {
 	notice := consumeFlashNotice(w, r)
-	state, err := a.deps.SkillRepo.LoadState()
+	state, err := a.loadSkillStateFromMaster()
 	if err != nil {
 		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -28,7 +30,7 @@ func (a App) skillsNewPage(w http.ResponseWriter, r *http.Request) {
 
 func (a App) skillsEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, skillsMeta().CurrentPath)
-	state, err := a.deps.SkillRepo.LoadState()
+	state, err := a.loadSkillStateFromMaster()
 	if err != nil {
 		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -54,7 +56,15 @@ func (a App) skillsEditSubmit(w http.ResponseWriter, r *http.Request) {
 func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, skillsMeta().CurrentPath)
-	state, err := a.deps.SkillRepo.LoadState()
+	master, err := a.masterOrErr()
+	if err != nil {
+		form := defaultSkillForm()
+		form.IsEditing = editing
+		form.ReturnTo = returnTo
+		a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
+		return
+	}
+	state, err := a.loadSkillStateFromMaster()
 	if err != nil {
 		form := defaultSkillForm()
 		form.IsEditing = editing
@@ -73,16 +83,39 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	} else if _, ok := findEntry(state.Entries, form.ID, func(entry skills.SkillEntry) string { return entry.ID }); ok {
 		parseErrs["id"] = "この ID は既に使用されています。"
 	}
-	result := skills.ValidateSave(input, a.deps.Now())
-	errors := mergeFieldErrors(parseErrs, result.FieldErrors)
-	if len(errors) > 0 {
-		form.FieldErrors = errors
+	result := master.Skills().Validate(input, master)
+	fieldErrs := mergeFieldErrors(parseErrs, result.FieldErrors)
+	if len(fieldErrs) > 0 {
+		form.FieldErrors = fieldErrs
 		form.FormError = formErrorText(result.FormError)
 		a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Form: form})
 		return
 	}
-	nextState, mode := common.UpsertEntries(state, *result.Entry, func(entry skills.SkillEntry) string { return entry.ID })
-	if err := a.deps.SkillRepo.SaveState(nextState); err != nil {
+	mode := common.SaveModeCreated
+	if editing {
+		mode = common.SaveModeUpdated
+		if err := master.Skills().Update(*result.Entry, master); err != nil {
+			form.FormError = formErrorText(err.Error())
+			a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Form: form})
+			return
+		}
+	} else {
+		if err := master.Skills().Create(*result.Entry, master); err != nil {
+			if errors.Is(err, dmaster.ErrDuplicateID) {
+				form.FieldErrors = mergeFieldErrors(form.FieldErrors, map[string]string{"id": "この ID は既に使用されています。"})
+			} else {
+				form.FormError = formErrorText(err.Error())
+			}
+			a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Form: form})
+			return
+		}
+	}
+	if err := master.Skills().Save(); err != nil {
+		a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
+		return
+	}
+	nextState, err := a.loadSkillStateFromMaster()
+	if err != nil {
 		a.renderSkillForm(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
@@ -97,7 +130,12 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 func (a App) skillsDelete(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, skillsMeta().CurrentPath)
-	itemState, err := a.deps.ItemRepo.LoadItemState()
+	master, err := a.masterOrErr()
+	if err != nil {
+		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
+		return
+	}
+	itemState, err := a.loadItemStateFromMaster()
 	if err != nil {
 		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -105,22 +143,26 @@ func (a App) skillsDelete(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimSpace(r.PathValue("id"))
 	for _, entry := range itemState.Items {
 		if entry.SkillID == id {
-			state, _ := a.deps.SkillRepo.LoadState()
+			state, _ := a.loadSkillStateFromMaster()
 			a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill is referenced by item " + entry.ID + ".")})
 			return
 		}
 	}
-	state, err := a.deps.SkillRepo.LoadState()
+	state, err := a.loadSkillStateFromMaster()
 	if err != nil {
 		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	nextState, ok := common.DeleteEntries(state, id, func(entry skills.SkillEntry) string { return entry.ID })
-	if !ok {
-		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill not found.")})
+	if err := master.Skills().Delete(id, master); err != nil {
+		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
-	if err := a.deps.SkillRepo.SaveState(nextState); err != nil {
+	if err := master.Skills().Save(); err != nil {
+		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		return
+	}
+	nextState, err := a.loadSkillStateFromMaster()
+	if err != nil {
 		a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}

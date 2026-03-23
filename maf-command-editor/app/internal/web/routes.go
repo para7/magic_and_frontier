@@ -11,8 +11,9 @@ import (
 type Dependencies = application.Dependencies
 
 type App struct {
-	cfg  config.Config
-	deps Dependencies
+	cfg           config.Config
+	deps          Dependencies
+	masterInitErr error
 }
 
 func RegisterRoutes(mux *http.ServeMux, cfg config.Config, deps Dependencies) {
@@ -46,7 +47,16 @@ func RegisterRoutes(mux *http.ServeMux, cfg config.Config, deps Dependencies) {
 	if deps.Now == nil {
 		deps.Now = time.Now
 	}
-	app := App{cfg: cfg, deps: deps}
+	var masterInitErr error
+	if deps.Master == nil {
+		svc := application.NewService(cfg, deps)
+		if master, err := svc.Master(); err == nil {
+			deps.Master = master
+		} else {
+			masterInitErr = err
+		}
+	}
+	app := App{cfg: cfg, deps: deps, masterInitErr: masterInitErr}
 
 	mux.HandleFunc("GET /items", app.itemsPage)
 	mux.HandleFunc("GET /items/new", app.itemsNewPage)

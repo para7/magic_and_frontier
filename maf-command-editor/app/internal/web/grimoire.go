@@ -1,18 +1,21 @@
 package web
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/grimoire"
+	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/webui"
 	"tools2/app/views"
 )
 
 func (a App) grimoirePage(w http.ResponseWriter, r *http.Request) {
 	notice := consumeFlashNotice(w, r)
-	state, err := a.deps.GrimoireRepo.LoadGrimoireState()
+	state, err := a.loadGrimoireStateFromMaster()
 	if err != nil {
 		a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -28,7 +31,7 @@ func (a App) grimoireNewPage(w http.ResponseWriter, r *http.Request) {
 
 func (a App) grimoireEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, grimoireMeta().CurrentPath)
-	state, err := a.deps.GrimoireRepo.LoadGrimoireState()
+	state, err := a.loadGrimoireStateFromMaster()
 	if err != nil {
 		a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -54,7 +57,15 @@ func (a App) grimoireEditSubmit(w http.ResponseWriter, r *http.Request) {
 func (a App) grimoireSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, grimoireMeta().CurrentPath)
-	state, err := a.deps.GrimoireRepo.LoadGrimoireState()
+	master, err := a.masterOrErr()
+	if err != nil {
+		form := defaultGrimoireForm(nil)
+		form.IsEditing = editing
+		form.ReturnTo = returnTo
+		a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error()), Form: form})
+		return
+	}
+	state, err := a.loadGrimoireStateFromMaster()
 	if err != nil {
 		form := defaultGrimoireForm(nil)
 		form.IsEditing = editing
@@ -86,19 +97,39 @@ func (a App) grimoireSave(w http.ResponseWriter, r *http.Request, editing bool) 
 			parseErrs["id"] = "この ID は既に使用されています。"
 		}
 	}
-	result := grimoire.ValidateSave(input, a.deps.Now())
-	errors := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapGrimoireField))
-	if conflictID := duplicateCastID(state.Entries, input.ID, input.CastID); conflictID != "" {
-		errors["castid"] = "Cast ID is already used by " + conflictID + "."
-	}
-	if len(errors) > 0 {
-		form.FieldErrors = errors
+	result := master.Grimoires().Validate(input, master)
+	fieldErrs := mergeFieldErrors(parseErrs, mapFieldErrors(result.FieldErrors, mapGrimoireField))
+	if len(fieldErrs) > 0 {
+		form.FieldErrors = fieldErrs
 		form.FormError = formErrorText(result.FormError)
 		a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Form: form})
 		return
 	}
-	nextState, mode := grimoire.Upsert(state, *result.Entry)
-	if err := a.deps.GrimoireRepo.SaveGrimoireState(nextState); err != nil {
+	mode := common.SaveModeCreated
+	if editing {
+		mode = common.SaveModeUpdated
+		if err := master.Grimoires().Update(*result.Entry, master); err != nil {
+			form.FormError = formErrorText(err.Error())
+			a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Form: form})
+			return
+		}
+	} else {
+		if err := master.Grimoires().Create(*result.Entry, master); err != nil {
+			if errors.Is(err, dmaster.ErrDuplicateID) {
+				form.FieldErrors = mergeFieldErrors(form.FieldErrors, map[string]string{"id": "この ID は既に使用されています。"})
+			} else {
+				form.FormError = formErrorText(err.Error())
+			}
+			a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Form: form})
+			return
+		}
+	}
+	if err := master.Grimoires().Save(); err != nil {
+		a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error()), Form: form})
+		return
+	}
+	nextState, err := a.loadGrimoireStateFromMaster()
+	if err != nil {
 		a.renderGrimoireForm(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
@@ -114,17 +145,26 @@ func (a App) grimoireDelete(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, grimoireMeta().CurrentPath)
 	id := strings.TrimSpace(r.PathValue("id"))
-	state, err := a.deps.GrimoireRepo.LoadGrimoireState()
+	master, err := a.masterOrErr()
 	if err != nil {
 		a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	nextState, ok := grimoire.Delete(state, id)
-	if !ok {
+	state, err := a.loadGrimoireStateFromMaster()
+	if err != nil {
+		a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error())})
+		return
+	}
+	if err := master.Grimoires().Delete(id, master); err != nil {
 		a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Entries: state.Entries, Notice: errorNotice("Grimoire entry not found.")})
 		return
 	}
-	if err := a.deps.GrimoireRepo.SaveGrimoireState(nextState); err != nil {
+	if err := master.Grimoires().Save(); err != nil {
+		a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		return
+	}
+	nextState, err := a.loadGrimoireStateFromMaster()
+	if err != nil {
 		a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}

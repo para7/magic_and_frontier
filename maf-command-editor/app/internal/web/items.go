@@ -1,10 +1,13 @@
 package web
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
+	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/items"
+	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/webui"
 	"tools2/app/views"
@@ -12,12 +15,12 @@ import (
 
 func (a App) itemsPage(w http.ResponseWriter, r *http.Request) {
 	notice := consumeFlashNotice(w, r)
-	state, err := a.deps.ItemRepo.LoadItemState()
+	state, err := a.loadItemStateFromMaster()
 	if err != nil {
 		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	skillState, err := a.deps.SkillRepo.LoadState()
+	skillState, err := a.loadSkillStateFromMaster()
 	if err != nil {
 		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -27,7 +30,7 @@ func (a App) itemsPage(w http.ResponseWriter, r *http.Request) {
 
 func (a App) itemsNewPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, itemMeta().CurrentPath)
-	skillState, err := a.deps.SkillRepo.LoadState()
+	skillState, err := a.loadSkillStateFromMaster()
 	if err != nil {
 		form := defaultItemForm(nil)
 		form.ReturnTo = returnTo
@@ -41,12 +44,12 @@ func (a App) itemsNewPage(w http.ResponseWriter, r *http.Request) {
 
 func (a App) itemsEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, itemMeta().CurrentPath)
-	state, err := a.deps.ItemRepo.LoadItemState()
+	state, err := a.loadItemStateFromMaster()
 	if err != nil {
 		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	skillState, err := a.deps.SkillRepo.LoadState()
+	skillState, err := a.loadSkillStateFromMaster()
 	if err != nil {
 		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
@@ -72,14 +75,21 @@ func (a App) itemsEditSubmit(w http.ResponseWriter, r *http.Request) {
 func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, itemMeta().CurrentPath)
-	state, err := a.deps.ItemRepo.LoadItemState()
+	master, err := a.masterOrErr()
 	if err != nil {
 		form := defaultItemForm(nil)
 		form.ReturnTo = returnTo
 		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
-	skillState, err := a.deps.SkillRepo.LoadState()
+	state, err := a.loadItemStateFromMaster()
+	if err != nil {
+		form := defaultItemForm(nil)
+		form.ReturnTo = returnTo
+		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
+		return
+	}
+	skillState, err := a.loadSkillStateFromMaster()
 	if err != nil {
 		form := defaultItemForm(nil)
 		form.ReturnTo = returnTo
@@ -97,17 +107,40 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	} else if _, ok := findEntry(state.Items, form.ID, func(entry items.ItemEntry) string { return entry.ID }); ok {
 		parseErrs["id"] = "この ID は既に使用されています。"
 	}
-	result := items.ValidateSave(input, toIDSet(skillState.Entries, func(entry skills.SkillEntry) string { return entry.ID }), a.deps.Now())
-	errors := mergeFieldErrors(parseErrs, result.FieldErrors)
-	if len(errors) > 0 {
-		form.FieldErrors = errors
-		form.ShowEnchantmentsDetail = errors["enchantments"] != ""
+	result := master.Items().Validate(input, master)
+	fieldErrs := mergeFieldErrors(parseErrs, result.FieldErrors)
+	if len(fieldErrs) > 0 {
+		form.FieldErrors = fieldErrs
+		form.ShowEnchantmentsDetail = fieldErrs["enchantments"] != ""
 		form.FormError = formErrorText(result.FormError)
 		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
 		return
 	}
-	nextState, mode := items.Upsert(state, *result.Entry)
-	if err := a.deps.ItemRepo.SaveItemState(nextState); err != nil {
+	mode := common.SaveModeCreated
+	if editing {
+		mode = common.SaveModeUpdated
+		if err := master.Items().Update(*result.Entry, master); err != nil {
+			form.FormError = formErrorText(err.Error())
+			a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
+			return
+		}
+	} else {
+		if err := master.Items().Create(*result.Entry, master); err != nil {
+			if errors.Is(err, dmaster.ErrDuplicateID) {
+				form.FieldErrors = mergeFieldErrors(form.FieldErrors, map[string]string{"id": "この ID は既に使用されています。"})
+			} else {
+				form.FormError = formErrorText(err.Error())
+			}
+			a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
+			return
+		}
+	}
+	if err := master.Items().Save(); err != nil {
+		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
+		return
+	}
+	nextState, err := a.loadItemStateFromMaster()
+	if err != nil {
 		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
@@ -123,17 +156,26 @@ func (a App) itemsDelete(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
 	returnTo := submittedReturnTo(r, itemMeta().CurrentPath)
 	id := strings.TrimSpace(r.PathValue("id"))
-	state, err := a.deps.ItemRepo.LoadItemState()
+	master, err := a.masterOrErr()
 	if err != nil {
 		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	nextState, ok := items.Delete(state, id)
-	if !ok {
+	state, err := a.loadItemStateFromMaster()
+	if err != nil {
+		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
+		return
+	}
+	if err := master.Items().Delete(id, master); err != nil {
 		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
 		return
 	}
-	if err := a.deps.ItemRepo.SaveItemState(nextState); err != nil {
+	if err := master.Items().Save(); err != nil {
+		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice(err.Error())})
+		return
+	}
+	nextState, err := a.loadItemStateFromMaster()
+	if err != nil {
 		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice(err.Error())})
 		return
 	}
