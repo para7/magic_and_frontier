@@ -14,7 +14,7 @@ var validSkillTypes = map[string]struct{}{
 
 func ValidateSave(input SaveInput, now time.Time) common.SaveResult[SkillEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
-	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "skill_")
+	id := common.RequireNonEmptyID(errs, "id", input.ID)
 	skillType := common.OptionalText(input.SkillType)
 	if skillType == "" {
 		skillType = "sword"

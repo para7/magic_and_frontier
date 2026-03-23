@@ -10,7 +10,7 @@ import (
 func TestValidateSaveSuccessCases(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
 	result := ValidateSave(SaveInput{
-		ID:     "items_1",
+		ID:     "stone-item",
 		ItemID: " minecraft:stone ",
 	}, map[string]struct{}{}, now)
 	if !result.OK || result.Entry == nil {
@@ -32,7 +32,7 @@ func TestValidateSaveValidationErrors(t *testing.T) {
 		skillIDs  map[string]struct{}
 		wantField string
 	}{
-		{name: "invalid id", input: SaveInput{ID: "bad", ItemID: "minecraft:stone"}, skillIDs: map[string]struct{}{}, wantField: "id"},
+		{name: "empty id", input: SaveInput{ID: "  ", ItemID: "minecraft:stone"}, skillIDs: map[string]struct{}{}, wantField: "id"},
 		{name: "invalid enchantment line", input: SaveInput{ID: "items_1", ItemID: "minecraft:stone", Enchantments: "minecraft:sharpness"}, skillIDs: map[string]struct{}{}, wantField: "enchantments"},
 		{name: "missing skill", input: SaveInput{ID: "items_1", ItemID: "minecraft:stone", SkillID: "skill_2"}, skillIDs: map[string]struct{}{}, wantField: "skillId"},
 	}

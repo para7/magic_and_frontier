@@ -8,7 +8,7 @@ import (
 func TestValidateSaveSuccess(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
 	result := ValidateSave(SaveInput{
-		ID:          "skill_1",
+		ID:          "slash-primary",
 		Name:        " Slash ",
 		SkillType:   " bow ",
 		Description: " desc ",
@@ -25,7 +25,7 @@ func TestValidateSaveSuccess(t *testing.T) {
 func TestValidateSaveDefaultsSkillType(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
 	result := ValidateSave(SaveInput{
-		ID:     "skill_1",
+		ID:     "slash-default",
 		Name:   "Slash",
 		Script: "say slash",
 	}, now)
@@ -39,7 +39,7 @@ func TestValidateSaveDefaultsSkillType(t *testing.T) {
 
 func TestValidateSaveErrors(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
-	result := ValidateSave(SaveInput{ID: "bad", SkillType: "gun", Script: " "}, now)
+	result := ValidateSave(SaveInput{ID: "   ", SkillType: "gun", Script: " "}, now)
 	if result.OK {
 		t.Fatalf("expected validation error")
 	}

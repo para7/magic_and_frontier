@@ -64,7 +64,7 @@ templ TreasureFormShell(data webui.TreasuresPageData) {
 									<input name="id" value={ data.Form.ID } readonly/>
 								} else {
 									<input name="id" value={ data.Form.ID }/>
-									<small>例: treasure_1（treasure_ + 連番）</small>
+									<small>任意のIDを入力（空白のみ不可）</small>
 								}
 								@FieldErrorBox(data.Form.FieldErrors, "id")
 							</label>

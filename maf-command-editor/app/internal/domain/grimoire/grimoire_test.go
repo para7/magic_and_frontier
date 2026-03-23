@@ -10,7 +10,7 @@ import (
 func TestValidateSaveSuccessCases(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
 	input := SaveInput{
-		ID:          "grimoire_1",
+		ID:          "firebolt01",
 		CastID:      1,
 		CastTime:    20,
 		MPCost:      5,
@@ -38,7 +38,7 @@ func TestValidateSaveValidationErrors(t *testing.T) {
 		input     SaveInput
 		wantField string
 	}{
-		{name: "invalid id", input: SaveInput{ID: "bad", CastID: 1, Script: "function maf:test", Title: "T"}, wantField: "id"},
+		{name: "empty id", input: SaveInput{ID: " \n ", CastID: 1, Script: "function maf:test", Title: "T"}, wantField: "id"},
 		{name: "cast id below minimum", input: SaveInput{ID: "grimoire_1", CastID: 0, Script: "function maf:test", Title: "T"}, wantField: "castid"},
 		{name: "title whitespace only", input: SaveInput{ID: "grimoire_1", CastID: 1, Script: "function maf:test", Title: "   "}, wantField: "title"},
 		{name: "script whitespace only", input: SaveInput{ID: "grimoire_1", CastID: 1, Script: " \n ", Title: "T"}, wantField: "script"},

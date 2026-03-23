@@ -8,7 +8,7 @@ import (
 
 func ValidateSave(input SaveInput, now time.Time) common.SaveResult[EnemySkillEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
-	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "enemyskill_")
+	id := common.RequireNonEmptyID(errs, "id", input.ID)
 	if errs.Any() {
 		return common.SaveValidationError[EnemySkillEntry](errs, "Validation failed. Fix the highlighted fields.")
 	}

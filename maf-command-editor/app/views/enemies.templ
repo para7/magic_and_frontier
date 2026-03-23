@@ -74,7 +74,7 @@ templ EnemyFormShell(data webui.EnemiesPageData) {
 									<input name="id" value={ data.Form.ID } readonly/>
 								} else {
 									<input name="id" value={ data.Form.ID }/>
-									<small>例: enemy_1（enemy_ + 連番）</small>
+									<small>任意のIDを入力（空白のみ不可）</small>
 								}
 								@FieldErrorBox(data.Form.FieldErrors, "id")
 							</label>

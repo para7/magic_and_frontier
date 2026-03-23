@@ -73,7 +73,7 @@ func TestHandlerSSRTreasureCreateValidationKeepsIDEditable(t *testing.T) {
 
 	rec := postForm(t, handler, "/treasures/edit", url.Values{
 		"id":            {"bad"},
-		"tablePath":     {"minecraft:chests/simple_dungeon"},
+		"tablePath":     {"minecraft:chests/missing_entry"},
 		"lootPoolsText": {"minecraft_item,minecraft:apple,1,,"},
 	}, http.StatusOK)
 	body := rec.Body.String()

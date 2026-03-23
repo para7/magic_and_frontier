@@ -9,7 +9,7 @@ import (
 
 func ValidateSave(input SaveInput, enemyIDs map[string]struct{}, now time.Time) common.SaveResult[SpawnTableEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
-	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "spawntable_")
+	id := common.RequireNonEmptyID(errs, "id", input.ID)
 	sourceMobType := common.NormalizeText(input.SourceMobType)
 	if sourceMobType != "" && !common.IsNamespacedResourceID(sourceMobType) {
 		errs.Add("sourceMobType", "Must be a minecraft entity id.")
@@ -19,10 +19,6 @@ func ValidateSave(input SaveInput, enemyIDs map[string]struct{}, now time.Time) 
 	seenEnemy := map[string]struct{}{}
 	for i, replacement := range input.Replacements {
 		enemyID := common.NormalizeText(replacement.EnemyID)
-		if !common.IsPrefixedSequenceID(enemyID, "enemy_") {
-			errs.Add(fmt.Sprintf("replacements.%d.enemyId", i), "Invalid ID format.")
-			continue
-		}
 		if _, ok := enemyIDs[enemyID]; !ok {
 			errs.Add(fmt.Sprintf("replacements.%d.enemyId", i), "Referenced enemy does not exist.")
 			continue

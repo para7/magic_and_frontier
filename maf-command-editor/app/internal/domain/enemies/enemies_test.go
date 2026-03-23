@@ -9,7 +9,7 @@ func TestValidateSaveSuccess(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
 	dropChance := 0.5
 	result := ValidateSave(SaveInput{
-		ID:      "enemy_1",
+		ID:      "zombie-field",
 		MobType: "minecraft:zombie",
 		Name:    " Zombie ",
 		HP:      20,
@@ -34,7 +34,7 @@ func TestValidateSaveSuccess(t *testing.T) {
 func TestValidateSaveErrors(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
 	result := ValidateSave(SaveInput{
-		ID:            "bad",
+		ID:            "",
 		MobType:       " ",
 		HP:            0,
 		EnemySkillIDs: []string{"bad"},

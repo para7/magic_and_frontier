@@ -8,7 +8,7 @@ import (
 func TestValidateSaveSuccess(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
 	result := ValidateSave(SaveInput{
-		ID:            "spawntable_1",
+		ID:            "overworld_zombie_a",
 		SourceMobType: "minecraft:zombie",
 		Dimension:     "minecraft:overworld",
 		MinX:          0,
@@ -25,7 +25,7 @@ func TestValidateSaveSuccess(t *testing.T) {
 	if !result.OK || result.Entry == nil {
 		t.Fatalf("expected success, got %+v", result)
 	}
-	if result.Entry.ID != "spawntable_1" {
+	if result.Entry.ID != "overworld_zombie_a" {
 		t.Fatalf("entry = %#v", result.Entry)
 	}
 }
@@ -33,7 +33,7 @@ func TestValidateSaveSuccess(t *testing.T) {
 func TestValidateSaveErrors(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
 	result := ValidateSave(SaveInput{
-		ID:            "bad",
+		ID:            " ",
 		SourceMobType: "zombie",
 		Dimension:     "minecraft:overworld",
 		MinX:          100,
@@ -69,7 +69,7 @@ func TestValidateSaveRejectsNonPositiveReplacementWeight(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			result := ValidateSave(SaveInput{
-				ID:            "spawntable_1",
+				ID:            "weight-check",
 				SourceMobType: "minecraft:zombie",
 				Dimension:     "minecraft:overworld",
 				MinX:          0,

@@ -57,8 +57,8 @@ func TestItemSaveSortsByID(t *testing.T) {
 func TestInvalidSavedataDoesNotBlockStartup(t *testing.T) {
 	deps := testDependencies(t)
 	if err := deps.GrimoireRepo.SaveGrimoireState(grimoire.GrimoireState{Entries: []grimoire.GrimoireEntry{{
-		ID:       "invalid_id",
-		CastID:   1,
+		ID:       "free-id",
+		CastID:   0,
 		CastTime: 1,
 		MPCost:   0,
 		Script:   "say x",
@@ -77,13 +77,13 @@ func TestInvalidSavedataDoesNotBlockStartup(t *testing.T) {
 	}
 	contains := false
 	for _, issue := range report.Issues {
-		if issue.Entity == "grimoire" && issue.ID == "invalid_id" && strings.Contains(issue.Message, "Invalid ID format") {
+		if issue.Entity == "grimoire" && issue.ID == "free-id" && strings.Contains(issue.Message, "Must satisfy gte 1.") {
 			contains = true
 			break
 		}
 	}
 	if !contains {
-		t.Fatalf("expected grimoire invalid_id issue in report, got: %s", report.String())
+		t.Fatalf("expected grimoire free-id castid issue in report, got: %s", report.String())
 	}
 }
 

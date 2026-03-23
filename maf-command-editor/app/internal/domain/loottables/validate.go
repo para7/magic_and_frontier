@@ -10,7 +10,7 @@ import (
 
 func ValidateSave(input SaveInput, itemIDs, grimoireIDs map[string]struct{}, now time.Time) common.SaveResult[LootTableEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
-	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "loottable_")
+	id := common.RequireNonEmptyID(errs, "id", input.ID)
 	pools := make([]treasures.DropRef, 0, len(input.LootPools))
 	for i, p := range input.LootPools {
 		kind := common.NormalizeText(p.Kind)
@@ -18,15 +18,11 @@ func ValidateSave(input SaveInput, itemIDs, grimoireIDs map[string]struct{}, now
 		if refID != "" {
 			switch kind {
 			case "item":
-				if !common.IsPrefixedSequenceID(refID, "items_") {
-					errs.Add(fmt.Sprintf("lootPools.%d.refId", i), "Invalid ID format.")
-				} else if _, ok := itemIDs[refID]; !ok {
+				if _, ok := itemIDs[refID]; !ok {
 					errs.Add(fmt.Sprintf("lootPools.%d.refId", i), "Referenced entry does not exist.")
 				}
 			case "grimoire":
-				if !common.IsPrefixedSequenceID(refID, "grimoire_") {
-					errs.Add(fmt.Sprintf("lootPools.%d.refId", i), "Invalid ID format.")
-				} else if _, ok := grimoireIDs[refID]; !ok {
+				if _, ok := grimoireIDs[refID]; !ok {
 					errs.Add(fmt.Sprintf("lootPools.%d.refId", i), "Referenced entry does not exist.")
 				}
 			case "minecraft_item":

@@ -8,12 +8,10 @@ import (
 
 func ValidateSave(input SaveInput, skillIDs map[string]struct{}, now time.Time) common.SaveResult[ItemEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
-	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "items_")
+	id := common.RequireNonEmptyID(errs, "id", input.ID)
 	skillID := common.OptionalText(input.SkillID)
 	if skillID != "" {
-		if !common.IsPrefixedSequenceID(skillID, "skill_") {
-			errs.Add("skillId", "Invalid ID format.")
-		} else if _, ok := skillIDs[skillID]; !ok {
+		if _, ok := skillIDs[skillID]; !ok {
 			errs.Add("skillId", "Referenced skill does not exist.")
 		}
 	}

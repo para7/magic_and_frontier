@@ -8,7 +8,7 @@ import (
 func TestValidateSaveSuccess(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
 	result := ValidateSave(SaveInput{
-		ID:        "treasure_1",
+		ID:        "dungeon_tier1",
 		TablePath: "minecraft:chests/simple_dungeon",
 		LootPools: []DropRef{{Kind: "minecraft_item", RefID: "minecraft:apple", Weight: 1}},
 	}, map[string]struct{}{}, map[string]struct{}{}, map[string]struct{}{"minecraft:chests/simple_dungeon": {}}, now)
@@ -23,7 +23,7 @@ func TestValidateSaveSuccess(t *testing.T) {
 func TestValidateSaveErrors(t *testing.T) {
 	now := time.Date(2026, 3, 4, 0, 0, 0, 0, time.UTC)
 	result := ValidateSave(SaveInput{
-		ID:        "bad",
+		ID:        " \t ",
 		TablePath: "minecraft:missing/test",
 		LootPools: []DropRef{{Kind: "item", RefID: "items_9", Weight: 1}},
 	}, map[string]struct{}{}, map[string]struct{}{}, map[string]struct{}{}, now)

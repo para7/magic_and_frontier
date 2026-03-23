@@ -9,17 +9,13 @@ import (
 
 func ValidateSave(input SaveInput, enemySkillIDs, itemIDs, grimoireIDs map[string]struct{}, now time.Time) common.SaveResult[EnemyEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
-	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "enemy_")
+	id := common.RequireNonEmptyID(errs, "id", input.ID)
 
 	normalizedEnemySkillIDs := make([]string, 0, len(input.EnemySkillIDs))
 	seen := map[string]struct{}{}
 	for i, sid := range input.EnemySkillIDs {
 		idv := common.NormalizeText(sid)
 		if idv == "" {
-			continue
-		}
-		if !common.IsPrefixedSequenceID(idv, "enemyskill_") {
-			errs.Add(fmt.Sprintf("enemySkillIds.%d", i), "Invalid ID format.")
 			continue
 		}
 		if _, ok := enemySkillIDs[idv]; !ok {
@@ -49,15 +45,11 @@ func ValidateSave(input SaveInput, enemySkillIDs, itemIDs, grimoireIDs map[strin
 		if refID != "" {
 			switch kind {
 			case "item":
-				if !common.IsPrefixedSequenceID(refID, "items_") {
-					errs.Add(fmt.Sprintf("drops.%d.refId", i), "Invalid ID format.")
-				} else if _, ok := itemIDs[refID]; !ok {
+				if _, ok := itemIDs[refID]; !ok {
 					errs.Add(fmt.Sprintf("drops.%d.refId", i), "Referenced entry does not exist.")
 				}
 			case "grimoire":
-				if !common.IsPrefixedSequenceID(refID, "grimoire_") {
-					errs.Add(fmt.Sprintf("drops.%d.refId", i), "Invalid ID format.")
-				} else if _, ok := grimoireIDs[refID]; !ok {
+				if _, ok := grimoireIDs[refID]; !ok {
 					errs.Add(fmt.Sprintf("drops.%d.refId", i), "Referenced entry does not exist.")
 				}
 			case "minecraft_item":
@@ -111,9 +103,7 @@ func normalizeEquipmentSlot(errs common.FieldErrors, field string, slot *Equipme
 	refID := common.NormalizeText(slot.RefID)
 	switch kind {
 	case "item":
-		if !common.IsPrefixedSequenceID(refID, "items_") {
-			errs.Add(field+".refId", "Invalid ID format.")
-		} else if _, ok := itemIDs[refID]; !ok {
+		if _, ok := itemIDs[refID]; !ok {
 			errs.Add(field+".refId", "Referenced entry does not exist.")
 		}
 	case "minecraft_item":

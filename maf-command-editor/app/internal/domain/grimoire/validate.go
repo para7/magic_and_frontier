@@ -8,7 +8,7 @@ import (
 
 func ValidateSave(input SaveInput, now time.Time) common.SaveResult[GrimoireEntry] {
 	errs := common.ViolationsToFieldErrors(common.ValidateStruct(input), common.DefaultValidationMessage)
-	id := common.RequirePrefixedSequenceID(errs, "id", input.ID, "grimoire_")
+	id := common.RequireNonEmptyID(errs, "id", input.ID)
 	if errs.Any() {
 		return common.SaveValidationError[GrimoireEntry](errs, "Validation failed. Fix the highlighted fields.")
 	}

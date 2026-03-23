@@ -193,15 +193,21 @@ func TestDefaultValidationMessage(t *testing.T) {
 	}
 }
 
-func TestIsPrefixedSequenceID(t *testing.T) {
-	if !IsPrefixedSequenceID("items_12", "items_") {
-		t.Fatalf("expected prefixed sequence id to be valid")
+func TestRequireNonEmptyID(t *testing.T) {
+	errs := FieldErrors{}
+	if got := RequireNonEmptyID(errs, "id", "  any-id  "); got != "any-id" {
+		t.Fatalf("id = %q", got)
 	}
-	if IsPrefixedSequenceID("items_x", "items_") {
-		t.Fatalf("expected invalid numeric suffix")
+	if errs.Any() {
+		t.Fatalf("errors = %#v", errs)
 	}
-	if IsPrefixedSequenceID("item_1", "items_") {
-		t.Fatalf("expected invalid prefix")
+
+	errs = FieldErrors{}
+	if got := RequireNonEmptyID(errs, "id", " \n\t "); got != "" {
+		t.Fatalf("id = %q", got)
+	}
+	if errs["id"] != "Required." {
+		t.Fatalf("errors = %#v", errs)
 	}
 }
 
