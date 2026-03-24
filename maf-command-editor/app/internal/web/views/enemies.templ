@@ -1,0 +1,160 @@
+package views
+
+import "tools2/app/internal/web/ui"
+
+templ EnemiesPage(data ui.EnemiesPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@EnemiesShell(data)
+		}
+	}
+}
+
+templ EnemiesShell(data ui.EnemiesPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="form-span-2">
+				@ListBrowser(data.Meta.CurrentURL, "/enemies/new", "新規追加", "mob type, name, hp, memo で検索") {
+					<div class="entry-list" data-list-entries>
+						for _, entry := range data.Entries {
+							<article
+								class="entry-card"
+								data-list-item
+								data-search={ EnemySearchBlob(entry) }
+								data-filters={ JoinTokens("all", entry.DropMode) }
+								data-sort-updated={ entry.UpdatedAt }
+								data-sort-id={ entry.ID }
+								data-sort-mob_type={ entry.MobType }
+								data-sort-hp={ trimFloat(entry.HP) }>
+								<header>
+									<div>
+										<h3 class="entry-line code">{ EnemyListTitle(entry.MobType, entry.Name) }</h3>
+										<p class="entry-meta entry-line">{ JoinCompactWithSpace(trimFloat(entry.HP), entry.Memo) }</p>
+									</div>
+									<div class="entry-actions">
+										<a class="secondary outline" role="button" href={ WithReturnTo("/enemies/edit?id="+entry.ID, data.Meta.CurrentURL) } data-return-to-link={ "/enemies/edit?id=" + entry.ID }>編集</a>
+										<form method="post" action={ "/enemies/" + entry.ID + "/delete" }>
+											@ReturnToField(data.Meta.CurrentURL)
+											<button type="submit" class="danger">削除</button>
+										</form>
+									</div>
+								</header>
+							</article>
+						}
+						@ListEmptyState("まだ敵はありません。", len(data.Entries) > 0)
+					</div>
+				}
+			</section>
+		</div>
+	</div>
+}
+
+templ EnemyFormPage(data ui.EnemiesPageData) {
+	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
+		@PageScaffold(data.Meta, data.Notice) {
+			@EnemyFormShell(data)
+		}
+	}
+}
+
+templ EnemyFormShell(data ui.EnemiesPageData) {
+	<div id="feature-shell" class="feature-shell">
+		@NoticeBox(data.Notice)
+		<div class="feature-grid">
+			<section class="form-span-2">
+				@FormShellHeader(FormTitle("Enemy", data.Form.IsEditing))
+				<form method="post" action={ FormAction("/enemies", data.Form.IsEditing) }>
+					@ReturnToField(data.Form.ReturnTo)
+					<div class="form-blocks">
+						<div class="form-block stack">
+							<label>
+								ID
+								if data.Form.IsEditing {
+									<input name="id" value={ data.Form.ID } readonly/>
+								} else {
+									<input name="id" value={ data.Form.ID }/>
+									<small>任意のIDを入力（空白のみ不可）</small>
+								}
+								@FieldErrorBox(data.Form.FieldErrors, "id")
+							</label>
+							<label>
+								Mob Type
+								<input class="input-medium" name="mobType" value={ data.Form.MobType }/>
+								@FieldErrorBox(data.Form.FieldErrors, "mobType")
+							</label>
+							<label>
+								Name
+								<input class="input-medium" name="name" value={ data.Form.Name }/>
+								@FieldErrorBox(data.Form.FieldErrors, "name")
+							</label>
+						</div>
+						<div class="form-block stack">
+							<label>
+								HP
+								<input class="input-short" name="hp" value={ data.Form.HP }/>
+								@FieldErrorBox(data.Form.FieldErrors, "hp")
+							</label>
+							<label>
+								Memo
+								<input class="input-long" name="memo" value={ data.Form.Memo }/>
+								@FieldErrorBox(data.Form.FieldErrors, "memo")
+							</label>
+							<label>
+								Attack
+								<input class="input-short" name="attack" value={ data.Form.Attack }/>
+								@FieldErrorBox(data.Form.FieldErrors, "attack")
+							</label>
+							<label>
+								Defense
+								<input class="input-short" name="defense" value={ data.Form.Defense }/>
+								@FieldErrorBox(data.Form.FieldErrors, "defense")
+							</label>
+							<label>
+								Move Speed
+								<input class="input-short" name="moveSpeed" value={ data.Form.MoveSpeed }/>
+								@FieldErrorBox(data.Form.FieldErrors, "moveSpeed")
+							</label>
+							<label>
+								Drop Mode
+								<select class="select-medium" name="dropMode">
+									<option value="replace" selected?={ data.Form.DropMode == "replace" }>replace</option>
+									<option value="append" selected?={ data.Form.DropMode == "append" }>append</option>
+								</select>
+								@FieldErrorBox(data.Form.FieldErrors, "dropMode")
+							</label>
+						</div>
+						<div class="form-block stack">
+							<label>
+								Enemy Skill Refs
+								<select name="enemySkillIds" multiple size="6">
+									for _, option := range data.Form.EnemySkillOptions {
+										<option value={ option.ID } selected?={ HasValue(data.Form.EnemySkillIDs, option.ID) }>{ option.Label }</option>
+									}
+								</select>
+								@FieldErrorBox(data.Form.FieldErrors, "enemySkillIds")
+							</label>
+							<label class="wide">
+								Equipment
+								<textarea name="equipmentText" rows="10">{ data.Form.EquipmentText }</textarea>
+								@FieldErrorBox(data.Form.FieldErrors, "equipmentText")
+							</label>
+							<label class="wide">
+								Drops
+								<textarea name="dropsText" rows="10">{ data.Form.DropsText }</textarea>
+								@FieldErrorBox(data.Form.FieldErrors, "dropsText")
+							</label>
+						</div>
+					</div>
+					if data.Form.FormError != "" {
+						<div class="field-error">{ data.Form.FormError }</div>
+					}
+					<div class="form-actions">
+							<button type="submit">{ SubmitLabel(data.Form.IsEditing) }</button>
+							<a class="secondary outline" role="button" href={ BackLink("/enemies", data.Form.ReturnTo) }>キャンセル</a>
+					</div>
+				</form>
+			</section>
+		</div>
+	</div>
+}

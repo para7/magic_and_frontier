@@ -15,9 +15,9 @@ import (
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
-	"tools2/app/internal/export"
-	"tools2/app/internal/idseq"
-	"tools2/app/internal/store"
+	"tools2/app/internal/domain/export"
+	"tools2/app/internal/domain/idseq"
+	"tools2/app/internal/domain/store"
 )
 
 type Dependencies struct {

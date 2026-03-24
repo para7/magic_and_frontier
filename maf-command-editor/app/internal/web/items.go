@@ -9,23 +9,23 @@ import (
 	"tools2/app/internal/domain/items"
 	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/domain/skills"
-	"tools2/app/internal/webui"
-	"tools2/app/views"
+	"tools2/app/internal/web/ui"
+	"tools2/app/internal/web/views"
 )
 
 func (a App) itemsPage(w http.ResponseWriter, r *http.Request) {
 	notice := consumeFlashNotice(w, r)
 	state, err := a.loadItemStateFromMaster()
 	if err != nil {
-		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
+		a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	skillState, err := a.loadSkillStateFromMaster()
 	if err != nil {
-		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
+		a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: notice, Form: defaultItemForm(skillOptions(skillState.Entries))})
+	a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: notice, Form: defaultItemForm(skillOptions(skillState.Entries))})
 }
 
 func (a App) itemsNewPage(w http.ResponseWriter, r *http.Request) {
@@ -34,34 +34,34 @@ func (a App) itemsNewPage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		form := defaultItemForm(nil)
 		form.ReturnTo = returnTo
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderItemForm(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	form := defaultItemForm(skillOptions(skillState.Entries))
 	form.ReturnTo = returnTo
-	a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
+	a.renderItemForm(w, r, ui.ItemsPageData{Meta: itemMeta(), Form: form})
 }
 
 func (a App) itemsEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, itemMeta().CurrentPath)
 	state, err := a.loadItemStateFromMaster()
 	if err != nil {
-		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
+		a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	skillState, err := a.loadSkillStateFromMaster()
 	if err != nil {
-		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
+		a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
 	if entry, ok := findEntry(state.Items, id, func(entry items.ItemEntry) string { return entry.ID }); ok {
 		form := itemEntryToForm(entry, skillOptions(skillState.Entries))
 		form.ReturnTo = returnTo
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
+		a.renderItemForm(w, r, ui.ItemsPageData{Meta: itemMeta(), Form: form})
 		return
 	}
-	a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
+	a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
 }
 
 func (a App) itemsSubmit(w http.ResponseWriter, r *http.Request) {
@@ -79,21 +79,21 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	if err != nil {
 		form := defaultItemForm(nil)
 		form.ReturnTo = returnTo
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderItemForm(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	state, err := a.loadItemStateFromMaster()
 	if err != nil {
 		form := defaultItemForm(nil)
 		form.ReturnTo = returnTo
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderItemForm(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	skillState, err := a.loadSkillStateFromMaster()
 	if err != nil {
 		form := defaultItemForm(nil)
 		form.ReturnTo = returnTo
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderItemForm(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	form, input, parseErrs := parseItemForm(r, skillState.Entries)
@@ -101,7 +101,7 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	form.ReturnTo = returnTo
 	if editing {
 		if _, ok := findEntry(state.Items, form.ID, func(entry items.ItemEntry) string { return entry.ID }); !ok {
-			a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
+			a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
 			return
 		}
 	} else if _, ok := findEntry(state.Items, form.ID, func(entry items.ItemEntry) string { return entry.ID }); ok {
@@ -113,7 +113,7 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 		form.FieldErrors = fieldErrs
 		form.ShowEnchantmentsDetail = fieldErrs["enchantments"] != ""
 		form.FormError = formErrorText(result.FormError)
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
+		a.renderItemForm(w, r, ui.ItemsPageData{Meta: itemMeta(), Form: form})
 		return
 	}
 	mode := common.SaveModeCreated
@@ -121,7 +121,7 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 		mode = common.SaveModeUpdated
 		if err := master.Items().Update(*result.Entry, master); err != nil {
 			form.FormError = formErrorText(err.Error())
-			a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
+			a.renderItemForm(w, r, ui.ItemsPageData{Meta: itemMeta(), Form: form})
 			return
 		}
 	} else {
@@ -131,17 +131,17 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 			} else {
 				form.FormError = formErrorText(err.Error())
 			}
-			a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Form: form})
+			a.renderItemForm(w, r, ui.ItemsPageData{Meta: itemMeta(), Form: form})
 			return
 		}
 	}
 	if err := master.Items().Save(); err != nil {
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderItemForm(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	nextState, err := a.loadItemStateFromMaster()
 	if err != nil {
-		a.renderItemForm(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderItemForm(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	notice := successNotice(noticeText("Item", mode))
@@ -149,7 +149,7 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: nextState.Items, Notice: notice})
+	a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Entries: nextState.Items, Notice: notice})
 }
 
 func (a App) itemsDelete(w http.ResponseWriter, r *http.Request) {
@@ -158,25 +158,25 @@ func (a App) itemsDelete(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimSpace(r.PathValue("id"))
 	master, err := a.masterOrErr()
 	if err != nil {
-		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
+		a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	state, err := a.loadItemStateFromMaster()
 	if err != nil {
-		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
+		a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	if err := master.Items().Delete(id, master); err != nil {
-		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
+		a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
 		return
 	}
 	if err := master.Items().Save(); err != nil {
-		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice(err.Error())})
+		a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice(err.Error())})
 		return
 	}
 	nextState, err := a.loadItemStateFromMaster()
 	if err != nil {
-		a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice(err.Error())})
+		a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice(err.Error())})
 		return
 	}
 	notice := successNotice("Item deleted.")
@@ -184,10 +184,10 @@ func (a App) itemsDelete(w http.ResponseWriter, r *http.Request) {
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Entries: nextState.Items, Notice: notice})
+	a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Entries: nextState.Items, Notice: notice})
 }
 
-func (a App) renderItems(w http.ResponseWriter, r *http.Request, data webui.ItemsPageData) {
+func (a App) renderItems(w http.ResponseWriter, r *http.Request, data ui.ItemsPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.ItemsShell(data))
@@ -196,7 +196,7 @@ func (a App) renderItems(w http.ResponseWriter, r *http.Request, data webui.Item
 	a.renderComponent(w, views.ItemsPage(data))
 }
 
-func (a App) renderItemForm(w http.ResponseWriter, r *http.Request, data webui.ItemsPageData) {
+func (a App) renderItemForm(w http.ResponseWriter, r *http.Request, data ui.ItemsPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.ItemFormShell(data))
@@ -205,13 +205,13 @@ func (a App) renderItemForm(w http.ResponseWriter, r *http.Request, data webui.I
 	a.renderComponent(w, views.ItemFormPage(data))
 }
 
-func itemMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Items", CurrentPath: "/items"}
+func itemMeta() ui.PageMeta {
+	return ui.PageMeta{Title: "Items", CurrentPath: "/items"}
 }
 
-func defaultItemForm(options []webui.ReferenceOption) webui.ItemFormData {
+func defaultItemForm(options []ui.ReferenceOption) ui.ItemFormData {
 	enchantmentOptions, selectedEnchantments := itemFormEnchantmentsFromText("")
-	return webui.ItemFormData{
+	return ui.ItemFormData{
 		ID:                   "",
 		ItemID:               "minecraft:stone",
 		SkillOptions:         options,
@@ -232,9 +232,9 @@ func defaultItemForm(options []webui.ReferenceOption) webui.ItemFormData {
 	}
 }
 
-func itemEntryToForm(entry items.ItemEntry, options []webui.ReferenceOption) webui.ItemFormData {
+func itemEntryToForm(entry items.ItemEntry, options []ui.ReferenceOption) ui.ItemFormData {
 	enchantmentOptions, selectedEnchantments := itemFormEnchantmentsFromText(entry.Enchantments)
-	return webui.ItemFormData{
+	return ui.ItemFormData{
 		ID:                   entry.ID,
 		ItemID:               entry.ItemID,
 		SkillID:              entry.SkillID,
@@ -258,7 +258,7 @@ func itemEntryToForm(entry items.ItemEntry, options []webui.ReferenceOption) web
 	}
 }
 
-func parseItemForm(r *http.Request, skills []skills.SkillEntry) (webui.ItemFormData, items.SaveInput, map[string]string) {
+func parseItemForm(r *http.Request, skills []skills.SkillEntry) (ui.ItemFormData, items.SaveInput, map[string]string) {
 	form := defaultItemForm(skillOptions(skills))
 	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.ItemID = strings.TrimSpace(r.Form.Get("itemId"))
@@ -296,22 +296,22 @@ func parseItemForm(r *http.Request, skills []skills.SkillEntry) (webui.ItemFormD
 	return form, input, errs
 }
 
-func itemOptions(entries []items.ItemEntry) []webui.ReferenceOption {
-	options := make([]webui.ReferenceOption, 0, len(entries))
+func itemOptions(entries []items.ItemEntry) []ui.ReferenceOption {
+	options := make([]ui.ReferenceOption, 0, len(entries))
 	for _, entry := range entries {
-		options = append(options, webui.ReferenceOption{ID: entry.ID, Label: entry.ItemID})
+		options = append(options, ui.ReferenceOption{ID: entry.ID, Label: entry.ItemID})
 	}
 	return options
 }
 
-func skillOptions(entries []skills.SkillEntry) []webui.ReferenceOption {
-	options := make([]webui.ReferenceOption, 0, len(entries))
+func skillOptions(entries []skills.SkillEntry) []ui.ReferenceOption {
+	options := make([]ui.ReferenceOption, 0, len(entries))
 	for _, entry := range entries {
 		label := entry.Name
 		if strings.TrimSpace(label) == "" {
 			label = entry.ID
 		}
-		options = append(options, webui.ReferenceOption{ID: entry.ID, Label: label})
+		options = append(options, ui.ReferenceOption{ID: entry.ID, Label: label})
 	}
 	return options
 }

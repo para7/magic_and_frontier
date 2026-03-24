@@ -13,8 +13,8 @@ import (
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
-	"tools2/app/internal/export"
-	"tools2/app/internal/mcsource"
+	"tools2/app/internal/domain/export"
+	"tools2/app/internal/domain/mcsource"
 )
 
 func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLootTableRoot string, now time.Time) ValidationReport {

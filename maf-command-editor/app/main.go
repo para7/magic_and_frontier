@@ -13,7 +13,7 @@ import (
 
 	"tools2/app/internal/application"
 	"tools2/app/internal/config"
-	"tools2/app/internal/httpapi"
+	"tools2/app/internal/web/api"
 )
 
 func main() {
@@ -125,7 +125,7 @@ func runEditor(args []string, cfg config.Config) int {
 
 func newHandler() http.Handler {
 	cfg := config.Load()
-	return chain(httpapi.NewHandler(cfg, application.Dependencies{}), recoverMiddleware, loggingMiddleware)
+	return chain(api.NewHandler(cfg, application.Dependencies{}), recoverMiddleware, loggingMiddleware)
 }
 
 type middleware func(http.Handler) http.Handler

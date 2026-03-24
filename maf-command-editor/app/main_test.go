@@ -15,7 +15,7 @@ import (
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/skills"
-	"tools2/app/internal/export"
+	"tools2/app/internal/domain/export"
 )
 
 func TestNewHandler_RedirectRootToForm(t *testing.T) {

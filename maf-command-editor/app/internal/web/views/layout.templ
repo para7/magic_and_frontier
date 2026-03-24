@@ -1,0 +1,50 @@
+package views
+
+import "tools2/app/internal/web/ui"
+
+templ Layout(title string, currentPath string) {
+	<!DOCTYPE html>
+	<html lang="ja" data-theme="dark">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta name="color-scheme" content="dark"/>
+			<title>{ title }</title>
+				<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+			@layoutScripts()
+			<link rel="stylesheet" href="/static/css/base.css"/>
+			<link rel="stylesheet" href="/static/css/layout.css"/>
+			<link rel="stylesheet" href="/static/css/list.css"/>
+			<link rel="stylesheet" href="/static/css/form.css"/>
+			<link rel="stylesheet" href="/static/css/components.css"/>
+		</head>
+		<body>
+			<header>
+				<h1>MAF Command Editor</h1>
+			</header>
+			<div class="layout-shell">
+				<aside class="sidebar">
+					<nav>
+						for _, item := range ui.NavItems() {
+							if item.Path == currentPath {
+								<a href={ item.Path } class="nav-link active" role="button">{ item.Label }</a>
+							} else {
+								<a href={ item.Path } class="nav-link" role="button">{ item.Label }</a>
+							}
+						}
+					</nav>
+					<div class="sidebar-actions">
+						<form method="post" action="/save" hx-post="/save" hx-target="#global-messages" hx-swap="innerHTML">
+							<input type="hidden" name="currentPath" value={ currentPath }/>
+							<button type="submit">Save / Export</button>
+						</form>
+						<div id="global-messages"></div>
+					</div>
+				</aside>
+				<main class="content">
+					{ children... }
+				</main>
+			</div>
+		</body>
+	</html>
+}

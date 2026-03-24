@@ -11,8 +11,8 @@ import (
 
 	"tools2/app/internal/application"
 	"tools2/app/internal/domain/common"
-	"tools2/app/internal/webui"
-	"tools2/app/views"
+	"tools2/app/internal/web/ui"
+	"tools2/app/internal/web/views"
 )
 
 func (a App) saveExport(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +28,7 @@ func (a App) saveExport(w http.ResponseWriter, r *http.Request) {
 	a.renderSaveResponse(w, r, currentPath, successNotice(message))
 }
 
-func (a App) renderSaveResponse(w http.ResponseWriter, r *http.Request, currentPath string, notice *webui.Notice) {
+func (a App) renderSaveResponse(w http.ResponseWriter, r *http.Request, currentPath string, notice *ui.Notice) {
 	if isHX(r) {
 		a.renderComponent(w, views.NoticeBox(notice))
 		return
@@ -36,15 +36,15 @@ func (a App) renderSaveResponse(w http.ResponseWriter, r *http.Request, currentP
 	a.renderScreen(w, r, currentPath, notice)
 }
 
-func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath string, notice *webui.Notice) {
+func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath string, notice *ui.Notice) {
 	switch normalizeScreenPath(currentPath) {
 	case "/grimoire":
 		state, err := a.loadGrimoireStateFromMaster()
 		if err != nil {
-			a.renderGrimoire(w, r, webui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error()), Form: defaultGrimoireForm(nil)})
+			a.renderGrimoire(w, r, ui.GrimoirePageData{Meta: grimoireMeta(), Notice: errorNotice(err.Error()), Form: defaultGrimoireForm(nil)})
 			return
 		}
-		a.renderGrimoire(w, r, webui.GrimoirePageData{
+		a.renderGrimoire(w, r, ui.GrimoirePageData{
 			Meta:    grimoireMeta(),
 			Notice:  notice,
 			Entries: state.Entries,
@@ -53,10 +53,10 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 	case "/skills":
 		state, err := a.loadSkillStateFromMaster()
 		if err != nil {
-			a.renderSkills(w, r, webui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: defaultSkillForm()})
+			a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: defaultSkillForm()})
 			return
 		}
-		a.renderSkills(w, r, webui.SkillsPageData{
+		a.renderSkills(w, r, ui.SkillsPageData{
 			Meta:    skillsMeta(),
 			Notice:  notice,
 			Entries: state.Entries,
@@ -65,10 +65,10 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 	case "/enemy-skills":
 		state, err := a.loadEnemySkillStateFromMaster()
 		if err != nil {
-			a.renderEnemySkills(w, r, webui.EnemySkillsPageData{Meta: enemySkillsMeta(), Notice: errorNotice(err.Error()), Form: defaultEnemySkillForm()})
+			a.renderEnemySkills(w, r, ui.EnemySkillsPageData{Meta: enemySkillsMeta(), Notice: errorNotice(err.Error()), Form: defaultEnemySkillForm()})
 			return
 		}
-		a.renderEnemySkills(w, r, webui.EnemySkillsPageData{
+		a.renderEnemySkills(w, r, ui.EnemySkillsPageData{
 			Meta:    enemySkillsMeta(),
 			Notice:  notice,
 			Entries: state.Entries,
@@ -77,17 +77,17 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 	case "/treasures":
 		data, err := a.treasuresPageData(notice)
 		if err != nil {
-			a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), Form: defaultTreasureForm()})
+			a.renderTreasures(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), Form: defaultTreasureForm()})
 			return
 		}
 		a.renderTreasures(w, r, data)
 	case "/loottables":
 		state, err := a.loadLootTableStateFromMaster()
 		if err != nil {
-			a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultLootTableForm()})
+			a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultLootTableForm()})
 			return
 		}
-		a.renderLootTables(w, r, webui.LootTablesPageData{
+		a.renderLootTables(w, r, ui.LootTablesPageData{
 			Meta:    lootTablesMeta(),
 			Notice:  notice,
 			Entries: state.Entries,
@@ -96,15 +96,15 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 	case "/enemies":
 		state, err := a.loadEnemyStateFromMaster()
 		if err != nil {
-			a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: defaultEnemyForm(nil)})
+			a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: defaultEnemyForm(nil)})
 			return
 		}
 		enemySkillState, err := a.loadEnemySkillStateFromMaster()
 		if err != nil {
-			a.renderEnemies(w, r, webui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: defaultEnemyForm(nil)})
+			a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: defaultEnemyForm(nil)})
 			return
 		}
-		a.renderEnemies(w, r, webui.EnemiesPageData{
+		a.renderEnemies(w, r, ui.EnemiesPageData{
 			Meta:    enemiesMeta(),
 			Notice:  notice,
 			Entries: state.Entries,
@@ -113,10 +113,10 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 	case "/spawn-tables":
 		state, err := a.loadSpawnTableStateFromMaster()
 		if err != nil {
-			a.renderSpawnTables(w, r, webui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultSpawnTableForm()})
+			a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: defaultSpawnTableForm()})
 			return
 		}
-		a.renderSpawnTables(w, r, webui.SpawnTablesPageData{
+		a.renderSpawnTables(w, r, ui.SpawnTablesPageData{
 			Meta:    spawnTablesMeta(),
 			Notice:  notice,
 			Entries: state.Entries,
@@ -127,10 +127,10 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 	default:
 		state, err := a.loadItemStateFromMaster()
 		if err != nil {
-			a.renderItems(w, r, webui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: defaultItemForm(nil)})
+			a.renderItems(w, r, ui.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error()), Form: defaultItemForm(nil)})
 			return
 		}
-		a.renderItems(w, r, webui.ItemsPageData{
+		a.renderItems(w, r, ui.ItemsPageData{
 			Meta:    itemMeta(),
 			Notice:  notice,
 			Entries: state.Items,
@@ -153,12 +153,12 @@ func noticeText(label string, mode common.SaveMode) string {
 	return label + " created."
 }
 
-func successNotice(text string) *webui.Notice {
-	return &webui.Notice{Kind: "success", Text: text}
+func successNotice(text string) *ui.Notice {
+	return &ui.Notice{Kind: "success", Text: text}
 }
 
-func errorNotice(text string) *webui.Notice {
-	return &webui.Notice{Kind: "error", Text: text}
+func errorNotice(text string) *ui.Notice {
+	return &ui.Notice{Kind: "error", Text: text}
 }
 
 func formErrorText(value string) string {
@@ -170,7 +170,7 @@ func formErrorText(value string) string {
 
 const flashNoticeCookieName = "tools2-flash-notice"
 
-func redirectWithNotice(w http.ResponseWriter, r *http.Request, path string, notice *webui.Notice) bool {
+func redirectWithNotice(w http.ResponseWriter, r *http.Request, path string, notice *ui.Notice) bool {
 	if isHX(r) {
 		return false
 	}
@@ -179,7 +179,7 @@ func redirectWithNotice(w http.ResponseWriter, r *http.Request, path string, not
 	return true
 }
 
-func setFlashNotice(w http.ResponseWriter, notice *webui.Notice) {
+func setFlashNotice(w http.ResponseWriter, notice *ui.Notice) {
 	if notice == nil || strings.TrimSpace(notice.Text) == "" {
 		return
 	}
@@ -193,7 +193,7 @@ func setFlashNotice(w http.ResponseWriter, notice *webui.Notice) {
 	})
 }
 
-func consumeFlashNotice(w http.ResponseWriter, r *http.Request) *webui.Notice {
+func consumeFlashNotice(w http.ResponseWriter, r *http.Request) *ui.Notice {
 	cookie, err := r.Cookie(flashNoticeCookieName)
 	if err != nil {
 		return nil
@@ -214,7 +214,7 @@ func consumeFlashNotice(w http.ResponseWriter, r *http.Request) *webui.Notice {
 	if len(parts) != 2 || strings.TrimSpace(parts[1]) == "" {
 		return nil
 	}
-	return &webui.Notice{Kind: parts[0], Text: parts[1]}
+	return &ui.Notice{Kind: parts[0], Text: parts[1]}
 }
 
 func normalizeScreenPath(value string) string {

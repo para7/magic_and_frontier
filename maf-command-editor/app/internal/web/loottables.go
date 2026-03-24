@@ -9,18 +9,18 @@ import (
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/loottables"
 	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/webui"
-	"tools2/app/views"
+	"tools2/app/internal/web/ui"
+	"tools2/app/internal/web/views"
 )
 
 func (a App) lootTablesPage(w http.ResponseWriter, r *http.Request) {
 	notice := consumeFlashNotice(w, r)
 	state, err := a.loadLootTableStateFromMaster()
 	if err != nil {
-		a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
+		a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: notice})
+	a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: notice})
 }
 
 func (a App) lootTablesNewPage(w http.ResponseWriter, r *http.Request) {
@@ -29,46 +29,46 @@ func (a App) lootTablesNewPage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		form := defaultLootTableForm()
 		form.ReturnTo = returnTo
-		a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	grimoireState, err := a.loadGrimoireStateFromMaster()
 	if err != nil {
 		form := defaultLootTableForm()
 		form.ReturnTo = returnTo
-		a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), Form: form})
+		a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), Form: form})
 		return
 	}
 	form := defaultLootTableForm()
 	form.ReturnTo = returnTo
-	a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+	a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 }
 
 func (a App) lootTablesEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, lootTablesMeta().CurrentPath)
 	itemState, err := a.loadItemStateFromMaster()
 	if err != nil {
-		a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
+		a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	grimoireState, err := a.loadGrimoireStateFromMaster()
 	if err != nil {
-		a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
+		a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	state, err := a.loadLootTableStateFromMaster()
 	if err != nil {
-		a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
+		a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
 	if entry, ok := findEntry(state.Entries, id, func(entry loottables.LootTableEntry) string { return entry.ID }); ok {
 		form := lootTableEntryToForm(entry)
 		form.ReturnTo = returnTo
-		a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+		a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
-	a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: errorNotice("Loottable not found.")})
+	a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: errorNotice("Loottable not found.")})
 }
 
 func (a App) lootTablesSubmit(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +87,7 @@ func (a App) lootTablesSave(w http.ResponseWriter, r *http.Request, editing bool
 		form := defaultLootTableForm()
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
-		a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	itemState, err := a.loadItemStateFromMaster()
@@ -95,7 +95,7 @@ func (a App) lootTablesSave(w http.ResponseWriter, r *http.Request, editing bool
 		form := defaultLootTableForm()
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
-		a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	grimoireState, err := a.loadGrimoireStateFromMaster()
@@ -103,7 +103,7 @@ func (a App) lootTablesSave(w http.ResponseWriter, r *http.Request, editing bool
 		form := defaultLootTableForm()
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
-		a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), Form: form})
+		a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), Form: form})
 		return
 	}
 	state, err := a.loadLootTableStateFromMaster()
@@ -111,7 +111,7 @@ func (a App) lootTablesSave(w http.ResponseWriter, r *http.Request, editing bool
 		form := defaultLootTableForm()
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
-		a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+		a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
 	form, input, parseErrs := parseLootTableForm(r)
@@ -119,7 +119,7 @@ func (a App) lootTablesSave(w http.ResponseWriter, r *http.Request, editing bool
 	form.ReturnTo = returnTo
 	if editing {
 		if _, ok := findEntry(state.Entries, form.ID, func(entry loottables.LootTableEntry) string { return entry.ID }); !ok {
-			a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: errorNotice("Loottable not found.")})
+			a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: errorNotice("Loottable not found.")})
 			return
 		}
 	} else if _, ok := findEntry(state.Entries, form.ID, func(entry loottables.LootTableEntry) string { return entry.ID }); ok {
@@ -130,7 +130,7 @@ func (a App) lootTablesSave(w http.ResponseWriter, r *http.Request, editing bool
 	if len(fieldErrs) > 0 {
 		form.FieldErrors = fieldErrs
 		form.FormError = formErrorText(result.FormError)
-		a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+		a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
 	mode := common.SaveModeCreated
@@ -138,7 +138,7 @@ func (a App) lootTablesSave(w http.ResponseWriter, r *http.Request, editing bool
 		mode = common.SaveModeUpdated
 		if err := master.LootTables().Update(*result.Entry, master); err != nil {
 			form.FormError = formErrorText(err.Error())
-			a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+			a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 			return
 		}
 	} else {
@@ -148,17 +148,17 @@ func (a App) lootTablesSave(w http.ResponseWriter, r *http.Request, editing bool
 			} else {
 				form.FormError = formErrorText(err.Error())
 			}
-			a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+			a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 			return
 		}
 	}
 	if err := master.LootTables().Save(); err != nil {
-		a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+		a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
 	nextState, err := a.loadLootTableStateFromMaster()
 	if err != nil {
-		a.renderLootTableForm(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+		a.renderLootTableForm(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
 	notice := successNotice(noticeText("Loottable", mode))
@@ -166,7 +166,7 @@ func (a App) lootTablesSave(w http.ResponseWriter, r *http.Request, editing bool
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Entries: nextState.Entries, Notice: notice})
+	a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) lootTablesDelete(w http.ResponseWriter, r *http.Request) {
@@ -174,26 +174,26 @@ func (a App) lootTablesDelete(w http.ResponseWriter, r *http.Request) {
 	returnTo := submittedReturnTo(r, lootTablesMeta().CurrentPath)
 	master, err := a.masterOrErr()
 	if err != nil {
-		a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
+		a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	state, err := a.loadLootTableStateFromMaster()
 	if err != nil {
-		a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
+		a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.PathValue("id"))
 	if err := master.LootTables().Delete(id, master); err != nil {
-		a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: errorNotice("Loottable not found.")})
+		a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: errorNotice("Loottable not found.")})
 		return
 	}
 	if err := master.LootTables().Save(); err != nil {
-		a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
 	nextState, err := a.loadLootTableStateFromMaster()
 	if err != nil {
-		a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
 	notice := successNotice("Loottable deleted.")
@@ -201,10 +201,10 @@ func (a App) lootTablesDelete(w http.ResponseWriter, r *http.Request) {
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderLootTables(w, r, webui.LootTablesPageData{Meta: lootTablesMeta(), Entries: nextState.Entries, Notice: notice})
+	a.renderLootTables(w, r, ui.LootTablesPageData{Meta: lootTablesMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
-func (a App) renderLootTables(w http.ResponseWriter, r *http.Request, data webui.LootTablesPageData) {
+func (a App) renderLootTables(w http.ResponseWriter, r *http.Request, data ui.LootTablesPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.LootTablesShell(data))
@@ -213,7 +213,7 @@ func (a App) renderLootTables(w http.ResponseWriter, r *http.Request, data webui
 	a.renderComponent(w, views.LootTablesPage(data))
 }
 
-func (a App) renderLootTableForm(w http.ResponseWriter, r *http.Request, data webui.LootTablesPageData) {
+func (a App) renderLootTableForm(w http.ResponseWriter, r *http.Request, data ui.LootTablesPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.LootTableFormShell(data))
@@ -222,12 +222,12 @@ func (a App) renderLootTableForm(w http.ResponseWriter, r *http.Request, data we
 	a.renderComponent(w, views.LootTableFormPage(data))
 }
 
-func lootTablesMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Loottables", CurrentPath: "/loottables"}
+func lootTablesMeta() ui.PageMeta {
+	return ui.PageMeta{Title: "Loottables", CurrentPath: "/loottables"}
 }
 
-func defaultLootTableForm() webui.LootTableFormData {
-	return webui.LootTableFormData{
+func defaultLootTableForm() ui.LootTableFormData {
+	return ui.LootTableFormData{
 		ID:            "",
 		Memo:          "",
 		LootPoolsText: "item,,1,1,1",
@@ -235,7 +235,7 @@ func defaultLootTableForm() webui.LootTableFormData {
 	}
 }
 
-func lootTableEntryToForm(entry loottables.LootTableEntry) webui.LootTableFormData {
+func lootTableEntryToForm(entry loottables.LootTableEntry) ui.LootTableFormData {
 	lines := make([]string, 0, len(entry.LootPools))
 	for _, pool := range entry.LootPools {
 		countMin := ""
@@ -254,7 +254,7 @@ func lootTableEntryToForm(entry loottables.LootTableEntry) webui.LootTableFormDa
 			countMax,
 		}, ","))
 	}
-	return webui.LootTableFormData{
+	return ui.LootTableFormData{
 		ID:            entry.ID,
 		Memo:          entry.Memo,
 		LootPoolsText: strings.Join(lines, "\n"),
@@ -263,7 +263,7 @@ func lootTableEntryToForm(entry loottables.LootTableEntry) webui.LootTableFormDa
 	}
 }
 
-func parseLootTableForm(r *http.Request) (webui.LootTableFormData, loottables.SaveInput, map[string]string) {
+func parseLootTableForm(r *http.Request) (ui.LootTableFormData, loottables.SaveInput, map[string]string) {
 	form := defaultLootTableForm()
 	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.Memo = r.Form.Get("memo")

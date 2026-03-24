@@ -10,16 +10,16 @@ import (
 	"tools2/app/internal/domain/common"
 	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/domain/treasures"
-	"tools2/app/internal/mcsource"
-	"tools2/app/internal/webui"
-	"tools2/app/views"
+	"tools2/app/internal/domain/mcsource"
+	"tools2/app/internal/web/ui"
+	"tools2/app/internal/web/views"
 )
 
 func (a App) treasuresPage(w http.ResponseWriter, r *http.Request) {
 	notice := consumeFlashNotice(w, r)
 	data, err := a.treasuresPageData(notice)
 	if err != nil {
-		a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
+		a.renderTreasures(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	a.renderTreasures(w, r, data)
@@ -33,17 +33,17 @@ func (a App) treasuresEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, treasuresMeta().CurrentPath)
 	itemState, err := a.loadItemStateFromMaster()
 	if err != nil {
-		a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
+		a.renderTreasures(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	grimoireState, err := a.loadGrimoireStateFromMaster()
 	if err != nil {
-		a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
+		a.renderTreasures(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	state, sources, sourcePaths, err := a.loadTreasureCatalog()
 	if err != nil {
-		a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
+		a.renderTreasures(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	tablePath := strings.TrimSpace(r.URL.Query().Get("tablePath"))
@@ -78,7 +78,7 @@ func (a App) treasuresEditPage(w http.ResponseWriter, r *http.Request) {
 		a.renderTreasures(w, r, data)
 		return
 	}
-	a.renderTreasureForm(w, r, webui.TreasuresPageData{
+	a.renderTreasureForm(w, r, ui.TreasuresPageData{
 		Meta:            treasuresMeta(),
 		ItemOptions:     itemOptions(itemState.Items),
 		GrimoireOptions: grimoireOptions(grimoireState.Entries),
@@ -101,28 +101,28 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		form := defaultTreasureForm()
 		form.ReturnTo = returnTo
-		a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderTreasureForm(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	itemState, err := a.loadItemStateFromMaster()
 	if err != nil {
 		form := defaultTreasureForm()
 		form.ReturnTo = returnTo
-		a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderTreasureForm(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	grimoireState, err := a.loadGrimoireStateFromMaster()
 	if err != nil {
 		form := defaultTreasureForm()
 		form.ReturnTo = returnTo
-		a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), Form: form})
+		a.renderTreasureForm(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), Form: form})
 		return
 	}
 	state, _, sourcePaths, err := a.loadTreasureCatalog()
 	if err != nil {
 		form := defaultTreasureForm()
 		form.ReturnTo = returnTo
-		a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+		a.renderTreasureForm(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
 	form, input, parseErrs := parseTreasureForm(r)
@@ -150,7 +150,7 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 		form.FormError = formErrorText(result.FormError)
 		form.HasOverlay = hasOverlay
 		form.IsEditing = hasOverlay
-		a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+		a.renderTreasureForm(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
 	mode := common.SaveModeCreated
@@ -158,7 +158,7 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 		mode = common.SaveModeUpdated
 		if err := master.Treasures().Update(*result.Entry, master); err != nil {
 			form.FormError = formErrorText(err.Error())
-			a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+			a.renderTreasureForm(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 			return
 		}
 	} else {
@@ -168,12 +168,12 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 			} else {
 				form.FormError = formErrorText(err.Error())
 			}
-			a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+			a.renderTreasureForm(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 			return
 		}
 	}
 	if err := master.Treasures().Save(); err != nil {
-		a.renderTreasureForm(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+		a.renderTreasureForm(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
 	notice := successNotice(noticeText("Treasure", mode))
@@ -183,7 +183,7 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 	}
 	data, err := a.treasuresPageData(notice)
 	if err != nil {
-		a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
+		a.renderTreasures(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	a.renderTreasures(w, r, data)
@@ -194,14 +194,14 @@ func (a App) treasuresDelete(w http.ResponseWriter, r *http.Request) {
 	returnTo := submittedReturnTo(r, treasuresMeta().CurrentPath)
 	master, err := a.masterOrErr()
 	if err != nil {
-		a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
+		a.renderTreasures(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.PathValue("id"))
 	if err := master.Treasures().Delete(id, master); err != nil {
 		data, dataErr := a.treasuresPageData(errorNotice("Treasure not found."))
 		if dataErr != nil {
-			a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(dataErr.Error())})
+			a.renderTreasures(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(dataErr.Error())})
 			return
 		}
 		a.renderTreasures(w, r, data)
@@ -210,7 +210,7 @@ func (a App) treasuresDelete(w http.ResponseWriter, r *http.Request) {
 	if err := master.Treasures().Save(); err != nil {
 		data, dataErr := a.treasuresPageData(errorNotice(err.Error()))
 		if dataErr != nil {
-			a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(dataErr.Error())})
+			a.renderTreasures(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(dataErr.Error())})
 			return
 		}
 		a.renderTreasures(w, r, data)
@@ -223,13 +223,13 @@ func (a App) treasuresDelete(w http.ResponseWriter, r *http.Request) {
 	}
 	data, dataErr := a.treasuresPageData(notice)
 	if dataErr != nil {
-		a.renderTreasures(w, r, webui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(dataErr.Error())})
+		a.renderTreasures(w, r, ui.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(dataErr.Error())})
 		return
 	}
 	a.renderTreasures(w, r, data)
 }
 
-func (a App) renderTreasures(w http.ResponseWriter, r *http.Request, data webui.TreasuresPageData) {
+func (a App) renderTreasures(w http.ResponseWriter, r *http.Request, data ui.TreasuresPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.TreasuresShell(data))
@@ -238,7 +238,7 @@ func (a App) renderTreasures(w http.ResponseWriter, r *http.Request, data webui.
 	a.renderComponent(w, views.TreasuresPage(data))
 }
 
-func (a App) renderTreasureForm(w http.ResponseWriter, r *http.Request, data webui.TreasuresPageData) {
+func (a App) renderTreasureForm(w http.ResponseWriter, r *http.Request, data ui.TreasuresPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.TreasureFormShell(data))
@@ -247,10 +247,10 @@ func (a App) renderTreasureForm(w http.ResponseWriter, r *http.Request, data web
 	a.renderComponent(w, views.TreasureFormPage(data))
 }
 
-func (a App) treasuresPageData(notice *webui.Notice) (webui.TreasuresPageData, error) {
+func (a App) treasuresPageData(notice *ui.Notice) (ui.TreasuresPageData, error) {
 	state, sources, _, err := a.loadTreasureCatalog()
 	if err != nil {
-		return webui.TreasuresPageData{}, err
+		return ui.TreasuresPageData{}, err
 	}
 	return treasureListPageData(state, sources, notice), nil
 }
@@ -274,17 +274,17 @@ func (a App) loadTreasureCatalog() (common.EntryState[treasures.TreasureEntry], 
 	return state, sources, sourcePaths, nil
 }
 
-func treasureListPageData(state common.EntryState[treasures.TreasureEntry], sources []mcsource.LootTableSource, notice *webui.Notice) webui.TreasuresPageData {
-	return webui.TreasuresPageData{
+func treasureListPageData(state common.EntryState[treasures.TreasureEntry], sources []mcsource.LootTableSource, notice *ui.Notice) ui.TreasuresPageData {
+	return ui.TreasuresPageData{
 		Meta:    treasuresMeta(),
 		Notice:  notice,
 		Entries: buildTreasureListEntries(state.Entries, sources),
 	}
 }
 
-func buildTreasureListEntries(entries []treasures.TreasureEntry, sources []mcsource.LootTableSource) []webui.TreasureListEntry {
+func buildTreasureListEntries(entries []treasures.TreasureEntry, sources []mcsource.LootTableSource) []ui.TreasureListEntry {
 	_ = sources
-	merged := map[string]webui.TreasureListEntry{}
+	merged := map[string]ui.TreasureListEntry{}
 	for _, entry := range entries {
 		if !treasures.IsSupportedTablePath(entry.TablePath) {
 			continue
@@ -298,7 +298,7 @@ func buildTreasureListEntries(entries []treasures.TreasureEntry, sources []mcsou
 		listEntry.HasOverlay = true
 		merged[entry.TablePath] = listEntry
 	}
-	out := make([]webui.TreasureListEntry, 0, len(merged))
+	out := make([]ui.TreasureListEntry, 0, len(merged))
 	for _, entry := range merged {
 		out = append(out, entry)
 	}
@@ -308,12 +308,12 @@ func buildTreasureListEntries(entries []treasures.TreasureEntry, sources []mcsou
 	return out
 }
 
-func treasuresMeta() webui.PageMeta {
-	return webui.PageMeta{Title: "Treasures", CurrentPath: "/treasures"}
+func treasuresMeta() ui.PageMeta {
+	return ui.PageMeta{Title: "Treasures", CurrentPath: "/treasures"}
 }
 
-func defaultTreasureForm() webui.TreasureFormData {
-	return webui.TreasureFormData{
+func defaultTreasureForm() ui.TreasureFormData {
+	return ui.TreasureFormData{
 		ID:            "",
 		TablePath:     "",
 		LootPoolsText: "item,,1,1,1",
@@ -321,7 +321,7 @@ func defaultTreasureForm() webui.TreasureFormData {
 	}
 }
 
-func treasureEntryToForm(entry treasures.TreasureEntry) webui.TreasureFormData {
+func treasureEntryToForm(entry treasures.TreasureEntry) ui.TreasureFormData {
 	lines := make([]string, 0, len(entry.LootPools))
 	for _, pool := range entry.LootPools {
 		countMin := ""
@@ -340,7 +340,7 @@ func treasureEntryToForm(entry treasures.TreasureEntry) webui.TreasureFormData {
 			countMax,
 		}, ","))
 	}
-	return webui.TreasureFormData{
+	return ui.TreasureFormData{
 		ID:            entry.ID,
 		TablePath:     entry.TablePath,
 		LootPoolsText: strings.Join(lines, "\n"),
@@ -350,7 +350,7 @@ func treasureEntryToForm(entry treasures.TreasureEntry) webui.TreasureFormData {
 	}
 }
 
-func parseTreasureForm(r *http.Request) (webui.TreasureFormData, treasures.SaveInput, map[string]string) {
+func parseTreasureForm(r *http.Request) (ui.TreasureFormData, treasures.SaveInput, map[string]string) {
 	form := defaultTreasureForm()
 	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.TablePath = strings.TrimSpace(r.Form.Get("tablePath"))
@@ -373,6 +373,6 @@ func hasTreasureSource(sourcePaths map[string]struct{}, tablePath string) bool {
 	return ok
 }
 
-func noticeWithError(message string) *webui.Notice {
+func noticeWithError(message string) *ui.Notice {
 	return errorNotice(message)
 }
