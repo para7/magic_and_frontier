@@ -3,6 +3,7 @@ package web
 import (
 	"embed"
 	"io/fs"
+	"mime"
 	"net/http"
 
 	"tools2/app/internal/application"
@@ -21,6 +22,7 @@ type App struct {
 }
 
 func RegisterRoutes(mux *http.ServeMux, cfg config.Config, deps Dependencies) {
+	_ = mime.AddExtensionType(".css", "text/css")
 	staticRoot, err := fs.Sub(staticFiles, "views")
 	if err != nil {
 		panic(err)
