@@ -1,72 +1,58 @@
-GO ?= go
-BIN_DIR ?= bin
-BIN_NAME ?= mce
-BIN_PATH := $(BIN_DIR)/$(BIN_NAME)
-APP_DIR := ./app
-LINT_CACHE_DIR ?= /tmp/maf-command-editor-cache
-GO_CACHE_DIR ?= /tmp/maf-command-editor-go-cache
+.PHONY: help generate tidy format lint build test run run-cmd dev check kill-port
 
-.PHONY: help setup generate tidy format lint build test run run-cmd dev check
+help: ## show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-help:
-	@echo "Available targets:"
-	@echo "  make setup     - install templ/staticcheck tools"
-	@echo "  make generate  - generate templ files"
-	@echo "  make tidy      - run go mod tidy"
-	@echo "  make format    - run go fmt ./..."
-	@echo "  make lint      - run go vet + staticcheck"
-	@echo "  make build     - build binary to $(BIN_PATH)"
-	@echo "  make test      - run go test ./..."
-	@echo "  make run       - generate templ and start editor on :8787"
-	@echo "  make run-cmd   - run command with ARGS='validate|export'"
-	@echo "  make dev       - alias of make run"
-	@echo "  make check     - generate + tidy + format + lint + build + test"
+run: run/web ## generate templ and start editor on :8787
 
-setup:
-	$(GO) get -tool github.com/a-h/templ/cmd/templ@latest
-	$(GO) get -tool honnef.co/go/tools/cmd/staticcheck@latest
-
-generate:
-	$(GO) tool templ generate ./...
-
-tidy:
-	$(GO) mod tidy
-
-format:
-	$(GO) fmt ./...
-
-lint:
-	mkdir -p $(GO_CACHE_DIR)
-	mkdir -p $(LINT_CACHE_DIR)
-	GOCACHE=$(GO_CACHE_DIR) $(GO) vet ./...
-	GOCACHE=$(GO_CACHE_DIR) XDG_CACHE_HOME=$(LINT_CACHE_DIR) $(GO) tool staticcheck ./...
-
-build:
-	mkdir -p $(BIN_DIR)
-	$(GO) build -o $(BIN_PATH) $(APP_DIR)
-
-test:
-	$(GO) test ./...
-
-check: format generate lint build test 
-
-run: generate
+run/editor:
 	echo http://localhost:8787
-	$(GO) run $(APP_DIR) editor
+	go run ./app editor
 
-run-cmd:
-	$(GO) run $(APP_DIR) $(ARGS)
+run/validate:
+	go run ./app validate
 
-dev: run
+run/export:
+	go run ./app export
 
-check: generate tidy format lint build test
 
-PORT=8787
-kill-port:
-	@pids=$$(lsof -t -i :$(PORT) 2>/dev/null); \
+check: generate tidy format lint build test ## run all checks
+
+generate: ## generate templ files
+	go tool templ generate ./...
+
+tidy: ## run go mod tidy
+	go mod tidy
+
+format: ## run go fmt ./...
+	go fmt ./...
+
+lint: ## run go vet + staticcheck
+	mkdir -p /tmp/maf-command-editor-go-cache
+	mkdir -p /tmp/maf-command-editor-cache
+	GOCACHE=/tmp/maf-command-editor-go-cache go vet ./...
+	GOCACHE=/tmp/maf-command-editor-go-cache XDG_CACHE_HOME=/tmp/maf-command-editor-cache go tool staticcheck ./...
+
+build: ## build binary to bin/mce
+	mkdir -p bin
+	go build -o bin/mce ./app
+
+test: ## run go test ./...
+	go test ./...
+
+
+
+run-cmd: ## run command with ARGS='validate|export'
+	go run ./app $(ARGS)
+
+dev: run ## alias of make run
+
+kill-port: ## kill process using port 8787
+	@pids=$$(lsof -t -i :8787 2>/dev/null); \
 	if [ -z "$$pids" ]; then \
-		echo "No process is using port $(PORT)"; \
+		echo "No process is using port 8787"; \
 	else \
-		echo "Killing PID(s): $$pids on port $(PORT)"; \
+		echo "Killing PID(s): $$pids on port 8787"; \
 		kill $$pids; \
 	fi
