@@ -1,8 +1,7 @@
 package views
 
-import "tools2/app/internal/web/ui"
 
-templ SkillsPage(data ui.SkillsPageData) {
+templ SkillsPage(data SkillsPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@SkillsShell(data)
@@ -10,7 +9,7 @@ templ SkillsPage(data ui.SkillsPageData) {
 	}
 }
 
-templ SkillsShell(data ui.SkillsPageData) {
+templ SkillsShell(data SkillsPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
@@ -49,7 +48,7 @@ templ SkillsShell(data ui.SkillsPageData) {
 	</div>
 }
 
-templ SkillFormPage(data ui.SkillsPageData) {
+templ SkillFormPage(data SkillsPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@SkillFormShell(data)
@@ -57,7 +56,7 @@ templ SkillFormPage(data ui.SkillsPageData) {
 	}
 }
 
-templ SkillFormShell(data ui.SkillsPageData) {
+templ SkillFormShell(data SkillsPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">

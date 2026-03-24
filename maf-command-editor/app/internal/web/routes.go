@@ -1,6 +1,8 @@
 package web
 
 import (
+	"embed"
+	"io/fs"
 	"net/http"
 
 	"tools2/app/internal/application"
@@ -9,6 +11,9 @@ import (
 
 type Dependencies = application.Dependencies
 
+//go:embed views/css/*.css
+var staticFiles embed.FS
+
 type App struct {
 	cfg           config.Config
 	deps          Dependencies
@@ -16,7 +21,11 @@ type App struct {
 }
 
 func RegisterRoutes(mux *http.ServeMux, cfg config.Config, deps Dependencies) {
-	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("internal/app/web/static"))))
+	staticRoot, err := fs.Sub(staticFiles, "views")
+	if err != nil {
+		panic(err)
+	}
+	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticRoot))))
 
 	var masterInitErr error
 	if deps.Master == nil {

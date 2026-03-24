@@ -5,7 +5,7 @@ import (
 	neturl "net/url"
 	"strings"
 
-	"tools2/app/internal/web/ui"
+	"tools2/app/internal/web/views"
 )
 
 func currentListURL(r *http.Request, fallback string) string {
@@ -20,7 +20,7 @@ func submittedReturnTo(r *http.Request, fallback string) string {
 	return sanitizeReturnTo(r.Form.Get("returnTo"), fallback)
 }
 
-func applyPageMeta(r *http.Request, meta ui.PageMeta) ui.PageMeta {
+func applyPageMeta(r *http.Request, meta views.PageMeta) views.PageMeta {
 	if strings.TrimSpace(meta.CurrentURL) == "" {
 		meta.CurrentURL = currentListURL(r, meta.CurrentPath)
 	}

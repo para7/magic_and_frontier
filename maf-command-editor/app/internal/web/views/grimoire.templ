@@ -1,8 +1,7 @@
 package views
 
-import "tools2/app/internal/web/ui"
 
-templ GrimoirePage(data ui.GrimoirePageData) {
+templ GrimoirePage(data GrimoirePageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@GrimoireShell(data)
@@ -10,7 +9,7 @@ templ GrimoirePage(data ui.GrimoirePageData) {
 	}
 }
 
-templ GrimoireShell(data ui.GrimoirePageData) {
+templ GrimoireShell(data GrimoirePageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
@@ -50,7 +49,7 @@ templ GrimoireShell(data ui.GrimoirePageData) {
 	</div>
 }
 
-templ GrimoireFormPage(data ui.GrimoirePageData) {
+templ GrimoireFormPage(data GrimoirePageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@GrimoireFormShell(data)
@@ -58,7 +57,7 @@ templ GrimoireFormPage(data ui.GrimoirePageData) {
 	}
 }
 
-templ GrimoireFormShell(data ui.GrimoirePageData) {
+templ GrimoireFormShell(data GrimoirePageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">

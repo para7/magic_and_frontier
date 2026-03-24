@@ -1,8 +1,7 @@
 package views
 
-import "tools2/app/internal/web/ui"
 
-templ TreasuresPage(data ui.TreasuresPageData) {
+templ TreasuresPage(data TreasuresPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@TreasuresShell(data)
@@ -10,7 +9,7 @@ templ TreasuresPage(data ui.TreasuresPageData) {
 	}
 }
 
-templ TreasuresShell(data ui.TreasuresPageData) {
+templ TreasuresShell(data TreasuresPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
@@ -39,7 +38,7 @@ templ TreasuresShell(data ui.TreasuresPageData) {
 	</div>
 }
 
-templ TreasureFormPage(data ui.TreasuresPageData) {
+templ TreasureFormPage(data TreasuresPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@TreasureFormShell(data)
@@ -47,7 +46,7 @@ templ TreasureFormPage(data ui.TreasuresPageData) {
 	}
 }
 
-templ TreasureFormShell(data ui.TreasuresPageData) {
+templ TreasureFormShell(data TreasuresPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">

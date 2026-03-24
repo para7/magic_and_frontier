@@ -1,6 +1,5 @@
 package views
 
-import "tools2/app/internal/web/ui"
 
 templ Layout(title string, currentPath string) {
 	<!DOCTYPE html>
@@ -25,7 +24,7 @@ templ Layout(title string, currentPath string) {
 			<div class="layout-shell">
 				<aside class="sidebar">
 					<nav>
-						for _, item := range ui.NavItems() {
+						for _, item := range NavItems() {
 							if item.Path == currentPath {
 								<a href={ item.Path } class="nav-link active" role="button">{ item.Label }</a>
 							} else {

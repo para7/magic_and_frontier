@@ -10,7 +10,6 @@ import (
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/enemyskills"
 	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/web/ui"
 	"tools2/app/internal/web/views"
 )
 
@@ -18,10 +17,10 @@ func (a App) enemiesPage(w http.ResponseWriter, r *http.Request) {
 	notice := consumeFlashNotice(w, r)
 	state, err := a.loadEnemyStateFromMaster()
 	if err != nil {
-		a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
+		a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: notice})
+	a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: notice})
 }
 
 func (a App) enemiesNewPage(w http.ResponseWriter, r *http.Request) {
@@ -30,34 +29,34 @@ func (a App) enemiesNewPage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		form := defaultEnemyForm(nil)
 		form.ReturnTo = returnTo
-		a.renderEnemyForm(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderEnemyForm(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	form := defaultEnemyForm(enemySkillState.Entries)
 	form.ReturnTo = returnTo
-	a.renderEnemyForm(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Form: form})
+	a.renderEnemyForm(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Form: form})
 }
 
 func (a App) enemiesEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, enemiesMeta().CurrentPath)
 	state, err := a.loadEnemyStateFromMaster()
 	if err != nil {
-		a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
+		a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	enemySkillState, err := a.loadEnemySkillStateFromMaster()
 	if err != nil {
-		a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
+		a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
 	if entry, ok := findEntry(state.Entries, id, func(entry enemies.EnemyEntry) string { return entry.ID }); ok {
 		form := enemyEntryToForm(entry, enemySkillOptions(enemySkillState.Entries))
 		form.ReturnTo = returnTo
-		a.renderEnemyForm(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Form: form})
+		a.renderEnemyForm(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Form: form})
 		return
 	}
-	a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: errorNotice("Enemy not found.")})
+	a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: errorNotice("Enemy not found.")})
 }
 
 func (a App) enemiesSubmit(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +75,7 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 		form := defaultEnemyForm(nil)
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
-		a.renderEnemyForm(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderEnemyForm(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	enemyState, err := a.loadEnemyStateFromMaster()
@@ -84,7 +83,7 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 		form := defaultEnemyForm(nil)
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
-		a.renderEnemyForm(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderEnemyForm(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	enemySkillState, err := a.loadEnemySkillStateFromMaster()
@@ -92,7 +91,7 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 		form := defaultEnemyForm(nil)
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
-		a.renderEnemyForm(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderEnemyForm(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	form, input, parseErrs := parseEnemyForm(r, enemySkillState.Entries)
@@ -100,7 +99,7 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	form.ReturnTo = returnTo
 	if editing {
 		if _, ok := findEntry(enemyState.Entries, form.ID, func(entry enemies.EnemyEntry) string { return entry.ID }); !ok {
-			a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Entries: enemyState.Entries, Notice: errorNotice("Enemy not found.")})
+			a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Entries: enemyState.Entries, Notice: errorNotice("Enemy not found.")})
 			return
 		}
 	} else if _, ok := findEntry(enemyState.Entries, form.ID, func(entry enemies.EnemyEntry) string { return entry.ID }); ok {
@@ -111,7 +110,7 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	if len(fieldErrs) > 0 {
 		form.FieldErrors = fieldErrs
 		form.FormError = formErrorText(result.FormError)
-		a.renderEnemyForm(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Form: form})
+		a.renderEnemyForm(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Form: form})
 		return
 	}
 	mode := common.SaveModeCreated
@@ -119,7 +118,7 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 		mode = common.SaveModeUpdated
 		if err := master.Enemies().Update(*result.Entry, master); err != nil {
 			form.FormError = formErrorText(err.Error())
-			a.renderEnemyForm(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Form: form})
+			a.renderEnemyForm(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Form: form})
 			return
 		}
 	} else {
@@ -129,17 +128,17 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 			} else {
 				form.FormError = formErrorText(err.Error())
 			}
-			a.renderEnemyForm(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Form: form})
+			a.renderEnemyForm(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Form: form})
 			return
 		}
 	}
 	if err := master.Enemies().Save(); err != nil {
-		a.renderEnemyForm(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderEnemyForm(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	nextState, err := a.loadEnemyStateFromMaster()
 	if err != nil {
-		a.renderEnemyForm(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderEnemyForm(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	notice := successNotice(noticeText("Enemy", mode))
@@ -147,7 +146,7 @@ func (a App) enemiesSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Entries: nextState.Entries, Notice: notice})
+	a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) enemiesDelete(w http.ResponseWriter, r *http.Request) {
@@ -155,26 +154,26 @@ func (a App) enemiesDelete(w http.ResponseWriter, r *http.Request) {
 	returnTo := submittedReturnTo(r, enemiesMeta().CurrentPath)
 	master, err := a.masterOrErr()
 	if err != nil {
-		a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
+		a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	state, err := a.loadEnemyStateFromMaster()
 	if err != nil {
-		a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
+		a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.PathValue("id"))
 	if err := master.Enemies().Delete(id, master); err != nil {
-		a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: errorNotice("Enemy not found.")})
+		a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: errorNotice("Enemy not found.")})
 		return
 	}
 	if err := master.Enemies().Save(); err != nil {
-		a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
 	nextState, err := a.loadEnemyStateFromMaster()
 	if err != nil {
-		a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
 	notice := successNotice("Enemy deleted.")
@@ -182,10 +181,10 @@ func (a App) enemiesDelete(w http.ResponseWriter, r *http.Request) {
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderEnemies(w, r, ui.EnemiesPageData{Meta: enemiesMeta(), Entries: nextState.Entries, Notice: notice})
+	a.renderEnemies(w, r, views.EnemiesPageData{Meta: enemiesMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
-func (a App) renderEnemies(w http.ResponseWriter, r *http.Request, data ui.EnemiesPageData) {
+func (a App) renderEnemies(w http.ResponseWriter, r *http.Request, data views.EnemiesPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.EnemiesShell(data))
@@ -194,7 +193,7 @@ func (a App) renderEnemies(w http.ResponseWriter, r *http.Request, data ui.Enemi
 	a.renderComponent(w, views.EnemiesPage(data))
 }
 
-func (a App) renderEnemyForm(w http.ResponseWriter, r *http.Request, data ui.EnemiesPageData) {
+func (a App) renderEnemyForm(w http.ResponseWriter, r *http.Request, data views.EnemiesPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.EnemyFormShell(data))
@@ -203,12 +202,12 @@ func (a App) renderEnemyForm(w http.ResponseWriter, r *http.Request, data ui.Ene
 	a.renderComponent(w, views.EnemyFormPage(data))
 }
 
-func enemiesMeta() ui.PageMeta {
-	return ui.PageMeta{Title: "Enemies", CurrentPath: "/enemies"}
+func enemiesMeta() views.PageMeta {
+	return views.PageMeta{Title: "Enemies", CurrentPath: "/enemies"}
 }
 
-func defaultEnemyForm(entries []enemyskills.EnemySkillEntry) ui.EnemyFormData {
-	return ui.EnemyFormData{
+func defaultEnemyForm(entries []enemyskills.EnemySkillEntry) views.EnemyFormData {
+	return views.EnemyFormData{
 		ID:                "",
 		MobType:           "minecraft:zombie",
 		HP:                "20",
@@ -218,8 +217,8 @@ func defaultEnemyForm(entries []enemyskills.EnemySkillEntry) ui.EnemyFormData {
 	}
 }
 
-func enemyEntryToForm(entry enemies.EnemyEntry, options []ui.ReferenceOption) ui.EnemyFormData {
-	form := ui.EnemyFormData{
+func enemyEntryToForm(entry enemies.EnemyEntry, options []views.ReferenceOption) views.EnemyFormData {
+	form := views.EnemyFormData{
 		ID:                entry.ID,
 		MobType:           entry.MobType,
 		Name:              entry.Name,
@@ -245,7 +244,7 @@ func enemyEntryToForm(entry enemies.EnemyEntry, options []ui.ReferenceOption) ui
 	return form
 }
 
-func parseEnemyForm(r *http.Request, enemySkillEntries []enemyskills.EnemySkillEntry) (ui.EnemyFormData, enemies.SaveInput, map[string]string) {
+func parseEnemyForm(r *http.Request, enemySkillEntries []enemyskills.EnemySkillEntry) (views.EnemyFormData, enemies.SaveInput, map[string]string) {
 	form := defaultEnemyForm(enemySkillEntries)
 	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.MobType = strings.TrimSpace(r.Form.Get("mobType"))

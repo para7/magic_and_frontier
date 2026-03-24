@@ -1,8 +1,7 @@
 package views
 
-import "tools2/app/internal/web/ui"
 
-templ LootTablesPage(data ui.LootTablesPageData) {
+templ LootTablesPage(data LootTablesPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@LootTablesShell(data)
@@ -10,7 +9,7 @@ templ LootTablesPage(data ui.LootTablesPageData) {
 	}
 }
 
-templ LootTablesShell(data ui.LootTablesPageData) {
+templ LootTablesShell(data LootTablesPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
@@ -48,7 +47,7 @@ templ LootTablesShell(data ui.LootTablesPageData) {
 	</div>
 }
 
-templ LootTableFormPage(data ui.LootTablesPageData) {
+templ LootTableFormPage(data LootTablesPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@LootTableFormShell(data)
@@ -56,7 +55,7 @@ templ LootTableFormPage(data ui.LootTablesPageData) {
 	}
 }
 
-templ LootTableFormShell(data ui.LootTablesPageData) {
+templ LootTableFormShell(data LootTablesPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">

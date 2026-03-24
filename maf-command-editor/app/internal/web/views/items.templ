@@ -1,8 +1,7 @@
 package views
 
-import "tools2/app/internal/web/ui"
 
-templ ItemsPage(data ui.ItemsPageData) {
+templ ItemsPage(data ItemsPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@ItemsShell(data)
@@ -10,7 +9,7 @@ templ ItemsPage(data ui.ItemsPageData) {
 	}
 }
 
-templ ItemsShell(data ui.ItemsPageData) {
+templ ItemsShell(data ItemsPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
@@ -49,7 +48,7 @@ templ ItemsShell(data ui.ItemsPageData) {
 	</div>
 }
 
-templ ItemFormPage(data ui.ItemsPageData) {
+templ ItemFormPage(data ItemsPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@ItemFormShell(data)
@@ -57,7 +56,7 @@ templ ItemFormPage(data ui.ItemsPageData) {
 	}
 }
 
-templ ItemFormShell(data ui.ItemsPageData) {
+templ ItemFormShell(data ItemsPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">

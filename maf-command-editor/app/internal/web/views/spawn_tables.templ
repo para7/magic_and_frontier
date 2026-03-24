@@ -1,8 +1,7 @@
 package views
 
-import "tools2/app/internal/web/ui"
 
-templ SpawnTablesPage(data ui.SpawnTablesPageData) {
+templ SpawnTablesPage(data SpawnTablesPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@SpawnTablesShell(data)
@@ -10,7 +9,7 @@ templ SpawnTablesPage(data ui.SpawnTablesPageData) {
 	}
 }
 
-templ SpawnTablesShell(data ui.SpawnTablesPageData) {
+templ SpawnTablesShell(data SpawnTablesPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
@@ -57,7 +56,7 @@ templ SpawnTablesShell(data ui.SpawnTablesPageData) {
 	</div>
 }
 
-templ SpawnTableFormPage(data ui.SpawnTablesPageData) {
+templ SpawnTableFormPage(data SpawnTablesPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@SpawnTableFormShell(data)
@@ -65,7 +64,7 @@ templ SpawnTableFormPage(data ui.SpawnTablesPageData) {
 	}
 }
 
-templ SpawnTableFormShell(data ui.SpawnTablesPageData) {
+templ SpawnTableFormShell(data SpawnTablesPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">

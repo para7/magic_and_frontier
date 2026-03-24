@@ -48,6 +48,8 @@ build:
 test:
 	$(GO) test ./...
 
+check: format generate lint build test 
+
 run: generate
 	echo http://localhost:8787
 	$(GO) run $(APP_DIR) editor

@@ -1,8 +1,7 @@
 package views
 
-import "tools2/app/internal/web/ui"
 
-templ NoticeBox(notice *ui.Notice) {
+templ NoticeBox(notice *Notice) {
 	if notice != nil && notice.Text != "" {
 		<div class={ "notice " + NoticeClass(notice) }>{ notice.Text }</div>
 	}
@@ -14,7 +13,7 @@ templ FieldErrorBox(errs map[string]string, key string) {
 	}
 }
 
-templ PageScaffold(meta ui.PageMeta, notice *ui.Notice) {
+templ PageScaffold(meta PageMeta, notice *Notice) {
 	<div class="page">
 		<section class="tool-section">
 			<div class="page-header">

@@ -10,7 +10,6 @@ import (
 	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
-	"tools2/app/internal/web/ui"
 )
 
 func FieldError(errs map[string]string, key string) string {
@@ -29,7 +28,7 @@ func HasValue(values []string, want string) bool {
 	return false
 }
 
-func EnchantmentCategories(options []ui.ItemEnchantmentOption) []string {
+func EnchantmentCategories(options []ItemEnchantmentOption) []string {
 	categories := make([]string, 0, len(options))
 	seen := map[string]bool{}
 	for _, option := range options {
@@ -43,8 +42,8 @@ func EnchantmentCategories(options []ui.ItemEnchantmentOption) []string {
 	return categories
 }
 
-func EnchantmentsByCategory(options []ui.ItemEnchantmentOption, category string) []ui.ItemEnchantmentOption {
-	filtered := make([]ui.ItemEnchantmentOption, 0, len(options))
+func EnchantmentsByCategory(options []ItemEnchantmentOption, category string) []ItemEnchantmentOption {
+	filtered := make([]ItemEnchantmentOption, 0, len(options))
 	for _, option := range options {
 		if option.Category == category {
 			filtered = append(filtered, option)
@@ -53,7 +52,7 @@ func EnchantmentsByCategory(options []ui.ItemEnchantmentOption, category string)
 	return filtered
 }
 
-func NoticeClass(notice *ui.Notice) string {
+func NoticeClass(notice *Notice) string {
 	if notice == nil || notice.Kind == "" {
 		return "notice-info"
 	}
@@ -336,24 +335,24 @@ func SpawnTableSearchBlob(entry spawntables.SpawnTableEntry) string {
 	return SearchBlob(values...)
 }
 
-func PageSizeOptions() []ui.SelectOption {
-	return []ui.SelectOption{
+func PageSizeOptions() []SelectOption {
+	return []SelectOption{
 		{Value: "25", Label: "25 / page"},
 		{Value: "50", Label: "50 / page"},
 		{Value: "100", Label: "100 / page"},
 	}
 }
 
-func ItemsFilterOptions() []ui.SelectOption {
-	return []ui.SelectOption{
+func ItemsFilterOptions() []SelectOption {
+	return []SelectOption{
 		{Value: "all", Label: "All items"},
 		{Value: "with-skill", Label: "With skill"},
 		{Value: "without-skill", Label: "Without skill"},
 	}
 }
 
-func ItemsSortOptions() []ui.SelectOption {
-	return []ui.SelectOption{
+func ItemsSortOptions() []SelectOption {
+	return []SelectOption{
 		{Value: "updated_desc", Label: "Updated desc"},
 		{Value: "updated_asc", Label: "Updated asc"},
 		{Value: "id_asc", Label: "ID asc"},
@@ -363,12 +362,12 @@ func ItemsSortOptions() []ui.SelectOption {
 	}
 }
 
-func GrimoireFilterOptions() []ui.SelectOption {
-	return []ui.SelectOption{{Value: "all", Label: "All entries"}}
+func GrimoireFilterOptions() []SelectOption {
+	return []SelectOption{{Value: "all", Label: "All entries"}}
 }
 
-func GrimoireSortOptions() []ui.SelectOption {
-	return []ui.SelectOption{
+func GrimoireSortOptions() []SelectOption {
+	return []SelectOption{
 		{Value: "updated_desc", Label: "Updated desc"},
 		{Value: "updated_asc", Label: "Updated asc"},
 		{Value: "id_asc", Label: "ID asc"},
@@ -380,16 +379,16 @@ func GrimoireSortOptions() []ui.SelectOption {
 	}
 }
 
-func NamedFilterOptions(label string) []ui.SelectOption {
-	return []ui.SelectOption{
+func NamedFilterOptions(label string) []SelectOption {
+	return []SelectOption{
 		{Value: "all", Label: "All " + label},
 		{Value: "named", Label: "Named"},
 		{Value: "unnamed", Label: "Unnamed"},
 	}
 }
 
-func NameSortOptions() []ui.SelectOption {
-	return []ui.SelectOption{
+func NameSortOptions() []SelectOption {
+	return []SelectOption{
 		{Value: "updated_desc", Label: "Updated desc"},
 		{Value: "updated_asc", Label: "Updated asc"},
 		{Value: "id_asc", Label: "ID asc"},
@@ -399,12 +398,12 @@ func NameSortOptions() []ui.SelectOption {
 	}
 }
 
-func TreasureFilterOptions() []ui.SelectOption {
-	return []ui.SelectOption{{Value: "all", Label: "All treasures"}}
+func TreasureFilterOptions() []SelectOption {
+	return []SelectOption{{Value: "all", Label: "All treasures"}}
 }
 
-func TreasureSortOptions() []ui.SelectOption {
-	return []ui.SelectOption{
+func TreasureSortOptions() []SelectOption {
+	return []SelectOption{
 		{Value: "updated_desc", Label: "Updated desc"},
 		{Value: "updated_asc", Label: "Updated asc"},
 		{Value: "id_asc", Label: "ID asc"},
@@ -412,12 +411,12 @@ func TreasureSortOptions() []ui.SelectOption {
 	}
 }
 
-func LootTableFilterOptions() []ui.SelectOption {
-	return []ui.SelectOption{{Value: "all", Label: "All loottables"}}
+func LootTableFilterOptions() []SelectOption {
+	return []SelectOption{{Value: "all", Label: "All loottables"}}
 }
 
-func LootTableSortOptions() []ui.SelectOption {
-	return []ui.SelectOption{
+func LootTableSortOptions() []SelectOption {
+	return []SelectOption{
 		{Value: "updated_desc", Label: "Updated desc"},
 		{Value: "updated_asc", Label: "Updated asc"},
 		{Value: "id_asc", Label: "ID asc"},
@@ -427,16 +426,16 @@ func LootTableSortOptions() []ui.SelectOption {
 	}
 }
 
-func EnemyFilterOptions() []ui.SelectOption {
-	return []ui.SelectOption{
+func EnemyFilterOptions() []SelectOption {
+	return []SelectOption{
 		{Value: "all", Label: "All enemies"},
 		{Value: "append", Label: "Drop append"},
 		{Value: "replace", Label: "Drop replace"},
 	}
 }
 
-func EnemySortOptions() []ui.SelectOption {
-	return []ui.SelectOption{
+func EnemySortOptions() []SelectOption {
+	return []SelectOption{
 		{Value: "updated_desc", Label: "Updated desc"},
 		{Value: "updated_asc", Label: "Updated asc"},
 		{Value: "id_asc", Label: "ID asc"},

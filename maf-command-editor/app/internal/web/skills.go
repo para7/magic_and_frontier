@@ -8,7 +8,6 @@ import (
 	"tools2/app/internal/domain/common"
 	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/domain/skills"
-	"tools2/app/internal/web/ui"
 	"tools2/app/internal/web/views"
 )
 
@@ -16,33 +15,33 @@ func (a App) skillsPage(w http.ResponseWriter, r *http.Request) {
 	notice := consumeFlashNotice(w, r)
 	state, err := a.loadSkillStateFromMaster()
 	if err != nil {
-		a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
+		a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: notice, Form: defaultSkillForm()})
+	a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: notice, Form: defaultSkillForm()})
 }
 
 func (a App) skillsNewPage(w http.ResponseWriter, r *http.Request) {
 	form := defaultSkillForm()
 	form.ReturnTo = queryReturnTo(r, skillsMeta().CurrentPath)
-	a.renderSkillForm(w, r, ui.SkillsPageData{Meta: skillsMeta(), Form: form})
+	a.renderSkillForm(w, r, views.SkillsPageData{Meta: skillsMeta(), Form: form})
 }
 
 func (a App) skillsEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, skillsMeta().CurrentPath)
 	state, err := a.loadSkillStateFromMaster()
 	if err != nil {
-		a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
+		a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
 	if entry, ok := findEntry(state.Entries, id, func(entry skills.SkillEntry) string { return entry.ID }); ok {
 		form := skillEntryToForm(entry)
 		form.ReturnTo = returnTo
-		a.renderSkillForm(w, r, ui.SkillsPageData{Meta: skillsMeta(), Form: form})
+		a.renderSkillForm(w, r, views.SkillsPageData{Meta: skillsMeta(), Form: form})
 		return
 	}
-	a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill not found.")})
+	a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill not found.")})
 }
 
 func (a App) skillsSubmit(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +60,7 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 		form := defaultSkillForm()
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
-		a.renderSkillForm(w, r, ui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderSkillForm(w, r, views.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	state, err := a.loadSkillStateFromMaster()
@@ -69,7 +68,7 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 		form := defaultSkillForm()
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
-		a.renderSkillForm(w, r, ui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderSkillForm(w, r, views.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	form, input, parseErrs := parseSkillForm(r)
@@ -77,7 +76,7 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	form.ReturnTo = returnTo
 	if editing {
 		if _, ok := findEntry(state.Entries, form.ID, func(entry skills.SkillEntry) string { return entry.ID }); !ok {
-			a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill not found.")})
+			a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill not found.")})
 			return
 		}
 	} else if _, ok := findEntry(state.Entries, form.ID, func(entry skills.SkillEntry) string { return entry.ID }); ok {
@@ -88,7 +87,7 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	if len(fieldErrs) > 0 {
 		form.FieldErrors = fieldErrs
 		form.FormError = formErrorText(result.FormError)
-		a.renderSkillForm(w, r, ui.SkillsPageData{Meta: skillsMeta(), Form: form})
+		a.renderSkillForm(w, r, views.SkillsPageData{Meta: skillsMeta(), Form: form})
 		return
 	}
 	mode := common.SaveModeCreated
@@ -96,7 +95,7 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 		mode = common.SaveModeUpdated
 		if err := master.Skills().Update(*result.Entry, master); err != nil {
 			form.FormError = formErrorText(err.Error())
-			a.renderSkillForm(w, r, ui.SkillsPageData{Meta: skillsMeta(), Form: form})
+			a.renderSkillForm(w, r, views.SkillsPageData{Meta: skillsMeta(), Form: form})
 			return
 		}
 	} else {
@@ -106,17 +105,17 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 			} else {
 				form.FormError = formErrorText(err.Error())
 			}
-			a.renderSkillForm(w, r, ui.SkillsPageData{Meta: skillsMeta(), Form: form})
+			a.renderSkillForm(w, r, views.SkillsPageData{Meta: skillsMeta(), Form: form})
 			return
 		}
 	}
 	if err := master.Skills().Save(); err != nil {
-		a.renderSkillForm(w, r, ui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderSkillForm(w, r, views.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	nextState, err := a.loadSkillStateFromMaster()
 	if err != nil {
-		a.renderSkillForm(w, r, ui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderSkillForm(w, r, views.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	notice := successNotice(noticeText("Skill", mode))
@@ -124,7 +123,7 @@ func (a App) skillsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Entries: nextState.Entries, Notice: notice})
+	a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) skillsDelete(w http.ResponseWriter, r *http.Request) {
@@ -132,38 +131,38 @@ func (a App) skillsDelete(w http.ResponseWriter, r *http.Request) {
 	returnTo := submittedReturnTo(r, skillsMeta().CurrentPath)
 	master, err := a.masterOrErr()
 	if err != nil {
-		a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
+		a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	itemState, err := a.loadItemStateFromMaster()
 	if err != nil {
-		a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
+		a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.PathValue("id"))
 	for _, entry := range itemState.Items {
 		if entry.SkillID == id {
 			state, _ := a.loadSkillStateFromMaster()
-			a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill is referenced by item " + entry.ID + ".")})
+			a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill is referenced by item " + entry.ID + ".")})
 			return
 		}
 	}
 	state, err := a.loadSkillStateFromMaster()
 	if err != nil {
-		a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
+		a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	if err := master.Skills().Delete(id, master); err != nil {
-		a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
 	if err := master.Skills().Save(); err != nil {
-		a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
 	nextState, err := a.loadSkillStateFromMaster()
 	if err != nil {
-		a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
 	notice := successNotice("Skill deleted.")
@@ -171,10 +170,10 @@ func (a App) skillsDelete(w http.ResponseWriter, r *http.Request) {
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderSkills(w, r, ui.SkillsPageData{Meta: skillsMeta(), Entries: nextState.Entries, Notice: notice})
+	a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
-func (a App) renderSkills(w http.ResponseWriter, r *http.Request, data ui.SkillsPageData) {
+func (a App) renderSkills(w http.ResponseWriter, r *http.Request, data views.SkillsPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.SkillsShell(data))
@@ -183,7 +182,7 @@ func (a App) renderSkills(w http.ResponseWriter, r *http.Request, data ui.Skills
 	a.renderComponent(w, views.SkillsPage(data))
 }
 
-func (a App) renderSkillForm(w http.ResponseWriter, r *http.Request, data ui.SkillsPageData) {
+func (a App) renderSkillForm(w http.ResponseWriter, r *http.Request, data views.SkillsPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.SkillFormShell(data))
@@ -192,19 +191,19 @@ func (a App) renderSkillForm(w http.ResponseWriter, r *http.Request, data ui.Ski
 	a.renderComponent(w, views.SkillFormPage(data))
 }
 
-func skillsMeta() ui.PageMeta {
-	return ui.PageMeta{Title: "Skills", CurrentPath: "/skills"}
+func skillsMeta() views.PageMeta {
+	return views.PageMeta{Title: "Skills", CurrentPath: "/skills"}
 }
 
-func defaultSkillForm() ui.SkillFormData {
-	return ui.SkillFormData{
+func defaultSkillForm() views.SkillFormData {
+	return views.SkillFormData{
 		SkillType:   "sword",
 		FieldErrors: map[string]string{},
 	}
 }
 
-func skillEntryToForm(entry skills.SkillEntry) ui.SkillFormData {
-	return ui.SkillFormData{
+func skillEntryToForm(entry skills.SkillEntry) views.SkillFormData {
+	return views.SkillFormData{
 		ID:          entry.ID,
 		Name:        entry.Name,
 		SkillType:   entry.SkillType,
@@ -215,7 +214,7 @@ func skillEntryToForm(entry skills.SkillEntry) ui.SkillFormData {
 	}
 }
 
-func parseSkillForm(r *http.Request) (ui.SkillFormData, skills.SaveInput, map[string]string) {
+func parseSkillForm(r *http.Request) (views.SkillFormData, skills.SaveInput, map[string]string) {
 	form := defaultSkillForm()
 	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.Name = r.Form.Get("name")

@@ -1,8 +1,7 @@
 package views
 
-import "tools2/app/internal/web/ui"
 
-templ EnemySkillsPage(data ui.EnemySkillsPageData) {
+templ EnemySkillsPage(data EnemySkillsPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@EnemySkillsShell(data)
@@ -10,7 +9,7 @@ templ EnemySkillsPage(data ui.EnemySkillsPageData) {
 	}
 }
 
-templ EnemySkillsShell(data ui.EnemySkillsPageData) {
+templ EnemySkillsShell(data EnemySkillsPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">
@@ -49,7 +48,7 @@ templ EnemySkillsShell(data ui.EnemySkillsPageData) {
 	</div>
 }
 
-templ EnemySkillFormPage(data ui.EnemySkillsPageData) {
+templ EnemySkillFormPage(data EnemySkillsPageData) {
 	@Layout(data.Meta.Title, data.Meta.CurrentPath) {
 		@PageScaffold(data.Meta, data.Notice) {
 			@EnemySkillFormShell(data)
@@ -57,7 +56,7 @@ templ EnemySkillFormPage(data ui.EnemySkillsPageData) {
 	}
 }
 
-templ EnemySkillFormShell(data ui.EnemySkillsPageData) {
+templ EnemySkillFormShell(data EnemySkillsPageData) {
 	<div id="feature-shell" class="feature-shell">
 		@NoticeBox(data.Notice)
 		<div class="feature-grid">

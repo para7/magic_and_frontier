@@ -9,7 +9,6 @@ import (
 	"tools2/app/internal/domain/common"
 	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/domain/spawntables"
-	"tools2/app/internal/web/ui"
 	"tools2/app/internal/web/views"
 )
 
@@ -17,33 +16,33 @@ func (a App) spawnTablesPage(w http.ResponseWriter, r *http.Request) {
 	notice := consumeFlashNotice(w, r)
 	state, err := a.loadSpawnTableStateFromMaster()
 	if err != nil {
-		a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
+		a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: notice})
+	a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: notice})
 }
 
 func (a App) spawnTablesNewPage(w http.ResponseWriter, r *http.Request) {
 	form := defaultSpawnTableForm()
 	form.ReturnTo = queryReturnTo(r, spawnTablesMeta().CurrentPath)
-	a.renderSpawnTableForm(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
+	a.renderSpawnTableForm(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
 }
 
 func (a App) spawnTablesEditPage(w http.ResponseWriter, r *http.Request) {
 	returnTo := queryReturnTo(r, spawnTablesMeta().CurrentPath)
 	state, err := a.loadSpawnTableStateFromMaster()
 	if err != nil {
-		a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
+		a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
 	if entry, ok := findEntry(state.Entries, id, func(entry spawntables.SpawnTableEntry) string { return entry.ID }); ok {
 		form := spawnTableEntryToForm(entry)
 		form.ReturnTo = returnTo
-		a.renderSpawnTableForm(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
+		a.renderSpawnTableForm(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
 		return
 	}
-	a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice("Spawn table not found.")})
+	a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice("Spawn table not found.")})
 }
 
 func (a App) spawnTablesSubmit(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +61,7 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 		form := defaultSpawnTableForm()
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
-		a.renderSpawnTableForm(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderSpawnTableForm(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	state, err := a.loadSpawnTableStateFromMaster()
@@ -70,7 +69,7 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 		form := defaultSpawnTableForm()
 		form.IsEditing = editing
 		form.ReturnTo = returnTo
-		a.renderSpawnTableForm(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderSpawnTableForm(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	form, input, parseErrs := parseSpawnTableForm(r)
@@ -78,7 +77,7 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 	form.ReturnTo = returnTo
 	if editing {
 		if _, ok := findEntry(state.Entries, form.ID, func(entry spawntables.SpawnTableEntry) string { return entry.ID }); !ok {
-			a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice("Spawn table not found.")})
+			a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice("Spawn table not found.")})
 			return
 		}
 	} else if _, ok := findEntry(state.Entries, form.ID, func(entry spawntables.SpawnTableEntry) string { return entry.ID }); ok {
@@ -90,7 +89,7 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 	if len(fieldErrs) > 0 {
 		form.FieldErrors = fieldErrs
 		form.FormError = formErrorText(result.FormError)
-		a.renderSpawnTableForm(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
+		a.renderSpawnTableForm(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
 		return
 	}
 	mode := common.SaveModeCreated
@@ -98,7 +97,7 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 		mode = common.SaveModeUpdated
 		if err := master.SpawnTables().Update(*result.Entry, master); err != nil {
 			form.FormError = formErrorText(err.Error())
-			a.renderSpawnTableForm(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
+			a.renderSpawnTableForm(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
 			return
 		}
 	} else {
@@ -108,17 +107,17 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 			} else {
 				form.FormError = formErrorText(err.Error())
 			}
-			a.renderSpawnTableForm(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
+			a.renderSpawnTableForm(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Form: form})
 			return
 		}
 	}
 	if err := master.SpawnTables().Save(); err != nil {
-		a.renderSpawnTableForm(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderSpawnTableForm(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	nextState, err := a.loadSpawnTableStateFromMaster()
 	if err != nil {
-		a.renderSpawnTableForm(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
+		a.renderSpawnTableForm(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error()), Form: form})
 		return
 	}
 	notice := successNotice(noticeText("Spawn table", mode))
@@ -126,7 +125,7 @@ func (a App) spawnTablesSave(w http.ResponseWriter, r *http.Request, editing boo
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: nextState.Entries, Notice: notice})
+	a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) spawnTablesDelete(w http.ResponseWriter, r *http.Request) {
@@ -134,26 +133,26 @@ func (a App) spawnTablesDelete(w http.ResponseWriter, r *http.Request) {
 	returnTo := submittedReturnTo(r, spawnTablesMeta().CurrentPath)
 	master, err := a.masterOrErr()
 	if err != nil {
-		a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
+		a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	state, err := a.loadSpawnTableStateFromMaster()
 	if err != nil {
-		a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
+		a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
 	id := strings.TrimSpace(r.PathValue("id"))
 	if err := master.SpawnTables().Delete(id, master); err != nil {
-		a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice("Spawn table not found.")})
+		a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice("Spawn table not found.")})
 		return
 	}
 	if err := master.SpawnTables().Save(); err != nil {
-		a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
 	nextState, err := a.loadSpawnTableStateFromMaster()
 	if err != nil {
-		a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
+		a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
 	notice := successNotice("Spawn table deleted.")
@@ -161,10 +160,10 @@ func (a App) spawnTablesDelete(w http.ResponseWriter, r *http.Request) {
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderSpawnTables(w, r, ui.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: nextState.Entries, Notice: notice})
+	a.renderSpawnTables(w, r, views.SpawnTablesPageData{Meta: spawnTablesMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
-func (a App) renderSpawnTables(w http.ResponseWriter, r *http.Request, data ui.SpawnTablesPageData) {
+func (a App) renderSpawnTables(w http.ResponseWriter, r *http.Request, data views.SpawnTablesPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.SpawnTablesShell(data))
@@ -173,7 +172,7 @@ func (a App) renderSpawnTables(w http.ResponseWriter, r *http.Request, data ui.S
 	a.renderComponent(w, views.SpawnTablesPage(data))
 }
 
-func (a App) renderSpawnTableForm(w http.ResponseWriter, r *http.Request, data ui.SpawnTablesPageData) {
+func (a App) renderSpawnTableForm(w http.ResponseWriter, r *http.Request, data views.SpawnTablesPageData) {
 	data.Meta = applyPageMeta(r, data.Meta)
 	if isHX(r) {
 		a.renderComponent(w, views.SpawnTableFormShell(data))
@@ -182,12 +181,12 @@ func (a App) renderSpawnTableForm(w http.ResponseWriter, r *http.Request, data u
 	a.renderComponent(w, views.SpawnTableFormPage(data))
 }
 
-func spawnTablesMeta() ui.PageMeta {
-	return ui.PageMeta{Title: "Spawn Tables", CurrentPath: "/spawn-tables"}
+func spawnTablesMeta() views.PageMeta {
+	return views.PageMeta{Title: "Spawn Tables", CurrentPath: "/spawn-tables"}
 }
 
-func defaultSpawnTableForm() ui.SpawnTableFormData {
-	return ui.SpawnTableFormData{
+func defaultSpawnTableForm() views.SpawnTableFormData {
+	return views.SpawnTableFormData{
 		Dimension:        "minecraft:overworld",
 		DimensionOptions: spawnTableDimensionOptions(),
 		BaseMobWeight:    "8000",
@@ -195,8 +194,8 @@ func defaultSpawnTableForm() ui.SpawnTableFormData {
 	}
 }
 
-func spawnTableEntryToForm(entry spawntables.SpawnTableEntry) ui.SpawnTableFormData {
-	return ui.SpawnTableFormData{
+func spawnTableEntryToForm(entry spawntables.SpawnTableEntry) views.SpawnTableFormData {
+	return views.SpawnTableFormData{
 		ID:               entry.ID,
 		SourceMobType:    entry.SourceMobType,
 		Dimension:        entry.Dimension,
@@ -214,7 +213,7 @@ func spawnTableEntryToForm(entry spawntables.SpawnTableEntry) ui.SpawnTableFormD
 	}
 }
 
-func parseSpawnTableForm(r *http.Request) (ui.SpawnTableFormData, spawntables.SaveInput, map[string]string) {
+func parseSpawnTableForm(r *http.Request) (views.SpawnTableFormData, spawntables.SaveInput, map[string]string) {
 	form := defaultSpawnTableForm()
 	form.ID = strings.TrimSpace(r.Form.Get("id"))
 	form.SourceMobType = strings.TrimSpace(r.Form.Get("sourceMobType"))
@@ -267,8 +266,8 @@ func formatSpawnTableReplacements(replacements []spawntables.ReplacementEntry) s
 	return strings.Join(lines, "\n")
 }
 
-func spawnTableDimensionOptions() []ui.SelectOption {
-	return []ui.SelectOption{
+func spawnTableDimensionOptions() []views.SelectOption {
+	return []views.SelectOption{
 		{Value: "minecraft:overworld", Label: "minecraft:overworld"},
 		{Value: "minecraft:the_nether", Label: "minecraft:the_nether"},
 		{Value: "minecraft:the_end", Label: "minecraft:the_end"},

@@ -1,4 +1,4 @@
-package ui
+package views
 
 import (
 	"tools2/app/internal/domain/enemies"

@@ -12,7 +12,7 @@ Minecraft local server is run with docker, ../compose.yml .
 
 ## build check 
 
-Run Makefile commands: ```make format build lint test```
+Run Makefile commands: ```make check```
 
 ## mcstacker
 
