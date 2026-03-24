@@ -6,6 +6,17 @@ For the near term, this repository’s primary goal is to migrate `../tools` to 
 ## Workflow
 Prefer running project commands via `make` targets when a suitable target exists.
 
+## Lint / Staticcheck
+
+Lint は `make lint` を使う。
+
+`go vet` / `staticcheck` を直接叩く必要がある場合は、キャッシュ先を明示して実行する。
+
+```bash
+GOCACHE=/tmp/maf-command-editor-go-cache go vet ./...
+GOCACHE=/tmp/maf-command-editor-go-cache XDG_CACHE_HOME=/tmp/maf-command-editor-cache go tool staticcheck ./...
+```
+
 ## minecraft server 
 
 Minecraft local server is run with docker, ../compose.yml .

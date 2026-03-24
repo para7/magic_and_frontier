@@ -250,7 +250,3 @@ func grimoireOptions(entries []grimoire.GrimoireEntry) []webui.ReferenceOption {
 	}
 	return options
 }
-
-func grimoireIDSet(state grimoire.GrimoireState) map[string]struct{} {
-	return toIDSet(state.Entries, func(entry grimoire.GrimoireEntry) string { return entry.ID })
-}

@@ -241,7 +241,3 @@ func enemySkillOptions(entries []enemyskills.EnemySkillEntry) []webui.ReferenceO
 	}
 	return options
 }
-
-func enemySkillIDSet(state common.EntryState[enemyskills.EnemySkillEntry]) map[string]struct{} {
-	return toIDSet(state.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
-}

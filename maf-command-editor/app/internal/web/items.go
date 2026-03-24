@@ -315,7 +315,3 @@ func skillOptions(entries []skills.SkillEntry) []webui.ReferenceOption {
 	}
 	return options
 }
-
-func itemIDSet(state items.ItemState) map[string]struct{} {
-	return toIDSet(state.Items, func(entry items.ItemEntry) string { return entry.ID })
-}

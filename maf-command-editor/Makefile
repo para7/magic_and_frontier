@@ -3,6 +3,8 @@ BIN_DIR ?= bin
 BIN_NAME ?= mce
 BIN_PATH := $(BIN_DIR)/$(BIN_NAME)
 APP_DIR := ./app
+LINT_CACHE_DIR ?= /tmp/maf-command-editor-cache
+GO_CACHE_DIR ?= /tmp/maf-command-editor-go-cache
 
 .PHONY: help setup generate tidy format lint build test run run-cmd dev check
 
@@ -34,8 +36,10 @@ format:
 	$(GO) fmt ./...
 
 lint:
-	$(GO) vet ./...
-	$(GO) tool staticcheck ./...
+	mkdir -p $(GO_CACHE_DIR)
+	mkdir -p $(LINT_CACHE_DIR)
+	GOCACHE=$(GO_CACHE_DIR) $(GO) vet ./...
+	GOCACHE=$(GO_CACHE_DIR) XDG_CACHE_HOME=$(LINT_CACHE_DIR) $(GO) tool staticcheck ./...
 
 build:
 	mkdir -p $(BIN_DIR)

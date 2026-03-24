@@ -6,21 +6,9 @@ import (
 
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
 )
-
-func toIDSet[T any](entries []T, idOf func(T) string) map[string]struct{} {
-	out := make(map[string]struct{}, len(entries))
-	for _, entry := range entries {
-		id := strings.TrimSpace(idOf(entry))
-		if id != "" {
-			out[id] = struct{}{}
-		}
-	}
-	return out
-}
 
 func compactLines(value string) []string {
 	raw := strings.Split(value, "\n")
@@ -294,25 +282,4 @@ func findEntry[T any](entries []T, id string, idOf func(T) string) (T, bool) {
 		}
 	}
 	return zero, false
-}
-
-func duplicateCastID(entries []grimoire.GrimoireEntry, id string, castID int) string {
-	for _, entry := range entries {
-		if entry.ID == id {
-			continue
-		}
-		if entry.CastID == castID {
-			return entry.ID
-		}
-	}
-	return ""
-}
-
-func duplicateTreasureTablePath(entries []treasures.TreasureEntry, entryID, tablePath string) string {
-	for _, entry := range entries {
-		if entry.ID != entryID && entry.TablePath == tablePath {
-			return entry.ID
-		}
-	}
-	return ""
 }
