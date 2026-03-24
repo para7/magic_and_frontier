@@ -16,7 +16,7 @@ type App struct {
 }
 
 func RegisterRoutes(mux *http.ServeMux, cfg config.Config, deps Dependencies) {
-	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("app/static"))))
+	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("internal/app/web/static"))))
 
 	var masterInitErr error
 	if deps.Master == nil {
