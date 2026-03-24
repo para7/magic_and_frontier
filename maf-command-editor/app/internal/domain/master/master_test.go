@@ -14,8 +14,8 @@ import (
 	"tools2/app/internal/domain/loottables"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/spawntables"
-	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/domain/store"
+	"tools2/app/internal/domain/treasures"
 )
 
 func TestItemSaveSortsByID(t *testing.T) {

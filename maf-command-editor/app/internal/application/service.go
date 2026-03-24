@@ -8,16 +8,16 @@ import (
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/enemyskills"
+	"tools2/app/internal/domain/export"
 	"tools2/app/internal/domain/grimoire"
+	"tools2/app/internal/domain/idseq"
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/loottables"
 	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/spawntables"
-	"tools2/app/internal/domain/treasures"
-	"tools2/app/internal/domain/export"
-	"tools2/app/internal/domain/idseq"
 	"tools2/app/internal/domain/store"
+	"tools2/app/internal/domain/treasures"
 )
 
 type Dependencies struct {

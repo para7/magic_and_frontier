@@ -10,6 +10,10 @@ Prefer running project commands via `make` targets when a suitable target exists
 
 Minecraft local server is run with docker, ../compose.yml .
 
+## build check 
+
+Run Makefile commands: ```make format build lint test```
+
 ## mcstacker
 
 入力画面は mcstacker を参考にする。https://mcstacker.net/?cmd=give

@@ -7,14 +7,14 @@ import (
 
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/enemyskills"
+	"tools2/app/internal/domain/export"
 	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/loottables"
+	"tools2/app/internal/domain/mcsource"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/domain/treasures"
-	"tools2/app/internal/domain/export"
-	"tools2/app/internal/domain/mcsource"
 )
 
 func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLootTableRoot string, now time.Time) ValidationReport {

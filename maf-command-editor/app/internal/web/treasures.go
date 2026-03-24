@@ -9,8 +9,8 @@ import (
 
 	"tools2/app/internal/domain/common"
 	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/domain/mcsource"
+	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/web/ui"
 	"tools2/app/internal/web/views"
 )

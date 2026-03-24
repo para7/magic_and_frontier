@@ -17,6 +17,8 @@ GOCACHE=/tmp/maf-command-editor-go-cache go vet ./...
 GOCACHE=/tmp/maf-command-editor-go-cache XDG_CACHE_HOME=/tmp/maf-command-editor-cache go tool staticcheck ./...
 ```
 
+Run all check commands: ```make format build lint test```
+
 ## minecraft server 
 
 Minecraft local server is run with docker, ../compose.yml .

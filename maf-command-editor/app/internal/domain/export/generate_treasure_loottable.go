@@ -9,8 +9,8 @@ import (
 	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/loottables"
-	"tools2/app/internal/domain/treasures"
 	"tools2/app/internal/domain/mcsource"
+	"tools2/app/internal/domain/treasures"
 )
 
 func generateTreasureOutputs(settings ExportSettings, minecraftLootTableRoot string, entries []treasures.TreasureEntry, itemEntries []items.ItemEntry, grimoireEntries []grimoire.GrimoireEntry) (treasureOutputStats, error) {
