@@ -2,7 +2,6 @@ package master
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -10,6 +9,7 @@ import (
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/enemyskills"
+	"tools2/app/internal/domain/entity"
 	"tools2/app/internal/domain/grimoire"
 	"tools2/app/internal/domain/items"
 	"tools2/app/internal/domain/loottables"
@@ -53,6 +53,15 @@ type JSONMaster struct {
 	spawnTableState common.EntryState[spawntables.SpawnTableEntry]
 	treasureState   common.EntryState[treasures.TreasureEntry]
 	lootTableState  common.EntryState[loottables.LootTableEntry]
+
+	itemsEntity       entity.MafEntity[items.SaveInput, items.ItemEntry]
+	grimoiresEntity   entity.MafEntity[grimoire.SaveInput, grimoire.GrimoireEntry]
+	skillsEntity      entity.MafEntity[skills.SaveInput, skills.SkillEntry]
+	enemySkillsEntity entity.MafEntity[enemyskills.SaveInput, enemyskills.EnemySkillEntry]
+	enemiesEntity     entity.MafEntity[enemies.SaveInput, enemies.EnemyEntry]
+	treasuresEntity   entity.MafEntity[treasures.SaveInput, treasures.TreasureEntry]
+	lootTablesEntity  entity.MafEntity[loottables.SaveInput, loottables.LootTableEntry]
+	spawnTablesEntity entity.MafEntity[spawntables.SaveInput, spawntables.SpawnTableEntry]
 
 	minecraftLootTableRoot string
 	treasureSourcePaths    map[string]struct{}
@@ -123,7 +132,45 @@ func NewJSONMaster(deps Dependencies) (*JSONMaster, error) {
 		treasureSourcePaths:    map[string]struct{}{},
 	}
 	m.refreshTreasureSourcesLocked()
+	m.initEntities()
 	return m, nil
+}
+
+func (m *JSONMaster) initEntities() {
+	m.itemsEntity = items.NewEntity(items.EntityDeps{
+		Mutex: &m.mu,
+		State: &m.itemState,
+		Repo:  m.itemRepo,
+		Now:   m.nowUTC,
+		SkillIDs: func() map[string]struct{} {
+			return m.skillIDSetLocked()
+		},
+	})
+	m.grimoiresEntity = grimoire.NewEntity(grimoire.EntityDeps{Mutex: &m.mu, State: &m.grimoireState, Repo: m.grimoireRepo, Now: m.nowUTC})
+	m.skillsEntity = skills.NewEntity(skills.EntityDeps{Mutex: &m.mu, State: &m.skillState, Repo: m.skillRepo, Now: m.nowUTC, ItemStates: &m.itemState.Items})
+	m.enemySkillsEntity = enemyskills.NewEntity(enemyskills.EntityDeps{Mutex: &m.mu, State: &m.enemySkillState, Repo: m.enemySkillRepo, Now: m.nowUTC, EnemyStates: &m.enemyState.Entries})
+	m.enemiesEntity = enemies.NewEntity(enemies.EntityDeps{
+		Mutex: &m.mu, State: &m.enemyState, Repo: m.enemyRepo, Now: m.nowUTC,
+		EnemySkillIDs: func() map[string]struct{} { return m.enemySkillIDSetLocked() },
+		ItemIDs:       func() map[string]struct{} { return m.itemIDSetLocked() },
+		GrimoireIDs:   func() map[string]struct{} { return m.grimoireIDSetLocked() },
+	})
+	m.treasuresEntity = treasures.NewEntity(treasures.EntityDeps{
+		Mutex: &m.mu, State: &m.treasureState, Repo: m.treasureRepo, Now: m.nowUTC,
+		ItemIDs:             func() map[string]struct{} { return m.itemIDSetLocked() },
+		GrimoireIDs:         func() map[string]struct{} { return m.grimoireIDSetLocked() },
+		TreasureSourceErr:   func() error { return m.treasureSourceErr },
+		TreasureSourcePaths: func() map[string]struct{} { return m.treasureSourcePathsLocked() },
+	})
+	m.lootTablesEntity = loottables.NewEntity(loottables.EntityDeps{
+		Mutex: &m.mu, State: &m.lootTableState, Repo: m.lootTableRepo, Now: m.nowUTC,
+		ItemIDs:     func() map[string]struct{} { return m.itemIDSetLocked() },
+		GrimoireIDs: func() map[string]struct{} { return m.grimoireIDSetLocked() },
+	})
+	m.spawnTablesEntity = spawntables.NewEntity(spawntables.EntityDeps{
+		Mutex: &m.mu, State: &m.spawnTableState, Repo: m.spawnTableRepo, Now: m.nowUTC,
+		EnemyIDs: func() map[string]struct{} { return m.enemyIDSetLocked() },
+	})
 }
 
 func (m *JSONMaster) refreshTreasureSourcesLocked() {
@@ -186,36 +233,36 @@ func (m *JSONMaster) HasSpawnTable(id string) bool {
 	return ok
 }
 
-func (m *JSONMaster) Items() MafEntity[items.SaveInput, items.ItemEntry] {
-	return itemEntity{m: m}
+func (m *JSONMaster) Items() entity.MafEntity[items.SaveInput, items.ItemEntry] {
+	return m.itemsEntity
 }
 
-func (m *JSONMaster) Grimoires() MafEntity[grimoire.SaveInput, grimoire.GrimoireEntry] {
-	return grimoireEntity{m: m}
+func (m *JSONMaster) Grimoires() entity.MafEntity[grimoire.SaveInput, grimoire.GrimoireEntry] {
+	return m.grimoiresEntity
 }
 
-func (m *JSONMaster) Skills() MafEntity[skills.SaveInput, skills.SkillEntry] {
-	return skillEntity{m: m}
+func (m *JSONMaster) Skills() entity.MafEntity[skills.SaveInput, skills.SkillEntry] {
+	return m.skillsEntity
 }
 
-func (m *JSONMaster) EnemySkills() MafEntity[enemyskills.SaveInput, enemyskills.EnemySkillEntry] {
-	return enemySkillEntity{m: m}
+func (m *JSONMaster) EnemySkills() entity.MafEntity[enemyskills.SaveInput, enemyskills.EnemySkillEntry] {
+	return m.enemySkillsEntity
 }
 
-func (m *JSONMaster) Enemies() MafEntity[enemies.SaveInput, enemies.EnemyEntry] {
-	return enemyEntity{m: m}
+func (m *JSONMaster) Enemies() entity.MafEntity[enemies.SaveInput, enemies.EnemyEntry] {
+	return m.enemiesEntity
 }
 
-func (m *JSONMaster) Treasures() MafEntity[treasures.SaveInput, treasures.TreasureEntry] {
-	return treasureEntity{m: m}
+func (m *JSONMaster) Treasures() entity.MafEntity[treasures.SaveInput, treasures.TreasureEntry] {
+	return m.treasuresEntity
 }
 
-func (m *JSONMaster) LootTables() MafEntity[loottables.SaveInput, loottables.LootTableEntry] {
-	return loottableEntity{m: m}
+func (m *JSONMaster) LootTables() entity.MafEntity[loottables.SaveInput, loottables.LootTableEntry] {
+	return m.lootTablesEntity
 }
 
-func (m *JSONMaster) SpawnTables() MafEntity[spawntables.SaveInput, spawntables.SpawnTableEntry] {
-	return spawnTableEntity{m: m}
+func (m *JSONMaster) SpawnTables() entity.MafEntity[spawntables.SaveInput, spawntables.SpawnTableEntry] {
+	return m.spawnTablesEntity
 }
 
 func (m *JSONMaster) SaveAll() error {
@@ -250,136 +297,8 @@ func (m *JSONMaster) nowUTC() time.Time {
 	return m.now()
 }
 
-func copyEntries[T any](entries []T) []T {
-	return append([]T{}, entries...)
-}
-
-func trimID(value string) string {
-	return strings.TrimSpace(value)
-}
-
-func hasID[T any](entries []T, id string, idOf func(T) string) bool {
-	id = trimID(id)
-	if id == "" {
-		return false
-	}
-	for _, entry := range entries {
-		if trimID(idOf(entry)) == id {
-			return true
-		}
-	}
-	return false
-}
-
-func findByID[T any](entries []T, id string, idOf func(T) string) (T, bool) {
-	var zero T
-	id = trimID(id)
-	if id == "" {
-		return zero, false
-	}
-	for _, entry := range entries {
-		if trimID(idOf(entry)) == id {
-			return entry, true
-		}
-	}
-	return zero, false
-}
-
-func upsertByID[T any](entries []T, entry T, idOf func(T) string) ([]T, bool) {
-	entryID := trimID(idOf(entry))
-	next := copyEntries(entries)
-	for i := range next {
-		if trimID(idOf(next[i])) == entryID {
-			next[i] = entry
-			return next, true
-		}
-	}
-	next = append(next, entry)
-	return next, false
-}
-
-func deleteByID[T any](entries []T, id string, idOf func(T) string) ([]T, bool) {
-	id = trimID(id)
-	next := make([]T, 0, len(entries))
-	found := false
-	for _, entry := range entries {
-		if trimID(idOf(entry)) == id {
-			found = true
-			continue
-		}
-		next = append(next, entry)
-	}
-	return next, found
-}
-
-func sortByID[T any](entries []T, idOf func(T) string) {
-	sort.Slice(entries, func(i, j int) bool {
-		return trimID(idOf(entries[i])) < trimID(idOf(entries[j]))
-	})
-}
-
 func idSet[T any](entries []T, idOf func(T) string) map[string]struct{} {
-	out := make(map[string]struct{}, len(entries))
-	for _, entry := range entries {
-		id := trimID(idOf(entry))
-		if id != "" {
-			out[id] = struct{}{}
-		}
-	}
-	return out
-}
-
-func firstFieldError(errs common.FieldErrors) string {
-	if len(errs) == 0 {
-		return "validation failed"
-	}
-	keys := make([]string, 0, len(errs))
-	for key := range errs {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-	first := keys[0]
-	return first + ": " + errs[first]
-}
-
-func relationErrFromResult[T any](result common.SaveResult[T]) error {
-	if len(result.FieldErrors) > 0 {
-		return fmt.Errorf("%w: %s", ErrRelation, firstFieldError(result.FieldErrors))
-	}
-	if strings.TrimSpace(result.FormError) != "" {
-		return fmt.Errorf("%w: %s", ErrRelation, result.FormError)
-	}
-	return fmt.Errorf("%w", ErrRelation)
-}
-
-func (m *JSONMaster) duplicateCastIDLocked(entryID string, castID int) string {
-	for _, entry := range m.grimoireState.Entries {
-		if entry.ID != entryID && entry.CastID == castID {
-			return entry.ID
-		}
-	}
-	return ""
-}
-
-func (m *JSONMaster) duplicateTreasureTablePathLocked(entryID, tablePath string) string {
-	tablePath = strings.TrimSpace(tablePath)
-	for _, entry := range m.treasureState.Entries {
-		if entry.ID != entryID && strings.TrimSpace(entry.TablePath) == tablePath {
-			return entry.ID
-		}
-	}
-	return ""
-}
-
-func (m *JSONMaster) firstSpawnOverlapLocked(entry spawntables.SpawnTableEntry) (string, bool) {
-	entries := make([]spawntables.SpawnTableEntry, 0, len(m.spawnTableState.Entries))
-	for _, it := range m.spawnTableState.Entries {
-		if it.ID == entry.ID {
-			continue
-		}
-		entries = append(entries, it)
-	}
-	return spawntables.FirstOverlap(entries, entry)
+	return entity.IDSet(entries, idOf)
 }
 
 func (m *JSONMaster) itemIDSetLocked() map[string]struct{} {
@@ -400,4 +319,12 @@ func (m *JSONMaster) enemySkillIDSetLocked() map[string]struct{} {
 
 func (m *JSONMaster) enemyIDSetLocked() map[string]struct{} {
 	return idSet(m.enemyState.Entries, func(entry enemies.EnemyEntry) string { return entry.ID })
+}
+
+func (m *JSONMaster) treasureSourcePathsLocked() map[string]struct{} {
+	out := make(map[string]struct{}, len(m.treasureSourcePaths))
+	for key := range m.treasureSourcePaths {
+		out[key] = struct{}{}
+	}
+	return out
 }
