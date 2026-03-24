@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -10,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"tools2/app/internal/cli"
+	"tools2/app/internal/application"
 	"tools2/app/internal/config"
 	"tools2/app/internal/httpapi"
 )
@@ -25,9 +26,81 @@ func main() {
 	switch args[0] {
 	case "editor":
 		os.Exit(runEditor(args[1:], cfg))
+	case "validate":
+		os.Exit(runValidate(args[1:], os.Stdout, os.Stderr, cfg))
+	case "export":
+		os.Exit(runExport(args[1:], os.Stdout, os.Stderr, cfg))
 	default:
-		os.Exit(cli.Run(args, os.Stdout, os.Stderr, cfg))
+		fmt.Fprintf(os.Stderr, "unknown command: %s\n", args[0])
+		printUsage(os.Stderr)
+		os.Exit(2)
 	}
+}
+
+func runValidate(args []string, stdout, stderr io.Writer, cfg config.Config) int {
+	fs := flag.NewFlagSet("validate", flag.ContinueOnError)
+	fs.SetOutput(stderr)
+	if err := fs.Parse(args); err != nil {
+		return 2
+	}
+
+	svc := application.NewService(cfg, application.DefaultDependencies(cfg))
+	report, err := svc.ValidateAll()
+	if err != nil {
+		fmt.Fprintf(stderr, "validate failed: %v\n", err)
+		return 1
+	}
+	if !report.OK {
+		fmt.Fprintln(stderr, "savedata validation failed:")
+		fmt.Fprintln(stderr, report.String())
+		return 1
+	}
+
+	fmt.Fprintf(stdout, "savedata validation ok: items=%d grimoire=%d skills=%d enemy_skills=%d enemies=%d spawn_tables=%d treasures=%d loottables=%d\n",
+		report.Counts.Items,
+		report.Counts.Grimoire,
+		report.Counts.Skills,
+		report.Counts.EnemySkills,
+		report.Counts.Enemies,
+		report.Counts.SpawnTables,
+		report.Counts.Treasures,
+		report.Counts.LootTables,
+	)
+	return 0
+}
+
+func runExport(args []string, stdout, stderr io.Writer, cfg config.Config) int {
+	fs := flag.NewFlagSet("export", flag.ContinueOnError)
+	fs.SetOutput(stderr)
+	if err := fs.Parse(args); err != nil {
+		return 2
+	}
+
+	svc := application.NewService(cfg, application.DefaultDependencies(cfg))
+	result := svc.ExportDatapack()
+	if !result.OK {
+		fmt.Fprintf(stderr, "export failed: %s\n", result.Message)
+		if result.Details != "" {
+			fmt.Fprintln(stderr, result.Details)
+		}
+		return 1
+	}
+
+	fmt.Fprintf(stdout, "datapack export completed: output=%s total_files=%d item_functions=%d item_loot=%d spell_functions=%d spell_loot=%d skills=%d enemy_skills=%d enemy_functions=%d enemy_loot=%d treasure_loot=%d loottable_loot=%d\n",
+		result.OutputRoot,
+		result.Generated.TotalFiles,
+		result.Generated.ItemFunctions,
+		result.Generated.ItemLootTables,
+		result.Generated.SpellFunctions,
+		result.Generated.SpellLootTables,
+		result.Generated.SkillFunctions,
+		result.Generated.EnemySkillFunctions,
+		result.Generated.EnemyFunctions,
+		result.Generated.EnemyLootTables,
+		result.Generated.TreasureLootTables,
+		result.Generated.LoottableLootTables,
+	)
+	return 0
 }
 
 func runEditor(args []string, cfg config.Config) int {
@@ -94,7 +167,16 @@ type statusRecorder struct {
 	statusCode int
 }
 
-func (r *statusRecorder) WriteHeader(code int) {
-	r.statusCode = code
-	r.ResponseWriter.WriteHeader(code)
+// func (r *statusRecorder) WriteHeader(code int) {
+// 	r.statusCode = code
+// 	r.ResponseWriter.WriteHeader(code)
+// }
+
+func printUsage(w io.Writer) {
+	fmt.Fprintln(w, "usage: mce <command>")
+	fmt.Fprintln(w, "")
+	fmt.Fprintln(w, "commands:")
+	fmt.Fprintln(w, "  editor     start web editor server")
+	fmt.Fprintln(w, "  validate   validate savedata and export settings")
+	fmt.Fprintln(w, "  export     validate and export datapack")
 }
