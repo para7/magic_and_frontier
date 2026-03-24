@@ -20,6 +20,7 @@ var (
 	ErrRelation    = errors.New("relation validation failed")
 )
 
+// 各JSONに対応するエンティティ
 type MafEntity[I any, E any] interface {
 	Validate(input I, master DBMaster) common.SaveResult[E]
 	Create(entry E, master DBMaster) error
@@ -31,6 +32,7 @@ type MafEntity[I any, E any] interface {
 	HasID(id string) bool
 }
 
+// 全体の統括インターフェース
 type DBMaster interface {
 	HasItem(id string) bool
 	HasGrimoire(id string) bool

@@ -125,7 +125,7 @@ func runEditor(args []string, cfg config.Config) int {
 
 func newHandler() http.Handler {
 	cfg := config.Load()
-	return chain(httpapi.NewHandler(cfg, httpapi.DefaultDependencies(cfg)), recoverMiddleware, loggingMiddleware)
+	return chain(httpapi.NewHandler(cfg, application.Dependencies{}), recoverMiddleware, loggingMiddleware)
 }
 
 type middleware func(http.Handler) http.Handler
@@ -166,11 +166,6 @@ type statusRecorder struct {
 	http.ResponseWriter
 	statusCode int
 }
-
-// func (r *statusRecorder) WriteHeader(code int) {
-// 	r.statusCode = code
-// 	r.ResponseWriter.WriteHeader(code)
-// }
 
 func printUsage(w io.Writer) {
 	fmt.Fprintln(w, "usage: mce <command>")

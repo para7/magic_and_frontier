@@ -2,7 +2,6 @@ package web
 
 import (
 	"net/http"
-	"time"
 
 	"tools2/app/internal/application"
 	"tools2/app/internal/config"
@@ -19,34 +18,6 @@ type App struct {
 func RegisterRoutes(mux *http.ServeMux, cfg config.Config, deps Dependencies) {
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("app/static"))))
 
-	defaults := application.DefaultDependencies(cfg)
-	if deps.ItemRepo == nil {
-		deps.ItemRepo = defaults.ItemRepo
-	}
-	if deps.GrimoireRepo == nil {
-		deps.GrimoireRepo = defaults.GrimoireRepo
-	}
-	if deps.SkillRepo == nil {
-		deps.SkillRepo = defaults.SkillRepo
-	}
-	if deps.EnemySkillRepo == nil {
-		deps.EnemySkillRepo = defaults.EnemySkillRepo
-	}
-	if deps.EnemyRepo == nil {
-		deps.EnemyRepo = defaults.EnemyRepo
-	}
-	if deps.SpawnTableRepo == nil {
-		deps.SpawnTableRepo = defaults.SpawnTableRepo
-	}
-	if deps.TreasureRepo == nil {
-		deps.TreasureRepo = defaults.TreasureRepo
-	}
-	if deps.LootTableRepo == nil {
-		deps.LootTableRepo = defaults.LootTableRepo
-	}
-	if deps.Now == nil {
-		deps.Now = time.Now
-	}
 	var masterInitErr error
 	if deps.Master == nil {
 		svc := application.NewService(cfg, deps)
