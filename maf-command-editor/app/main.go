@@ -1,23 +1,53 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"runtime/debug"
+	"strings"
 	"time"
 
+	"tools2/app/internal/cli"
 	"tools2/app/internal/config"
 	"tools2/app/internal/httpapi"
 )
 
 func main() {
 	cfg := config.Load()
+	args := os.Args[1:]
+	if len(args) == 0 {
+		os.Exit(runEditor(nil, cfg))
+	}
+
+	switch args[0] {
+	case "editor":
+		os.Exit(runEditor(args[1:], cfg))
+	default:
+		os.Exit(cli.Run(args, os.Stdout, os.Stderr, cfg))
+	}
+}
+
+func runEditor(args []string, cfg config.Config) int {
+	fs := flag.NewFlagSet("editor", flag.ContinueOnError)
+	fs.SetOutput(os.Stderr)
+	if err := fs.Parse(args); err != nil {
+		return 2
+	}
+	if fs.NArg() > 0 {
+		fmt.Fprintf(os.Stderr, "unexpected args for editor: %s\n", strings.Join(fs.Args(), " "))
+		return 2
+	}
+
 	addr := fmt.Sprintf(":%d", cfg.Port)
 	log.Printf("listening on %s", addr)
 	if err := http.ListenAndServe(addr, newHandler()); err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, "editor failed: %v\n", err)
+		return 1
 	}
+	return 0
 }
 
 func newHandler() http.Handler {

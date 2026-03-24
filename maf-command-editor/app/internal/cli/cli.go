@@ -16,13 +16,13 @@ func Run(args []string, stdout, stderr io.Writer, cfg config.Config) int {
 	}
 
 	switch args[0] {
+	case "editor":
+		fmt.Fprintln(stderr, "editor must be started from main entrypoint")
+		return 2
 	case "validate":
 		return runValidate(args[1:], stdout, stderr, cfg)
 	case "export":
 		return runExport(args[1:], stdout, stderr, cfg)
-	case "help", "-h", "--help":
-		printUsage(stdout)
-		return 0
 	default:
 		fmt.Fprintf(stderr, "unknown command: %s\n", args[0])
 		printUsage(stderr)
@@ -97,9 +97,10 @@ func runExport(args []string, stdout, stderr io.Writer, cfg config.Config) int {
 }
 
 func printUsage(w io.Writer) {
-	fmt.Fprintln(w, "usage: tools2-cli <command>")
+	fmt.Fprintln(w, "usage: mce <command>")
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "commands:")
+	fmt.Fprintln(w, "  editor     start web editor server")
 	fmt.Fprintln(w, "  validate   validate savedata and export settings")
 	fmt.Fprintln(w, "  export     validate and export datapack")
 }

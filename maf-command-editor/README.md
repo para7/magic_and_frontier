@@ -1,22 +1,27 @@
 # maf-command-editor
 
-## CLI の実行方法 (`run-cli`)
+## コマンド
 
-`Makefile` の `run-cli` ターゲットから CLI を実行できます。  
-引数は `ARGS` で渡します。
+`mce` は次の 3 コマンドを持ちます。
 
-```bash
-make run-cli ARGS='validate'
-make run-cli ARGS='export'
-```
-
-`run-cli` の実体は次のコマンドです。
-
-```bash
-go run ./app/cmd/tools2-cli $(ARGS)
-```
-
-利用できるコマンド:
-
+- `editor`: Web サーバー起動
 - `validate`: savedata と export 設定のバリデーション
 - `export`: バリデーション後に datapack を出力
+
+引数なしの `mce` は `mce editor` と同じです。
+
+## `make` での実行
+
+```bash
+make run                       # editor 起動
+make run-cmd ARGS='validate'   # validate 実行
+make run-cmd ARGS='export'     # export 実行
+```
+
+実体コマンド:
+
+```bash
+go run ./app editor
+go run ./app validate
+go run ./app export
+```
