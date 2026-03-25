@@ -34,7 +34,7 @@ func (a apiRouter) registerItemRoutes(mux *http.ServeMux) {
 			writeInternalError(w, err)
 			return
 		}
-		if _, ok := findEntry(state.Items, strings.TrimSpace(input.ID), func(entry items.ItemEntry) string { return entry.ID }); ok {
+		if _, ok := findEntry(state.Entries, strings.TrimSpace(input.ID), func(entry items.ItemEntry) string { return entry.ID }); ok {
 			writeDuplicateIDValidationError[items.ItemEntry](w)
 			return
 		}

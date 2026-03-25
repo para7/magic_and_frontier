@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/items"
 )
 
@@ -28,7 +29,7 @@ func TestServiceAllocateCastID(t *testing.T) {
 
 func TestServiceExportDatapackRejectsInvalidSavedata(t *testing.T) {
 	cfg := testConfig(t)
-	writeJSONFile(t, cfg.ItemStatePath, items.ItemState{Items: []items.ItemEntry{
+	writeJSONFile(t, cfg.ItemStatePath, common.EntryState[items.ItemEntry]{Entries: []items.ItemEntry{
 		{ID: "items_1", ItemID: "minecraft:apple", SkillID: "skill_999"},
 	}})
 	svc := NewService(cfg, Dependencies{Now: fixedNow})

@@ -24,7 +24,7 @@ func (a App) itemsPage(w http.ResponseWriter, r *http.Request) {
 		a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Notice: errorNotice(err.Error())})
 		return
 	}
-	a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: notice, Form: defaultItemForm(skillOptions(skillState.Entries))})
+	a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Entries, Notice: notice, Form: defaultItemForm(skillOptions(skillState.Entries))})
 }
 
 func (a App) itemsNewPage(w http.ResponseWriter, r *http.Request) {
@@ -54,13 +54,13 @@ func (a App) itemsEditPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id := strings.TrimSpace(r.URL.Query().Get("id"))
-	if entry, ok := findEntry(state.Items, id, func(entry items.ItemEntry) string { return entry.ID }); ok {
+	if entry, ok := findEntry(state.Entries, id, func(entry items.ItemEntry) string { return entry.ID }); ok {
 		form := itemEntryToForm(entry, skillOptions(skillState.Entries))
 		form.ReturnTo = returnTo
 		a.renderItemForm(w, r, views.ItemsPageData{Meta: itemMeta(), Form: form})
 		return
 	}
-	a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
+	a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Entries, Notice: errorNotice("Item not found.")})
 }
 
 func (a App) itemsSubmit(w http.ResponseWriter, r *http.Request) {
@@ -99,11 +99,11 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	form.IsEditing = editing
 	form.ReturnTo = returnTo
 	if editing {
-		if _, ok := findEntry(state.Items, form.ID, func(entry items.ItemEntry) string { return entry.ID }); !ok {
-			a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
+		if _, ok := findEntry(state.Entries, form.ID, func(entry items.ItemEntry) string { return entry.ID }); !ok {
+			a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Entries, Notice: errorNotice("Item not found.")})
 			return
 		}
-	} else if _, ok := findEntry(state.Items, form.ID, func(entry items.ItemEntry) string { return entry.ID }); ok {
+	} else if _, ok := findEntry(state.Entries, form.ID, func(entry items.ItemEntry) string { return entry.ID }); ok {
 		parseErrs["id"] = "この ID は既に使用されています。"
 	}
 	result := master.Items().Validate(input, master)
@@ -148,7 +148,7 @@ func (a App) itemsSave(w http.ResponseWriter, r *http.Request, editing bool) {
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: nextState.Items, Notice: notice})
+	a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) itemsDelete(w http.ResponseWriter, r *http.Request) {
@@ -166,16 +166,16 @@ func (a App) itemsDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := master.Items().Delete(id, master); err != nil {
-		a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice("Item not found.")})
+		a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Entries, Notice: errorNotice("Item not found.")})
 		return
 	}
 	if err := master.Items().Save(); err != nil {
-		a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice(err.Error())})
+		a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
 	nextState, err := a.loadItemStateFromMaster()
 	if err != nil {
-		a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Items, Notice: errorNotice(err.Error())})
+		a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: state.Entries, Notice: errorNotice(err.Error())})
 		return
 	}
 	notice := successNotice("Item deleted.")
@@ -183,7 +183,7 @@ func (a App) itemsDelete(w http.ResponseWriter, r *http.Request) {
 	if redirectWithNotice(w, r, returnTo, notice) {
 		return
 	}
-	a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: nextState.Items, Notice: notice})
+	a.renderItems(w, r, views.ItemsPageData{Meta: itemMeta(), Entries: nextState.Entries, Notice: notice})
 }
 
 func (a App) renderItems(w http.ResponseWriter, r *http.Request, data views.ItemsPageData) {

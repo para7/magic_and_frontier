@@ -132,7 +132,7 @@ func (a App) renderScreen(w http.ResponseWriter, r *http.Request, currentPath st
 		a.renderItems(w, r, views.ItemsPageData{
 			Meta:    itemMeta(),
 			Notice:  notice,
-			Entries: state.Items,
+			Entries: state.Entries,
 			Form:    defaultItemForm(nil),
 		})
 	}

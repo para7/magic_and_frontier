@@ -16,19 +16,23 @@ import (
 	"tools2/app/internal/domain/mcsource"
 	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/domain/spawntables"
-	"tools2/app/internal/domain/store"
 	"tools2/app/internal/domain/treasures"
 )
 
+type entryRepo[T any] interface {
+	LoadState() (common.EntryState[T], error)
+	SaveState(common.EntryState[T]) error
+}
+
 type Dependencies struct {
-	ItemRepo               store.ItemStateRepository
-	GrimoireRepo           store.GrimoireStateRepository
-	SkillRepo              store.EntryStateRepository[skills.SkillEntry]
-	EnemySkillRepo         store.EntryStateRepository[enemyskills.EnemySkillEntry]
-	EnemyRepo              store.EntryStateRepository[enemies.EnemyEntry]
-	SpawnTableRepo         store.EntryStateRepository[spawntables.SpawnTableEntry]
-	TreasureRepo           store.EntryStateRepository[treasures.TreasureEntry]
-	LootTableRepo          store.EntryStateRepository[loottables.LootTableEntry]
+	ItemRepo               entryRepo[items.ItemEntry]
+	GrimoireRepo           entryRepo[grimoire.GrimoireEntry]
+	SkillRepo              entryRepo[skills.SkillEntry]
+	EnemySkillRepo         entryRepo[enemyskills.EnemySkillEntry]
+	EnemyRepo              entryRepo[enemies.EnemyEntry]
+	SpawnTableRepo         entryRepo[spawntables.SpawnTableEntry]
+	TreasureRepo           entryRepo[treasures.TreasureEntry]
+	LootTableRepo          entryRepo[loottables.LootTableEntry]
 	MinecraftLootTableRoot string
 	Now                    func() time.Time
 }
@@ -36,17 +40,17 @@ type Dependencies struct {
 type JSONMaster struct {
 	mu sync.RWMutex
 
-	itemRepo       store.ItemStateRepository
-	grimoireRepo   store.GrimoireStateRepository
-	skillRepo      store.EntryStateRepository[skills.SkillEntry]
-	enemySkillRepo store.EntryStateRepository[enemyskills.EnemySkillEntry]
-	enemyRepo      store.EntryStateRepository[enemies.EnemyEntry]
-	spawnTableRepo store.EntryStateRepository[spawntables.SpawnTableEntry]
-	treasureRepo   store.EntryStateRepository[treasures.TreasureEntry]
-	lootTableRepo  store.EntryStateRepository[loottables.LootTableEntry]
+	itemRepo       entryRepo[items.ItemEntry]
+	grimoireRepo   entryRepo[grimoire.GrimoireEntry]
+	skillRepo      entryRepo[skills.SkillEntry]
+	enemySkillRepo entryRepo[enemyskills.EnemySkillEntry]
+	enemyRepo      entryRepo[enemies.EnemyEntry]
+	spawnTableRepo entryRepo[spawntables.SpawnTableEntry]
+	treasureRepo   entryRepo[treasures.TreasureEntry]
+	lootTableRepo  entryRepo[loottables.LootTableEntry]
 
-	itemState       items.ItemState
-	grimoireState   grimoire.GrimoireState
+	itemState       common.EntryState[items.ItemEntry]
+	grimoireState   common.EntryState[grimoire.GrimoireEntry]
 	skillState      common.EntryState[skills.SkillEntry]
 	enemySkillState common.EntryState[enemyskills.EnemySkillEntry]
 	enemyState      common.EntryState[enemies.EnemyEntry]
@@ -77,11 +81,11 @@ func NewJSONMaster(deps Dependencies) (*JSONMaster, error) {
 		return nil, fmt.Errorf("master dependencies are incomplete")
 	}
 
-	itemState, err := deps.ItemRepo.LoadItemState()
+	itemState, err := deps.ItemRepo.LoadState()
 	if err != nil {
 		return nil, fmt.Errorf("load items: %w", err)
 	}
-	grimoireState, err := deps.GrimoireRepo.LoadGrimoireState()
+	grimoireState, err := deps.GrimoireRepo.LoadState()
 	if err != nil {
 		return nil, fmt.Errorf("load grimoire: %w", err)
 	}
@@ -147,7 +151,7 @@ func (m *JSONMaster) initEntities() {
 		},
 	})
 	m.grimoiresEntity = grimoire.NewEntity(grimoire.EntityDeps{Mutex: &m.mu, State: &m.grimoireState, Repo: m.grimoireRepo, Now: m.nowUTC})
-	m.skillsEntity = skills.NewEntity(skills.EntityDeps{Mutex: &m.mu, State: &m.skillState, Repo: m.skillRepo, Now: m.nowUTC, ItemStates: &m.itemState.Items})
+	m.skillsEntity = skills.NewEntity(skills.EntityDeps{Mutex: &m.mu, State: &m.skillState, Repo: m.skillRepo, Now: m.nowUTC, ItemStates: &m.itemState.Entries})
 	m.enemySkillsEntity = enemyskills.NewEntity(enemyskills.EntityDeps{Mutex: &m.mu, State: &m.enemySkillState, Repo: m.enemySkillRepo, Now: m.nowUTC, EnemyStates: &m.enemyState.Entries})
 	m.enemiesEntity = enemies.NewEntity(enemies.EntityDeps{
 		Mutex: &m.mu, State: &m.enemyState, Repo: m.enemyRepo, Now: m.nowUTC,
@@ -302,23 +306,23 @@ func idSet[T any](entries []T, idOf func(T) string) map[string]struct{} {
 }
 
 func (m *JSONMaster) itemIDSetLocked() map[string]struct{} {
-	return idSet(m.itemState.Items, func(entry items.ItemEntry) string { return entry.ID })
+	return entity.IDSet(m.itemState.Entries, func(entry items.ItemEntry) string { return entry.ID })
 }
 
 func (m *JSONMaster) grimoireIDSetLocked() map[string]struct{} {
-	return idSet(m.grimoireState.Entries, func(entry grimoire.GrimoireEntry) string { return entry.ID })
+	return entity.IDSet(m.grimoireState.Entries, func(entry grimoire.GrimoireEntry) string { return entry.ID })
 }
 
 func (m *JSONMaster) skillIDSetLocked() map[string]struct{} {
-	return idSet(m.skillState.Entries, func(entry skills.SkillEntry) string { return entry.ID })
+	return entity.IDSet(m.skillState.Entries, func(entry skills.SkillEntry) string { return entry.ID })
 }
 
 func (m *JSONMaster) enemySkillIDSetLocked() map[string]struct{} {
-	return idSet(m.enemySkillState.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
+	return entity.IDSet(m.enemySkillState.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
 }
 
 func (m *JSONMaster) enemyIDSetLocked() map[string]struct{} {
-	return idSet(m.enemyState.Entries, func(entry enemies.EnemyEntry) string { return entry.ID })
+	return entity.IDSet(m.enemyState.Entries, func(entry enemies.EnemyEntry) string { return entry.ID })
 }
 
 func (m *JSONMaster) treasureSourcePathsLocked() map[string]struct{} {

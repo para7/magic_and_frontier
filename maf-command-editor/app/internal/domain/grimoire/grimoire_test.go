@@ -5,6 +5,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"tools2/app/internal/domain/common"
 )
 
 func TestValidateSaveSuccessCases(t *testing.T) {
@@ -58,7 +60,7 @@ func TestValidateSaveValidationErrors(t *testing.T) {
 }
 
 func TestStateJSONShape(t *testing.T) {
-	state := GrimoireState{Entries: []GrimoireEntry{{ID: "grimoire_1"}}}
+	state := common.EntryState[GrimoireEntry]{Entries: []GrimoireEntry{{ID: "grimoire_1"}}}
 	raw, err := json.Marshal(state)
 	if err != nil {
 		t.Fatal(err)

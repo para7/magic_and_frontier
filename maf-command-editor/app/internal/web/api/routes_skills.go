@@ -66,7 +66,7 @@ func (a apiRouter) registerSkillRoutes(mux *http.ServeMux) {
 			writeInternalError(w, err)
 			return
 		}
-		for _, entry := range itemState.Items {
+		for _, entry := range itemState.Entries {
 			if entry.SkillID == id {
 				writeCodedError(w, http.StatusBadRequest, "REFERENCE_ERROR", "Skill is referenced by item "+entry.ID+".")
 				return

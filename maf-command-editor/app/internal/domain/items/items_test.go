@@ -5,6 +5,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"tools2/app/internal/domain/common"
 )
 
 func TestValidateSaveSuccessCases(t *testing.T) {
@@ -50,12 +52,12 @@ func TestValidateSaveValidationErrors(t *testing.T) {
 }
 
 func TestStateJSONShape(t *testing.T) {
-	state := ItemState{Items: []ItemEntry{{ID: "items_1"}}}
+	state := common.EntryState[ItemEntry]{Entries: []ItemEntry{{ID: "items_1"}}}
 	raw, err := json.Marshal(state)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(raw), `"items"`) {
+	if !strings.Contains(string(raw), `"entries"`) {
 		t.Fatalf("json shape mismatch: %s", raw)
 	}
 }

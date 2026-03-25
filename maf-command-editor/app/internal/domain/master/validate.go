@@ -34,7 +34,7 @@ func (m *JSONMaster) ValidateSavedAll() ValidationReport {
 	report := ValidationReport{
 		OK: true,
 		Counts: Counts{
-			Items:       len(itemState.Items),
+			Items:       len(itemState.Entries),
 			Grimoire:    len(grimoireState.Entries),
 			Skills:      len(skillState.Entries),
 			EnemySkills: len(enemySkillState.Entries),
@@ -45,7 +45,7 @@ func (m *JSONMaster) ValidateSavedAll() ValidationReport {
 		},
 	}
 
-	itemIDs := idSet(itemState.Items, func(entry items.ItemEntry) string { return entry.ID })
+	itemIDs := idSet(itemState.Entries, func(entry items.ItemEntry) string { return entry.ID })
 	grimoireIDs := idSet(grimoireState.Entries, func(entry grimoire.GrimoireEntry) string { return entry.ID })
 	skillIDs := idSet(skillState.Entries, func(entry skills.SkillEntry) string { return entry.ID })
 	enemySkillIDs := idSet(enemySkillState.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
@@ -61,7 +61,7 @@ func (m *JSONMaster) ValidateSavedAll() ValidationReport {
 		})
 	}
 
-	for _, entry := range itemState.Items {
+	for _, entry := range itemState.Entries {
 		appendSaveIssues(&report, "item", entry.ID, items.ValidateSave(items.SaveInputFromEntry(entry), skillIDs, m.nowUTC()))
 	}
 	for _, entry := range grimoireState.Entries {

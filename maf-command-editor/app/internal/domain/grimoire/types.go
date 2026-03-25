@@ -11,10 +11,6 @@ type GrimoireEntry struct {
 	UpdatedAt   string `json:"updatedAt"`
 }
 
-type GrimoireState struct {
-	Entries []GrimoireEntry `json:"entries"`
-}
-
 type SaveInput struct {
 	ID          string `json:"id"`
 	CastID      int    `json:"castid" validate:"gte=1"`

@@ -79,7 +79,7 @@ func (a App) treasuresEditPage(w http.ResponseWriter, r *http.Request) {
 	}
 	a.renderTreasureForm(w, r, views.TreasuresPageData{
 		Meta:            treasuresMeta(),
-		ItemOptions:     itemOptions(itemState.Items),
+		ItemOptions:     itemOptions(itemState.Entries),
 		GrimoireOptions: grimoireOptions(grimoireState.Entries),
 		Form:            form,
 	})
@@ -114,14 +114,14 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		form := defaultTreasureForm()
 		form.ReturnTo = returnTo
-		a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), Form: form})
+		a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Entries), Form: form})
 		return
 	}
 	state, _, sourcePaths, err := a.loadTreasureCatalog()
 	if err != nil {
 		form := defaultTreasureForm()
 		form.ReturnTo = returnTo
-		a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+		a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Entries), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
 	form, input, parseErrs := parseTreasureForm(r)
@@ -149,7 +149,7 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 		form.FormError = formErrorText(result.FormError)
 		form.HasOverlay = hasOverlay
 		form.IsEditing = hasOverlay
-		a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+		a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Entries), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
 	mode := common.SaveModeCreated
@@ -157,7 +157,7 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 		mode = common.SaveModeUpdated
 		if err := master.Treasures().Update(*result.Entry, master); err != nil {
 			form.FormError = formErrorText(err.Error())
-			a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+			a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Entries), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 			return
 		}
 	} else {
@@ -167,12 +167,12 @@ func (a App) treasuresSave(w http.ResponseWriter, r *http.Request) {
 			} else {
 				form.FormError = formErrorText(err.Error())
 			}
-			a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+			a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), ItemOptions: itemOptions(itemState.Entries), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 			return
 		}
 	}
 	if err := master.Treasures().Save(); err != nil {
-		a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Items), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
+		a.renderTreasureForm(w, r, views.TreasuresPageData{Meta: treasuresMeta(), Notice: errorNotice(err.Error()), ItemOptions: itemOptions(itemState.Entries), GrimoireOptions: grimoireOptions(grimoireState.Entries), Form: form})
 		return
 	}
 	notice := successNotice(noticeText("Treasure", mode))

@@ -43,28 +43,3 @@ func ValidateSave(input SaveInput, skillIDs map[string]struct{}, now time.Time) 
 	}
 	return common.SaveSuccess(entry, common.SaveModeCreated)
 }
-
-func Upsert(state ItemState, entry ItemEntry) (ItemState, common.SaveMode) {
-	for i := range state.Items {
-		if state.Items[i].ID == entry.ID {
-			next := append([]ItemEntry{}, state.Items...)
-			next[i] = entry
-			return ItemState{Items: next}, common.SaveModeUpdated
-		}
-	}
-	next := append(append([]ItemEntry{}, state.Items...), entry)
-	return ItemState{Items: next}, common.SaveModeCreated
-}
-
-func Delete(state ItemState, id string) (ItemState, bool) {
-	next := make([]ItemEntry, 0, len(state.Items))
-	found := false
-	for _, it := range state.Items {
-		if it.ID == id {
-			found = true
-			continue
-		}
-		next = append(next, it)
-	}
-	return ItemState{Items: next}, found
-}

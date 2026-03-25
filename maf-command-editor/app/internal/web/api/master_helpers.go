@@ -22,20 +22,20 @@ func (a apiRouter) masterOrErr() (dmaster.DBMaster, error) {
 	return a.deps.Master, nil
 }
 
-func (a apiRouter) itemState() (items.ItemState, error) {
+func (a apiRouter) itemState() (common.EntryState[items.ItemEntry], error) {
 	master, err := a.masterOrErr()
 	if err != nil {
-		return items.ItemState{}, err
+		return common.EntryState[items.ItemEntry]{}, err
 	}
-	return items.ItemState{Items: master.Items().ListAll()}, nil
+	return common.EntryState[items.ItemEntry]{Entries: master.Items().ListAll()}, nil
 }
 
-func (a apiRouter) grimoireState() (grimoire.GrimoireState, error) {
+func (a apiRouter) grimoireState() (common.EntryState[grimoire.GrimoireEntry], error) {
 	master, err := a.masterOrErr()
 	if err != nil {
-		return grimoire.GrimoireState{}, err
+		return common.EntryState[grimoire.GrimoireEntry]{}, err
 	}
-	return grimoire.GrimoireState{Entries: master.Grimoires().ListAll()}, nil
+	return common.EntryState[grimoire.GrimoireEntry]{Entries: master.Grimoires().ListAll()}, nil
 }
 
 func (a apiRouter) skillState() (common.EntryState[skills.SkillEntry], error) {

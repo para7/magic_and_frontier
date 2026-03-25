@@ -159,13 +159,6 @@ func TestExportDatapackKeepsStaticFilesAndWritesGeneratedTick(t *testing.T) {
 	}
 
 	result := ExportDatapack(ExportParams{
-		ItemState:          items.ItemState{},
-		GrimoireState:      grimoire.GrimoireState{},
-		Skills:             nil,
-		EnemySkills:        nil,
-		Enemies:            nil,
-		Treasures:          nil,
-		LootTables:         nil,
 		ExportSettingsPath: settingsPath,
 	})
 	if !result.OK {

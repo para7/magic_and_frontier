@@ -57,8 +57,8 @@ type SaveDataResponse struct {
 }
 
 type ExportParams struct {
-	ItemState              items.ItemState
-	GrimoireState          grimoire.GrimoireState
+	Items                  []items.ItemEntry
+	Grimoires              []grimoire.GrimoireEntry
 	Skills                 []skills.SkillEntry
 	EnemySkills            []enemyskills.EnemySkillEntry
 	Enemies                []enemies.EnemyEntry
@@ -78,15 +78,15 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
 
-	itemStats, err := generateItemOutputs(settings, params.ItemState.Items)
+	itemStats, err := generateItemOutputs(settings, params.Items)
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
-	grimoireStats, err := generateGrimoireOutputs(settings, params.GrimoireState.Entries)
+	grimoireStats, err := generateGrimoireOutputs(settings, params.Grimoires)
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
-	debugGrimoireFunctions, err := generateGrimoireDebugFunctions(settings, params.GrimoireState.Entries)
+	debugGrimoireFunctions, err := generateGrimoireDebugFunctions(settings, params.Grimoires)
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
@@ -98,7 +98,7 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
-	enemyStats, err := generateEnemyOutputs(settings, params.Enemies, params.ItemState.Items, params.GrimoireState.Entries)
+	enemyStats, err := generateEnemyOutputs(settings, params.Enemies, params.Items, params.Grimoires)
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
@@ -106,11 +106,11 @@ func ExportDatapack(params ExportParams) SaveDataResponse {
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
-	treasureStats, err := generateTreasureOutputs(settings, params.MinecraftLootTableRoot, params.Treasures, params.ItemState.Items, params.GrimoireState.Entries)
+	treasureStats, err := generateTreasureOutputs(settings, params.MinecraftLootTableRoot, params.Treasures, params.Items, params.Grimoires)
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}
-	loottableStats, err := generateLootTableOutputs(settings, params.LootTables, params.ItemState.Items, params.GrimoireState.Entries)
+	loottableStats, err := generateLootTableOutputs(settings, params.LootTables, params.Items, params.Grimoires)
 	if err != nil {
 		return exportFailure("EXPORT_FAILED", "Datapack export failed.", err)
 	}

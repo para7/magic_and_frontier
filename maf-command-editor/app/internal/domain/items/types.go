@@ -20,10 +20,6 @@ type ItemEntry struct {
 	UpdatedAt           string `json:"updatedAt"`
 }
 
-type ItemState struct {
-	Items []ItemEntry `json:"items"`
-}
-
 type SaveInput struct {
 	ID                  string `json:"id"`
 	ItemID              string `json:"itemId" validate:"trimmed_required,trimmed_min=1,trimmed_max=200"`

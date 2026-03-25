@@ -1,8 +1,6 @@
 package export
 
 import (
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
 	dmaster "tools2/app/internal/domain/master"
 )
 
@@ -30,8 +28,8 @@ func ExportDatapackFromMaster(master dmaster.DBMaster, params MasterExportParams
 		}
 	}
 	return ExportDatapack(ExportParams{
-		ItemState:              items.ItemState{Items: master.Items().ListAll()},
-		GrimoireState:          grimoire.GrimoireState{Entries: master.Grimoires().ListAll()},
+		Items:                  master.Items().ListAll(),
+		Grimoires:              master.Grimoires().ListAll(),
 		Skills:                 master.Skills().ListAll(),
 		EnemySkills:            master.EnemySkills().ListAll(),
 		Enemies:                master.Enemies().ListAll(),

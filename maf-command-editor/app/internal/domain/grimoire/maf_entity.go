@@ -9,21 +9,21 @@ import (
 	"tools2/app/internal/domain/entity"
 )
 
-type grimoireSaver interface {
-	SaveGrimoireState(GrimoireState) error
+type entrySaver interface {
+	SaveState(common.EntryState[GrimoireEntry]) error
 }
 
 type EntityDeps struct {
 	Mutex *sync.RWMutex
-	State *GrimoireState
-	Repo  grimoireSaver
+	State *common.EntryState[GrimoireEntry]
+	Repo  entrySaver
 	Now   func() time.Time
 }
 
 type Entity struct {
 	mu    *sync.RWMutex
-	state *GrimoireState
-	repo  grimoireSaver
+	state *common.EntryState[GrimoireEntry]
+	repo  entrySaver
 	now   func() time.Time
 }
 
@@ -110,7 +110,7 @@ func (e *Entity) Save() error {
 	next := entity.CopyEntries(e.state.Entries)
 	entity.SortByID(next, func(it GrimoireEntry) string { return it.ID })
 	e.state.Entries = next
-	return e.repo.SaveGrimoireState(*e.state)
+	return e.repo.SaveState(*e.state)
 }
 
 func (e *Entity) ListAll() []GrimoireEntry {

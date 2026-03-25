@@ -17,10 +17,10 @@ import (
 
 func TestValidateBundleDetectsBrokenReferences(t *testing.T) {
 	report := ValidateBundle(StateBundle{
-		ItemState: items.ItemState{Items: []items.ItemEntry{
+		ItemState: common.EntryState[items.ItemEntry]{Entries: []items.ItemEntry{
 			{ID: "items_1", ItemID: "minecraft:apple", SkillID: "skill_9"},
 		}},
-		GrimoireState: grimoire.GrimoireState{Entries: []grimoire.GrimoireEntry{
+		GrimoireState: common.EntryState[grimoire.GrimoireEntry]{Entries: []grimoire.GrimoireEntry{
 			{ID: "grimoire_1", CastID: 1, CastTime: 10, MPCost: 5, Script: "say cast", Title: "Spell"},
 			{ID: "grimoire_2", CastID: 1, CastTime: 10, MPCost: 5, Script: "say cast", Title: "Spell 2"},
 		}},

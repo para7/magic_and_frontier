@@ -140,7 +140,7 @@ func (a App) skillsDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id := strings.TrimSpace(r.PathValue("id"))
-	for _, entry := range itemState.Items {
+	for _, entry := range itemState.Entries {
 		if entry.SkillID == id {
 			state, _ := a.loadSkillStateFromMaster()
 			a.renderSkills(w, r, views.SkillsPageData{Meta: skillsMeta(), Entries: state.Entries, Notice: errorNotice("Skill is referenced by item " + entry.ID + ".")})

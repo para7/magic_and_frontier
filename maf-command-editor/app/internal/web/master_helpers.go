@@ -25,20 +25,20 @@ func (a App) masterOrErr() (dmaster.DBMaster, error) {
 	return a.deps.Master, nil
 }
 
-func (a App) loadItemStateFromMaster() (items.ItemState, error) {
+func (a App) loadItemStateFromMaster() (common.EntryState[items.ItemEntry], error) {
 	master, err := a.masterOrErr()
 	if err != nil {
-		return items.ItemState{}, err
+		return common.EntryState[items.ItemEntry]{}, err
 	}
-	return items.ItemState{Items: master.Items().ListAll()}, nil
+	return common.EntryState[items.ItemEntry]{Entries: master.Items().ListAll()}, nil
 }
 
-func (a App) loadGrimoireStateFromMaster() (grimoire.GrimoireState, error) {
+func (a App) loadGrimoireStateFromMaster() (common.EntryState[grimoire.GrimoireEntry], error) {
 	master, err := a.masterOrErr()
 	if err != nil {
-		return grimoire.GrimoireState{}, err
+		return common.EntryState[grimoire.GrimoireEntry]{}, err
 	}
-	return grimoire.GrimoireState{Entries: master.Grimoires().ListAll()}, nil
+	return common.EntryState[grimoire.GrimoireEntry]{Entries: master.Grimoires().ListAll()}, nil
 }
 
 func (a App) loadSkillStateFromMaster() (common.EntryState[skills.SkillEntry], error) {
