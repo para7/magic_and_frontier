@@ -15,7 +15,8 @@ type GrimoireEntity struct {
 }
 
 func NewGrimoireEntity(path string) *GrimoireEntity {
-	return &GrimoireEntity{store: files.NewJsonStore[Grimoire](path)}
+	store := files.NewJsonStore[Grimoire](path)
+	return &GrimoireEntity{store: store}
 }
 
 func (s *GrimoireEntity) ValidateJSON(data Grimoire, mas master.DBMaster) (Grimoire, error) {
@@ -106,19 +107,15 @@ func (s *GrimoireEntity) Delete(id string, mas master.DBMaster) error {
 }
 
 func (s *GrimoireEntity) Save() error {
-	// JsonStore を使ってそのまま実装
-	// data の中身をそのまま保存する
-	s.store.Entries = s.data
-	return s.store.Save()
+	return s.store.Save(s.data)
 }
 
 func (s *GrimoireEntity) Load() error {
-	// JsonStore を使ってそのまま実装
-	// 現状の JSON の中身で data を上書きする
-	if err := s.store.Load(); err != nil {
+	data, err := s.store.Load()
+	if err != nil {
 		return err
 	}
-	s.data = s.store.Entries
+	s.data = data
 	return nil
 }
 

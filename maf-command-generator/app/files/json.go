@@ -11,29 +11,29 @@ type entriesFile[T any] struct {
 }
 
 type JsonStore[T any] struct {
-	Path    string
-	Entries []T
+	Path string
+	// Entries []T
 }
 
 func NewJsonStore[T any](path string) JsonStore[T] {
 	return JsonStore[T]{Path: path}
 }
 
-func (s *JsonStore[T]) Load() error {
+func (s *JsonStore[T]) Load() ([]T, error) {
 	data, err := os.ReadFile(s.Path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	var f entriesFile[T]
 	if err := json.Unmarshal(data, &f); err != nil {
-		return err
+		return nil, err
 	}
-	s.Entries = f.Entries
-	return nil
+	// s.Entries = f.Entries
+	// return nil
+	return f.Entries, nil
 }
 
-func (s *JsonStore[T]) Save() error {
-	entries := s.Entries
+func (s *JsonStore[T]) Save(entries []T) error {
 	if entries == nil {
 		entries = []T{}
 	}
