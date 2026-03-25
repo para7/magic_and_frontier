@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"tools2/app/internal/web/views"
+	"maf-command-editor/app/internal/web/views"
 )
 
 func TestItemFormEnchantmentsFromText(t *testing.T) {

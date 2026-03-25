@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"strings"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/entity/treasures"
-	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/domain/mcsource"
-	"tools2/app/internal/web/views"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity/treasures"
+	dmaster "maf-command-editor/app/internal/domain/master"
+	"maf-command-editor/app/internal/domain/mcsource"
+	"maf-command-editor/app/internal/web/views"
 )
 
 func (a App) treasuresPage(w http.ResponseWriter, r *http.Request) {

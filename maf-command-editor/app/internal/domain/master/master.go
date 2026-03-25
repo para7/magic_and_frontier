@@ -6,17 +6,17 @@ import (
 	"sync"
 	"time"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/entity"
-	"tools2/app/internal/domain/entity/enemies"
-	"tools2/app/internal/domain/entity/enemyskills"
-	"tools2/app/internal/domain/entity/grimoire"
-	"tools2/app/internal/domain/entity/items"
-	"tools2/app/internal/domain/entity/loottables"
-	"tools2/app/internal/domain/entity/skills"
-	"tools2/app/internal/domain/entity/spawntables"
-	"tools2/app/internal/domain/entity/treasures"
-	"tools2/app/internal/domain/mcsource"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity"
+	"maf-command-editor/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/entity/enemyskills"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	"maf-command-editor/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/loottables"
+	"maf-command-editor/app/internal/domain/entity/skills"
+	"maf-command-editor/app/internal/domain/entity/spawntables"
+	"maf-command-editor/app/internal/domain/entity/treasures"
+	"maf-command-editor/app/internal/domain/mcsource"
 )
 
 type entryRepo[T any] interface {

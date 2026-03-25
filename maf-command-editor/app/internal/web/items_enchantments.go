@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode"
 
-	"tools2/app/internal/web/views"
+	"maf-command-editor/app/internal/web/views"
 )
 
 type itemEnchantmentDef struct {

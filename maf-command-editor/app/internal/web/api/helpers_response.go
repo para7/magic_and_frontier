@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"tools2/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/common"
 )
 
 type apiErrorResponse struct {

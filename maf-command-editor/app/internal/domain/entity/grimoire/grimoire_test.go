@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"tools2/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/common"
 )
 
 func TestValidateSaveSuccessCases(t *testing.T) {

@@ -3,7 +3,7 @@ package items
 import (
 	"time"
 
-	"tools2/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/common"
 )
 
 func ValidateSave(input SaveInput, skillIDs map[string]struct{}, now time.Time) common.SaveResult[ItemEntry] {

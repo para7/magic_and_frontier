@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strings"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/entity/items"
-	"tools2/app/internal/domain/entity/skills"
-	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/web/views"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/skills"
+	dmaster "maf-command-editor/app/internal/domain/master"
+	"maf-command-editor/app/internal/web/views"
 )
 
 func (a App) itemsPage(w http.ResponseWriter, r *http.Request) {

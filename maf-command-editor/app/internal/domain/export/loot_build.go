@@ -3,9 +3,9 @@ package export
 import (
 	"fmt"
 
-	"tools2/app/internal/domain/entity/grimoire"
-	"tools2/app/internal/domain/entity/items"
-	"tools2/app/internal/domain/entity/treasures"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	"maf-command-editor/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/treasures"
 )
 
 func buildDropLootTable(drops []treasures.DropRef, itemsByID map[string]items.ItemEntry, grimoiresByID map[string]grimoire.GrimoireEntry, context string) (map[string]any, error) {

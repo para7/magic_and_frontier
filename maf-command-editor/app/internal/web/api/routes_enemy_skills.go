@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/entity/enemyskills"
-	dmaster "tools2/app/internal/domain/master"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity/enemyskills"
+	dmaster "maf-command-editor/app/internal/domain/master"
 )
 
 func (a apiRouter) registerEnemySkillRoutes(mux *http.ServeMux) {

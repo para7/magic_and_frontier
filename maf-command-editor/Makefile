@@ -1,5 +1,7 @@
 .PHONY: help generate tidy format lint build test run run-cmd dev check kill-port
 
+ENTRY =./app
+
 help: ## show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -8,13 +10,13 @@ run: run/web ## generate templ and start editor on :8787
 
 run/editor:
 	echo http://localhost:8787
-	go run ./app editor
+	go run $(ENTRY) editor
 
 run/validate:
-	go run ./app validate
+	go run $(ENTRY) validate
 
 run/export:
-	go run ./app export
+	go run $(ENTRY) export
 
 
 check: generate tidy format lint build test ## run all checks
@@ -29,14 +31,12 @@ format: ## run go fmt ./...
 	go fmt ./...
 
 lint: ## run go vet + staticcheck
-	mkdir -p /tmp/maf-command-editor-go-cache
-	mkdir -p /tmp/maf-command-editor-cache
-	GOCACHE=/tmp/maf-command-editor-go-cache go vet ./...
-	GOCACHE=/tmp/maf-command-editor-go-cache XDG_CACHE_HOME=/tmp/maf-command-editor-cache go tool staticcheck ./...
+	go vet ./...
+	go tool staticcheck ./...
 
 build: ## build binary to bin/mce
 	mkdir -p bin
-	go build -o bin/mce ./app
+	go build -o bin/mce $(ENTRY)
 
 test: ## run go test ./...
 	go test ./...

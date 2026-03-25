@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"tools2/app/internal/domain/entity/grimoire"
-	"tools2/app/internal/domain/entity/items"
-	"tools2/app/internal/domain/entity/treasures"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	"maf-command-editor/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/treasures"
 )
 
 func TestToSpellLootTableIncludesLoreAndNewCustomData(t *testing.T) {

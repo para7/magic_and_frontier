@@ -1,6 +1,6 @@
 package treasures
 
-import "tools2/app/internal/domain/entity"
+import "maf-command-editor/app/internal/domain/entity"
 
 type DropRef = entity.DropRef
 

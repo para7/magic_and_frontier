@@ -3,9 +3,9 @@ package api
 import (
 	"net/http"
 
-	"tools2/app/internal/application"
-	"tools2/app/internal/config"
-	"tools2/app/internal/web"
+	"maf-command-editor/app/internal/application"
+	"maf-command-editor/app/internal/config"
+	"maf-command-editor/app/internal/web"
 )
 
 type Dependencies = application.Dependencies

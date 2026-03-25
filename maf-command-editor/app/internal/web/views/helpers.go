@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"tools2/app/internal/domain/entity/enemies"
-	"tools2/app/internal/domain/entity/loottables"
-	"tools2/app/internal/domain/entity/spawntables"
-	"tools2/app/internal/domain/entity/treasures"
+	"maf-command-editor/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/entity/loottables"
+	"maf-command-editor/app/internal/domain/entity/spawntables"
+	"maf-command-editor/app/internal/domain/entity/treasures"
 )
 
 func FieldError(errs map[string]string, key string) string {

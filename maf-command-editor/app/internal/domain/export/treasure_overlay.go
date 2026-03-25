@@ -15,7 +15,7 @@ type treasureOverlayManifest struct {
 }
 
 func treasureOverlayManifestPath(settings ExportSettings) string {
-	return filepath.Join(settings.OutputRoot, ".tools2", "treasure-overrides.json")
+	return filepath.Join(settings.OutputRoot, ".maf-command-editor", "treasure-overrides.json")
 }
 
 func cleanupTreasureOverlayOutputs(settings ExportSettings) error {

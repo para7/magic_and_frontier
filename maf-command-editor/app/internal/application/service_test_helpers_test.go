@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"tools2/app/internal/config"
-	"tools2/app/internal/domain/export"
+	"maf-command-editor/app/internal/config"
+	"maf-command-editor/app/internal/domain/export"
 )
 
 func fixedNow() time.Time {

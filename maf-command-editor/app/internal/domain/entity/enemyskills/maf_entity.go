@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/entity"
-	"tools2/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity"
+	"maf-command-editor/app/internal/domain/entity/enemies"
 )
 
 type EntityDeps struct {

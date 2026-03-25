@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/entity/grimoire"
-	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/web/views"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	dmaster "maf-command-editor/app/internal/domain/master"
+	"maf-command-editor/app/internal/web/views"
 )
 
 func (a App) grimoirePage(w http.ResponseWriter, r *http.Request) {

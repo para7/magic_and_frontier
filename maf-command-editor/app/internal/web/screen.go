@@ -9,9 +9,9 @@ import (
 
 	"github.com/a-h/templ"
 
-	"tools2/app/internal/application"
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/web/views"
+	"maf-command-editor/app/internal/application"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/web/views"
 )
 
 func (a App) saveExport(w http.ResponseWriter, r *http.Request) {
@@ -167,7 +167,7 @@ func formErrorText(value string) string {
 	return value
 }
 
-const flashNoticeCookieName = "tools2-flash-notice"
+const flashNoticeCookieName = "maf-command-editor-flash-notice"
 
 func redirectWithNotice(w http.ResponseWriter, r *http.Request, path string, notice *views.Notice) bool {
 	if isHX(r) {

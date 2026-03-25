@@ -3,16 +3,16 @@ package api
 import (
 	"fmt"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/entity/enemies"
-	"tools2/app/internal/domain/entity/enemyskills"
-	"tools2/app/internal/domain/entity/grimoire"
-	"tools2/app/internal/domain/entity/items"
-	"tools2/app/internal/domain/entity/loottables"
-	"tools2/app/internal/domain/entity/skills"
-	"tools2/app/internal/domain/entity/spawntables"
-	"tools2/app/internal/domain/entity/treasures"
-	dmaster "tools2/app/internal/domain/master"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/entity/enemyskills"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	"maf-command-editor/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/loottables"
+	"maf-command-editor/app/internal/domain/entity/skills"
+	"maf-command-editor/app/internal/domain/entity/spawntables"
+	"maf-command-editor/app/internal/domain/entity/treasures"
+	dmaster "maf-command-editor/app/internal/domain/master"
 )
 
 func (a apiRouter) masterOrErr() (dmaster.DBMaster, error) {

@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"tools2/app/internal/application"
-	"tools2/app/internal/config"
-	"tools2/app/internal/web/api"
+	"maf-command-editor/app/internal/application"
+	"maf-command-editor/app/internal/config"
+	"maf-command-editor/app/internal/web/api"
 )
 
 func main() {

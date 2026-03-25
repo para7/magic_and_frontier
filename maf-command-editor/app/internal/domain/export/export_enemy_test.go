@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"tools2/app/internal/domain/entity/enemies"
-	"tools2/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/entity/items"
 )
 
 func TestToEnemyFunctionLinesUsesMobTypeAndDeathLootTable(t *testing.T) {

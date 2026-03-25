@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"tools2/app/internal/domain/entity/treasures"
+	"maf-command-editor/app/internal/domain/entity/treasures"
 )
 
 func TestValidateSaveSuccess(t *testing.T) {

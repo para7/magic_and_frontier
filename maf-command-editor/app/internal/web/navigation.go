@@ -5,7 +5,7 @@ import (
 	neturl "net/url"
 	"strings"
 
-	"tools2/app/internal/web/views"
+	"maf-command-editor/app/internal/web/views"
 )
 
 func currentListURL(r *http.Request, fallback string) string {

@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"tools2/app/internal/application"
-	"tools2/app/internal/config"
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/export"
+	"maf-command-editor/app/internal/application"
+	"maf-command-editor/app/internal/config"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/export"
 )
 
 type entryIDOnly struct {

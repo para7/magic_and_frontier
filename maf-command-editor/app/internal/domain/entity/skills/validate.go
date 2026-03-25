@@ -3,7 +3,7 @@ package skills
 import (
 	"time"
 
-	"tools2/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/common"
 )
 
 var validSkillTypes = map[string]struct{}{

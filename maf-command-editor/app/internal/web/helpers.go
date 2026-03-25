@@ -4,10 +4,10 @@ import (
 	"strconv"
 	"strings"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/entity/enemies"
-	"tools2/app/internal/domain/entity/spawntables"
-	"tools2/app/internal/domain/entity/treasures"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/entity/spawntables"
+	"maf-command-editor/app/internal/domain/entity/treasures"
 )
 
 func compactLines(value string) []string {

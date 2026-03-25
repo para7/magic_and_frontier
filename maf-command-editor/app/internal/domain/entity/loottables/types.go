@@ -1,6 +1,6 @@
 package loottables
 
-import "tools2/app/internal/domain/entity/treasures"
+import "maf-command-editor/app/internal/domain/entity/treasures"
 
 type LootTableEntry struct {
 	ID        string              `json:"id"`

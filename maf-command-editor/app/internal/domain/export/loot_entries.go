@@ -5,8 +5,8 @@ import (
 	"math"
 	"strings"
 
-	"tools2/app/internal/domain/entity/grimoire"
-	"tools2/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	"maf-command-editor/app/internal/domain/entity/items"
 )
 
 func normalizeFunctionBody(script string) string {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/entity/treasures"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity/treasures"
 )
 
 func ValidateSave(input SaveInput, itemIDs, grimoireIDs map[string]struct{}, now time.Time) common.SaveResult[LootTableEntry] {

@@ -1,7 +1,7 @@
 package export
 
 import (
-	dmaster "tools2/app/internal/domain/master"
+	dmaster "maf-command-editor/app/internal/domain/master"
 )
 
 type MasterExportParams struct {
