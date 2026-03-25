@@ -4,6 +4,7 @@ import (
 	master "maf_command_editor/app/domain/master"
 )
 
+// Model の共通インターフェース
 type MafEntity[T any] interface {
 	ValidateJSON(data any, mas master.DBMaster) (T, error)
 

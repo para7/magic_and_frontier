@@ -31,3 +31,8 @@ type Grimoire struct {
 	Description string `json:"description"`
 	UpdatedAt   string `json:"updatedAt"`
 }
+
+// JSONをパースする構造体
+type grimoireJsonFile struct {
+	Entries []Grimoire `json:"entries"`
+}
