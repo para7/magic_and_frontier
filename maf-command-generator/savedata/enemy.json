@@ -1,0 +1,36 @@
+{
+  "entries": [
+    {
+      "id": "enemy_1",
+      "mobType": "minecraft:zombie",
+      "name": "Sample Zombie",
+      "hp": 40,
+      "memo": "",
+      "attack": 6,
+      "defense": 2,
+      "moveSpeed": 0.22,
+      "equipment": {},
+      "enemySkillIds": [
+        "enemyskill_1"
+      ],
+      "dropMode": "replace",
+      "drops": [
+        {
+          "kind": "item",
+          "refId": "items_1",
+          "weight": 70,
+          "countMin": 1,
+          "countMax": 3
+        },
+        {
+          "kind": "grimoire",
+          "refId": "prominence01",
+          "weight": 30,
+          "countMin": 1,
+          "countMax": 1
+        }
+      ],
+      "updatedAt": "2026-02-23T00:00:00.000Z"
+    }
+  ]
+}

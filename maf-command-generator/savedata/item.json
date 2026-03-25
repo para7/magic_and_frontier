@@ -1,0 +1,22 @@
+{
+  "entries": [
+    {
+      "id": "items_1",
+      "itemId": "minecraft:stone",
+      "customName": "Starter Stone",
+      "lore": "Sample item",
+      "enchantments": "minecraft:aqua_affinity 1\nminecraft:bane_of_arthropods 9",
+      "unbreakable": false,
+      "customModelData": "",
+      "repairCost": "",
+      "hideFlags": "",
+      "potionId": "",
+      "customPotionColor": "",
+      "customPotionEffects": "",
+      "attributeModifiers": "",
+      "customNbt": "",
+      "nbt": "{id:\"minecraft:stone\",Count:1b,tag:{display:{Name:'{\"text\":\"Starter Stone\"}',Lore:['{\"text\":\"Sample item\"}']},Enchantments:[{id:\"minecraft:aqua_affinity\",lvl:1s},{id:\"minecraft:bane_of_arthropods\",lvl:9s}]}}",
+      "updatedAt": "2026-03-22T15:02:52Z"
+    }
+  ]
+}

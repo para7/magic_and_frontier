@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "id": "loottable_1",
+      "memo": "",
+      "lootPools": [
+        {
+          "kind": "item",
+          "refId": "items_1",
+          "weight": 70,
+          "countMin": 1,
+          "countMax": 3
+        },
+        {
+          "kind": "grimoire",
+          "refId": "prominence01",
+          "weight": 30,
+          "countMin": 1,
+          "countMax": 1
+        }
+      ],
+      "updatedAt": "2026-02-23T00:00:00.000Z"
+    }
+  ]
+}
