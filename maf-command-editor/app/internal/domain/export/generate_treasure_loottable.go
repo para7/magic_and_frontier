@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"tools2/app/internal/domain/entity/enemies"
 	"tools2/app/internal/domain/entity/grimoire"
 	"tools2/app/internal/domain/entity/items"
 	"tools2/app/internal/domain/entity/loottables"
@@ -84,18 +83,4 @@ func generateLootTableOutputs(settings ExportSettings, entries []loottables.Loot
 		}
 	}
 	return loottableOutputStats{LoottableLootTables: len(entries)}, nil
-}
-
-func toTreasureDrops(drops []enemies.DropRef) []treasures.DropRef {
-	out := make([]treasures.DropRef, 0, len(drops))
-	for _, drop := range drops {
-		out = append(out, treasures.DropRef{
-			Kind:     drop.Kind,
-			RefID:    drop.RefID,
-			Weight:   drop.Weight,
-			CountMin: drop.CountMin,
-			CountMax: drop.CountMax,
-		})
-	}
-	return out
 }

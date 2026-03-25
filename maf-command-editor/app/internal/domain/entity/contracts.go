@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 
 	"tools2/app/internal/domain/common"
 )
@@ -35,6 +36,83 @@ type MafEntity[I any, E any] interface {
 	ListAll() []E
 	FindByID(id string) (E, bool)
 	HasID(id string) bool
+}
+
+type EntrySaver[T any] interface {
+	SaveState(common.EntryState[T]) error
+}
+
+type DropRef struct {
+	Kind     string   `json:"kind" validate:"trimmed_required,trimmed_oneof=minecraft_item item grimoire"`
+	RefID    string   `json:"refId" validate:"trimmed_required,trimmed_min=1,trimmed_max=200"`
+	Weight   float64  `json:"weight" validate:"gte=1,lte=100000"`
+	CountMin *float64 `json:"countMin,omitempty" validate:"omitempty,gte=1,lte=64"`
+	CountMax *float64 `json:"countMax,omitempty" validate:"omitempty,gte=1,lte=64"`
+}
+
+type BaseEntity[E any] struct {
+	Mu    *sync.RWMutex
+	State *common.EntryState[E]
+	Repo  EntrySaver[E]
+	IDOf  func(E) string
+}
+
+func (b *BaseEntity[E]) Save() error {
+	b.Mu.Lock()
+	defer b.Mu.Unlock()
+	next := CopyEntries(b.State.Entries)
+	SortByID(next, b.IDOf)
+	b.State.Entries = next
+	return b.Repo.SaveState(*b.State)
+}
+
+func (b *BaseEntity[E]) ListAll() []E {
+	b.Mu.RLock()
+	defer b.Mu.RUnlock()
+	return CopyEntries(b.State.Entries)
+}
+
+func (b *BaseEntity[E]) FindByID(id string) (E, bool) {
+	b.Mu.RLock()
+	defer b.Mu.RUnlock()
+	return FindByID(b.State.Entries, id, b.IDOf)
+}
+
+func (b *BaseEntity[E]) HasID(id string) bool {
+	_, ok := b.FindByID(id)
+	return ok
+}
+
+func (b *BaseEntity[E]) CreateEntry(entry E, label string) error {
+	if HasID(b.State.Entries, b.IDOf(entry), b.IDOf) {
+		return fmt.Errorf("%w: %s %s", ErrDuplicateID, label, b.IDOf(entry))
+	}
+	return nil
+}
+
+func (b *BaseEntity[E]) AppendEntry(entry E) {
+	b.State.Entries = append(CopyEntries(b.State.Entries), entry)
+}
+
+func (b *BaseEntity[E]) UpdateEntry(entry E, label string) error {
+	if !HasID(b.State.Entries, b.IDOf(entry), b.IDOf) {
+		return fmt.Errorf("%w: %s %s", ErrNotFound, label, b.IDOf(entry))
+	}
+	return nil
+}
+
+func (b *BaseEntity[E]) UpsertEntry(entry E) {
+	next, _ := UpsertByID(b.State.Entries, entry, b.IDOf)
+	b.State.Entries = next
+}
+
+func (b *BaseEntity[E]) DeleteEntry(id string, label string) error {
+	next, ok := DeleteByID(b.State.Entries, id, b.IDOf)
+	if !ok {
+		return fmt.Errorf("%w: %s %s", ErrNotFound, label, id)
+	}
+	b.State.Entries = next
+	return nil
 }
 
 func TrimID(value string) string {

@@ -1,7 +1,6 @@
 package grimoire
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -9,22 +8,16 @@ import (
 	"tools2/app/internal/domain/entity"
 )
 
-type entrySaver interface {
-	SaveState(common.EntryState[GrimoireEntry]) error
-}
-
 type EntityDeps struct {
 	Mutex *sync.RWMutex
 	State *common.EntryState[GrimoireEntry]
-	Repo  entrySaver
+	Repo  entity.EntrySaver[GrimoireEntry]
 	Now   func() time.Time
 }
 
 type Entity struct {
-	mu    *sync.RWMutex
-	state *common.EntryState[GrimoireEntry]
-	repo  entrySaver
-	now   func() time.Time
+	entity.BaseEntity[GrimoireEntry]
+	now func() time.Time
 }
 
 func NewEntity(deps EntityDeps) *Entity {
@@ -32,12 +25,18 @@ func NewEntity(deps EntityDeps) *Entity {
 	if now == nil {
 		now = time.Now
 	}
-	return &Entity{mu: deps.Mutex, state: deps.State, repo: deps.Repo, now: now}
+	return &Entity{
+		BaseEntity: entity.BaseEntity[GrimoireEntry]{
+			Mu: deps.Mutex, State: deps.State, Repo: deps.Repo,
+			IDOf: func(e GrimoireEntry) string { return e.ID },
+		},
+		now: now,
+	}
 }
 
 func (e *Entity) Validate(input SaveInput, _ entity.MasterRef) common.SaveResult[GrimoireEntry] {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
+	e.Mu.RLock()
+	defer e.Mu.RUnlock()
 	return e.validateLocked(input)
 }
 
@@ -56,7 +55,7 @@ func (e *Entity) validateLocked(input SaveInput) common.SaveResult[GrimoireEntry
 }
 
 func (e *Entity) duplicateCastIDLocked(entryID string, castID int) string {
-	for _, entry := range e.state.Entries {
+	for _, entry := range e.State.Entries {
 		if entry.ID != entryID && entry.CastID == castID {
 			return entry.ID
 		}
@@ -65,69 +64,37 @@ func (e *Entity) duplicateCastIDLocked(entryID string, castID int) string {
 }
 
 func (e *Entity) Create(entry GrimoireEntry, _ entity.MasterRef) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	if entity.HasID(e.state.Entries, entry.ID, func(it GrimoireEntry) string { return it.ID }) {
-		return fmt.Errorf("%w: grimoire %s", entity.ErrDuplicateID, entry.ID)
+	e.Mu.Lock()
+	defer e.Mu.Unlock()
+	if err := e.CreateEntry(entry, "grimoire"); err != nil {
+		return err
 	}
 	result := e.validateLocked(grimoireToInput(entry))
 	if !result.OK {
 		return entity.RelationErrFromResult(result)
 	}
-	e.state.Entries = append(entity.CopyEntries(e.state.Entries), entry)
+	e.AppendEntry(entry)
 	return nil
 }
 
 func (e *Entity) Update(entry GrimoireEntry, _ entity.MasterRef) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	if !entity.HasID(e.state.Entries, entry.ID, func(it GrimoireEntry) string { return it.ID }) {
-		return fmt.Errorf("%w: grimoire %s", entity.ErrNotFound, entry.ID)
+	e.Mu.Lock()
+	defer e.Mu.Unlock()
+	if err := e.UpdateEntry(entry, "grimoire"); err != nil {
+		return err
 	}
 	result := e.validateLocked(grimoireToInput(entry))
 	if !result.OK {
 		return entity.RelationErrFromResult(result)
 	}
-	next, _ := entity.UpsertByID(e.state.Entries, entry, func(it GrimoireEntry) string { return it.ID })
-	e.state.Entries = next
+	e.UpsertEntry(entry)
 	return nil
 }
 
 func (e *Entity) Delete(id string, _ entity.MasterRef) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	next, ok := entity.DeleteByID(e.state.Entries, id, func(it GrimoireEntry) string { return it.ID })
-	if !ok {
-		return fmt.Errorf("%w: grimoire %s", entity.ErrNotFound, id)
-	}
-	e.state.Entries = next
-	return nil
-}
-
-func (e *Entity) Save() error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	next := entity.CopyEntries(e.state.Entries)
-	entity.SortByID(next, func(it GrimoireEntry) string { return it.ID })
-	e.state.Entries = next
-	return e.repo.SaveState(*e.state)
-}
-
-func (e *Entity) ListAll() []GrimoireEntry {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
-	return entity.CopyEntries(e.state.Entries)
-}
-
-func (e *Entity) FindByID(id string) (GrimoireEntry, bool) {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
-	return entity.FindByID(e.state.Entries, id, func(it GrimoireEntry) string { return it.ID })
-}
-
-func (e *Entity) HasID(id string) bool {
-	_, ok := e.FindByID(id)
-	return ok
+	e.Mu.Lock()
+	defer e.Mu.Unlock()
+	return e.DeleteEntry(id, "grimoire")
 }
 
 func grimoireToInput(entry GrimoireEntry) SaveInput {

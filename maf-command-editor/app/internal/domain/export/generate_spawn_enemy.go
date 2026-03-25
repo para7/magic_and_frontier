@@ -97,7 +97,7 @@ func generateEnemyOutputs(settings ExportSettings, entries []enemies.EnemyEntry,
 	}
 
 	for _, entry := range entries {
-		lootTable, err := buildDropLootTable(toTreasureDrops(entry.Drops), itemsByID, grimoiresByID, "enemy("+entry.ID+")")
+		lootTable, err := buildDropLootTable(entry.Drops, itemsByID, grimoiresByID, "enemy("+entry.ID+")")
 		if err != nil {
 			return enemyOutputStats{}, err
 		}

@@ -1,7 +1,6 @@
 package spawntables
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -9,22 +8,16 @@ import (
 	"tools2/app/internal/domain/entity"
 )
 
-type entrySaver interface {
-	SaveState(common.EntryState[SpawnTableEntry]) error
-}
-
 type EntityDeps struct {
 	Mutex    *sync.RWMutex
 	State    *common.EntryState[SpawnTableEntry]
-	Repo     entrySaver
+	Repo     entity.EntrySaver[SpawnTableEntry]
 	Now      func() time.Time
 	EnemyIDs func() map[string]struct{}
 }
 
 type Entity struct {
-	mu       *sync.RWMutex
-	state    *common.EntryState[SpawnTableEntry]
-	repo     entrySaver
+	entity.BaseEntity[SpawnTableEntry]
 	now      func() time.Time
 	enemyIDs func() map[string]struct{}
 }
@@ -38,12 +31,18 @@ func NewEntity(deps EntityDeps) *Entity {
 	if enemyIDs == nil {
 		enemyIDs = func() map[string]struct{} { return map[string]struct{}{} }
 	}
-	return &Entity{mu: deps.Mutex, state: deps.State, repo: deps.Repo, now: now, enemyIDs: enemyIDs}
+	return &Entity{
+		BaseEntity: entity.BaseEntity[SpawnTableEntry]{
+			Mu: deps.Mutex, State: deps.State, Repo: deps.Repo,
+			IDOf: func(e SpawnTableEntry) string { return e.ID },
+		},
+		now: now, enemyIDs: enemyIDs,
+	}
 }
 
 func (e *Entity) Validate(input SaveInput, _ entity.MasterRef) common.SaveResult[SpawnTableEntry] {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
+	e.Mu.RLock()
+	defer e.Mu.RUnlock()
 	return e.validateLocked(input)
 }
 
@@ -62,8 +61,8 @@ func (e *Entity) validateLocked(input SaveInput) common.SaveResult[SpawnTableEnt
 }
 
 func (e *Entity) firstOverlapLocked(entry SpawnTableEntry) (string, bool) {
-	entries := make([]SpawnTableEntry, 0, len(e.state.Entries))
-	for _, it := range e.state.Entries {
+	entries := make([]SpawnTableEntry, 0, len(e.State.Entries))
+	for _, it := range e.State.Entries {
 		if it.ID == entry.ID {
 			continue
 		}
@@ -73,69 +72,37 @@ func (e *Entity) firstOverlapLocked(entry SpawnTableEntry) (string, bool) {
 }
 
 func (e *Entity) Create(entry SpawnTableEntry, _ entity.MasterRef) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	if entity.HasID(e.state.Entries, entry.ID, func(it SpawnTableEntry) string { return it.ID }) {
-		return fmt.Errorf("%w: spawn table %s", entity.ErrDuplicateID, entry.ID)
+	e.Mu.Lock()
+	defer e.Mu.Unlock()
+	if err := e.CreateEntry(entry, "spawn table"); err != nil {
+		return err
 	}
 	result := e.validateLocked(spawnTableToInput(entry))
 	if !result.OK {
 		return entity.RelationErrFromResult(result)
 	}
-	e.state.Entries = append(entity.CopyEntries(e.state.Entries), entry)
+	e.AppendEntry(entry)
 	return nil
 }
 
 func (e *Entity) Update(entry SpawnTableEntry, _ entity.MasterRef) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	if !entity.HasID(e.state.Entries, entry.ID, func(it SpawnTableEntry) string { return it.ID }) {
-		return fmt.Errorf("%w: spawn table %s", entity.ErrNotFound, entry.ID)
+	e.Mu.Lock()
+	defer e.Mu.Unlock()
+	if err := e.UpdateEntry(entry, "spawn table"); err != nil {
+		return err
 	}
 	result := e.validateLocked(spawnTableToInput(entry))
 	if !result.OK {
 		return entity.RelationErrFromResult(result)
 	}
-	next, _ := entity.UpsertByID(e.state.Entries, entry, func(it SpawnTableEntry) string { return it.ID })
-	e.state.Entries = next
+	e.UpsertEntry(entry)
 	return nil
 }
 
 func (e *Entity) Delete(id string, _ entity.MasterRef) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	next, ok := entity.DeleteByID(e.state.Entries, id, func(it SpawnTableEntry) string { return it.ID })
-	if !ok {
-		return fmt.Errorf("%w: spawn table %s", entity.ErrNotFound, id)
-	}
-	e.state.Entries = next
-	return nil
-}
-
-func (e *Entity) Save() error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	next := entity.CopyEntries(e.state.Entries)
-	entity.SortByID(next, func(it SpawnTableEntry) string { return it.ID })
-	e.state.Entries = next
-	return e.repo.SaveState(*e.state)
-}
-
-func (e *Entity) ListAll() []SpawnTableEntry {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
-	return entity.CopyEntries(e.state.Entries)
-}
-
-func (e *Entity) FindByID(id string) (SpawnTableEntry, bool) {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
-	return entity.FindByID(e.state.Entries, id, func(it SpawnTableEntry) string { return it.ID })
-}
-
-func (e *Entity) HasID(id string) bool {
-	_, ok := e.FindByID(id)
-	return ok
+	e.Mu.Lock()
+	defer e.Mu.Unlock()
+	return e.DeleteEntry(id, "spawn table")
 }
 
 func spawnTableToInput(entry SpawnTableEntry) SaveInput {

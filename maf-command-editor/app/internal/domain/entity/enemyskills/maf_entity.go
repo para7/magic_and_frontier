@@ -10,22 +10,16 @@ import (
 	"tools2/app/internal/domain/entity/enemies"
 )
 
-type entrySaver interface {
-	SaveState(common.EntryState[EnemySkillEntry]) error
-}
-
 type EntityDeps struct {
 	Mutex       *sync.RWMutex
 	State       *common.EntryState[EnemySkillEntry]
-	Repo        entrySaver
+	Repo        entity.EntrySaver[EnemySkillEntry]
 	Now         func() time.Time
 	EnemyStates *[]enemies.EnemyEntry
 }
 
 type Entity struct {
-	mu          *sync.RWMutex
-	state       *common.EntryState[EnemySkillEntry]
-	repo        entrySaver
+	entity.BaseEntity[EnemySkillEntry]
 	now         func() time.Time
 	enemyStates *[]enemies.EnemyEntry
 }
@@ -40,47 +34,52 @@ func NewEntity(deps EntityDeps) *Entity {
 		empty := []enemies.EnemyEntry{}
 		enemiesRef = &empty
 	}
-	return &Entity{mu: deps.Mutex, state: deps.State, repo: deps.Repo, now: now, enemyStates: enemiesRef}
+	return &Entity{
+		BaseEntity: entity.BaseEntity[EnemySkillEntry]{
+			Mu: deps.Mutex, State: deps.State, Repo: deps.Repo,
+			IDOf: func(e EnemySkillEntry) string { return e.ID },
+		},
+		now: now, enemyStates: enemiesRef,
+	}
 }
 
 func (e *Entity) Validate(input SaveInput, _ entity.MasterRef) common.SaveResult[EnemySkillEntry] {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
+	e.Mu.RLock()
+	defer e.Mu.RUnlock()
 	return ValidateSave(input, e.now())
 }
 
 func (e *Entity) Create(entry EnemySkillEntry, _ entity.MasterRef) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	if entity.HasID(e.state.Entries, entry.ID, func(it EnemySkillEntry) string { return it.ID }) {
-		return fmt.Errorf("%w: enemy skill %s", entity.ErrDuplicateID, entry.ID)
+	e.Mu.Lock()
+	defer e.Mu.Unlock()
+	if err := e.CreateEntry(entry, "enemy skill"); err != nil {
+		return err
 	}
 	result := ValidateSave(enemySkillToInput(entry), e.now())
 	if !result.OK {
 		return entity.RelationErrFromResult(result)
 	}
-	e.state.Entries = append(entity.CopyEntries(e.state.Entries), entry)
+	e.AppendEntry(entry)
 	return nil
 }
 
 func (e *Entity) Update(entry EnemySkillEntry, _ entity.MasterRef) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	if !entity.HasID(e.state.Entries, entry.ID, func(it EnemySkillEntry) string { return it.ID }) {
-		return fmt.Errorf("%w: enemy skill %s", entity.ErrNotFound, entry.ID)
+	e.Mu.Lock()
+	defer e.Mu.Unlock()
+	if err := e.UpdateEntry(entry, "enemy skill"); err != nil {
+		return err
 	}
 	result := ValidateSave(enemySkillToInput(entry), e.now())
 	if !result.OK {
 		return entity.RelationErrFromResult(result)
 	}
-	next, _ := entity.UpsertByID(e.state.Entries, entry, func(it EnemySkillEntry) string { return it.ID })
-	e.state.Entries = next
+	e.UpsertEntry(entry)
 	return nil
 }
 
 func (e *Entity) Delete(id string, _ entity.MasterRef) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
+	e.Mu.Lock()
+	defer e.Mu.Unlock()
 	trimmedID := entity.TrimID(id)
 	for _, enemy := range *e.enemyStates {
 		for _, skillID := range enemy.EnemySkillIDs {
@@ -89,38 +88,7 @@ func (e *Entity) Delete(id string, _ entity.MasterRef) error {
 			}
 		}
 	}
-	next, ok := entity.DeleteByID(e.state.Entries, id, func(it EnemySkillEntry) string { return it.ID })
-	if !ok {
-		return fmt.Errorf("%w: enemy skill %s", entity.ErrNotFound, id)
-	}
-	e.state.Entries = next
-	return nil
-}
-
-func (e *Entity) Save() error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	next := entity.CopyEntries(e.state.Entries)
-	entity.SortByID(next, func(it EnemySkillEntry) string { return it.ID })
-	e.state.Entries = next
-	return e.repo.SaveState(*e.state)
-}
-
-func (e *Entity) ListAll() []EnemySkillEntry {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
-	return entity.CopyEntries(e.state.Entries)
-}
-
-func (e *Entity) FindByID(id string) (EnemySkillEntry, bool) {
-	e.mu.RLock()
-	defer e.mu.RUnlock()
-	return entity.FindByID(e.state.Entries, id, func(it EnemySkillEntry) string { return it.ID })
-}
-
-func (e *Entity) HasID(id string) bool {
-	_, ok := e.FindByID(id)
-	return ok
+	return e.DeleteEntry(id, "enemy skill")
 }
 
 func enemySkillToInput(entry EnemySkillEntry) SaveInput {
