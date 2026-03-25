@@ -8,13 +8,13 @@ import (
 )
 
 func Validate(cfg MafConfig) int {
-	store := grimoire.NewStore(cfg.GrimoireStatePath)
-	if err := store.Load(); err != nil {
+	entity := grimoire.NewGrimoireEntity(cfg.GrimoireStatePath)
+	if err := entity.Load(); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to load grimoire: %v\n", err)
 		return 1
 	}
-	fmt.Printf("Loaded %d grimoires\n", len(store.Entries))
-	errs := store.ValidateAll()
+	fmt.Printf("Loaded %d grimoires\n", len(entity.GetAll()))
+	errs := entity.ValidateAll(nil)
 	for _, e := range errs {
 		fmt.Fprintln(os.Stderr, e)
 	}

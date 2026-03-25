@@ -1,6 +1,8 @@
 package grimoire
 
-func TestGrimoireID() {
+import "testing"
+
+func TestGrimoireID(t *testing.T) {
 	// tests := []struct {
 	// 	name    string
 	// 	id      string
