@@ -1,47 +1,42 @@
 package grimoire
 
 import (
-	"encoding/json"
+	"maf_command_editor/app/domain/master"
 	"maf_command_editor/app/files"
-	"os"
 )
 
-type Store struct {
-	Path      string
-	Grimoires []Grimoire
+type GrimoireEntity struct {
+	files.JsonStore[Grimoire]
 }
 
-func NewStore(path string) *Store {
-	return &Store{Path: path}
-}
+// // func NewStore(path string) *Store {
+// // 	return &Store{JsonStore: files.NewJsonStore[Grimoire](path)}
+// // }
 
-func (s *Store) Load() error {
-	data, err := os.ReadFile(s.Path)
-	if err != nil {
-		return err
-	}
-	var f grimoireJsonFile
-	if err := json.Unmarshal(data, &f); err != nil {
-		return err
-	}
-	s.Grimoires = f.Entries
-	return nil
-}
+// func (s *Store) ValidateJSON(g Grimoire, mas master.DBMaster) (Grimoire, error) {
+// 	// TODO
+// 	return Grimoire{}, nil
+// }
 
-func (s *Store) Save() error {
-	entries := s.Grimoires
-	if entries == nil {
-		entries = []Grimoire{}
-	}
-	return files.WriteJson(s.Path, grimoireJsonFile{Entries: entries})
-}
+// func Create()
 
-func (s *Store) Validate() (Grimoire, error) {
+// func (s *Store) ValidateAll(mas master.DBMaster) []error {
+
+// 	// TODO
+// 	return nil
+// }
+
+func (s *GrimoireEntity) ValidateJSON(data Grimoire, mas master.DBMaster) (Grimoire, error) {
 	// TODO
+
 	return Grimoire{}, nil
 }
 
-func (s *Store) ValidateAll() []error {
-	// TODO
-	return nil
-}
+func (s *GrimoireEntity) Create(data Grimoire, mas master.DBMaster) error
+func (s *GrimoireEntity) Update(data Grimoire, mas master.DBMaster) error
+func (s *GrimoireEntity) Delete(id string, mas master.DBMaster) error
+func (s *GrimoireEntity) Save() error
+func (s *GrimoireEntity) Load() error
+
+func (s *GrimoireEntity) ValidateAll(mas master.DBMaster) []error
+func (s *GrimoireEntity) Find() Grimoire

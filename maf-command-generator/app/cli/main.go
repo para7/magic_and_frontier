@@ -13,7 +13,7 @@ func Validate(cfg MafConfig) int {
 		fmt.Fprintf(os.Stderr, "failed to load grimoire: %v\n", err)
 		return 1
 	}
-	fmt.Printf("Loaded %d grimoires\n", len(store.Grimoires))
+	fmt.Printf("Loaded %d grimoires\n", len(store.Entries))
 	errs := store.ValidateAll()
 	for _, e := range errs {
 		fmt.Fprintln(os.Stderr, e)
