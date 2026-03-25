@@ -1,4 +1,4 @@
-module maf-command-editor
+module maf_command_editor
 
 go 1.25.0
 

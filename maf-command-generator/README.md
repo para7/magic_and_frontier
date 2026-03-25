@@ -1,14 +1,14 @@
-# maf-command-editor
+# maf_command_editor
 
 ## コマンド
 
-`mce` は次の 3 コマンドを持ちます。
+`mcg` は次の 3 コマンドを持ちます。
 
 - `editor`: Web サーバー起動
 - `validate`: savedata と export 設定のバリデーション
 - `export`: バリデーション後に datapack を出力
 
-引数なしの `mce` は `mce editor` と同じです。
+引数なしの `mcg` は `mcg editor` と同じです。
 
 ## `make` での実行
 

@@ -5,16 +5,16 @@ import (
 )
 
 func Validate(cfg MafConfig) int {
-	fmt.Printf("Validate")
+	fmt.Println("Validate")
 	return 0
 }
 
 func Export(cfg MafConfig) int {
-	fmt.Printf("Export")
+	fmt.Println("Export")
 	return 0
 }
 
 func Editor(cfg MafConfig) int {
-	fmt.Printf("Editor")
+	fmt.Println("Editor")
 	return 0
 }

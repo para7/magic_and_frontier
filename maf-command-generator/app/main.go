@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"maf-command-editor/app/cli"
+	"maf_command_editor/app/cli"
 )
 
 func main() {
@@ -30,7 +30,7 @@ func main() {
 }
 
 func printUsage(w io.Writer) {
-	fmt.Fprintln(w, "usage: mce <command>")
+	fmt.Fprintln(w, "usage: mcg <command>")
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "commands:")
 	fmt.Fprintln(w, "  editor     start web editor server")
