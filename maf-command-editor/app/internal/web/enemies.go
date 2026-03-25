@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/enemyskills"
+	"tools2/app/internal/domain/entity/enemies"
+	"tools2/app/internal/domain/entity/enemyskills"
 	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/web/views"
 )

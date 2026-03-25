@@ -1,4 +1,10 @@
-# Repository Guidelines
+## ソース構造
+
+- /app/internal/domain: コア実装
+- /app/internal/application: コア実装とUI・CLIの橋渡し
+- /app/internal/web: Web UI
+
+## Repository Guidelines
 
 - build check commands: ```make check```
 

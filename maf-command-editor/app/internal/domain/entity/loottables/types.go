@@ -1,6 +1,6 @@
 package loottables
 
-import "tools2/app/internal/domain/treasures"
+import "tools2/app/internal/domain/entity/treasures"
 
 type LootTableEntry struct {
 	ID        string              `json:"id"`

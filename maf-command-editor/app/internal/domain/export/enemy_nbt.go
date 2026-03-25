@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/entity/enemies"
+	"tools2/app/internal/domain/entity/items"
 )
 
 func toEnemyFunctionLines(settings ExportSettings, entry enemies.EnemyEntry, itemsByID map[string]items.ItemEntry) []string {

@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/entity/enemies"
+	"tools2/app/internal/domain/entity/items"
 )
 
 func TestToEnemyFunctionLinesUsesMobTypeAndDeathLootTable(t *testing.T) {

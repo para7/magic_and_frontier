@@ -7,7 +7,7 @@ import (
 
 	"tools2/app/internal/domain/common"
 	"tools2/app/internal/domain/entity"
-	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/entity/items"
 )
 
 type entrySaver interface {

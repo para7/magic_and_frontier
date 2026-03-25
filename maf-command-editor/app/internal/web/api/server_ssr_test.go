@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
-	"tools2/app/internal/domain/skills"
+	"tools2/app/internal/domain/entity/grimoire"
+	"tools2/app/internal/domain/entity/items"
+	"tools2/app/internal/domain/entity/skills"
 )
 
 func TestHandlerHealth(t *testing.T) {

@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/enemies"
 	"tools2/app/internal/domain/entity"
+	"tools2/app/internal/domain/entity/enemies"
 )
 
 type entrySaver interface {

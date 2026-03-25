@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/enemies"
+	"tools2/app/internal/domain/entity/enemies"
 	dmaster "tools2/app/internal/domain/master"
 )
 

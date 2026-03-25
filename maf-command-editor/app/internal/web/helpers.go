@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/spawntables"
-	"tools2/app/internal/domain/treasures"
+	"tools2/app/internal/domain/entity/enemies"
+	"tools2/app/internal/domain/entity/spawntables"
+	"tools2/app/internal/domain/entity/treasures"
 )
 
 func compactLines(value string) []string {

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"tools2/app/internal/domain/treasures"
+	"tools2/app/internal/domain/entity/treasures"
 )
 
 func TestValidateSaveSuccess(t *testing.T) {

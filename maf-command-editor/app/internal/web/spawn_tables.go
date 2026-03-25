@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"tools2/app/internal/domain/common"
+	"tools2/app/internal/domain/entity/spawntables"
 	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/domain/spawntables"
 	"tools2/app/internal/web/views"
 )
 

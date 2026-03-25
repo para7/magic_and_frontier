@@ -3,9 +3,9 @@ package export
 import (
 	"fmt"
 
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
-	"tools2/app/internal/domain/treasures"
+	"tools2/app/internal/domain/entity/grimoire"
+	"tools2/app/internal/domain/entity/items"
+	"tools2/app/internal/domain/entity/treasures"
 )
 
 func buildDropLootTable(drops []treasures.DropRef, itemsByID map[string]items.ItemEntry, grimoiresByID map[string]grimoire.GrimoireEntry, context string) (map[string]any, error) {

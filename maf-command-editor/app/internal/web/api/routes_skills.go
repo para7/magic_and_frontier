@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"tools2/app/internal/domain/common"
+	"tools2/app/internal/domain/entity/skills"
 	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/domain/skills"
 )
 
 func (a apiRouter) registerSkillRoutes(mux *http.ServeMux) {

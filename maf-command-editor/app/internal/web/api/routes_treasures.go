@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"tools2/app/internal/domain/common"
+	"tools2/app/internal/domain/entity/treasures"
 	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/domain/treasures"
 )
 
 func (a apiRouter) registerTreasureRoutes(mux *http.ServeMux) {

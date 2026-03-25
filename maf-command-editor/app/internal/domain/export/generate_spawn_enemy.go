@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
-	"tools2/app/internal/domain/spawntables"
+	"tools2/app/internal/domain/entity/enemies"
+	"tools2/app/internal/domain/entity/grimoire"
+	"tools2/app/internal/domain/entity/items"
+	"tools2/app/internal/domain/entity/spawntables"
 )
 
 func generateSpawnTableOutputs(settings ExportSettings, entries []spawntables.SpawnTableEntry) (spawnTableOutputStats, error) {

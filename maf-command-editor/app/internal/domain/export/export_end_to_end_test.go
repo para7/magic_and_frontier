@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/entity/grimoire"
+	"tools2/app/internal/domain/entity/items"
+	"tools2/app/internal/domain/entity/treasures"
 	"tools2/app/internal/domain/mcsource"
-	"tools2/app/internal/domain/treasures"
 )
 
 func TestGenerateItemOutputsUsesConfiguredLootDir(t *testing.T) {

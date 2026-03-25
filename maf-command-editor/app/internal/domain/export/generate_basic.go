@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"tools2/app/internal/domain/enemyskills"
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
-	"tools2/app/internal/domain/skills"
+	"tools2/app/internal/domain/entity/enemyskills"
+	"tools2/app/internal/domain/entity/grimoire"
+	"tools2/app/internal/domain/entity/items"
+	"tools2/app/internal/domain/entity/skills"
 )
 
 func generateItemOutputs(settings ExportSettings, entries []items.ItemEntry) (itemOutputStats, error) {

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/grimoire"
+	"tools2/app/internal/domain/entity/grimoire"
 	dmaster "tools2/app/internal/domain/master"
 	"tools2/app/internal/web/views"
 )

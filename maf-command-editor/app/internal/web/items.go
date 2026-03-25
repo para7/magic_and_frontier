@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/items"
+	"tools2/app/internal/domain/entity/items"
+	"tools2/app/internal/domain/entity/skills"
 	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/domain/skills"
 	"tools2/app/internal/web/views"
 )
 
