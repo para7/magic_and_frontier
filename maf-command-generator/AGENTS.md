@@ -1,36 +1,27 @@
+# project info
+
+移行前のプロジェクト "../maf-command-editor" を最小構成で書き直し中。
+
+# Structure
+
+- app/cli/ -- editor, export, validate の3機能のエントリポイント。
+- app/domain/model/ -- 各 JSON に対応した、統一規格でのモデリングと抽象化、バリデーションなど。
+- app/domain/export/ -- データパックの出力処理。
+- app/domain/master/ -- 全 model を束ねて model 間連携を扱う。
+- app/files/ -- ファイル操作系ユーティリティ。
+
+# 重要クラス
+
+## MafEntity
+
+app/domain/model で実装している、各 JSON 操作やバリデーションの実装。
+
+## DBMaster
+
+あらゆる機能へアクセスできるハブとなる存在。データ間連携を取り持つ。
+cli, editor などは DBMaster を薄くラッピングする形で機能を提供する。
+
 # Repository Guidelines
 
-## Project Goal
-For the near term, this repository’s primary goal is to migrate `../tools` to Go.
+- build check command: ```make check```
 
-## Workflow
-Prefer running project commands via `make` targets when a suitable target exists.
-
-## Lint / Staticcheck
-
-Lint は `make lint` を使う。
-
-`go vet` / `staticcheck` を直接叩く必要がある場合は、キャッシュ先を明示して実行する。
-
-```bash
-GOCACHE=/tmp/maf_command_editor-go-cache go vet ./...
-GOCACHE=/tmp/maf_command_editor-go-cache XDG_CACHE_HOME=/tmp/maf_command_editor-cache go tool staticcheck ./...
-```
-
-Run all check commands: ```make check```
-
-## minecraft server 
-
-Minecraft local server is run with docker, ../compose.yml .
-
-## mcstacker
-
-入力画面は mcstacker を参考にする。https://mcstacker.net/?cmd=give
-
-
-## old projects info
-
-以前のプロジェクト情報が必要なら /tmp で git clone をするなどして内容を確認して。本プロジェクトの /tmp にもある。
-
-project1: https://github.com/para7/Minecraft_Datapack
-project2: https://github.com/para7/magic_and_frontier
