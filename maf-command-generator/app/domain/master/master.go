@@ -16,6 +16,8 @@ func NewDBMaster(cfg config.MafConfig) *DBMasterImpl {
 	return &DBMasterImpl{grimoire: grimoire}
 }
 
+// ------ MafEntity 向けインターフェースの実装 ------
+
 func (d *DBMasterImpl) HasGrimoire(id string) bool {
 	_, found := d.grimoire.Find(id)
 	return found
@@ -48,4 +50,12 @@ func (d *DBMasterImpl) HasTreasure(_ string) bool {
 func (d *DBMasterImpl) HasLootTable(_ string) bool {
 	// TODO
 	return false
+}
+
+// ------ CLI 向けユースケースの実装 ------
+
+func (d *DBMasterImpl) ValidateAll() []error {
+	errs := []error{}
+	errs = append(errs, d.grimoire.ValidateAll(d)...)
+	return errs
 }

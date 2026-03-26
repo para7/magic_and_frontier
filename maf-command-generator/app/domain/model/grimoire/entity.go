@@ -2,6 +2,7 @@ package grimoire
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	model "maf_command_editor/app/domain/model"
@@ -116,6 +117,7 @@ func (s *GrimoireEntity) Load() error {
 		return err
 	}
 	s.data = data
+	fmt.Printf("[grimoire.Load] Loaded %d records\n", len(data))
 	return nil
 }
 
@@ -126,6 +128,12 @@ func (s *GrimoireEntity) ValidateAll(mas model.DBMaster) []error {
 		if _, err := s.ValidateJSON(g, mas); err != nil {
 			errs = append(errs, err)
 		}
+	}
+
+	if len(errs) > 0 {
+		fmt.Printf("[grimoire.ValidateAll] Found %d errors\n", len(errs))
+	} else {
+		fmt.Printf("[grimoire.ValidateAll] No errors found\n")
 	}
 	return errs
 }
