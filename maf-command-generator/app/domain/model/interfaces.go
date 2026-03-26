@@ -13,9 +13,7 @@ type DBMaster interface {
 
 // Model の共通インターフェース
 type MafEntity[T any] interface {
-	ValidateJSON(data T, mas DBMaster) (T, error)
-	// ValidateStruct() (T, error)
-	// ValidateRelation(mas DBMaster) (T, error)
+	ValidateJSON(data T, mas DBMaster) (T, []ValidationError)
 
 	// 主に web 画面からの操作用、メモリで保持してる配列にデータを追記する。リレーション関係を確認するため validate も行う
 	Create(data T, mas DBMaster) error
@@ -25,8 +23,7 @@ type MafEntity[T any] interface {
 	Load() error
 
 	// DBMaster との連携用
-	// ListAll() []T
-	ValidateAll(mas DBMaster) []error
+	ValidateAll(mas DBMaster) [][]ValidationError
 	Find(id string) (T, bool)
 	GetAll() []T
 }

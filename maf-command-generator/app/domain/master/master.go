@@ -1,6 +1,8 @@
 package master
 
 import (
+	"log"
+
 	model "maf_command_editor/app/domain/model"
 	"maf_command_editor/app/domain/model/grimoire"
 	config "maf_command_editor/app/files"
@@ -12,7 +14,9 @@ type DBMasterImpl struct {
 
 func NewDBMaster(cfg config.MafConfig) *DBMasterImpl {
 	grimoire := grimoire.NewGrimoireEntity(cfg.GrimoireStatePath)
-	grimoire.Load()
+	if err := grimoire.Load(); err != nil {
+		log.Fatalf("failed to load grimoire: %v", err)
+	}
 	return &DBMasterImpl{grimoire: grimoire}
 }
 
@@ -54,8 +58,8 @@ func (d *DBMasterImpl) HasLootTable(_ string) bool {
 
 // ------ CLI 向けユースケースの実装 ------
 
-func (d *DBMasterImpl) ValidateAll() []error {
-	errs := []error{}
-	errs = append(errs, d.grimoire.ValidateAll(d)...)
-	return errs
+func (d *DBMasterImpl) ValidateAll() [][]model.ValidationError {
+	var result [][]model.ValidationError
+	result = append(result, d.grimoire.ValidateAll(d)...)
+	return result
 }

@@ -4,10 +4,9 @@ import (
 	"errors"
 	"fmt"
 
+	cv "maf_command_editor/app/domain/custom_validator"
 	model "maf_command_editor/app/domain/model"
 	"maf_command_editor/app/files"
-
-	"maf_command_editor/app/domain/custom_validator"
 )
 
 // MafEntity の実装
@@ -21,30 +20,29 @@ func NewGrimoireEntity(path string) *GrimoireEntity {
 	return &GrimoireEntity{store: store}
 }
 
-func (s *GrimoireEntity) ValidateJSON(data Grimoire, mas model.DBMaster) (Grimoire, error) {
-	// validateStruct, validateRelationを順に呼び出し、データを受け入れ可能かを検証する
-	if errs := s.ValidateStruct(data); len(errs) > 0 {
-		return Grimoire{}, errs[0]
-	}
-	if errs := s.ValidateRelation(data, mas); len(errs) > 0 {
-		return Grimoire{}, errs[0]
+func (s *GrimoireEntity) ValidateJSON(data Grimoire, mas model.DBMaster) (Grimoire, []model.ValidationError) {
+	var errs []model.ValidationError
+	errs = append(errs, s.ValidateStruct(data)...)
+	errs = append(errs, s.ValidateRelation(data, mas)...)
+	if len(errs) > 0 {
+		return Grimoire{}, errs
 	}
 	return data, nil
 }
 
-func (s *GrimoireEntity) ValidateStruct(newData Grimoire) []error {
-	err := custom_validator.Validate.Struct(newData)
+func (s *GrimoireEntity) ValidateStruct(data Grimoire) []model.ValidationError {
+	err := cv.Validate.Struct(data)
 	if err == nil {
 		return nil
 	}
-	var errs []error
-	for _, fe := range err.(custom_validator.ValidationErrors) {
-		errs = append(errs, fmt.Errorf("%s: failed on '%s' rule", fe.Field(), fe.Tag()))
+	var errs []model.ValidationError
+	for _, fe := range err.(cv.ValidationErrors) {
+		errs = append(errs, cv.NewValidationError("grimoire", data.ID, fe))
 	}
 	return errs
 }
 
-func (s *GrimoireEntity) ValidateRelation(newData Grimoire, mas model.DBMaster) []error {
+func (s *GrimoireEntity) ValidateRelation(data Grimoire, mas model.DBMaster) []model.ValidationError {
 	// ほかのテーブルとのリレーションに関する内容を検証する
 	// grimoire は特に検証すべき内容はない
 	return nil
@@ -52,9 +50,8 @@ func (s *GrimoireEntity) ValidateRelation(newData Grimoire, mas model.DBMaster) 
 
 func (s *GrimoireEntity) Create(data Grimoire, mas model.DBMaster) error {
 	// Validateを実行し、問題なければ data に追加する
-	// Grimoire が参照する先のリレーションはないのでIDだけチェック
-	if _, err := s.ValidateJSON(data, mas); err != nil {
-		return err
+	if _, errs := s.ValidateJSON(data, mas); len(errs) > 0 {
+		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
 	}
 	for _, g := range s.data {
 		if g.ID == data.ID {
@@ -67,8 +64,8 @@ func (s *GrimoireEntity) Create(data Grimoire, mas model.DBMaster) error {
 
 func (s *GrimoireEntity) Update(data Grimoire, mas model.DBMaster) error {
 	// Validateを実行し、問題なければdataを更新する
-	if _, err := s.ValidateJSON(data, mas); err != nil {
-		return err
+	if _, errs := s.ValidateJSON(data, mas); len(errs) > 0 {
+		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
 	}
 	for i, g := range s.data {
 		if g.ID == data.ID {
@@ -106,21 +103,21 @@ func (s *GrimoireEntity) Load() error {
 	return nil
 }
 
-func (s *GrimoireEntity) ValidateAll(mas model.DBMaster) []error {
+func (s *GrimoireEntity) ValidateAll(mas model.DBMaster) [][]model.ValidationError {
 	// いまの data の中身すべてに対して validate を実行する
-	var errs []error
+	var result [][]model.ValidationError
 	for _, g := range s.data {
-		if _, err := s.ValidateJSON(g, mas); err != nil {
-			errs = append(errs, err)
+		if _, errs := s.ValidateJSON(g, mas); len(errs) > 0 {
+			result = append(result, errs)
 		}
 	}
 
-	if len(errs) > 0 {
-		fmt.Printf("[grimoire.ValidateAll] Found %d errors\n", len(errs))
+	if len(result) > 0 {
+		fmt.Printf("[grimoire.ValidateAll] Found errors in %d record(s)\n", len(result))
 	} else {
 		fmt.Printf("[grimoire.ValidateAll] No errors found\n")
 	}
-	return errs
+	return result
 }
 
 func (s *GrimoireEntity) Find(id string) (Grimoire, bool) {
