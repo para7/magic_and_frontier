@@ -5,11 +5,12 @@ import (
 	"io"
 	"os"
 
-	"maf_command_editor/app/cli"
+	cli "maf_command_editor/app/cli"
+	config "maf_command_editor/app/files"
 )
 
 func main() {
-	cfg := cli.LoadConfig()
+	cfg := config.LoadConfig()
 	args := os.Args[1:]
 	// if len(args) == 0 {
 	// 	os.Exit(runEditor(nil, cfg))

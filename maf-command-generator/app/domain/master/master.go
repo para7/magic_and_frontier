@@ -3,13 +3,16 @@ package master
 import (
 	model "maf_command_editor/app/domain/model"
 	"maf_command_editor/app/domain/model/grimoire"
+	config "maf_command_editor/app/files"
 )
 
 type DBMasterImpl struct {
 	grimoire model.MafEntity[grimoire.Grimoire]
 }
 
-func NewDBMaster(grimoire model.MafEntity[grimoire.Grimoire]) *DBMasterImpl {
+func NewDBMaster(cfg config.MafConfig) *DBMasterImpl {
+	grimoire := grimoire.NewGrimoireEntity(cfg.GrimoireStatePath)
+	grimoire.Load()
 	return &DBMasterImpl{grimoire: grimoire}
 }
 
