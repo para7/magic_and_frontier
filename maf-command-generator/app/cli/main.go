@@ -2,12 +2,12 @@ package cli
 
 import (
 	"fmt"
-	"maf_command_editor/app/domain/master/masterimpl"
+	"maf_command_editor/app/domain/master"
 	"maf_command_editor/app/domain/model/grimoire"
 )
 
 func Validate(cfg MafConfig) int {
-	_ = masterimpl.NewDBMaster(grimoire.NewGrimoireEntity(cfg.GrimoireStatePath))
+	_ = master.NewDBMaster(grimoire.NewGrimoireEntity(cfg.GrimoireStatePath))
 
 	// entity := grimoire.NewGrimoireEntity(cfg.GrimoireStatePath)
 	// if err := entity.Load(); err != nil {

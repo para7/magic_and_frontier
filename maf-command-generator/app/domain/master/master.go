@@ -1,8 +1,8 @@
-package masterimpl
+package master
 
 import (
+	model "maf_command_editor/app/domain/model"
 	"maf_command_editor/app/domain/model/grimoire"
-	model "maf_command_editor/app/domain/model/maf_entity"
 )
 
 type DBMasterImpl struct {
@@ -14,7 +14,8 @@ func NewDBMaster(grimoire model.MafEntity[grimoire.Grimoire]) *DBMasterImpl {
 }
 
 func (d *DBMasterImpl) HasGrimoire(id string) bool {
-	return d.grimoire.Find(id) != (grimoire.Grimoire{})
+	_, found := d.grimoire.Find(id)
+	return found
 }
 
 func (d *DBMasterImpl) HasItem(_ string) bool {
