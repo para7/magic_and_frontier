@@ -3,10 +3,11 @@ package grimoire
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	model "maf_command_editor/app/domain/model"
 	"maf_command_editor/app/files"
+
+	"maf_command_editor/app/domain/custom_validator"
 )
 
 // MafEntity の実装
@@ -32,29 +33,13 @@ func (s *GrimoireEntity) ValidateJSON(data Grimoire, mas model.DBMaster) (Grimoi
 }
 
 func (s *GrimoireEntity) ValidateStruct(newData Grimoire) []error {
-	// リレーションとは関係ない、値の範囲、文字数などデータ単品で検証できる内容を検証する
+	err := custom_validator.Validate.Struct(newData)
+	if err == nil {
+		return nil
+	}
 	var errs []error
-	if strings.TrimSpace(newData.ID) == "" {
-		errs = append(errs, errors.New("id is required"))
-	}
-	if newData.CastID < 1 {
-		errs = append(errs, errors.New("castid must be >= 1"))
-	}
-	if newData.CastTime < 0 || newData.CastTime > 12000 {
-		errs = append(errs, errors.New("castTime must be between 0 and 12000"))
-	}
-	if newData.MPCost < 0 || newData.MPCost > 1000000 {
-		errs = append(errs, errors.New("mpCost must be between 0 and 1000000"))
-	}
-	if strings.TrimSpace(newData.Script) == "" {
-		errs = append(errs, errors.New("script is required"))
-	} else if len([]rune(strings.TrimSpace(newData.Script))) > 20000 {
-		errs = append(errs, errors.New("script must be <= 20000 characters"))
-	}
-	if strings.TrimSpace(newData.Title) == "" {
-		errs = append(errs, errors.New("title is required"))
-	} else if len([]rune(strings.TrimSpace(newData.Title))) > 200 {
-		errs = append(errs, errors.New("title must be <= 200 characters"))
+	for _, fe := range err.(custom_validator.ValidationErrors) {
+		errs = append(errs, fmt.Errorf("%s: failed on '%s' rule", fe.Field(), fe.Tag()))
 	}
 	return errs
 }

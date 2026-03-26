@@ -9,6 +9,7 @@
 - app/domain/export/ -- データパックの出力処理。
 - app/domain/master/ -- 全 model を束ねて model 間連携を扱う。
 - app/files/ -- ファイル操作系ユーティリティ。
+- app/minecraft/ -- Minecraft 内部データ + 補助スクリプト
 
 # 重要クラス
 
