@@ -3,6 +3,7 @@ package master
 import (
 	"log"
 
+	export "maf_command_editor/app/domain/export"
 	model "maf_command_editor/app/domain/model"
 	"maf_command_editor/app/domain/model/grimoire"
 	config "maf_command_editor/app/files"
@@ -11,6 +12,8 @@ import (
 type DBMasterImpl struct {
 	grimoire model.MafEntity[grimoire.Grimoire]
 }
+
+var _ export.DBMaster = (*DBMasterImpl)(nil)
 
 func NewDBMaster(cfg config.MafConfig) *DBMasterImpl {
 	grimoire := grimoire.NewGrimoireEntity(cfg.GrimoireStatePath)
@@ -61,5 +64,18 @@ func (d *DBMasterImpl) HasLootTable(_ string) bool {
 func (d *DBMasterImpl) ValidateAll() [][]model.ValidationError {
 	var result [][]model.ValidationError
 	result = append(result, d.grimoire.ValidateAll(d)...)
+	return result
+}
+
+// ------ Export 向けインターフェースの実装 ------
+
+func (d *DBMasterImpl) GetGrimoireByID(id string) (grimoire.Grimoire, bool) {
+	return d.grimoire.Find(id)
+}
+
+func (d *DBMasterImpl) ListGrimoires() []grimoire.Grimoire {
+	entries := d.grimoire.GetAll()
+	result := make([]grimoire.Grimoire, len(entries))
+	copy(result, entries)
 	return result
 }
