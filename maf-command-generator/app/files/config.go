@@ -12,7 +12,9 @@ type ExportSettings struct {
 }
 
 type ExportPaths struct {
-	SpellEffect string `json:"spellEffect"`
+	GrimoireEffect     string `json:"grimoireEffect"`
+	GrimoireSelectFile string `json:"grimoireSelectFile"`
+	GrimoireDebug      string `json:"grimoireDebug"`
 }
 
 func LoadExportSettings(path string) (ExportSettings, error) {

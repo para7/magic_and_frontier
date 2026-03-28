@@ -11,8 +11,11 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	if err != nil {
 		return err
 	}
-	spellEffectPath := settings.ExportPaths.SpellEffect
-	writeDir := filepath.Join(settings.OutputRoot, spellEffectPath)
-	artifacts := BuildGrimoireArtifacts(dmas, spellEffectPath)
-	return WriteGrimoireArtifacts(writeDir, artifacts)
+
+	effectRelDir := settings.ExportPaths.GrimoireEffect
+	effectDir := filepath.Join(settings.OutputRoot, effectRelDir)
+	effectSelect := filepath.Join(settings.OutputRoot, settings.ExportPaths.GrimoireSelectFile)
+
+	effects := BuildGrimoireArtifacts(dmas, effectRelDir)
+	return WriteGrimoireArtifacts(effectDir, effectSelect, effects)
 }

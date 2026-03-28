@@ -1,6 +1,8 @@
 {
   "outputRoot": "../datapacks/magic_and_frontier",
   "exportPaths": {
-    "spellEffect": "data/maf/function/generated/grimoire/effect"
+    "grimoireEffect": "data/maf/function/generated/grimoire/effect",
+    "grimoireSelectFile": "data/maf/function/generated/grimoire/selectexec.mcfunction",
+    "grimoireDebug": "data/maf/function/generated/grimoire/debug"
   }
 }
