@@ -2,10 +2,10 @@ package cli
 
 import (
 	"fmt"
-	"maf_command_editor/app/files"
+	master "maf_command_editor/app/domain/master"
 )
 
-func Editor(cfg files.MafConfig) int {
+func Editor(dmas *master.DBMaster) int {
 	fmt.Println("Editor")
 	return 0
 }

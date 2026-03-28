@@ -6,23 +6,29 @@ import (
 	"os"
 
 	cli "maf_command_editor/app/cli"
+	"maf_command_editor/app/domain/master"
 	config "maf_command_editor/app/files"
 )
 
 func main() {
 	cfg := config.LoadConfig()
 	args := os.Args[1:]
-	// if len(args) == 0 {
-	// 	os.Exit(runEditor(nil, cfg))
-	// }
+
+	if len(args) == 0 {
+		printUsage(os.Stderr)
+		os.Exit(2)
+	}
 
 	switch args[0] {
 	case "editor":
-		os.Exit(cli.Editor(cfg))
+		dmas := master.NewDBMaster(cfg)
+		os.Exit(cli.Editor(dmas))
 	case "validate":
-		os.Exit(cli.Validate(cfg))
+		dmas := master.NewDBMaster(cfg)
+		os.Exit(cli.Validate(dmas))
 	case "export":
-		os.Exit(cli.Export(cfg))
+		dmas := master.NewDBMaster(cfg)
+		os.Exit(cli.Export(dmas, cfg))
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", args[0])
 		printUsage(os.Stderr)

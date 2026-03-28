@@ -1,8 +1,28 @@
 package files
 
 import (
+	"encoding/json"
+	"os"
 	"path/filepath"
 )
+
+type ExportSettings struct {
+	OutputRoot  string      `json:"outputRoot"`
+	ExportPaths ExportPaths `json:"exportPaths"`
+}
+
+type ExportPaths struct {
+	SpellEffect string `json:"spellEffect"`
+}
+
+func LoadExportSettings(path string) (ExportSettings, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return ExportSettings{}, err
+	}
+	var s ExportSettings
+	return s, json.Unmarshal(data, &s)
+}
 
 type MafConfig struct {
 	Port                   int

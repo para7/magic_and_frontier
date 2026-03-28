@@ -3,15 +3,12 @@ package cli
 import (
 	"fmt"
 	cv "maf_command_editor/app/domain/custom_validator"
-	master "maf_command_editor/app/domain/master"
-	"maf_command_editor/app/files"
+	"maf_command_editor/app/domain/master"
 	"os"
 )
 
-func Validate(cfg files.MafConfig) int {
-	db := master.NewDBMaster(cfg)
-
-	allErrs := db.ValidateAll()
+func Validate(dmas *master.DBMaster) int {
+	allErrs := dmas.ValidateAll()
 	total := 0
 	for i, recordErrs := range allErrs {
 		for _, _e := range recordErrs {
