@@ -44,10 +44,6 @@ func NewValidationError(entity, id string, fe FieldError) model.ValidationError 
 	}
 }
 
-func FormatValidationError(e model.ValidationError) string {
-	return fmt.Sprintf("%s【id=%s】%s: %s", e.Entity, e.ID, e.Field, formatMessage(e))
-}
-
 func formatMessage(e model.ValidationError) string {
 	switch e.Tag {
 	case "trimmed_required":
@@ -72,4 +68,8 @@ func formatMessage(e model.ValidationError) string {
 		}
 		return fmt.Sprintf("'%s' ルールに違反しています", e.Tag)
 	}
+}
+
+func FormatValidationError(e model.ValidationError) string {
+	return fmt.Sprintf("%s【%s】%s: %s", e.Entity, e.ID, e.Field, formatMessage(e))
 }

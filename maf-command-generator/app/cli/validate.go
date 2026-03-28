@@ -13,9 +13,11 @@ func Validate(cfg files.MafConfig) int {
 
 	allErrs := db.ValidateAll()
 	total := 0
-	for _, recordErrs := range allErrs {
-		for _, e := range recordErrs {
-			fmt.Fprintf(os.Stderr, "  %s\n", cv.FormatValidationError(e))
+	for i, recordErrs := range allErrs {
+		for _, _e := range recordErrs {
+			e := _e
+			e.Entity = e.Entity + fmt.Sprintf("[%d]", i+1)
+			fmt.Fprintf(os.Stderr, " %s\n", cv.FormatValidationError(e))
 			total++
 		}
 	}
