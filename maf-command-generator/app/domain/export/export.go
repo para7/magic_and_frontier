@@ -6,16 +6,18 @@ import (
 	config "maf_command_editor/app/files"
 )
 
+const funcRoot = "data/maf/function"
+
 func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	settings, err := config.LoadExportSettings(mafconfig.ExportSettingsPath)
 	if err != nil {
 		return err
 	}
 
-	effectRelDir := settings.ExportPaths.GrimoireEffect
-	effectDir := filepath.Join(settings.OutputRoot, effectRelDir)
-	effectSelect := filepath.Join(settings.OutputRoot, settings.ExportPaths.GrimoireSelectFile)
+	effectLogicalDir := settings.ExportPaths.GrimoireEffect
+	effectDir := filepath.Join(settings.OutputRoot, funcRoot, effectLogicalDir)
+	effectSelect := filepath.Join(settings.OutputRoot, funcRoot, settings.ExportPaths.GrimoireSelectFile)
 
-	effects := BuildGrimoireArtifacts(dmas, effectRelDir)
+	effects := BuildGrimoireArtifacts(dmas, effectLogicalDir)
 	return WriteGrimoireArtifacts(effectDir, effectSelect, effects)
 }

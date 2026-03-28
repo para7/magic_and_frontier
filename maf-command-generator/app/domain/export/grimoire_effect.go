@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-const namespace = "maf"
-
 type GrimoireEffectFunction struct {
 	ID           string
 	Body         string
@@ -24,7 +22,7 @@ func BuildGrimoireArtifacts(master DBMaster, effectDir string) []GrimoireEffectF
 	entries := make([]GrimoireEffectFunction, 0, len(grimoires))
 
 	for _, entry := range grimoires {
-		selectScript := fmt.Sprintf("execute if entity @s[scores={mafEffectID=%d}] run function %s", entry.CastID, functionRefName(namespace, effectDir, entry.ID))
+		selectScript := fmt.Sprintf("execute if entity @s[scores={mafEffectID=%d}] run function %s", entry.CastID, functionRefName(effectDir, entry.ID))
 		entries = append(entries, GrimoireEffectFunction{
 			ID:           entry.ID,
 			Body:         entry.Script,
@@ -58,11 +56,10 @@ func getEffectFunctionName(spellEffectDir string, grimoireId string) string {
 }
 
 // minecraft で認識される function の名前を取得する
-func functionRefName(namespace string, relativeDir, baseName string) string {
-	resourcePath := strings.TrimPrefix(filepath.ToSlash(relativeDir), "data/maf/function/")
-	resourcePath = strings.Trim(resourcePath, "/")
-	if resourcePath == "" {
-		return namespace + ":" + baseName
+func functionRefName(logicalDir, baseName string) string {
+	dir := strings.Trim(filepath.ToSlash(logicalDir), "/")
+	if dir == "" {
+		return "maf:" + baseName
 	}
-	return namespace + ":" + resourcePath + "/" + baseName
+	return "maf:" + dir + "/" + baseName
 }

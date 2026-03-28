@@ -33,7 +33,7 @@ func TestBuildGrimoireArtifactsBuildsEffectsAndSelectExec(t *testing.T) {
 		},
 	}
 
-	effects := BuildGrimoireArtifacts(master, "data/maf/function/generated/grimoire/effect")
+	effects := BuildGrimoireArtifacts(master, "generated/grimoire/effect")
 
 	if len(effects) != 2 {
 		t.Fatalf("effects length = %d, want 2", len(effects))
@@ -56,7 +56,7 @@ func TestBuildGrimoireArtifactsBuildsEffectsAndSelectExec(t *testing.T) {
 }
 
 func TestBuildGrimoireArtifactsEmpty(t *testing.T) {
-	effects := BuildGrimoireArtifacts(stubDBMaster{}, "data/maf/function/generated/grimoire/effect")
+	effects := BuildGrimoireArtifacts(stubDBMaster{}, "generated/grimoire/effect")
 
 	if len(effects) != 0 {
 		t.Fatalf("effects length = %d, want 0", len(effects))
