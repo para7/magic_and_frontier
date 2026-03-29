@@ -120,6 +120,7 @@ func (s *TreasureEntity) Load() error {
 		return err
 	}
 	s.data = data
+	fmt.Printf("[treasure.Load] Loaded %d records\n", len(data))
 	return nil
 }
 
@@ -141,6 +142,11 @@ func (s *TreasureEntity) ValidateAll(mas model.DBMaster) [][]model.ValidationErr
 			continue
 		}
 		seenIDs[t.ID] = true
+	}
+	if len(result) > 0 {
+		fmt.Printf("[treasure.ValidateAll] Found errors in %d record(s)\n", len(result))
+	} else {
+		fmt.Printf("[treasure.ValidateAll] No errors found\n")
 	}
 	return result
 }

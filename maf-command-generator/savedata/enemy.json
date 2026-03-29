@@ -11,7 +11,7 @@
       "moveSpeed": 0.22,
       "equipment": {},
       "enemySkillIds": [
-        "enemyskill_1"
+        "near_poison"
       ],
       "dropMode": "replace",
       "drops": [

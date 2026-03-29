@@ -3,6 +3,8 @@
   "exportPaths": {
     "grimoireEffect": "generated/grimoire/effect",
     "grimoireSelectFile": "generated/grimoire/selectexec.mcfunction",
-    "grimoireDebug": "generated/grimoire/give"
+    "grimoireDebug": "generated/grimoire/give",
+    "enemy": "generated/enemy/spawn",
+    "enemySkill": "generated/enemy/skill"
   }
 }

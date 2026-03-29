@@ -92,6 +92,7 @@ func (s *LootTableEntity) Load() error {
 		return err
 	}
 	s.data = data
+	fmt.Printf("[loottable.Load] Loaded %d records\n", len(data))
 	return nil
 }
 
@@ -113,6 +114,11 @@ func (s *LootTableEntity) ValidateAll(mas model.DBMaster) [][]model.ValidationEr
 			continue
 		}
 		seenIDs[lt.ID] = true
+	}
+	if len(result) > 0 {
+		fmt.Printf("[loottable.ValidateAll] Found errors in %d record(s)\n", len(result))
+	} else {
+		fmt.Printf("[loottable.ValidateAll] No errors found\n")
 	}
 	return result
 }

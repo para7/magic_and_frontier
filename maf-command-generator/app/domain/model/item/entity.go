@@ -114,6 +114,7 @@ func (s *ItemEntity) Load() error {
 		return err
 	}
 	s.data = data
+	fmt.Printf("[item.Load] Loaded %d records\n", len(data))
 	return nil
 }
 
@@ -135,6 +136,11 @@ func (s *ItemEntity) ValidateAll(mas model.DBMaster) [][]model.ValidationError {
 			continue
 		}
 		seenIDs[it.ID] = true
+	}
+	if len(result) > 0 {
+		fmt.Printf("[item.ValidateAll] Found errors in %d record(s)\n", len(result))
+	} else {
+		fmt.Printf("[item.ValidateAll] No errors found\n")
 	}
 	return result
 }

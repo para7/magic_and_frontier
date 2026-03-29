@@ -155,6 +155,7 @@ func (s *SpawnTableEntity) Load() error {
 		return err
 	}
 	s.data = data
+	fmt.Printf("[spawntable.Load] Loaded %d records\n", len(data))
 	return nil
 }
 
@@ -176,6 +177,11 @@ func (s *SpawnTableEntity) ValidateAll(mas model.DBMaster) [][]model.ValidationE
 			continue
 		}
 		seenIDs[st.ID] = true
+	}
+	if len(result) > 0 {
+		fmt.Printf("[spawntable.ValidateAll] Found errors in %d record(s)\n", len(result))
+	} else {
+		fmt.Printf("[spawntable.ValidateAll] No errors found\n")
 	}
 	return result
 }

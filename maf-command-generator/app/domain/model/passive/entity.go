@@ -90,6 +90,7 @@ func (s *PassiveEntity) Load() error {
 		return err
 	}
 	s.data = data
+	fmt.Printf("[passive.Load] Loaded %d records\n", len(data))
 	return nil
 }
 
@@ -111,6 +112,11 @@ func (s *PassiveEntity) ValidateAll(mas model.DBMaster) [][]model.ValidationErro
 			continue
 		}
 		seenIDs[p.ID] = true
+	}
+	if len(result) > 0 {
+		fmt.Printf("[passive.ValidateAll] Found errors in %d record(s)\n", len(result))
+	} else {
+		fmt.Printf("[passive.ValidateAll] No errors found\n")
 	}
 	return result
 }

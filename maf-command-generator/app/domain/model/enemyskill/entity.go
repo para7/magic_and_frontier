@@ -90,6 +90,7 @@ func (s *EnemySkillEntity) Load() error {
 		return err
 	}
 	s.data = data
+	fmt.Printf("[enemyskill.Load] Loaded %d records\n", len(data))
 	return nil
 }
 
@@ -111,6 +112,11 @@ func (s *EnemySkillEntity) ValidateAll(mas model.DBMaster) [][]model.ValidationE
 			continue
 		}
 		seenIDs[e.ID] = true
+	}
+	if len(result) > 0 {
+		fmt.Printf("[enemyskill.ValidateAll] Found errors in %d record(s)\n", len(result))
+	} else {
+		fmt.Printf("[enemyskill.ValidateAll] No errors found\n")
 	}
 	return result
 }
