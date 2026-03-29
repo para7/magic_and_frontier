@@ -28,6 +28,18 @@ func hasFieldError(errs []model.ValidationError, field string) bool {
 	return false
 }
 
+type testDBMaster struct{}
+
+func (testDBMaster) HasItem(string) bool               { return true }
+func (testDBMaster) HasGrimoire(string) bool           { return true }
+func (testDBMaster) HasPassive(string) bool            { return true }
+func (testDBMaster) HasEnemySkill(string) bool         { return true }
+func (testDBMaster) HasEnemy(string) bool              { return true }
+func (testDBMaster) HasSpawnTable(string) bool         { return true }
+func (testDBMaster) HasTreasure(string) bool           { return true }
+func (testDBMaster) HasLootTable(string) bool          { return true }
+func (testDBMaster) HasMinecraftLootTable(string) bool { return true }
+
 func TestGrimoireValidateStructAllValid(t *testing.T) {
 	entity := &GrimoireEntity{}
 
@@ -203,4 +215,23 @@ func TestGrimoireValidateStructPerFieldOKNG(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGrimoireValidateAllDetectsDuplicateID(t *testing.T) {
+	entity := &GrimoireEntity{
+		data: []Grimoire{
+			validGrimoire(),
+			validGrimoire(),
+		},
+	}
+
+	allErrs := entity.ValidateAll(testDBMaster{})
+	for _, recordErrs := range allErrs {
+		for _, err := range recordErrs {
+			if err.ID == "grimoire_1" && err.Field == "id" && err.Tag == "unique" {
+				return
+			}
+		}
+	}
+	t.Fatalf("expected duplicate id error, got %#v", allErrs)
 }

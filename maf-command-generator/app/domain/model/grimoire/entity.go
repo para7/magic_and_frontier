@@ -20,60 +20,60 @@ func NewGrimoireEntity(path string) *GrimoireEntity {
 	return &GrimoireEntity{store: store}
 }
 
-func (s *GrimoireEntity) ValidateJSON(data Grimoire, mas model.DBMaster) (Grimoire, []model.ValidationError) {
+func (s *GrimoireEntity) ValidateJSON(newEntity Grimoire, mas model.DBMaster) (Grimoire, []model.ValidationError) {
 	var errs []model.ValidationError
-	errs = append(errs, s.ValidateStruct(data)...)
-	errs = append(errs, s.ValidateRelation(data, mas)...)
+	errs = append(errs, s.ValidateStruct(newEntity)...)
+	errs = append(errs, s.ValidateRelation(newEntity, mas)...)
 	if len(errs) > 0 {
 		return Grimoire{}, errs
 	}
-	return data, nil
+	return newEntity, nil
 }
 
-func (s *GrimoireEntity) ValidateStruct(data Grimoire) []model.ValidationError {
-	err := cv.Validate.Struct(data)
+func (s *GrimoireEntity) ValidateStruct(newEntity Grimoire) []model.ValidationError {
+	err := cv.Validate.Struct(newEntity)
 	if err == nil {
 		return nil
 	}
 	var errs []model.ValidationError
 	for _, fe := range err.(cv.ValidationErrors) {
-		errs = append(errs, cv.NewValidationError("grimoire", data.ID, fe))
+		errs = append(errs, cv.NewValidationError("grimoire", newEntity.ID, fe))
 	}
 	return errs
 }
 
-func (s *GrimoireEntity) ValidateRelation(data Grimoire, mas model.DBMaster) []model.ValidationError {
-	// ほかのテーブルとのリレーションに関する内容を検証する
-	// grimoire は特に検証すべき内容はない
+func (s *GrimoireEntity) ValidateRelation(newEntity Grimoire, _ model.DBMaster) []model.ValidationError {
+	// ID の重複チェックを行う
+
 	return nil
 }
 
-func (s *GrimoireEntity) Create(data Grimoire, mas model.DBMaster) error {
+func (s *GrimoireEntity) Create(newEntity Grimoire, mas model.DBMaster) error {
 	// Validateを実行し、問題なければ data に追加する
-	if _, errs := s.ValidateJSON(data, mas); len(errs) > 0 {
+	if _, errs := s.ValidateJSON(newEntity, mas); len(errs) > 0 {
 		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
 	}
 	for _, g := range s.data {
-		if g.ID == data.ID {
-			return errors.New("grimoire id already exists: " + data.ID)
+		if g.ID == newEntity.ID {
+			return errors.New("grimoire id already exists: " + newEntity.ID)
 		}
 	}
-	s.data = append(s.data, data)
+	s.data = append(s.data, newEntity)
 	return nil
 }
 
-func (s *GrimoireEntity) Update(data Grimoire, mas model.DBMaster) error {
+func (s *GrimoireEntity) Update(newEntity Grimoire, mas model.DBMaster) error {
 	// Validateを実行し、問題なければdataを更新する
-	if _, errs := s.ValidateJSON(data, mas); len(errs) > 0 {
+	if _, errs := s.ValidateJSON(newEntity, mas); len(errs) > 0 {
 		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
 	}
 	for i, g := range s.data {
-		if g.ID == data.ID {
-			s.data[i] = data
+		if g.ID == newEntity.ID {
+			s.data[i] = newEntity
 			return nil
 		}
 	}
-	return errors.New("grimoire not found: " + data.ID)
+	return errors.New("grimoire not found: " + newEntity.ID)
 }
 
 func (s *GrimoireEntity) Delete(id string, mas model.DBMaster) error {
@@ -106,10 +106,22 @@ func (s *GrimoireEntity) Load() error {
 func (s *GrimoireEntity) ValidateAll(mas model.DBMaster) [][]model.ValidationError {
 	// いまの data の中身すべてに対して validate を実行する
 	var result [][]model.ValidationError
+	seenIDs := map[string]bool{}
 	for _, g := range s.data {
 		if _, errs := s.ValidateJSON(g, mas); len(errs) > 0 {
 			result = append(result, errs)
 		}
+		if seenIDs[g.ID] {
+			result = append(result, []model.ValidationError{{
+				Entity: "grimoire",
+				ID:     g.ID,
+				Field:  "id",
+				Tag:    "unique",
+				Param:  "ID重複を検出",
+			}})
+			continue
+		}
+		seenIDs[g.ID] = true
 	}
 
 	if len(result) > 0 {
