@@ -22,7 +22,7 @@ func BuildEnemySkillArtifacts(master DBMaster, skillLogicalDir string) []EnemySk
 	for _, entry := range entries {
 		out = append(out, EnemySkillFunction{
 			ID:             entry.ID,
-			Body:           entry.Script,
+			Body:           strings.Join(entry.Script, "\n"),
 			DispatcherLine: fmt.Sprintf("execute if entity @s[tag=%s] run function %s", entry.ID, functionRefName(skillLogicalDir, entry.ID)),
 		})
 	}

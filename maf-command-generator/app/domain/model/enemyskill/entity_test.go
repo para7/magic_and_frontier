@@ -11,7 +11,7 @@ func validEnemySkill() EnemySkill {
 		ID:          "eskill_1",
 		Name:        "炎の一撃",
 		Description: "炎のダメージを与える",
-		Script:      "function maf:enemy_skill/test",
+		Script:      []string{"function maf:enemy_skill/test"},
 	}
 }
 
@@ -58,8 +58,8 @@ func TestEnemySkillValidateStructPerField(t *testing.T) {
 		{name: "name ng over max", patch: func(e *EnemySkill) { e.Name = string(make([]rune, 81)) }, wantErrField: "name"},
 		{name: "description ok empty", patch: func(e *EnemySkill) { e.Description = "" }},
 		{name: "description ng over max", patch: func(e *EnemySkill) { e.Description = string(make([]rune, 401)) }, wantErrField: "description"},
-		{name: "script ok", patch: func(e *EnemySkill) { e.Script = "function maf:test" }},
-		{name: "script ng empty", patch: func(e *EnemySkill) { e.Script = "  " }, wantErrField: "script"},
+		{name: "script ok", patch: func(e *EnemySkill) { e.Script = []string{"function maf:test"} }},
+		{name: "script ng empty", patch: func(e *EnemySkill) { e.Script = []string{} }, wantErrField: "script"},
 	}
 
 	for _, tt := range tests {

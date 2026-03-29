@@ -12,7 +12,7 @@ func validGrimoire() Grimoire {
 		CastID:      1,
 		CastTime:    20,
 		MPCost:      5,
-		Script:      "function maf:test",
+		Script:      []string{"function maf:test"},
 		Title:       "Firebolt",
 		Description: "desc",
 	}
@@ -144,13 +144,13 @@ func TestGrimoireValidateStructPerFieldOKNG(t *testing.T) {
 		{
 			name: "script ok",
 			patch: func(g *Grimoire) {
-				g.Script = "function maf:ok"
+				g.Script = []string{"function maf:ok"}
 			},
 		},
 		{
-			name: "script ng whitespace only",
+			name: "script ng empty",
 			patch: func(g *Grimoire) {
-				g.Script = " \n \t "
+				g.Script = []string{}
 			},
 			wantErrField: "script",
 		},

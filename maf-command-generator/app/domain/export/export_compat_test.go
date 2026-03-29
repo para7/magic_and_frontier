@@ -39,7 +39,7 @@ func TestExportDatapackDoesNotWriteLegacyEnemyCompatibilityWrappers(t *testing.T
 
 	master := exportMasterStub{
 		enemySkills: []enemyskillModel.EnemySkill{
-			{ID: "near_poison", Script: "say poison"},
+			{ID: "near_poison", Script: []string{"say poison"}},
 		},
 		enemies: []enemyModel.Enemy{
 			{ID: "poison_zombie", MobType: "minecraft:zombie", HP: 20, DropMode: "replace"},

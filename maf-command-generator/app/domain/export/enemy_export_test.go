@@ -18,7 +18,7 @@ import (
 func TestBuildEnemySkillArtifactsAndWrite(t *testing.T) {
 	master := exportMasterStub{
 		enemySkills: []enemyskillModel.EnemySkill{
-			{ID: "near_poison", Script: "effect give @e[distance=..2] minecraft:poison 10 2"},
+			{ID: "near_poison", Script: []string{"effect give @e[distance=..2] minecraft:poison 10 2"}},
 		},
 	}
 

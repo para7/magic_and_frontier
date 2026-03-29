@@ -4,7 +4,9 @@
       "id": "skill_1",
       "name": "Sword Slash",
       "skilltype": "sword",
-      "script": "function maf:skill/sword_slash"
+      "script": [
+        "function maf:skill/sword_slash"
+      ]
     }
   ]
 }

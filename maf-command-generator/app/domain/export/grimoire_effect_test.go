@@ -9,8 +9,8 @@ import (
 func TestBuildGrimoireArtifactsBuildsEffectsAndSelectExec(t *testing.T) {
 	master := exportMasterStub{
 		grimoires: []grimoireModel.Grimoire{
-			{ID: "fire", CastID: 2, Script: "say fire"},
-			{ID: "ice", CastID: 9, Script: "say ice\n"},
+			{ID: "fire", CastID: 2, Script: []string{"say fire"}},
+			{ID: "ice", CastID: 9, Script: []string{"say ice"}},
 		},
 	}
 
@@ -22,7 +22,7 @@ func TestBuildGrimoireArtifactsBuildsEffectsAndSelectExec(t *testing.T) {
 	if effects[0].ID != "fire" || effects[0].Body != "say fire" {
 		t.Fatalf("effects[0] = %#v", effects[0])
 	}
-	if effects[1].ID != "ice" || effects[1].Body != "say ice\n" {
+	if effects[1].ID != "ice" || effects[1].Body != "say ice" {
 		t.Fatalf("effects[1] = %#v", effects[1])
 	}
 

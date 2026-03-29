@@ -12,7 +12,7 @@ func validPassive() Passive {
 		Name:        "斬撃スキル",
 		SkillType:   "sword",
 		Description: "剣スキル",
-		Script:      "function maf:skill/test",
+		Script:      []string{"function maf:skill/test"},
 	}
 }
 
@@ -63,8 +63,8 @@ func TestPassiveValidateStructPerField(t *testing.T) {
 		{name: "skilltype ok axe", patch: func(p *Passive) { p.SkillType = "axe" }},
 		{name: "skilltype ng invalid", patch: func(p *Passive) { p.SkillType = "staff" }, wantErrField: "skilltype"},
 		{name: "skilltype ng empty", patch: func(p *Passive) { p.SkillType = "" }, wantErrField: "skilltype"},
-		{name: "script ok", patch: func(p *Passive) { p.Script = "function maf:test" }},
-		{name: "script ng empty", patch: func(p *Passive) { p.Script = "  " }, wantErrField: "script"},
+		{name: "script ok", patch: func(p *Passive) { p.Script = []string{"function maf:test"} }},
+		{name: "script ng empty", patch: func(p *Passive) { p.Script = []string{} }, wantErrField: "script"},
 	}
 
 	for _, tt := range tests {

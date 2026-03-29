@@ -25,7 +25,7 @@ func BuildGrimoireArtifacts(master DBMaster, effectDir string) []GrimoireEffectF
 		selectScript := fmt.Sprintf("execute if entity @s[scores={mafEffectID=%d}] run function %s", entry.CastID, functionRefName(effectDir, entry.ID))
 		entries = append(entries, GrimoireEffectFunction{
 			ID:           entry.ID,
-			Body:         entry.Script,
+			Body:         strings.Join(entry.Script, "\n"),
 			SelectScript: selectScript,
 			Book:         grimoireToBook(entry),
 		})
