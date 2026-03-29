@@ -1,0 +1,67 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "max": 3,
+                "min": 1,
+                "type": "minecraft:uniform"
+              },
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{item_id:\"minecraft:stone\",source_id:\"items_1\",nbt_snapshot:\"{id:\\\"minecraft:stone\\\",Count:1b,tag:{display:{Name:'{\\\"text\\\":\\\"Starter Stone\\\"}',Lore:['{\\\"text\\\":\\\"Sample item\\\"}']},Enchantments:[{id:\\\"minecraft:aqua_affinity\\\",lvl:1s},{id:\\\"minecraft:bane_of_arthropods\\\",lvl:9s}]}}\"}}"
+            }
+          ],
+          "name": "minecraft:stone",
+          "type": "minecraft:item",
+          "weight": 70
+        },
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": 1,
+              "function": "minecraft:set_count"
+            },
+            {
+              "components": {
+                "minecraft:consumable": {
+                  "animation": "bow",
+                  "consume_seconds": 99999,
+                  "has_consume_particles": false
+                },
+                "minecraft:item_name": {
+                  "text": "プロミネンス40"
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "右クリックで詠唱を開始"
+                  },
+                  {
+                    "text": "effect=2 cast=40 cost=7"
+                  }
+                ]
+              },
+              "function": "minecraft:set_components"
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{grimoire_id:\"prominence01\",spell:{castid:2,cost:7,cast:40,title:\"プロミネンス\",description:\"周囲炎上+ダメージ+移動低下\"}}}"
+            }
+          ],
+          "name": "minecraft:book",
+          "type": "minecraft:item",
+          "weight": 30
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "type": "minecraft:generic"
+}

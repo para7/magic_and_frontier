@@ -15,6 +15,9 @@ type ExportPaths struct {
 	GrimoireEffect     string `json:"grimoireEffect"`
 	GrimoireSelectFile string `json:"grimoireSelectFile"`
 	GrimoireDebug      string `json:"grimoireDebug"`
+	Enemy              string `json:"enemy"`
+	EnemySkill         string `json:"enemySkill"`
+	EnemyLoot          string `json:"enemyLoot"`
 }
 
 func LoadExportSettings(path string) (ExportSettings, error) {

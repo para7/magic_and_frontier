@@ -5,6 +5,7 @@
     "grimoireSelectFile": "generated/grimoire/selectexec.mcfunction",
     "grimoireDebug": "generated/grimoire/give",
     "enemy": "generated/enemy/spawn",
-    "enemySkill": "generated/enemy/skill"
+    "enemySkill": "generated/enemy/skill",
+    "enemyLoot": "generated/enemy/loot"
   }
 }

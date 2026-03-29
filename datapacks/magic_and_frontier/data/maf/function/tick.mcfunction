@@ -7,7 +7,7 @@ execute as @a run function maf:system/score/prescore
 # 処理開始
 function maf:magic/tick
 function maf:soul/tick
-function maf:generated/tick
+function maf:enemy/tick
 
 # スコアリセット
 function maf:system/score/afterscore
