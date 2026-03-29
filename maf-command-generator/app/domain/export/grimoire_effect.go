@@ -53,7 +53,7 @@ func WriteGrimoireArtifacts(spellEffectDir string, selectExecFile string, effect
 	return os.WriteFile(selectExecFile, []byte(selectExec), 0o755)
 }
 
-// デバッグ用の give コマンドを生成 (1グリモア1ファイル)
+// デバッグ用の give コマンドを生成
 func WriteGrimoireDebugArtifacts(debugDir string, effects []GrimoireEffectFunction) error {
 	os.MkdirAll(debugDir, 0o755)
 	for _, entry := range effects {
