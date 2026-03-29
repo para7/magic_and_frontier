@@ -14,5 +14,4 @@ type SpawnTable struct {
 	MaxZ          int                      `json:"maxZ"          validate:"gte=-30000000,lte=30000000"`
 	BaseMobWeight int                      `json:"baseMobWeight" validate:"gte=0,lte=1000000"`
 	Replacements  []model.ReplacementEntry `json:"replacements"  validate:"min=1"`
-	UpdatedAt     string                   `json:"updatedAt"`
 }

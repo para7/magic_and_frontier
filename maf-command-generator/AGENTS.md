@@ -1,10 +1,8 @@
 # project info
 
-移行前のプロジェクト `../maf-command-editor` を最小構成で書き直し中。問題調査時は `../magic_and_frontier` も参照する。
-
 `maf-command-editor` でデータ入力し、`generated` に出力する設計。`generated` 配下に問題があっても直接編集せず、生成元ロジックを修正する。
 
-開発初期段階のため、過去互換より設計改善を優先する。内部利用PC向けツールなのでスマホ向けCSSは対象外。
+開発初期段階のため、過去互換より設計改善を優先する。
 
 # Layering
 

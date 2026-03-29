@@ -17,5 +17,4 @@ type Item struct {
 	AttributeModifiers  string `json:"attributeModifiers"`
 	CustomNBT           string `json:"customNbt"`
 	NBT                 string `json:"nbt"`
-	UpdatedAt           string `json:"updatedAt"`
 }

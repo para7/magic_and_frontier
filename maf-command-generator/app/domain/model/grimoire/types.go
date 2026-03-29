@@ -8,5 +8,4 @@ type Grimoire struct {
 	Script      string `json:"script"   validate:"trimmed_required"`
 	Title       string `json:"title"    validate:"trimmed_required"`
 	Description string `json:"description"`
-	UpdatedAt   string `json:"updatedAt"`
 }

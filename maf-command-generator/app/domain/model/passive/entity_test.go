@@ -13,7 +13,6 @@ func validPassive() Passive {
 		SkillType:   "sword",
 		Description: "剣スキル",
 		Script:      "function maf:skill/test",
-		UpdatedAt:   "2026-03-29T00:00:00Z",
 	}
 }
 

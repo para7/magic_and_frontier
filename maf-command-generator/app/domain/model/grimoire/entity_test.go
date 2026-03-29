@@ -15,7 +15,6 @@ func validGrimoire() Grimoire {
 		Script:      "function maf:test",
 		Title:       "Firebolt",
 		Description: "desc",
-		UpdatedAt:   "2026-03-27T00:00:00Z",
 	}
 }
 
@@ -178,18 +177,6 @@ func TestGrimoireValidateStructPerFieldOKNG(t *testing.T) {
 			name: "description ok text",
 			patch: func(g *Grimoire) {
 				g.Description = "some description"
-			},
-		},
-		{
-			name: "updatedAt ok empty",
-			patch: func(g *Grimoire) {
-				g.UpdatedAt = ""
-			},
-		},
-		{
-			name: "updatedAt ok iso8601",
-			patch: func(g *Grimoire) {
-				g.UpdatedAt = "2026-03-27T12:34:56Z"
 			},
 		},
 	}

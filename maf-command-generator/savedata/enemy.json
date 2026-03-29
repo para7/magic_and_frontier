@@ -1,9 +1,9 @@
 {
   "entries": [
     {
-      "id": "enemy_1",
+      "id": "poison_zombie",
       "mobType": "minecraft:zombie",
-      "name": "Sample Zombie",
+      "name": "Poison Zombie",
       "hp": 40,
       "memo": "",
       "attack": 6,
@@ -29,8 +29,7 @@
           "countMin": 1,
           "countMax": 1
         }
-      ],
-      "updatedAt": "2026-02-23T00:00:00.000Z"
+      ]
     }
   ]
 }

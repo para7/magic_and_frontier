@@ -6,5 +6,4 @@ type Passive struct {
 	SkillType   string `json:"skilltype"   validate:"trimmed_oneof=sword bow axe"`
 	Description string `json:"description" validate:"trimmed_max=400"`
 	Script      string `json:"script"      validate:"trimmed_required"`
-	UpdatedAt   string `json:"updatedAt"`
 }

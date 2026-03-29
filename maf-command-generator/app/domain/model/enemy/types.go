@@ -15,5 +15,4 @@ type Enemy struct {
 	EnemySkillIDs []string        `json:"enemySkillIds"`
 	DropMode      string          `json:"dropMode"              validate:"trimmed_required,trimmed_oneof=append replace"`
 	Drops         []model.DropRef `json:"drops"                 validate:"dive"`
-	UpdatedAt     string          `json:"updatedAt"`
 }

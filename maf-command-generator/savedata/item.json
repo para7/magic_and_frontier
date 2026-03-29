@@ -15,8 +15,7 @@
       "customPotionEffects": "",
       "attributeModifiers": "",
       "customNbt": "",
-      "nbt": "{id:\"minecraft:stone\",Count:1b,tag:{display:{Name:'{\"text\":\"Starter Stone\"}',Lore:['{\"text\":\"Sample item\"}']},Enchantments:[{id:\"minecraft:aqua_affinity\",lvl:1s},{id:\"minecraft:bane_of_arthropods\",lvl:9s}]}}",
-      "updatedAt": "2026-03-22T15:02:52Z"
+      "nbt": "{id:\"minecraft:stone\",Count:1b,tag:{display:{Name:'{\"text\":\"Starter Stone\"}',Lore:['{\"text\":\"Sample item\"}']},Enchantments:[{id:\"minecraft:aqua_affinity\",lvl:1s},{id:\"minecraft:bane_of_arthropods\",lvl:9s}]}}"
     }
   ]
 }

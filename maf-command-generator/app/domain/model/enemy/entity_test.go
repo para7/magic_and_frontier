@@ -8,11 +8,10 @@ import (
 
 func validEnemy() Enemy {
 	return Enemy{
-		ID:        "enemy_1",
-		MobType:   "minecraft:zombie",
-		HP:        20,
-		DropMode:  "append",
-		UpdatedAt: "2026-03-29T00:00:00Z",
+		ID:       "enemy_1",
+		MobType:  "minecraft:zombie",
+		HP:       20,
+		DropMode: "append",
 	}
 }
 

@@ -15,7 +15,6 @@ func validLootTable() LootTable {
 		LootPools: []model.DropRef{
 			{Kind: "minecraft_item", RefID: "minecraft:diamond", Weight: 1, CountMin: ptrFloat(1), CountMax: ptrFloat(1)},
 		},
-		UpdatedAt: "2026-03-29T00:00:00Z",
 	}
 }
 
