@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"ホバリング40"},minecraft:lore=[{text:"右クリックで詠唱を開始"},{text:"effect=16 cast=40 cost=18"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"hover01",spell:{castid:16,cost:18,cast:40,title:"ホバリング",description:"空中に停滞する"}}}] 1

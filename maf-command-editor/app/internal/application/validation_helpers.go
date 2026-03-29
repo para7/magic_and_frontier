@@ -3,7 +3,7 @@ package application
 import (
 	"strings"
 
-	"tools2/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/common"
 )
 
 func appendSaveIssues[T any](report *ValidationReport, entity, id string, result common.SaveResult[T]) {

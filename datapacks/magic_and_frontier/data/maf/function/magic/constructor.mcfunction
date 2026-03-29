@@ -1,4 +1,3 @@
-scoreboard players set @s mafCastID 0
 scoreboard players set @s mafMP 0
 scoreboard players set @s mafMaxMP 0
 scoreboard players set @s mafCastCost 0

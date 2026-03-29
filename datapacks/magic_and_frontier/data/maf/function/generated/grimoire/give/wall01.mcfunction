@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"ウォール40"},minecraft:lore=[{text:"右クリックで詠唱を開始"},{text:"effect=18 cast=40 cost=9"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"wall01",spell:{castid:18,cost:9,cast:40,title:"ウォール",description:"自分を壁で囲い緊急回避"}}}] 1

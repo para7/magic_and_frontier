@@ -1,4 +1,4 @@
-module tools2
+module maf-command-editor
 
 go 1.25.0
 

@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"フロアー40"},minecraft:lore=[{text:"右クリックで詠唱を開始"},{text:"effect=17 cast=40 cost=11"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"floor01",spell:{castid:17,cost:11,cast:40,title:"フロアー",description:"床を展開"}}}] 1

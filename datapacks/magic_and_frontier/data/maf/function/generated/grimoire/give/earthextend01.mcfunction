@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"アースエクステンド40"},minecraft:lore=[{text:"右クリックで詠唱を開始"},{text:"effect=20 cast=40 cost=17"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"earthextend01",spell:{castid:20,cost:17,cast:40,title:"アースエクステンド",description:"足元の水や溶岩を固める"}}}] 1

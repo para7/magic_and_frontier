@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"ポイズン40"},minecraft:lore=[{text:"右クリックで詠唱を開始"},{text:"effect=5 cast=40 cost=10"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"poison01",spell:{castid:5,cost:10,cast:40,title:"ポイズン",description:"最寄りの敵の周囲に毒を与え、弱体化"}}}] 1

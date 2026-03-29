@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"グラビデ40"},minecraft:lore=[{text:"右クリックで詠唱を開始"},{text:"effect=15 cast=40 cost=9"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"gravity01",spell:{castid:15,cost:9,cast:40,title:"グラビデ",description:"空中の敵を地面に落とす"}}}] 1

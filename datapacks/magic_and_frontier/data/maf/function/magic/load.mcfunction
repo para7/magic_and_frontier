@@ -1,6 +1,3 @@
-# 魔導書に設定されているIDをそのまま代入する先
-scoreboard objectives add mafCastID dummy
-
 scoreboard objectives add mafMP dummy
 scoreboard objectives add mafMaxMP dummy
 

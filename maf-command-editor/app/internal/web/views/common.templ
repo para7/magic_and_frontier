@@ -1,0 +1,79 @@
+package views
+
+
+templ NoticeBox(notice *Notice) {
+	if notice != nil && notice.Text != "" {
+		<div class={ "notice " + NoticeClass(notice) }>{ notice.Text }</div>
+	}
+}
+
+templ FieldErrorBox(errs map[string]string, key string) {
+	if message := FieldError(errs, key); message != "" {
+		<div class="field-error">{ message }</div>
+	}
+}
+
+templ PageScaffold(meta PageMeta, notice *Notice) {
+	<div class="page">
+		<section class="tool-section">
+			<div class="page-header">
+				<h1 class="section-title">{ meta.Title }</h1>
+				if meta.Description != "" {
+					<p>{ meta.Description }</p>
+				}
+			</div>
+			<div class="panel">
+				{ children... }
+			</div>
+		</section>
+	</div>
+}
+
+templ ReturnToField(returnTo string) {
+	<input type="hidden" name="returnTo" value={ returnTo } data-return-to-input="true"/>
+}
+
+templ ListBrowser(currentURL string, newPath string, label string, searchPlaceholder string) {
+	<div class="list-browser" data-list-root data-current-url={ currentURL } data-page-size="25">
+		@ListToolbar(currentURL, newPath, label, searchPlaceholder)
+		{ children... }
+		<div class="list-toolbar-row compact list-pagination-bar">
+			<p class="entry-meta list-summary" data-list-summary>Showing 0-0 of 0</p>
+			<div class="list-pagination">
+				<button type="button" class="secondary outline" data-list-prev>Previous</button>
+				<span class="entry-meta" data-list-page-label>Page 1 / 1</span>
+				<button type="button" class="secondary outline" data-list-next>Next</button>
+			</div>
+		</div>
+	</div>
+}
+
+templ ListToolbar(currentURL string, newPath string, label string, searchPlaceholder string) {
+	<div class="list-toolbar">
+		<div class="list-toolbar-row">
+			<div class="list-toolbar-controls">
+				<label class="list-control list-search">
+					Search
+					<input type="search" placeholder={ searchPlaceholder } data-list-search/>
+				</label>
+			</div>
+			<div class="form-actions">
+				<a role="button" href={ WithReturnTo(newPath, currentURL) } data-return-to-link={ newPath }>{ label }</a>
+			</div>
+		</div>
+	</div>
+}
+
+templ ListEmptyState(text string, hidden bool) {
+	<article class="entry-card list-empty-state" data-list-empty hidden?={ hidden }>
+		<p class="entry-meta" data-empty-default={ text } data-empty-filtered="条件に一致するエントリはありません。">{ text }</p>
+	</article>
+}
+
+templ FormShellHeader(title string) {
+	<header class="section-header">
+		<div>
+			<h2 class="section-title">{ title }</h2>
+		</div>
+	</header>
+}

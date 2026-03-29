@@ -3,16 +3,16 @@ package web
 import (
 	"fmt"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/enemyskills"
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
-	"tools2/app/internal/domain/loottables"
-	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/domain/skills"
-	"tools2/app/internal/domain/spawntables"
-	"tools2/app/internal/domain/treasures"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/entity/enemyskills"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	"maf-command-editor/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/loottables"
+	"maf-command-editor/app/internal/domain/entity/skills"
+	"maf-command-editor/app/internal/domain/entity/spawntables"
+	"maf-command-editor/app/internal/domain/entity/treasures"
+	dmaster "maf-command-editor/app/internal/domain/master"
 )
 
 func (a App) masterOrErr() (dmaster.DBMaster, error) {
@@ -25,20 +25,20 @@ func (a App) masterOrErr() (dmaster.DBMaster, error) {
 	return a.deps.Master, nil
 }
 
-func (a App) loadItemStateFromMaster() (items.ItemState, error) {
+func (a App) loadItemStateFromMaster() (common.EntryState[items.ItemEntry], error) {
 	master, err := a.masterOrErr()
 	if err != nil {
-		return items.ItemState{}, err
+		return common.EntryState[items.ItemEntry]{}, err
 	}
-	return items.ItemState{Items: master.Items().ListAll()}, nil
+	return common.EntryState[items.ItemEntry]{Entries: master.Items().ListAll()}, nil
 }
 
-func (a App) loadGrimoireStateFromMaster() (grimoire.GrimoireState, error) {
+func (a App) loadGrimoireStateFromMaster() (common.EntryState[grimoire.GrimoireEntry], error) {
 	master, err := a.masterOrErr()
 	if err != nil {
-		return grimoire.GrimoireState{}, err
+		return common.EntryState[grimoire.GrimoireEntry]{}, err
 	}
-	return grimoire.GrimoireState{Entries: master.Grimoires().ListAll()}, nil
+	return common.EntryState[grimoire.GrimoireEntry]{Entries: master.Grimoires().ListAll()}, nil
 }
 
 func (a App) loadSkillStateFromMaster() (common.EntryState[skills.SkillEntry], error) {

@@ -1,0 +1,17 @@
+{
+  "overworld": [
+    {
+      "id": "overworld_test1",
+      "distance_min": 0,
+      "distance_max": 10000,
+      "x_min": -10000,
+      "z_min": -10000,
+      "y_min": -64,
+      "x_max": 10000,
+      "z_max": 10000,
+      "y_max": 320
+    }
+  ],
+  "nether": [],
+  "end": []
+}

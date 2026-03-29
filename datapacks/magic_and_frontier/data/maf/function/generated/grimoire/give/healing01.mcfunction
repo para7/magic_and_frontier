@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"ヒーリング40"},minecraft:lore=[{text:"右クリックで詠唱を開始"},{text:"effect=7 cast=40 cost=13"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"healing01",spell:{castid:7,cost:13,cast:40,title:"ヒーリング",description:"周囲に即時回復+リジェネ"}}}] 1

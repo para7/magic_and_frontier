@@ -5,23 +5,23 @@ import (
 	"strings"
 	"time"
 
-	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/enemyskills"
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
-	"tools2/app/internal/domain/loottables"
-	"tools2/app/internal/domain/skills"
-	"tools2/app/internal/domain/spawntables"
-	"tools2/app/internal/domain/treasures"
-	"tools2/app/internal/export"
-	"tools2/app/internal/mcsource"
+	"maf-command-editor/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/entity/enemyskills"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	"maf-command-editor/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/loottables"
+	"maf-command-editor/app/internal/domain/entity/skills"
+	"maf-command-editor/app/internal/domain/entity/spawntables"
+	"maf-command-editor/app/internal/domain/entity/treasures"
+	"maf-command-editor/app/internal/domain/export"
+	"maf-command-editor/app/internal/domain/mcsource"
 )
 
 func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLootTableRoot string, now time.Time) ValidationReport {
 	report := ValidationReport{
 		OK: true,
 		Counts: Counts{
-			Items:       len(states.ItemState.Items),
+			Items:       len(states.ItemState.Entries),
 			Grimoire:    len(states.GrimoireState.Entries),
 			Skills:      len(states.SkillState.Entries),
 			EnemySkills: len(states.EnemySkillState.Entries),
@@ -41,7 +41,7 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLoot
 		}
 	}
 
-	itemIDs := entryIDs(states.ItemState.Items, func(entry items.ItemEntry) string { return entry.ID })
+	itemIDs := entryIDs(states.ItemState.Entries, func(entry items.ItemEntry) string { return entry.ID })
 	grimoireIDs := entryIDs(states.GrimoireState.Entries, func(entry grimoire.GrimoireEntry) string { return entry.ID })
 	skillIDs := entryIDs(states.SkillState.Entries, func(entry skills.SkillEntry) string { return entry.ID })
 	enemySkillIDs := entryIDs(states.EnemySkillState.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
@@ -61,7 +61,7 @@ func ValidateBundle(states StateBundle, exportSettingsPath string, minecraftLoot
 		}
 	}
 
-	for _, entry := range states.ItemState.Items {
+	for _, entry := range states.ItemState.Entries {
 		appendSaveIssues(&report, "item", entry.ID, items.ValidateSave(itemToInput(entry), skillIDs, now))
 	}
 	for _, entry := range states.GrimoireState.Entries {

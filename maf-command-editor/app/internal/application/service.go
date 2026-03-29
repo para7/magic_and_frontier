@@ -4,32 +4,31 @@ import (
 	"fmt"
 	"time"
 
-	"tools2/app/internal/config"
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/enemyskills"
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
-	"tools2/app/internal/domain/loottables"
-	dmaster "tools2/app/internal/domain/master"
-	"tools2/app/internal/domain/skills"
-	"tools2/app/internal/domain/spawntables"
-	"tools2/app/internal/domain/treasures"
-	"tools2/app/internal/export"
-	"tools2/app/internal/idseq"
-	"tools2/app/internal/store"
+	"maf-command-editor/app/internal/config"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/entity/enemyskills"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	"maf-command-editor/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/loottables"
+	"maf-command-editor/app/internal/domain/entity/skills"
+	"maf-command-editor/app/internal/domain/entity/spawntables"
+	"maf-command-editor/app/internal/domain/entity/treasures"
+	"maf-command-editor/app/internal/domain/export"
+	"maf-command-editor/app/internal/domain/idseq"
+	dmaster "maf-command-editor/app/internal/domain/master"
 )
 
 type Dependencies struct {
-	ItemRepo           store.ItemStateRepository
-	GrimoireRepo       store.GrimoireStateRepository
-	SkillRepo          store.EntryStateRepository[skills.SkillEntry]
-	EnemySkillRepo     store.EntryStateRepository[enemyskills.EnemySkillEntry]
-	EnemyRepo          store.EntryStateRepository[enemies.EnemyEntry]
-	SpawnTableRepo     store.EntryStateRepository[spawntables.SpawnTableEntry]
-	TreasureRepo       store.EntryStateRepository[treasures.TreasureEntry]
-	LootTableRepo      store.EntryStateRepository[loottables.LootTableEntry]
-	CounterRepo        store.CounterRepository
+	ItemRepo           common.StateRepository[items.ItemEntry]
+	GrimoireRepo       common.StateRepository[grimoire.GrimoireEntry]
+	SkillRepo          common.StateRepository[skills.SkillEntry]
+	EnemySkillRepo     common.StateRepository[enemyskills.EnemySkillEntry]
+	EnemyRepo          common.StateRepository[enemies.EnemyEntry]
+	SpawnTableRepo     common.StateRepository[spawntables.SpawnTableEntry]
+	TreasureRepo       common.StateRepository[treasures.TreasureEntry]
+	LootTableRepo      common.StateRepository[loottables.LootTableEntry]
+	CounterRepo        idseq.Repository
 	Master             dmaster.DBMaster
 	ExportSettingsPath string
 	Now                func() time.Time
@@ -42,8 +41,8 @@ type Service struct {
 }
 
 type StateBundle struct {
-	ItemState       items.ItemState
-	GrimoireState   grimoire.GrimoireState
+	ItemState       common.EntryState[items.ItemEntry]
+	GrimoireState   common.EntryState[grimoire.GrimoireEntry]
 	SkillState      common.EntryState[skills.SkillEntry]
 	EnemySkillState common.EntryState[enemyskills.EnemySkillEntry]
 	EnemyState      common.EntryState[enemies.EnemyEntry]
@@ -78,15 +77,15 @@ type ValidationReport struct {
 
 func DefaultDependencies(cfg config.Config) Dependencies {
 	return Dependencies{
-		ItemRepo:           store.NewItemStateRepository(cfg.ItemStatePath),
-		GrimoireRepo:       store.NewGrimoireStateRepository(cfg.GrimoireStatePath),
-		SkillRepo:          store.NewEntryStateRepository[skills.SkillEntry](cfg.SkillStatePath),
-		EnemySkillRepo:     store.NewEntryStateRepository[enemyskills.EnemySkillEntry](cfg.EnemySkillStatePath),
-		EnemyRepo:          store.NewEntryStateRepository[enemies.EnemyEntry](cfg.EnemyStatePath),
-		SpawnTableRepo:     store.NewEntryStateRepository[spawntables.SpawnTableEntry](cfg.SpawnTableStatePath),
-		TreasureRepo:       store.NewEntryStateRepository[treasures.TreasureEntry](cfg.TreasureStatePath),
-		LootTableRepo:      store.NewEntryStateRepository[loottables.LootTableEntry](cfg.LootTablesStatePath),
-		CounterRepo:        store.NewCounterRepository(cfg.IDCounterStatePath),
+		ItemRepo:           common.StateRepository[items.ItemEntry]{Path: cfg.ItemStatePath},
+		GrimoireRepo:       common.StateRepository[grimoire.GrimoireEntry]{Path: cfg.GrimoireStatePath},
+		SkillRepo:          common.StateRepository[skills.SkillEntry]{Path: cfg.SkillStatePath},
+		EnemySkillRepo:     common.StateRepository[enemyskills.EnemySkillEntry]{Path: cfg.EnemySkillStatePath},
+		EnemyRepo:          common.StateRepository[enemies.EnemyEntry]{Path: cfg.EnemyStatePath},
+		SpawnTableRepo:     common.StateRepository[spawntables.SpawnTableEntry]{Path: cfg.SpawnTableStatePath},
+		TreasureRepo:       common.StateRepository[treasures.TreasureEntry]{Path: cfg.TreasureStatePath},
+		LootTableRepo:      common.StateRepository[loottables.LootTableEntry]{Path: cfg.LootTablesStatePath},
+		CounterRepo:        idseq.Repository{Path: cfg.IDCounterStatePath},
 		ExportSettingsPath: cfg.ExportSettingsPath,
 		Now:                time.Now,
 	}
@@ -94,31 +93,31 @@ func DefaultDependencies(cfg config.Config) Dependencies {
 
 func NewService(cfg config.Config, deps Dependencies) Service {
 	defaults := DefaultDependencies(cfg)
-	if deps.ItemRepo == nil {
+	if deps.ItemRepo.Path == "" {
 		deps.ItemRepo = defaults.ItemRepo
 	}
-	if deps.GrimoireRepo == nil {
+	if deps.GrimoireRepo.Path == "" {
 		deps.GrimoireRepo = defaults.GrimoireRepo
 	}
-	if deps.SkillRepo == nil {
+	if deps.SkillRepo.Path == "" {
 		deps.SkillRepo = defaults.SkillRepo
 	}
-	if deps.EnemySkillRepo == nil {
+	if deps.EnemySkillRepo.Path == "" {
 		deps.EnemySkillRepo = defaults.EnemySkillRepo
 	}
-	if deps.EnemyRepo == nil {
+	if deps.EnemyRepo.Path == "" {
 		deps.EnemyRepo = defaults.EnemyRepo
 	}
-	if deps.SpawnTableRepo == nil {
+	if deps.SpawnTableRepo.Path == "" {
 		deps.SpawnTableRepo = defaults.SpawnTableRepo
 	}
-	if deps.TreasureRepo == nil {
+	if deps.TreasureRepo.Path == "" {
 		deps.TreasureRepo = defaults.TreasureRepo
 	}
-	if deps.LootTableRepo == nil {
+	if deps.LootTableRepo.Path == "" {
 		deps.LootTableRepo = defaults.LootTableRepo
 	}
-	if deps.CounterRepo == nil {
+	if deps.CounterRepo.Path == "" {
 		deps.CounterRepo = defaults.CounterRepo
 	}
 	if deps.ExportSettingsPath == "" {
@@ -165,8 +164,8 @@ func (s Service) LoadStates() (StateBundle, error) {
 	}
 	if s.deps.Master != nil {
 		return StateBundle{
-			ItemState:       items.ItemState{Items: s.deps.Master.Items().ListAll()},
-			GrimoireState:   grimoire.GrimoireState{Entries: s.deps.Master.Grimoires().ListAll()},
+			ItemState:       common.EntryState[items.ItemEntry]{Entries: s.deps.Master.Items().ListAll()},
+			GrimoireState:   common.EntryState[grimoire.GrimoireEntry]{Entries: s.deps.Master.Grimoires().ListAll()},
 			SkillState:      common.EntryState[skills.SkillEntry]{Entries: s.deps.Master.Skills().ListAll()},
 			EnemySkillState: common.EntryState[enemyskills.EnemySkillEntry]{Entries: s.deps.Master.EnemySkills().ListAll()},
 			EnemyState:      common.EntryState[enemies.EnemyEntry]{Entries: s.deps.Master.Enemies().ListAll()},
@@ -175,11 +174,11 @@ func (s Service) LoadStates() (StateBundle, error) {
 			LootTableState:  common.EntryState[loottables.LootTableEntry]{Entries: s.deps.Master.LootTables().ListAll()},
 		}, nil
 	}
-	itemState, err := s.deps.ItemRepo.LoadItemState()
+	itemState, err := s.deps.ItemRepo.LoadState()
 	if err != nil {
 		return StateBundle{}, fmt.Errorf("load items: %w", err)
 	}
-	grimoireState, err := s.deps.GrimoireRepo.LoadGrimoireState()
+	grimoireState, err := s.deps.GrimoireRepo.LoadState()
 	if err != nil {
 		return StateBundle{}, fmt.Errorf("load grimoire: %w", err)
 	}
@@ -245,12 +244,12 @@ func (s Service) ValidateAll() (ValidationReport, error) {
 }
 
 func (s Service) AllocateCastID() (int, error) {
-	state, err := s.deps.CounterRepo.LoadCounterState()
+	state, err := s.deps.CounterRepo.Load()
 	if err != nil {
 		return 0, err
 	}
 	next, castID := idseq.NextCastID(state)
-	if err := s.deps.CounterRepo.SaveCounterState(next); err != nil {
+	if err := s.deps.CounterRepo.Save(next); err != nil {
 		return 0, err
 	}
 	return castID, nil
@@ -300,8 +299,8 @@ func (s Service) ExportDatapack() export.SaveDataResponse {
 		}
 	}
 	return export.ExportDatapack(export.ExportParams{
-		ItemState:              states.ItemState,
-		GrimoireState:          states.GrimoireState,
+		Items:                  states.ItemState.Entries,
+		Grimoires:              states.GrimoireState.Entries,
 		Skills:                 states.SkillState.Entries,
 		EnemySkills:            states.EnemySkillState.Entries,
 		Enemies:                states.EnemyState.Entries,

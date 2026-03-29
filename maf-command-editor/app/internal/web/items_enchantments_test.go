@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"tools2/app/internal/webui"
+	"maf-command-editor/app/internal/web/views"
 )
 
 func TestItemFormEnchantmentsFromText(t *testing.T) {
@@ -105,7 +105,7 @@ func TestItemFormEnchantmentsFromRequest(t *testing.T) {
 	}
 }
 
-func findEnchantmentOption(t *testing.T, options []webui.ItemEnchantmentOption, id string) webui.ItemEnchantmentOption {
+func findEnchantmentOption(t *testing.T, options []views.ItemEnchantmentOption, id string) views.ItemEnchantmentOption {
 	t.Helper()
 	for _, option := range options {
 		if option.ID == id {
@@ -113,5 +113,5 @@ func findEnchantmentOption(t *testing.T, options []webui.ItemEnchantmentOption, 
 		}
 	}
 	t.Fatalf("enchantment option %q not found", id)
-	return webui.ItemEnchantmentOption{}
+	return views.ItemEnchantmentOption{}
 }

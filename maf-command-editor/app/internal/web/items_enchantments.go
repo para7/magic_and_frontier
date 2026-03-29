@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode"
 
-	"tools2/app/internal/webui"
+	"maf-command-editor/app/internal/web/views"
 )
 
 type itemEnchantmentDef struct {
@@ -71,7 +71,7 @@ var itemEnchantmentCatalog = []itemEnchantmentDef{
 	{Category: "Cursed", Key: "vanishing_curse", MaxLevel: 1},
 }
 
-func itemFormEnchantmentsFromText(text string) ([]webui.ItemEnchantmentOption, int) {
+func itemFormEnchantmentsFromText(text string) ([]views.ItemEnchantmentOption, int) {
 	levels := map[string]string{}
 	selected := map[string]bool{}
 	for _, line := range strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n") {
@@ -86,7 +86,7 @@ func itemFormEnchantmentsFromText(text string) ([]webui.ItemEnchantmentOption, i
 	return buildItemEnchantmentOptions(selected, levels)
 }
 
-func itemFormEnchantmentsFromRequest(r *http.Request) (string, []webui.ItemEnchantmentOption, int) {
+func itemFormEnchantmentsFromRequest(r *http.Request) (string, []views.ItemEnchantmentOption, int) {
 	selected := map[string]bool{}
 	for _, id := range r.Form["enchantmentIds"] {
 		id = strings.TrimSpace(id)
@@ -113,8 +113,8 @@ func itemFormEnchantmentsFromRequest(r *http.Request) (string, []webui.ItemEncha
 	return strings.Join(lines, "\n"), options, selectedCount
 }
 
-func buildItemEnchantmentOptions(selected map[string]bool, levels map[string]string) ([]webui.ItemEnchantmentOption, int) {
-	options := make([]webui.ItemEnchantmentOption, 0, len(itemEnchantmentCatalog))
+func buildItemEnchantmentOptions(selected map[string]bool, levels map[string]string) ([]views.ItemEnchantmentOption, int) {
+	options := make([]views.ItemEnchantmentOption, 0, len(itemEnchantmentCatalog))
 	selectedCount := 0
 
 	for _, def := range itemEnchantmentCatalog {
@@ -127,7 +127,7 @@ func buildItemEnchantmentOptions(selected map[string]bool, levels map[string]str
 		if checked {
 			selectedCount++
 		}
-		options = append(options, webui.ItemEnchantmentOption{
+		options = append(options, views.ItemEnchantmentOption{
 			ID:             id,
 			Category:       def.Category,
 			Key:            def.Key,

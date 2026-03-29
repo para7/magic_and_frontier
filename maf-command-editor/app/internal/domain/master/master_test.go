@@ -6,16 +6,15 @@ import (
 	"testing"
 	"time"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/enemyskills"
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
-	"tools2/app/internal/domain/loottables"
-	"tools2/app/internal/domain/skills"
-	"tools2/app/internal/domain/spawntables"
-	"tools2/app/internal/domain/treasures"
-	"tools2/app/internal/store"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/entity/enemyskills"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	"maf-command-editor/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/loottables"
+	"maf-command-editor/app/internal/domain/entity/skills"
+	"maf-command-editor/app/internal/domain/entity/spawntables"
+	"maf-command-editor/app/internal/domain/entity/treasures"
 )
 
 func TestItemSaveSortsByID(t *testing.T) {
@@ -39,32 +38,32 @@ func TestItemSaveSortsByID(t *testing.T) {
 		t.Fatalf("Save() error = %v", err)
 	}
 
-	state, err := deps.ItemRepo.LoadItemState()
+	state, err := deps.ItemRepo.LoadState()
 	if err != nil {
-		t.Fatalf("LoadItemState() error = %v", err)
+		t.Fatalf("LoadState() error = %v", err)
 	}
-	if len(state.Items) != 2 {
-		t.Fatalf("len(items) = %d, want 2", len(state.Items))
+	if len(state.Entries) != 2 {
+		t.Fatalf("len(entries) = %d, want 2", len(state.Entries))
 	}
-	if got := state.Items[0].ID; got != "items_1" {
+	if got := state.Entries[0].ID; got != "items_1" {
 		t.Fatalf("first id = %q, want items_1", got)
 	}
-	if got := state.Items[1].ID; got != "items_2" {
+	if got := state.Entries[1].ID; got != "items_2" {
 		t.Fatalf("second id = %q, want items_2", got)
 	}
 }
 
 func TestInvalidSavedataDoesNotBlockStartup(t *testing.T) {
 	deps := testDependencies(t)
-	if err := deps.GrimoireRepo.SaveGrimoireState(grimoire.GrimoireState{Entries: []grimoire.GrimoireEntry{{
-		ID:       "invalid_id",
-		CastID:   1,
+	if err := deps.GrimoireRepo.SaveState(common.EntryState[grimoire.GrimoireEntry]{Entries: []grimoire.GrimoireEntry{{
+		ID:       "free-id",
+		CastID:   0,
 		CastTime: 1,
 		MPCost:   0,
 		Script:   "say x",
 		Title:    "bad",
 	}}}); err != nil {
-		t.Fatalf("SaveGrimoireState() error = %v", err)
+		t.Fatalf("SaveState() error = %v", err)
 	}
 
 	master, err := NewJSONMaster(deps)
@@ -77,13 +76,13 @@ func TestInvalidSavedataDoesNotBlockStartup(t *testing.T) {
 	}
 	contains := false
 	for _, issue := range report.Issues {
-		if issue.Entity == "grimoire" && issue.ID == "invalid_id" && strings.Contains(issue.Message, "Invalid ID format") {
+		if issue.Entity == "grimoire" && issue.ID == "free-id" && strings.Contains(issue.Message, "Must satisfy gte 1.") {
 			contains = true
 			break
 		}
 	}
 	if !contains {
-		t.Fatalf("expected grimoire invalid_id issue in report, got: %s", report.String())
+		t.Fatalf("expected grimoire free-id castid issue in report, got: %s", report.String())
 	}
 }
 
@@ -91,19 +90,19 @@ func testDependencies(t *testing.T) Dependencies {
 	t.Helper()
 	dir := t.TempDir()
 
-	itemRepo := store.NewItemStateRepository(filepath.Join(dir, "savedata", "item.json"))
-	grimoireRepo := store.NewGrimoireStateRepository(filepath.Join(dir, "savedata", "grimoire.json"))
-	skillRepo := store.NewEntryStateRepository[skills.SkillEntry](filepath.Join(dir, "savedata", "skill.json"))
-	enemySkillRepo := store.NewEntryStateRepository[enemyskills.EnemySkillEntry](filepath.Join(dir, "savedata", "enemy_skill.json"))
-	enemyRepo := store.NewEntryStateRepository[enemies.EnemyEntry](filepath.Join(dir, "savedata", "enemy.json"))
-	spawnRepo := store.NewEntryStateRepository[spawntables.SpawnTableEntry](filepath.Join(dir, "savedata", "spawn_table.json"))
-	treasureRepo := store.NewEntryStateRepository[treasures.TreasureEntry](filepath.Join(dir, "savedata", "treasure.json"))
-	loottableRepo := store.NewEntryStateRepository[loottables.LootTableEntry](filepath.Join(dir, "savedata", "loottables.json"))
+	itemRepo := common.StateRepository[items.ItemEntry]{Path: filepath.Join(dir, "savedata", "item.json")}
+	grimoireRepo := common.StateRepository[grimoire.GrimoireEntry]{Path: filepath.Join(dir, "savedata", "grimoire.json")}
+	skillRepo := common.StateRepository[skills.SkillEntry]{Path: filepath.Join(dir, "savedata", "skill.json")}
+	enemySkillRepo := common.StateRepository[enemyskills.EnemySkillEntry]{Path: filepath.Join(dir, "savedata", "enemy_skill.json")}
+	enemyRepo := common.StateRepository[enemies.EnemyEntry]{Path: filepath.Join(dir, "savedata", "enemy.json")}
+	spawnRepo := common.StateRepository[spawntables.SpawnTableEntry]{Path: filepath.Join(dir, "savedata", "spawn_table.json")}
+	treasureRepo := common.StateRepository[treasures.TreasureEntry]{Path: filepath.Join(dir, "savedata", "treasure.json")}
+	loottableRepo := common.StateRepository[loottables.LootTableEntry]{Path: filepath.Join(dir, "savedata", "loottables.json")}
 
-	if err := itemRepo.SaveItemState(items.ItemState{Items: []items.ItemEntry{}}); err != nil {
+	if err := itemRepo.SaveState(common.EntryState[items.ItemEntry]{Entries: []items.ItemEntry{}}); err != nil {
 		t.Fatalf("seed item: %v", err)
 	}
-	if err := grimoireRepo.SaveGrimoireState(grimoire.GrimoireState{Entries: []grimoire.GrimoireEntry{}}); err != nil {
+	if err := grimoireRepo.SaveState(common.EntryState[grimoire.GrimoireEntry]{Entries: []grimoire.GrimoireEntry{}}); err != nil {
 		t.Fatalf("seed grimoire: %v", err)
 	}
 	if err := skillRepo.SaveState(common.EntryState[skills.SkillEntry]{Entries: []skills.SkillEntry{}}); err != nil {

@@ -1,14 +1,14 @@
 package application
 
 import (
-	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/enemyskills"
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
-	"tools2/app/internal/domain/loottables"
-	"tools2/app/internal/domain/skills"
-	"tools2/app/internal/domain/spawntables"
-	"tools2/app/internal/domain/treasures"
+	"maf-command-editor/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/entity/enemyskills"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	"maf-command-editor/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/loottables"
+	"maf-command-editor/app/internal/domain/entity/skills"
+	"maf-command-editor/app/internal/domain/entity/spawntables"
+	"maf-command-editor/app/internal/domain/entity/treasures"
 )
 
 func itemToInput(entry items.ItemEntry) items.SaveInput {

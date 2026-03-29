@@ -5,7 +5,7 @@ import (
 	neturl "net/url"
 	"strings"
 
-	"tools2/app/internal/webui"
+	"maf-command-editor/app/internal/web/views"
 )
 
 func currentListURL(r *http.Request, fallback string) string {
@@ -20,7 +20,7 @@ func submittedReturnTo(r *http.Request, fallback string) string {
 	return sanitizeReturnTo(r.Form.Get("returnTo"), fallback)
 }
 
-func applyPageMeta(r *http.Request, meta webui.PageMeta) webui.PageMeta {
+func applyPageMeta(r *http.Request, meta views.PageMeta) views.PageMeta {
 	if strings.TrimSpace(meta.CurrentURL) == "" {
 		meta.CurrentURL = currentListURL(r, meta.CurrentPath)
 	}

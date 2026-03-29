@@ -1,0 +1,10 @@
+{
+  "criteria": {
+    "use_book": {
+      "trigger": "minecraft:using_item"
+    }
+  },
+  "rewards": {
+    "function": "maf:magic/use_grimoire"
+  }
+}

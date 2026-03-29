@@ -1,74 +1,58 @@
-GO ?= go
-BIN_DIR ?= bin
-BIN_NAME ?= tools2
-BIN_PATH := $(BIN_DIR)/$(BIN_NAME)
-APP_DIR := ./app
-CLI_BIN_NAME ?= tools2-cli
-CLI_BIN_PATH := $(BIN_DIR)/$(CLI_BIN_NAME)
-CLI_DIR := ./app/cmd/tools2-cli
+.PHONY: help generate tidy format lint build test run run-cmd dev check kill-port
 
-.PHONY: help setup generate tidy format lint build build-cli test run run-cli dev check
+ENTRY =./app
 
-help:
-	@echo "Available targets:"
-	@echo "  make setup     - install templ/staticcheck tools"
-	@echo "  make generate  - generate templ files"
-	@echo "  make tidy      - run go mod tidy"
-	@echo "  make format    - run go fmt ./..."
-	@echo "  make lint      - run go vet + staticcheck"
-	@echo "  make build     - build binary to $(BIN_PATH)"
-	@echo "  make build-cli - build CLI binary to $(CLI_BIN_PATH)"
-	@echo "  make test      - run go test ./..."
-	@echo "  make run       - generate templ and start app on :8080"
-	@echo "  make run-cli   - run CLI binary with ARGS='...'"
-	@echo "  make dev       - alias of make run"
-	@echo "  make check     - generate + tidy + format + lint + build + test"
+help: ## show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-setup:
-	$(GO) get -tool github.com/a-h/templ/cmd/templ@latest
-	$(GO) get -tool honnef.co/go/tools/cmd/staticcheck@latest
+run: run/web ## generate templ and start editor on :8787
 
-generate:
-	$(GO) tool templ generate ./...
+run/editor:
+	echo http://localhost:8787
+	go run $(ENTRY) editor
 
-tidy:
-	$(GO) mod tidy
+run/validate:
+	go run $(ENTRY) validate
 
-format:
-	$(GO) fmt ./...
+run/export:
+	go run $(ENTRY) export
 
-lint:
-	$(GO) vet ./...
-	$(GO) tool staticcheck ./...
 
-build:
-	mkdir -p $(BIN_DIR)
-	$(GO) build -o $(BIN_PATH) $(APP_DIR)
+check: generate tidy format lint build test ## run all checks
 
-build-cli:
-	mkdir -p $(BIN_DIR)
-	$(GO) build -o $(CLI_BIN_PATH) $(CLI_DIR)
+generate: ## generate templ files
+	go tool templ generate ./...
 
-test:
-	$(GO) test ./...
+tidy: ## run go mod tidy
+	go mod tidy
 
-run: generate
-	echo http://localhost:8080
-	$(GO) run $(APP_DIR)
+format: ## run go fmt ./...
+	go fmt ./...
 
-run-cli:
-	$(GO) run $(CLI_DIR) $(ARGS)
+lint: ## run go vet + staticcheck
+	go vet ./...
+	go tool staticcheck ./...
 
-dev: run
+build: ## build binary to bin/mce
+	mkdir -p bin
+	go build -o bin/mce $(ENTRY)
 
-check: generate tidy format lint build test
+test: ## run go test ./...
+	go test ./...
 
-PORT=8787
-kill-port:
-	@pids=$$(lsof -t -i :$(PORT) 2>/dev/null); \
+
+
+run-cmd: ## run command with ARGS='validate|export'
+	go run ./app $(ARGS)
+
+dev: run ## alias of make run
+
+kill-port: ## kill process using port 8787
+	@pids=$$(lsof -t -i :8787 2>/dev/null); \
 	if [ -z "$$pids" ]; then \
-		echo "No process is using port $(PORT)"; \
+		echo "No process is using port 8787"; \
 	else \
-		echo "Killing PID(s): $$pids on port $(PORT)"; \
+		echo "Killing PID(s): $$pids on port 8787"; \
 		kill $$pids; \
 	fi

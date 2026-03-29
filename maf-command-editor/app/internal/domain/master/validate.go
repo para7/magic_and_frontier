@@ -3,15 +3,15 @@ package master
 import (
 	"strings"
 
-	"tools2/app/internal/domain/common"
-	"tools2/app/internal/domain/enemies"
-	"tools2/app/internal/domain/enemyskills"
-	"tools2/app/internal/domain/grimoire"
-	"tools2/app/internal/domain/items"
-	"tools2/app/internal/domain/loottables"
-	"tools2/app/internal/domain/skills"
-	"tools2/app/internal/domain/spawntables"
-	"tools2/app/internal/domain/treasures"
+	"maf-command-editor/app/internal/domain/common"
+	"maf-command-editor/app/internal/domain/entity/enemies"
+	"maf-command-editor/app/internal/domain/entity/enemyskills"
+	"maf-command-editor/app/internal/domain/entity/grimoire"
+	"maf-command-editor/app/internal/domain/entity/items"
+	"maf-command-editor/app/internal/domain/entity/loottables"
+	"maf-command-editor/app/internal/domain/entity/skills"
+	"maf-command-editor/app/internal/domain/entity/spawntables"
+	"maf-command-editor/app/internal/domain/entity/treasures"
 )
 
 func (m *JSONMaster) ValidateSavedAll() ValidationReport {
@@ -34,7 +34,7 @@ func (m *JSONMaster) ValidateSavedAll() ValidationReport {
 	report := ValidationReport{
 		OK: true,
 		Counts: Counts{
-			Items:       len(itemState.Items),
+			Items:       len(itemState.Entries),
 			Grimoire:    len(grimoireState.Entries),
 			Skills:      len(skillState.Entries),
 			EnemySkills: len(enemySkillState.Entries),
@@ -45,7 +45,7 @@ func (m *JSONMaster) ValidateSavedAll() ValidationReport {
 		},
 	}
 
-	itemIDs := idSet(itemState.Items, func(entry items.ItemEntry) string { return entry.ID })
+	itemIDs := idSet(itemState.Entries, func(entry items.ItemEntry) string { return entry.ID })
 	grimoireIDs := idSet(grimoireState.Entries, func(entry grimoire.GrimoireEntry) string { return entry.ID })
 	skillIDs := idSet(skillState.Entries, func(entry skills.SkillEntry) string { return entry.ID })
 	enemySkillIDs := idSet(enemySkillState.Entries, func(entry enemyskills.EnemySkillEntry) string { return entry.ID })
@@ -61,11 +61,11 @@ func (m *JSONMaster) ValidateSavedAll() ValidationReport {
 		})
 	}
 
-	for _, entry := range itemState.Items {
-		appendSaveIssues(&report, "item", entry.ID, items.ValidateSave(itemToInput(entry), skillIDs, m.nowUTC()))
+	for _, entry := range itemState.Entries {
+		appendSaveIssues(&report, "item", entry.ID, items.ValidateSave(items.SaveInputFromEntry(entry), skillIDs, m.nowUTC()))
 	}
 	for _, entry := range grimoireState.Entries {
-		appendSaveIssues(&report, "grimoire", entry.ID, grimoire.ValidateSave(grimoireToInput(entry), m.nowUTC()))
+		appendSaveIssues(&report, "grimoire", entry.ID, grimoire.ValidateSave(grimoire.SaveInputFromEntry(entry), m.nowUTC()))
 		if prevID, exists := castIDs[entry.CastID]; exists && prevID != entry.ID {
 			report.Issues = append(report.Issues, ValidationIssue{
 				Entity:  "grimoire",
@@ -78,13 +78,13 @@ func (m *JSONMaster) ValidateSavedAll() ValidationReport {
 		}
 	}
 	for _, entry := range skillState.Entries {
-		appendSaveIssues(&report, "skill", entry.ID, skills.ValidateSave(skillToInput(entry), m.nowUTC()))
+		appendSaveIssues(&report, "skill", entry.ID, skills.ValidateSave(skills.SaveInputFromEntry(entry), m.nowUTC()))
 	}
 	for _, entry := range enemySkillState.Entries {
-		appendSaveIssues(&report, "enemy_skill", entry.ID, enemyskills.ValidateSave(enemySkillToInput(entry), m.nowUTC()))
+		appendSaveIssues(&report, "enemy_skill", entry.ID, enemyskills.ValidateSave(enemyskills.SaveInputFromEntry(entry), m.nowUTC()))
 	}
 	for _, entry := range treasureState.Entries {
-		appendSaveIssues(&report, "treasure", entry.ID, treasures.ValidateSave(treasureToInput(entry), itemIDs, grimoireIDs, treasureSourcePaths, m.nowUTC()))
+		appendSaveIssues(&report, "treasure", entry.ID, treasures.ValidateSave(treasures.SaveInputFromEntry(entry), itemIDs, grimoireIDs, treasureSourcePaths, m.nowUTC()))
 		if prevID, exists := treasureTablePaths[strings.TrimSpace(entry.TablePath)]; exists && prevID != entry.ID {
 			report.Issues = append(report.Issues, ValidationIssue{
 				Entity:  "treasure",
@@ -97,13 +97,13 @@ func (m *JSONMaster) ValidateSavedAll() ValidationReport {
 		}
 	}
 	for _, entry := range lootTableState.Entries {
-		appendSaveIssues(&report, "loottable", entry.ID, loottables.ValidateSave(loottableToInput(entry), itemIDs, grimoireIDs, m.nowUTC()))
+		appendSaveIssues(&report, "loottable", entry.ID, loottables.ValidateSave(loottables.SaveInputFromEntry(entry), itemIDs, grimoireIDs, m.nowUTC()))
 	}
 	for _, entry := range enemyState.Entries {
-		appendSaveIssues(&report, "enemy", entry.ID, enemies.ValidateSave(enemyToInput(entry), enemySkillIDs, itemIDs, grimoireIDs, m.nowUTC()))
+		appendSaveIssues(&report, "enemy", entry.ID, enemies.ValidateSave(enemies.SaveInputFromEntry(entry), enemySkillIDs, itemIDs, grimoireIDs, m.nowUTC()))
 	}
 	for _, entry := range spawnTableState.Entries {
-		appendSaveIssues(&report, "spawn_table", entry.ID, spawntables.ValidateSave(spawnTableToInput(entry), enemyIDs, m.nowUTC()))
+		appendSaveIssues(&report, "spawn_table", entry.ID, spawntables.ValidateSave(spawntables.SaveInputFromEntry(entry), enemyIDs, m.nowUTC()))
 	}
 	for _, pair := range spawntables.AllOverlaps(spawnTableState.Entries) {
 		report.Issues = append(report.Issues, ValidationIssue{

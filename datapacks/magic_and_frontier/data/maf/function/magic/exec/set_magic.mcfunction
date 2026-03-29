@@ -13,6 +13,7 @@ execute if score @s mafCastCost > @s mafMP run scoreboard players set @s mafCast
 # execute if score @s mafCastCost > @s mafMP run tellraw @s [{"text":"MPが足りません！"}, {"score":{"name":"@s","objective":"mafMP"}},{"text":" / "},{"score":{"name":"@s","objective":"mafCastCost"}}]
 execute if score @s mafCastCost > @s mafMP run tellraw @s [{"text":"MPが足りません！ 消費MP: "},{"score":{"name":"@s","objective":"mafCastCost"}}]
 execute if score @s mafCastCost > @s mafMP run playsound minecraft:block.dispenser.fail master @s ~ ~ ~ 1.0 1.1
+execute if score @s mafCastCost > @s mafMP run return fail
 
 # 詠唱名を保存する
 execute as @a[scores={mafPlayerID=1}] run data modify storage p7:mpbar bar1.title set from storage p7:maf magictmp.title
@@ -39,3 +40,4 @@ execute as @a[scores={mafPlayerID=20}] run data modify storage p7:mpbar bar20.ti
 
 # 発動条件のある魔法はここで判定をする？
 # 発動時でいいかも　「力が足りなかった！」的な
+return 1

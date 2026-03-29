@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"テンペスト40"},minecraft:lore=[{text:"右クリックで詠唱を開始"},{text:"effect=4 cast=40 cost=13"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"tempest01",spell:{castid:4,cost:13,cast:40,title:"テンペスト",description:"敵1体に雷を落とし周辺に特大ダメージ"}}}] 1

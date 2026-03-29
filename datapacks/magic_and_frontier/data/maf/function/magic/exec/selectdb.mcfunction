@@ -1,2 +1,0 @@
-execute if data entity @s SelectedItem.components."minecraft:custom_data".maf.spell run data modify storage p7:maf magictmp set from entity @s SelectedItem.components."minecraft:custom_data".maf.spell
-execute if data entity @s Inventory[{Slot:-106b}].components."minecraft:custom_data".maf.spell run data modify storage p7:maf magictmp set from entity @s Inventory[{Slot:-106b}].components."minecraft:custom_data".maf.spell

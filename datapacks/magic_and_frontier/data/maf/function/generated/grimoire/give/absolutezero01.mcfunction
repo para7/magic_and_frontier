@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"アブソリュート・ゼロ40"},minecraft:lore=[{text:"右クリックで詠唱を開始"},{text:"effect=3 cast=40 cost=11"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"absolutezero01",spell:{castid:3,cost:11,cast:40,title:"アブソリュート・ゼロ",description:"水を凍らせ氷上の存在に大ダメージ"}}}] 1

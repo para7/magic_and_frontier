@@ -2,7 +2,6 @@ package common
 
 import (
 	"regexp"
-	"strconv"
 	"strings"
 )
 
@@ -11,27 +10,10 @@ var (
 	resourcePathPattern = regexp.MustCompile(`^[a-z0-9_./-]+$`)
 )
 
-func IsPrefixedSequenceID(value, prefix string) bool {
-	value = NormalizeText(value)
-	if !strings.HasPrefix(value, prefix) {
-		return false
-	}
-	suffix := strings.TrimPrefix(value, prefix)
-	if suffix == "" {
-		return false
-	}
-	n, err := strconv.Atoi(suffix)
-	return err == nil && n >= 1
-}
-
-func RequirePrefixedSequenceID(errs FieldErrors, field, value, prefix string) string {
+func RequireNonEmptyID(errs FieldErrors, field, value string) string {
 	id := NormalizeText(value)
 	if id == "" {
 		errs.Add(field, "Required.")
-		return ""
-	}
-	if !IsPrefixedSequenceID(id, prefix) {
-		errs.Add(field, "Invalid ID format.")
 		return ""
 	}
 	return id

@@ -1,0 +1,9 @@
+{
+  "entries": [
+    {
+      "id": "near_poison",
+      "description": "近距離毒",
+      "script": "effect give @e[distance=..2] minecraft:poison 10 2"
+    }
+  ]
+}

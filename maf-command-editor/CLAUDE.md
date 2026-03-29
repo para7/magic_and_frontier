@@ -1,14 +1,12 @@
-# Repository Guidelines
+## ソース構造
 
-## Project Goal
-For the near term, this repository’s primary goal is to migrate `../tools` to Go.
+- /app/internal/domain: コア実装
+- /app/internal/application: コア実装とUI・CLIの橋渡し
+- /app/internal/web: Web UI
 
-## Workflow
-Prefer running project commands via `make` targets when a suitable target exists.
+## Repository Guidelines
 
-## minecraft server 
-
-Minecraft local server is run with docker, ../compose.yml .
+- build check commands: ```make check```
 
 ## mcstacker
 
