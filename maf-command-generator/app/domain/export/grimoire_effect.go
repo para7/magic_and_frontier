@@ -11,6 +11,7 @@ type GrimoireEffectFunction struct {
 	ID           string
 	Body         string
 	SelectScript string
+	Book         string
 }
 
 func BuildGrimoireArtifacts(master DBMaster, effectDir string) []GrimoireEffectFunction {
@@ -27,6 +28,7 @@ func BuildGrimoireArtifacts(master DBMaster, effectDir string) []GrimoireEffectF
 			ID:           entry.ID,
 			Body:         entry.Script,
 			SelectScript: selectScript,
+			Book:         grimoireToBook(entry),
 		})
 	}
 
@@ -49,6 +51,19 @@ func WriteGrimoireArtifacts(spellEffectDir string, selectExecFile string, effect
 
 	selectExec := strings.Join(selectLines, "\n")
 	return os.WriteFile(selectExecFile, []byte(selectExec), 0o755)
+}
+
+// デバッグ用の give コマンドを生成 (1グリモア1ファイル)
+func WriteGrimoireDebugArtifacts(debugDir string, effects []GrimoireEffectFunction) error {
+	os.MkdirAll(debugDir, 0o755)
+	for _, entry := range effects {
+		path := filepath.Join(debugDir, entry.ID+".mcfunction")
+		script := fmt.Sprintf("give @p %s 1", entry.Book)
+		if err := os.WriteFile(path, []byte(script), 0o755); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func getEffectFunctionName(spellEffectDir string, grimoireId string) string {

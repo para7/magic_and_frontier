@@ -17,7 +17,14 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	effectLogicalDir := settings.ExportPaths.GrimoireEffect
 	effectDir := filepath.Join(settings.OutputRoot, funcRoot, effectLogicalDir)
 	effectSelect := filepath.Join(settings.OutputRoot, funcRoot, settings.ExportPaths.GrimoireSelectFile)
+	debugDir := filepath.Join(settings.OutputRoot, funcRoot, settings.ExportPaths.GrimoireDebug)
 
 	effects := BuildGrimoireArtifacts(dmas, effectLogicalDir)
-	return WriteGrimoireArtifacts(effectDir, effectSelect, effects)
+	if err := WriteGrimoireArtifacts(effectDir, effectSelect, effects); err != nil {
+		return err
+	}
+	if err := WriteGrimoireDebugArtifacts(debugDir, effects); err != nil {
+		return err
+	}
+	return nil
 }

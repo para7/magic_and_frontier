@@ -3,6 +3,6 @@
   "exportPaths": {
     "grimoireEffect": "generated/grimoire/effect",
     "grimoireSelectFile": "generated/grimoire/selectexec.mcfunction",
-    "grimoireDebug": "generated/grimoire/debug"
+    "grimoireDebug": "generated/grimoire/give"
   }
 }

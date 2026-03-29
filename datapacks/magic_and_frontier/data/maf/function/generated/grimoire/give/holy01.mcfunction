@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"ホーリー40"},minecraft:lore=[{text:"右クリックで詠唱を開始"},{text:"effect=10 cast=40 cost=30"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"holy01",spell:{castid:10,cost:30,cast:40,title:"ホーリー",description:"近くのアンデッドに特大ダメージ"}}}] 1
