@@ -1,4 +1,3 @@
-scoreboard players set @a mafUseWand 0
 scoreboard players set @a mafWalkCM 0
 scoreboard players set @a mafAviateCM 0
 scoreboard players set @a mafClimbCM 0

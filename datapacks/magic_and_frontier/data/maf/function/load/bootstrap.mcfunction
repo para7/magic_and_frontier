@@ -1,7 +1,5 @@
 tellraw @a [{"text":"enable datapack: Magic and Frontier"}]
 
-scoreboard objectives add mafUseWand minecraft.used:minecraft.carrot_on_a_stick
-
 function maf:magic/load
 
 scoreboard objectives add mafPlayerID dummy
