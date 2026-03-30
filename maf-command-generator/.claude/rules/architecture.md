@@ -8,9 +8,7 @@ paths:
 依存方向は固定で、逆流させない。
 
 ```
-main → cli → master → model / export → files
-                                  ↓
-                              minecraft
+main → cli → master → model / export → files, minecraft
 ```
 
 - `main`: サブコマンド分岐のみ（`editor` / `validate` / `export`）
