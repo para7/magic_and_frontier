@@ -1,103 +1,61 @@
-# Minecraft Server on Docker
+[![maf-command-generator-ci](https://github.com/para7/magic_and_frontier_v2/actions/workflows/maf-command-generator-ci.yml/badge.svg)](https://github.com/para7/magic_and_frontier_v2/actions/workflows/maf-command-generator-ci.yml)
 
-既存の `server_1_21_11.jar` を使って Minecraft サーバーを起動し、ワールドデータをバインドマウントで保持します。  
-データパックは `./datapacks` を `world/datapacks` にマウントして管理します。  
-バックアップは 24 時間ごとに `tgz` を作成し、デフォルトで最新 7 世代を保持します。
+# Magic And Frontier Datapack
 
-## 構成
+魔法を使って冒険をして遊ぶデータパック
 
-- サーバーデータ: `./data`
-- データパック: `./datapacks`
-- バックアップ: `./backups`
-- サーバーJAR: `./server_1_21_11.jar`
+旧TUSB風データパックの後継 <https://github.com/para7/Minecraft_Datapack>  
+前作のプレイ動画 <https://youtu.be/F4YhRD_rlPU>
 
-## セットアップ
+## 暫定開発スケジュール
 
-```bash
-cp .env.example .env
-mkdir -p data backups datapacks
-```
+### 2026
 
-`.env` の `RCON_PASSWORD` は必ず変更してください。
+#### 3月
 
-EULA 同意は自動化していません。初回起動後に `data/eula.txt` を編集して `eula=true` にしてください。
+- 開発ツールのリライト完了
 
-## 起動
+**→ すでに遅延、4月下旬までコマンド調査と並行して実施**
 
-```bash
-docker compose up -d
-```
+#### 4月上旬
 
-初回は EULA 未同意で停止するため、以下を実行して再起動します。
+- コマンド仕様の調査研究
 
-```bash
-sed -i 's/^eula=false/eula=true/' data/eula.txt
-docker compose up -d
-```
+#### 4月下旬
 
-## 確認
+- 数字のガイドライン算出
+- アイテム・魔法を計200種類実装
+- 敵を50種類実装
+- 試験的な組み込み開始
 
-```bash
-docker compose logs -f minecraft
-docker compose logs -f backup
-```
+#### 5月下旬
 
-## サーバーコマンド実行（Makefile）
+- オーバーワールドの5段階実装
+- オーバーワールドのトレジャー3種を仮実装
+- ネザーの実装開始
 
-```bash
-make mc-cmd CMD="list"
-make mc-cmd CMD="say hello from make"
-make mc-shell
-```
+#### 6月下旬
 
-バックアップファイルは `backups/` 配下に `minecraft-world_YYYYmmdd_HHMMSS.tgz` 形式で生成されます。
+- ネザーの5段階実装
+- エンドの6段階実装
+- オーバーワールドの仕様詰め開始
+- クローズドα版開始
+- 動画編集開始
 
-## Command Editor (tools monorepo)
+#### 7月
 
-`maf-command-editor` は `tools/` 配下の monorepo に移行しました。
+- 動画投稿
+- オーバーワールドのテーブル細分化+トレジャー完了
 
-- `tools/domain`: valibot + usecase のドメイン層
-- `tools/server`: hono API 層（JSON 保存ラッパー）
-- `tools/frontend`: Angular UI
+#### 8月
 
-```bash
-cd tools
-pnpm install
-pnpm --filter @maf/server dev
-pnpm --filter @maf/frontend dev
-```
+- ネザーのテーブル細分化+トレジャー完了
+- エンド詰め開始
 
-サンプルデータパック:
+#### 9月
 
-- `datapacks/sample_pack` を同梱しています。
-- サーバー起動時または `/reload` 実行時に `say sample_pack_loaded` を実行する最小構成です。
+- エンド実装完了？
 
-データパックの動作確認:
+## 連絡先・状況など
 
-```bash
-docker compose restart minecraft
-rg 'Found new data pack file/sample_pack|sample_pack_loaded' data/logs/latest.log
-```
-
-`Found new data pack file/sample_pack` または `sample_pack_loaded` が表示されれば、`./datapacks` のマウント経由でデータパックが読み込まれています。
-
-## 主要な環境変数
-
-- `MC_XMS` / `MC_XMX`: JVMメモリ
-- `RCON_PASSWORD`: RCONパスワード（必須）
-- `BACKUP_INTERVAL_HOURS`: バックアップ間隔（デフォルト `24`）
-- `BACKUP_RETENTION`: 保持世代数（デフォルト `7`）
-- `BACKUP_PREFIX`: バックアップファイル接頭辞
-
-## 復元手順
-
-1. `docker compose stop minecraft`
-2. `data/` を退避
-3. 復元したい `tgz` を `data/` に展開
-4. `docker compose start minecraft`
-
-例:
-
-```bash
-tar -xzf backups/minecraft-world_20260215_120000.tgz -C data
-```
+https://bsky.app/profile/nanaket.dev
