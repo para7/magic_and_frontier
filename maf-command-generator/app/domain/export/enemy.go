@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	ec "maf_command_editor/app/domain/export/convert"
 	model "maf_command_editor/app/domain/model"
 	enemyModel "maf_command_editor/app/domain/model/enemy"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
@@ -38,7 +39,7 @@ func BuildEnemyArtifacts(master DBMaster, enemyLootLogicalDir, minecraftLootRoot
 	enemies := master.ListEnemies()
 	artifacts := make([]EnemyArtifact, 0, len(enemies))
 	for _, entry := range enemies {
-		pool, err := buildDropLootPool(entry.Drops, itemsByID, grimoiresByID, "enemy("+entry.ID+")")
+		pool, err := ec.BuildDropLootPool(entry.Drops, itemsByID, grimoiresByID, "enemy("+entry.ID+")")
 		if err != nil {
 			return nil, err
 		}
@@ -49,7 +50,7 @@ func BuildEnemyArtifacts(master DBMaster, enemyLootLogicalDir, minecraftLootRoot
 		}
 
 		lootID := resourceRefName("maf", enemyLootLogicalDir, entry.ID)
-		lines := toEnemyFunctionLines(entry, lootID, itemsByID)
+		lines := ec.ToEnemyFunctionLines(entry, lootID, itemsByID)
 		artifacts = append(artifacts, EnemyArtifact{
 			ID:           entry.ID,
 			SummonScript: strings.Join(lines, "\n"),
@@ -90,7 +91,7 @@ func buildEnemyLootTable(entry enemyModel.Enemy, customPool map[string]any, mine
 		if err != nil {
 			return nil, fmt.Errorf("enemy(%s): failed to load base loot table %s: %w", entry.ID, tablePath, err)
 		}
-		merged, err := mergeLootTablePools(base, customPool, tablePath)
+		merged, err := ec.MergeLootTablePools(base, customPool, tablePath)
 		if err != nil {
 			return nil, err
 		}

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+
+	ec "maf_command_editor/app/domain/export/convert"
 )
 
 type GrimoireEffectFunction struct {
@@ -27,7 +29,7 @@ func BuildGrimoireArtifacts(master DBMaster, effectDir string) []GrimoireEffectF
 			ID:           entry.ID,
 			Body:         strings.Join(entry.Script, "\n"),
 			SelectScript: selectScript,
-			Book:         grimoireToBook(entry),
+			Book:         ec.GrimoireToBook(entry),
 		})
 	}
 
