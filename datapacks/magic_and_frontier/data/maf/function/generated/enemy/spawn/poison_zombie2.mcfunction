@@ -1,0 +1,3 @@
+# enemyId=poison_zombie2 mobType=minecraft:zombie
+# dropMode=append
+summon minecraft:zombie ~ ~ ~ {Health:2f,DeathLootTable:"maf:generated/enemy/loot/poison_zombie2",CustomName:{text:"Poison Zombie DropAppend"},Tags:["maf_enemy","maf_enemy_poison_zombie2","maf_vh_checked","EnemySkill","near_poison","maf_enemy_skill_near_poison"],Attributes:[{Name:generic.max_health,Base:2},{Name:generic.attack_damage,Base:6},{Name:generic.armor,Base:2},{Name:generic.movement_speed,Base:0.22}],HandItems:[{},{}],HandDropChances:[0.085F,0.085F],ArmorItems:[{},{},{},{}],ArmorDropChances:[0.085F,0.085F,0.085F,0.085F]}

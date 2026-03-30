@@ -4,7 +4,7 @@
       "id": "poison_zombie",
       "mobType": "minecraft:zombie",
       "name": "Poison Zombie",
-      "hp": 40,
+      "hp": 2,
       "memo": "",
       "attack": 6,
       "defense": 2,
@@ -14,6 +14,37 @@
         "near_poison"
       ],
       "dropMode": "replace",
+      "drops": [
+        {
+          "kind": "item",
+          "refId": "items_1",
+          "weight": 70,
+          "countMin": 1,
+          "countMax": 3
+        },
+        {
+          "kind": "grimoire",
+          "refId": "prominence01",
+          "weight": 30,
+          "countMin": 1,
+          "countMax": 1
+        }
+      ]
+    },
+    {
+      "id": "poison_zombie2",
+      "mobType": "minecraft:zombie",
+      "name": "Poison Zombie DropAppend",
+      "hp": 2,
+      "memo": "",
+      "attack": 6,
+      "defense": 2,
+      "moveSpeed": 0.22,
+      "equipment": {},
+      "enemySkillIds": [
+        "near_poison"
+      ],
+      "dropMode": "append",
       "drops": [
         {
           "kind": "item",
