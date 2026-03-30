@@ -1,0 +1,58 @@
+name: maf-command-generator-ci
+
+on:
+  pull_request:
+    paths:
+      - "maf-command-generator/**"
+      - ".github/workflows/maf-command-generator-ci.yml"
+  push:
+    branches:
+      - master
+    paths:
+      - "maf-command-generator/**"
+      - ".github/workflows/maf-command-generator-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  maf-command-generator:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: maf-command-generator
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: maf-command-generator/go.mod
+          cache-dependency-path: maf-command-generator/go.sum
+
+      - name: Download modules
+        run: go mod download
+
+      - name: Build
+        run: make build
+
+      - name: Lint
+        run: make lint
+
+      - name: Format
+        run: make format
+
+      - name: Verify formatting is committed
+        run: |
+          git diff --exit-code -- maf-command-generator || {
+            echo "Formatting changes are required. Run 'cd maf-command-generator && make format' and commit the result."
+            exit 1
+          }
+
+      - name: Test
+        run: make test
+
+      - name: Validate data
+        run: make run/validate
