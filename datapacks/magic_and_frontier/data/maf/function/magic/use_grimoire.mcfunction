@@ -3,6 +3,8 @@
 advancement revoke @s only maf:use_grimoire
 
 execute unless entity @s[scores={mafCastTime=..-1}] run return 0
+scoreboard players add @s mafCoolTime 0
+execute unless entity @s[scores={mafCoolTime=..0}] run return 0
 
 data remove storage p7:maf magictmp
 execute unless data entity @s SelectedItem.components."minecraft:custom_data".maf.spell run return 0

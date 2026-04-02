@@ -5,6 +5,6 @@
     }
   },
   "rewards": {
-    "function": "maf:constructor"
+    "function": "maf:player_init"
   }
 }

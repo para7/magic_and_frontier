@@ -22,4 +22,3 @@ Minecraft データパック向けゲームコンテンツ（魔導書・アイ�
 
 - project1: https://github.com/para7/Minecraft_Datapack
 - project2: https://github.com/para7/magic_and_frontier
-- 移行前のプロジェクト: "../maf-command-editor" 

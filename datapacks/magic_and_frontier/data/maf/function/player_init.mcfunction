@@ -1,4 +1,4 @@
-tellraw @s [{"text":"constructor: 初期化処理を実行"}]
+tellraw @s [{"text":"player_init: 初期化処理を実行"}]
 
 scoreboard players set @s mafPlayerID 0
 scoreboard players set @s mafMoved 0
@@ -18,4 +18,4 @@ scoreboard players set @s tmp2 0
 scoreboard players set @s mafLogin 1
 scoreboard players set @s mafCastTime -1
 
-function maf:magic/constructor
+function maf:magic/player_init

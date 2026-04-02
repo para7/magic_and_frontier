@@ -4,6 +4,7 @@
       "id": "prominence01",
       "castid": 2,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 7,
       "script": [
         "#プロミネンス",
@@ -29,6 +30,7 @@
       "id": "absolutezero01",
       "castid": 3,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 11,
       "script": [
         "#アブソリュートゼロ",
@@ -80,6 +82,7 @@
       "id": "tempest01",
       "castid": 4,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 13,
       "script": [
         "#テンペスト",
@@ -115,6 +118,7 @@
       "id": "poison01",
       "castid": 5,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 10,
       "script": [
         "#テンペスト",
@@ -145,6 +149,7 @@
       "id": "earthshake01",
       "castid": 6,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 4,
       "script": [
         "#テンペスト",
@@ -171,6 +176,7 @@
       "id": "healing01",
       "castid": 7,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 13,
       "script": [
         "#ヒーリング",
@@ -198,6 +204,7 @@
       "id": "barrier01",
       "castid": 8,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 22,
       "script": [
         "effect give @e[type=#p7b:friendmob,distance=..10] minecraft:absorption 210 2",
@@ -220,6 +227,7 @@
       "id": "refresh01",
       "castid": 9,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 17,
       "script": [
         "# effect give @e[type=#p7b:undead,sort=nearest,limit=1] minecraft:instant_health 1 1",
@@ -252,6 +260,7 @@
       "id": "holy01",
       "castid": 10,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 30,
       "script": [
         "# effect give @e[type=#p7b:undead,sort=nearest,limit=1] minecraft:instant_health 1 1",
@@ -276,6 +285,7 @@
       "id": "sacrifice01",
       "castid": 11,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 23,
       "script": [
         "# effect give @e[type=#p7b:undead,sort=nearest,limit=1] minecraft:instant_health 1 1",
@@ -304,6 +314,7 @@
       "id": "tornado01",
       "castid": 12,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 6,
       "script": [
         "#ヒーリング",
@@ -329,6 +340,7 @@
       "id": "sweep01",
       "castid": 13,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 14,
       "script": [
         "",
@@ -350,6 +362,7 @@
       "id": "airrider01",
       "castid": 14,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 18,
       "script": [
         "",
@@ -376,6 +389,7 @@
       "id": "gravity01",
       "castid": 15,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 9,
       "script": [
         "",
@@ -405,6 +419,7 @@
       "id": "hover01",
       "castid": 16,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 18,
       "script": [
         "",
@@ -428,6 +443,7 @@
       "id": "floor01",
       "castid": 17,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 11,
       "script": [
         "",
@@ -449,6 +465,7 @@
       "id": "wall01",
       "castid": 18,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 9,
       "script": [
         "",
@@ -478,6 +495,7 @@
       "id": "roof01",
       "castid": 19,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 10,
       "script": [
         "",
@@ -508,6 +526,7 @@
       "id": "earthextend01",
       "castid": 20,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 17,
       "script": [
         "fill ~-5 ~-1 ~-5 ~5 ~-6 ~5 minecraft:stone replace minecraft:water",
@@ -530,6 +549,7 @@
       "id": "cushion01",
       "castid": 21,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 14,
       "script": [
         "",
@@ -555,6 +575,7 @@
       "id": "disaster01",
       "castid": 22,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 30,
       "script": [
         "",
@@ -577,6 +598,7 @@
       "id": "phoenix01",
       "castid": 23,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 60,
       "script": [
         "",
@@ -603,6 +625,7 @@
       "id": "teleport01",
       "castid": 24,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 40,
       "script": [
         "",
@@ -626,6 +649,7 @@
       "id": "reinforce01",
       "castid": 25,
       "castTime": 40,
+      "coolTime": 20,
       "mpCost": 50,
       "script": [
         "",

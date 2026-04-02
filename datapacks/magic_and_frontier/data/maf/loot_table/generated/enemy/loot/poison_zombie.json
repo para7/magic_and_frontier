@@ -73,7 +73,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{grimoire_id:\"prominence01\",spell:{castid:2,cost:7,cast:40,title:\"プロミネンス\",description:\"周囲炎上+ダメージ+移動低下\"}}}"
+              "tag": "{maf:{grimoire_id:\"prominence01\",spell:{castid:2,cost:7,cast:40,cooltime:20,title:\"プロミネンス\",description:\"周囲炎上+ダメージ+移動低下\"}}}"
             }
           ],
           "name": "minecraft:book",

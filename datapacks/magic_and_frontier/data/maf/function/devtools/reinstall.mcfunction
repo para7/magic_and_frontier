@@ -4,6 +4,7 @@
 scoreboard objectives remove mafPlayerID
 scoreboard objectives remove mafMoved
 scoreboard objectives remove mafWalkCM
+scoreboard objectives remove mafCoolTime
 scoreboard objectives remove p7_setSkSlot
 scoreboard objectives remove p7_setSkID
 scoreboard objectives remove p7_setSkEnable
