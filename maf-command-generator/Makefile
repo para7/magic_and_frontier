@@ -17,6 +17,7 @@ run/validate:
 
 run/export:
 	go run $(ENTRY) export
+	cd ../ && make mc-cmd CMD="reload"
 
 
 check: generate tidy format lint build test ## run all checks

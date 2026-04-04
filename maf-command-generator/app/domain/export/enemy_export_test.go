@@ -12,6 +12,7 @@ import (
 	enemyskillModel "maf_command_editor/app/domain/model/enemyskill"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
+	passiveModel "maf_command_editor/app/domain/model/passive"
 	mc "maf_command_editor/app/minecraft"
 )
 
@@ -214,5 +215,52 @@ func TestWriteEnemyArtifactsWritesFiles(t *testing.T) {
 	var parsed map[string]any
 	if err := json.Unmarshal(data, &parsed); err != nil {
 		t.Fatalf("enemy loot should be valid json: %v", err)
+	}
+}
+
+func TestBuildEnemyArtifactsWithPassiveDrop(t *testing.T) {
+	slot := 1
+	master := exportMasterStub{
+		passives: []passiveModel.Passive{
+			{
+				ID:        "passive_1",
+				Name:      "Quickstep",
+				Condition: "always",
+				Slots:     []int{1},
+				CastID:    100,
+				Script:    []string{"say passive"},
+			},
+		},
+		enemies: []enemyModel.Enemy{
+			{
+				ID:       "enemy_1",
+				MobType:  "minecraft:zombie",
+				HP:       20,
+				DropMode: "replace",
+				Drops: []model.DropRef{
+					{Kind: "passive", RefID: "passive_1", Slot: &slot, Weight: 1, CountMin: ptrFloat(1), CountMax: ptrFloat(1)},
+				},
+			},
+		},
+	}
+
+	artifacts, err := BuildEnemyArtifacts(master, "generated/enemy/loot", t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(artifacts) != 1 {
+		t.Fatalf("artifacts length = %d, want 1", len(artifacts))
+	}
+
+	data, err := json.Marshal(artifacts[0].LootTable)
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(data)
+	if !strings.Contains(text, `passive:{id:\"passive_1\",slot:1`) {
+		t.Fatalf("loot table should embed passive metadata: %s", text)
+	}
+	if !strings.Contains(text, `castid:1001`) {
+		t.Fatalf("loot table should use derived passive castid: %s", text)
 	}
 }

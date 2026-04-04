@@ -3,9 +3,10 @@ package model
 // DropRef はアイテム・グリモア・バニラアイテムへの参照とドロップ設定。
 // Enemy, Treasure, LootTable などで共通して使用する。
 type DropRef struct {
-	Kind     string   `json:"kind"              validate:"trimmed_required,trimmed_oneof=minecraft_item item grimoire"`
-	RefID    string   `json:"refId"             validate:"trimmed_required,trimmed_min=1,trimmed_max=200"`
-	Weight   float64  `json:"weight"            validate:"gte=1,lte=100000"`
+	Kind     string   `json:"kind"               validate:"trimmed_required,trimmed_oneof=minecraft_item item grimoire passive"`
+	RefID    string   `json:"refId"              validate:"trimmed_required,trimmed_min=1,trimmed_max=200"`
+	Slot     *int     `json:"slot,omitempty"     validate:"omitempty,gte=1,lte=3"`
+	Weight   float64  `json:"weight"             validate:"gte=1,lte=100000"`
 	CountMin *float64 `json:"countMin,omitempty" validate:"omitempty,gte=1,lte=64"`
 	CountMax *float64 `json:"countMax,omitempty" validate:"omitempty,gte=1,lte=64"`
 }

@@ -1,11 +1,15 @@
 {
   "entries": [
     {
-      "id": "skill_1",
+      "id": "passive_1",
       "name": "Sword Slash",
-      "skilltype": "sword",
+      "condition": "on_sword_hit",
+      "slots": [
+        1
+      ],
+      "castid": 100,
       "script": [
-        "function maf:skill/sword_slash"
+        "tell @a Passive skill activated: Sword Slash!"
       ]
     }
   ]

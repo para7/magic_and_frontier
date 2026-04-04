@@ -4,6 +4,9 @@
     "grimoireEffect": "generated/grimoire/effect",
     "grimoireSelectFile": "generated/grimoire/selectexec.mcfunction",
     "grimoireDebug": "generated/grimoire/give",
+    "passiveEffect": "generated/passive/effect",
+    "passiveGive": "generated/passive/give",
+    "passiveApply": "generated/passive/apply",
     "enemy": "generated/enemy/spawn",
     "enemySkill": "generated/enemy/skill",
     "enemyLoot": "generated/enemy/loot"

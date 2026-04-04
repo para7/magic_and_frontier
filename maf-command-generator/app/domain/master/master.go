@@ -47,7 +47,7 @@ func NewDBMaster(cfg config.MafConfig) *DBMaster {
 	d.item = item.NewItemEntity(cfg.ItemStatePath)
 	load("item", d.item.Load)
 
-	d.passive = passive.NewPassiveEntity(cfg.SkillStatePath)
+	d.passive = passive.NewPassiveEntity(cfg.PassiveStatePath)
 	load("passive", d.passive.Load)
 
 	d.enemyskill = enemyskill.NewEnemySkillEntity(cfg.EnemySkillStatePath)

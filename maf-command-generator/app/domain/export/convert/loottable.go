@@ -6,9 +6,16 @@ import (
 	model "maf_command_editor/app/domain/model"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
+	passiveModel "maf_command_editor/app/domain/model/passive"
 )
 
-func BuildDropLootPool(drops []model.DropRef, itemsByID map[string]itemModel.Item, grimoiresByID map[string]grimoireModel.Grimoire, context string) (map[string]any, error) {
+func BuildDropLootPool(
+	drops []model.DropRef,
+	itemsByID map[string]itemModel.Item,
+	grimoiresByID map[string]grimoireModel.Grimoire,
+	passivesByID map[string]passiveModel.Passive,
+	context string,
+) (map[string]any, error) {
 	entries := make([]any, 0, len(drops))
 	for _, drop := range drops {
 		switch drop.Kind {
@@ -35,6 +42,21 @@ func BuildDropLootPool(drops []model.DropRef, itemsByID map[string]itemModel.Ite
 				return nil, fmt.Errorf("%s: referenced grimoire not found (%s)", context, drop.RefID)
 			}
 			out := toSpellLootEntry(entry, drop.CountMin, drop.CountMax)
+			out["weight"] = ToWeight(drop.Weight)
+			entries = append(entries, out)
+		case "passive":
+			if drop.Slot == nil {
+				return nil, fmt.Errorf("%s: passive drop requires slot (%s)", context, drop.RefID)
+			}
+			slot := *drop.Slot
+			entry, ok := passivesByID[drop.RefID]
+			if !ok {
+				return nil, fmt.Errorf("%s: referenced passive not found (%s)", context, drop.RefID)
+			}
+			if !passiveHasSlot(entry, slot) {
+				return nil, fmt.Errorf("%s: passive(%s) does not support slot %d", context, drop.RefID, slot)
+			}
+			out := toPassiveLootEntry(entry, slot, drop.CountMin, drop.CountMax)
 			out["weight"] = ToWeight(drop.Weight)
 			entries = append(entries, out)
 		default:
@@ -113,4 +135,29 @@ func toSpellLootEntry(entry grimoireModel.Grimoire, min, max *float64) map[strin
 		"name":      "minecraft:book",
 		"functions": functions,
 	}
+}
+
+func toPassiveLootEntry(entry passiveModel.Passive, slot int, min, max *float64) map[string]any {
+	functions := []any{
+		map[string]any{"function": "minecraft:set_count", "add": false, "count": ToCountValue(min, max)},
+		map[string]any{
+			"function":   "minecraft:set_components",
+			"components": passiveLootComponents(entry, slot),
+		},
+		map[string]any{"function": "minecraft:set_custom_data", "tag": passiveSpellCustomData(entry, slot)},
+	}
+	return map[string]any{
+		"type":      "minecraft:item",
+		"name":      "minecraft:book",
+		"functions": functions,
+	}
+}
+
+func passiveHasSlot(entry passiveModel.Passive, slot int) bool {
+	for _, v := range entry.Slots {
+		if v == slot {
+			return true
+		}
+	}
+	return false
 }

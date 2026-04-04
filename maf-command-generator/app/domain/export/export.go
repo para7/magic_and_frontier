@@ -2,6 +2,7 @@ package export
 
 import (
 	"path/filepath"
+	"strings"
 
 	config "maf_command_editor/app/files"
 )
@@ -19,6 +20,12 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	effectDir := filepath.Join(settings.OutputRoot, funcRoot, effectLogicalDir)
 	effectSelect := filepath.Join(settings.OutputRoot, funcRoot, settings.ExportPaths.GrimoireSelectFile)
 	debugDir := filepath.Join(settings.OutputRoot, funcRoot, settings.ExportPaths.GrimoireDebug)
+	passiveEffectLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveEffect, "generated/passive/effect")
+	passiveEffectDir := filepath.Join(settings.OutputRoot, funcRoot, passiveEffectLogicalDir)
+	passiveGiveLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveGive, normalizePathOrDefault(settings.ExportPaths.PassiveGrimoire, "generated/passive/give"))
+	passiveGiveDir := filepath.Join(settings.OutputRoot, funcRoot, passiveGiveLogicalDir)
+	passiveApplyLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveApply, "generated/passive/apply")
+	passiveApplyDir := filepath.Join(settings.OutputRoot, funcRoot, passiveApplyLogicalDir)
 	enemySkillLogicalDir := settings.ExportPaths.EnemySkill
 	enemySkillDir := filepath.Join(settings.OutputRoot, funcRoot, enemySkillLogicalDir)
 	enemyLogicalDir := settings.ExportPaths.Enemy
@@ -27,10 +34,21 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	enemyLootDir := filepath.Join(settings.OutputRoot, lootRoot, enemyLootLogicalDir)
 
 	effects := BuildGrimoireArtifacts(dmas, effectLogicalDir)
-	if err := WriteGrimoireArtifacts(effectDir, effectSelect, effects); err != nil {
+	passiveEffects, passiveGrimoires, err := BuildPassiveArtifacts(dmas, passiveEffectLogicalDir, passiveGiveLogicalDir, passiveApplyLogicalDir)
+	if err != nil {
+		return err
+	}
+	selectLines, err := BuildSelectExecLines(effects, passiveGrimoires)
+	if err != nil {
+		return err
+	}
+	if err := WriteGrimoireArtifacts(effectDir, effectSelect, effects, selectLines); err != nil {
 		return err
 	}
 	if err := WriteGrimoireDebugArtifacts(debugDir, effects); err != nil {
+		return err
+	}
+	if err := WritePassiveArtifacts(passiveEffectDir, passiveGiveDir, passiveApplyDir, passiveEffects, passiveGrimoires); err != nil {
 		return err
 	}
 	skills := BuildEnemySkillArtifacts(dmas, enemySkillLogicalDir)
@@ -46,4 +64,12 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 		return err
 	}
 	return nil
+}
+
+func normalizePathOrDefault(value, fallback string) string {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return fallback
+	}
+	return value
 }

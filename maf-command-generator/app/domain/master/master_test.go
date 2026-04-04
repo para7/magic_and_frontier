@@ -37,7 +37,7 @@ func newTestConfig(t *testing.T, grimoires []grimoireModel.Grimoire) files.MafCo
 
 	writeState(t, p("grimoire.json"), grimoires)
 	writeState[struct{}](t, p("item.json"), nil)
-	writeState[struct{}](t, p("skill.json"), nil)
+	writeState[struct{}](t, p("passive.json"), nil)
 	writeState[struct{}](t, p("enemy_skill.json"), nil)
 	writeState[struct{}](t, p("enemy.json"), nil)
 	writeState[struct{}](t, p("spawn_table.json"), nil)
@@ -47,7 +47,7 @@ func newTestConfig(t *testing.T, grimoires []grimoireModel.Grimoire) files.MafCo
 	cfg := files.LoadConfig()
 	cfg.GrimoireStatePath = p("grimoire.json")
 	cfg.ItemStatePath = p("item.json")
-	cfg.SkillStatePath = p("skill.json")
+	cfg.PassiveStatePath = p("passive.json")
 	cfg.EnemySkillStatePath = p("enemy_skill.json")
 	cfg.EnemyStatePath = p("enemy.json")
 	cfg.SpawnTableStatePath = p("spawn_table.json")

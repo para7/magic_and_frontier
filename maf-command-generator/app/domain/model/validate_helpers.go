@@ -58,6 +58,13 @@ func ValidateDropRefs(entity, id, prefix string, drops []DropRef, mas DBMaster) 
 		if refID != "" {
 			switch kind {
 			case "item":
+				if d.Slot != nil {
+					errs = append(errs, ValidationError{
+						Entity: entity, ID: id,
+						Field: fmt.Sprintf("%s[%d].slot", prefix, i),
+						Tag:   "relation", Param: "slot is only supported when kind=passive",
+					})
+				}
 				if !mas.HasItem(refID) {
 					errs = append(errs, ValidationError{
 						Entity: entity, ID: id,
@@ -66,6 +73,13 @@ func ValidateDropRefs(entity, id, prefix string, drops []DropRef, mas DBMaster) 
 					})
 				}
 			case "grimoire":
+				if d.Slot != nil {
+					errs = append(errs, ValidationError{
+						Entity: entity, ID: id,
+						Field: fmt.Sprintf("%s[%d].slot", prefix, i),
+						Tag:   "relation", Param: "slot is only supported when kind=passive",
+					})
+				}
 				if !mas.HasGrimoire(refID) {
 					errs = append(errs, ValidationError{
 						Entity: entity, ID: id,
@@ -73,7 +87,29 @@ func ValidateDropRefs(entity, id, prefix string, drops []DropRef, mas DBMaster) 
 						Tag:   "relation", Param: "grimoire not found",
 					})
 				}
+			case "passive":
+				if !mas.HasPassive(refID) {
+					errs = append(errs, ValidationError{
+						Entity: entity, ID: id,
+						Field: fmt.Sprintf("%s[%d].refId", prefix, i),
+						Tag:   "relation", Param: "passive not found",
+					})
+				}
+				if d.Slot == nil {
+					errs = append(errs, ValidationError{
+						Entity: entity, ID: id,
+						Field: fmt.Sprintf("%s[%d].slot", prefix, i),
+						Tag:   "relation", Param: "slot is required when kind=passive",
+					})
+				}
 			case "minecraft_item":
+				if d.Slot != nil {
+					errs = append(errs, ValidationError{
+						Entity: entity, ID: id,
+						Field: fmt.Sprintf("%s[%d].slot", prefix, i),
+						Tag:   "relation", Param: "slot is only supported when kind=passive",
+					})
+				}
 				if !IsNamespacedResourceID(refID) {
 					errs = append(errs, ValidationError{
 						Entity: entity, ID: id,

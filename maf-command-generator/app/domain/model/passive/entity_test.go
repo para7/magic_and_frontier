@@ -9,9 +9,11 @@ import (
 func validPassive() Passive {
 	return Passive{
 		ID:          "passive_1",
-		Name:        "斬撃スキル",
-		SkillType:   "sword",
-		Description: "剣スキル",
+		Name:        "剣の心得",
+		Condition:   "on_sword_hit",
+		Slots:       []int{1, 2},
+		CastID:      100,
+		Description: "剣攻撃時に発動するパッシブ",
 		Script:      []string{"function maf:skill/test"},
 	}
 }
@@ -58,11 +60,15 @@ func TestPassiveValidateStructPerField(t *testing.T) {
 		{name: "name ok empty", patch: func(p *Passive) { p.Name = "" }},
 		{name: "name ok max", patch: func(p *Passive) { p.Name = string(make([]rune, 80)) }},
 		{name: "name ng over max", patch: func(p *Passive) { p.Name = string(make([]rune, 81)) }, wantErrField: "name"},
-		{name: "skilltype ok sword", patch: func(p *Passive) { p.SkillType = "sword" }},
-		{name: "skilltype ok bow", patch: func(p *Passive) { p.SkillType = "bow" }},
-		{name: "skilltype ok axe", patch: func(p *Passive) { p.SkillType = "axe" }},
-		{name: "skilltype ng invalid", patch: func(p *Passive) { p.SkillType = "staff" }, wantErrField: "skilltype"},
-		{name: "skilltype ng empty", patch: func(p *Passive) { p.SkillType = "" }, wantErrField: "skilltype"},
+		{name: "condition ok", patch: func(p *Passive) { p.Condition = "always" }},
+		{name: "condition ng empty", patch: func(p *Passive) { p.Condition = " " }, wantErrField: "condition"},
+		{name: "slots ok", patch: func(p *Passive) { p.Slots = []int{1, 3} }},
+		{name: "slots ng empty", patch: func(p *Passive) { p.Slots = nil }, wantErrField: "slots"},
+		{name: "slots ng under", patch: func(p *Passive) { p.Slots = []int{0} }, wantErrField: "slots[0]"},
+		{name: "slots ng over", patch: func(p *Passive) { p.Slots = []int{4} }, wantErrField: "slots[0]"},
+		{name: "slots ng duplicate", patch: func(p *Passive) { p.Slots = []int{2, 2} }, wantErrField: "slots"},
+		{name: "castid ok", patch: func(p *Passive) { p.CastID = 1 }},
+		{name: "castid ng zero", patch: func(p *Passive) { p.CastID = 0 }, wantErrField: "castid"},
 		{name: "script ok", patch: func(p *Passive) { p.Script = []string{"function maf:test"} }},
 		{name: "script ng empty", patch: func(p *Passive) { p.Script = []string{} }, wantErrField: "script"},
 	}

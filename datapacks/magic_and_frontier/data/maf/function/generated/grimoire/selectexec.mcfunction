@@ -22,3 +22,4 @@ execute if entity @s[scores={mafEffectID=22}] run function maf:generated/grimoir
 execute if entity @s[scores={mafEffectID=23}] run function maf:generated/grimoire/effect/phoenix01
 execute if entity @s[scores={mafEffectID=24}] run function maf:generated/grimoire/effect/teleport01
 execute if entity @s[scores={mafEffectID=25}] run function maf:generated/grimoire/effect/reinforce01
+execute if entity @s[scores={mafEffectID=1001}] run function maf:generated/passive/apply/passive_1_slot1
