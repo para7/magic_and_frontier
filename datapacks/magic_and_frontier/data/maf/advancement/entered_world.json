@@ -5,6 +5,6 @@
     }
   },
   "rewards": {
-    "function": "maf:player_init"
+    "function": "maf:entered_world"
   }
 }
