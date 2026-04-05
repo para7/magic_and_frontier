@@ -53,7 +53,14 @@ func TestEnemySkillValidateStructPerField(t *testing.T) {
 		wantErrField string
 	}{
 		{name: "id ok", patch: func(e *EnemySkill) { e.ID = "ok" }},
+		{name: "id ok underscore", patch: func(e *EnemySkill) { e.ID = "eskill_ok" }},
+		{name: "id ok hyphen", patch: func(e *EnemySkill) { e.ID = "eskill-ok" }},
 		{name: "id ng empty", patch: func(e *EnemySkill) { e.ID = "  " }, wantErrField: "id"},
+		{name: "id ng space", patch: func(e *EnemySkill) { e.ID = "enemy skill" }, wantErrField: "id"},
+		{name: "id ng uppercase", patch: func(e *EnemySkill) { e.ID = "ESkill_1" }, wantErrField: "id"},
+		{name: "id ng colon", patch: func(e *EnemySkill) { e.ID = "foo:bar" }, wantErrField: "id"},
+		{name: "id ng slash", patch: func(e *EnemySkill) { e.ID = "foo/bar" }, wantErrField: "id"},
+		{name: "id ng dot", patch: func(e *EnemySkill) { e.ID = "foo.bar" }, wantErrField: "id"},
 		{name: "name ok empty", patch: func(e *EnemySkill) { e.Name = "" }},
 		{name: "name ng over max", patch: func(e *EnemySkill) { e.Name = string(make([]rune, 81)) }, wantErrField: "name"},
 		{name: "description ok empty", patch: func(e *EnemySkill) { e.Description = "" }},

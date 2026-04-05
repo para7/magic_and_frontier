@@ -62,9 +62,50 @@ func TestGrimoireValidateStructPerFieldOKNG(t *testing.T) {
 			},
 		},
 		{
+			name: "id ok hyphen",
+			patch: func(g *Grimoire) {
+				g.ID = "grimoire-ok"
+			},
+		},
+		{
 			name: "id ng whitespace only",
 			patch: func(g *Grimoire) {
 				g.ID = " \n "
+			},
+			wantErrField: "id",
+		},
+		{
+			name: "id ng uppercase",
+			patch: func(g *Grimoire) {
+				g.ID = "Grimoire_1"
+			},
+			wantErrField: "id",
+		},
+		{
+			name: "id ng with space",
+			patch: func(g *Grimoire) {
+				g.ID = "fire bolt"
+			},
+			wantErrField: "id",
+		},
+		{
+			name: "id ng colon",
+			patch: func(g *Grimoire) {
+				g.ID = "foo:bar"
+			},
+			wantErrField: "id",
+		},
+		{
+			name: "id ng slash",
+			patch: func(g *Grimoire) {
+				g.ID = "foo/bar"
+			},
+			wantErrField: "id",
+		},
+		{
+			name: "id ng dot",
+			patch: func(g *Grimoire) {
+				g.ID = "foo.bar"
 			},
 			wantErrField: "id",
 		},

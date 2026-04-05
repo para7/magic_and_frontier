@@ -1,7 +1,7 @@
 package enemyskill
 
 type EnemySkill struct {
-	ID          string   `json:"id"          validate:"trimmed_required"`
+	ID          string   `json:"id"          validate:"trimmed_required,maf_slug_id"`
 	Name        string   `json:"name"        validate:"trimmed_max=80"`
 	Description string   `json:"description" validate:"trimmed_max=400"`
 	Script      []string `json:"script"      validate:"min=1"`

@@ -3,7 +3,7 @@ package enemy
 import model "maf_command_editor/app/domain/model"
 
 type Enemy struct {
-	ID            string          `json:"id"                    validate:"trimmed_required"`
+	ID            string          `json:"id"                    validate:"trimmed_required,maf_slug_id"`
 	MobType       string          `json:"mobType"               validate:"trimmed_required"`
 	Name          string          `json:"name"`
 	HP            float64         `json:"hp"                    validate:"gte=1,lte=100000"`

@@ -53,7 +53,14 @@ func TestEnemyValidateStructPerField(t *testing.T) {
 		wantErrField string
 	}{
 		{name: "id ok", patch: func(e *Enemy) { e.ID = "ok" }},
+		{name: "id ok underscore", patch: func(e *Enemy) { e.ID = "enemy_ok" }},
+		{name: "id ok hyphen", patch: func(e *Enemy) { e.ID = "enemy-ok" }},
 		{name: "id ng empty", patch: func(e *Enemy) { e.ID = "  " }, wantErrField: "id"},
+		{name: "id ng space", patch: func(e *Enemy) { e.ID = "enemy boss" }, wantErrField: "id"},
+		{name: "id ng uppercase", patch: func(e *Enemy) { e.ID = "Enemy_1" }, wantErrField: "id"},
+		{name: "id ng colon", patch: func(e *Enemy) { e.ID = "foo:bar" }, wantErrField: "id"},
+		{name: "id ng slash", patch: func(e *Enemy) { e.ID = "foo/bar" }, wantErrField: "id"},
+		{name: "id ng dot", patch: func(e *Enemy) { e.ID = "foo.bar" }, wantErrField: "id"},
 		{name: "mobType ok", patch: func(e *Enemy) { e.MobType = "minecraft:skeleton" }},
 		{name: "mobType ng empty", patch: func(e *Enemy) { e.MobType = " " }, wantErrField: "mobType"},
 		{name: "hp ok", patch: func(e *Enemy) { e.HP = 1 }},

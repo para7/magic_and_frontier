@@ -55,7 +55,14 @@ func TestPassiveValidateStructPerField(t *testing.T) {
 		wantErrField string
 	}{
 		{name: "id ok", patch: func(p *Passive) { p.ID = "ok" }},
+		{name: "id ok underscore", patch: func(p *Passive) { p.ID = "passive_ok" }},
+		{name: "id ok hyphen", patch: func(p *Passive) { p.ID = "passive-ok" }},
 		{name: "id ng empty", patch: func(p *Passive) { p.ID = " " }, wantErrField: "id"},
+		{name: "id ng space", patch: func(p *Passive) { p.ID = "fire bolt" }, wantErrField: "id"},
+		{name: "id ng uppercase", patch: func(p *Passive) { p.ID = "PassiveOk" }, wantErrField: "id"},
+		{name: "id ng colon", patch: func(p *Passive) { p.ID = "foo:bar" }, wantErrField: "id"},
+		{name: "id ng slash", patch: func(p *Passive) { p.ID = "foo/bar" }, wantErrField: "id"},
+		{name: "id ng dot", patch: func(p *Passive) { p.ID = "foo.bar" }, wantErrField: "id"},
 		{name: "name ok empty", patch: func(p *Passive) { p.Name = "" }},
 		{name: "name ok max", patch: func(p *Passive) { p.Name = string(make([]rune, 80)) }},
 		{name: "name ng over max", patch: func(p *Passive) { p.Name = string(make([]rune, 81)) }, wantErrField: "name"},

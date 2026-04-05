@@ -1,7 +1,7 @@
 package passive
 
 type Passive struct {
-	ID          string   `json:"id"          validate:"trimmed_required"`
+	ID          string   `json:"id"          validate:"trimmed_required,maf_slug_id"`
 	Name        string   `json:"name"        validate:"trimmed_max=80"`
 	Role        string   `json:"role"        validate:"trimmed_max=200"`
 	Condition   string   `json:"condition"   validate:"trimmed_required"`

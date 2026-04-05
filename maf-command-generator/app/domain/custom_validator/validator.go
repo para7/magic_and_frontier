@@ -3,6 +3,7 @@ package custom_validator
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 
 	model "maf_command_editor/app/domain/model"
@@ -11,6 +12,8 @@ import (
 )
 
 var Validate *validator.Validate
+
+var slugIDPattern = regexp.MustCompile(`^[a-z0-9_-]+$`)
 
 func init() {
 	Validate = validator.New()
@@ -44,6 +47,9 @@ func init() {
 			}
 		}
 		return false
+	})
+	Validate.RegisterValidation("maf_slug_id", func(fl validator.FieldLevel) bool {
+		return slugIDPattern.MatchString(fl.Field().String())
 	})
 }
 
@@ -87,6 +93,8 @@ func formatMessage(e model.ValidationError) string {
 		return fmt.Sprintf("最大文字数は%sです (%s=%s)", e.Param, e.Tag, e.Param)
 	case "trimmed_oneof", "oneof":
 		return fmt.Sprintf("次のいずれかの値が必要です: %s", e.Param)
+	case "maf_slug_id":
+		return "半角小文字英数字、_、- のみ使用できます"
 	case "gte":
 		return fmt.Sprintf("%s以上の値が必要です (gte=%s)", e.Param, e.Param)
 	case "lte":
