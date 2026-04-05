@@ -1,11 +1,12 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help mc-cmd mc-shell
+.PHONY: help mc-cmd mc-shell mc-logs
 
 help:
 	@echo "Available targets:"
 	@echo "  make mc-cmd CMD='list'        # Run a Minecraft command via RCON"
 	@echo "  make mc-shell                 # Open interactive shell in minecraft container"
+	@echo "  make mc-logs                  # Tail Minecraft server logs"
 
 mc-cmd:
 	@if [ -z "$(CMD)" ]; then \
@@ -31,3 +32,6 @@ mc-cmd:
 
 mc-shell:
 	@docker exec -it minecraft /bin/sh
+
+mc-logs:
+	@docker compose logs -f minecraft
