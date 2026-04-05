@@ -68,5 +68,10 @@ data remove storage maf:runtime initialized
 function maf:load
 advancement revoke @a only maf:entered_world3
 advancement revoke @a only maf:use_grimoire
+
+# reinstall では既存オンラインプレイヤーに entered_world が自動で再発火しないため、
+# 削除したスコア群を明示的に初期化し直す。
+execute as @a run function maf:entered_world
+
 # TODO: ここに仮置き 本来はログイン時毎回
 function maf:system/set_player_id/run
