@@ -58,14 +58,14 @@
                   "has_consume_particles": false
                 },
                 "minecraft:item_name": {
-                  "text": "プロミネンス40"
+                  "text": "プロミネンス"
                 },
                 "minecraft:lore": [
                   {
-                    "text": "右クリックで詠唱を開始"
+                    "text": "周囲炎上+ダメージ+移動低下"
                   },
                   {
-                    "text": "effect=2 cast=40 cost=7"
+                    "text": "消費MP:7 詠唱時間:40"
                   }
                 ]
               },

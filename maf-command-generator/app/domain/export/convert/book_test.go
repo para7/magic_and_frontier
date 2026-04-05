@@ -21,9 +21,17 @@ func TestGrimoireBookAndLootShareModel(t *testing.T) {
 	}
 
 	book := GrimoireToBook(entry)
-	wantItemName := fmt.Sprintf("minecraft:item_name={text:%s}", JsonString(fmt.Sprintf("%s%d", entry.Title, entry.CastTime)))
+	wantItemName := fmt.Sprintf("minecraft:item_name={text:%s}", JsonString(entry.Title))
 	if !strings.Contains(book, wantItemName) {
 		t.Fatalf("book should contain escaped item_name; got: %s", book)
+	}
+	wantLore := fmt.Sprintf(
+		"minecraft:lore=[%s,%s]",
+		textComponentSNBT(entry.Description),
+		textComponentSNBT(fmt.Sprintf("消費MP:%d 詠唱時間:%d", entry.MPCost, entry.CastTime)),
+	)
+	if !strings.Contains(book, wantLore) {
+		t.Fatalf("book should contain updated grimoire lore; got: %s", book)
 	}
 	wantCustomData := spellCustomData(entry)
 	if !strings.Contains(book, "minecraft:custom_data="+wantCustomData) {
@@ -33,8 +41,19 @@ func TestGrimoireBookAndLootShareModel(t *testing.T) {
 	lootEntry := toSpellLootEntry(entry, nil, nil)
 	components := lootComponentsByFunction(t, lootEntry)
 	itemNameComponent := mapByKey(t, components, "minecraft:item_name")
-	if itemNameComponent["text"] != fmt.Sprintf("%s%d", entry.Title, entry.CastTime) {
+	if itemNameComponent["text"] != entry.Title {
 		t.Fatalf("loot item_name mismatch: %#v", itemNameComponent)
+	}
+	lore := loreLinesByKey(t, components, "minecraft:lore")
+	if len(lore) != 2 {
+		t.Fatalf("loot lore line count = %d, want 2", len(lore))
+	}
+	if lore[0] != entry.Description {
+		t.Fatalf("loot lore[0] mismatch: got %q want %q", lore[0], entry.Description)
+	}
+	wantLine2 := fmt.Sprintf("消費MP:%d 詠唱時間:%d", entry.MPCost, entry.CastTime)
+	if lore[1] != wantLine2 {
+		t.Fatalf("loot lore[1] mismatch: got %q want %q", lore[1], wantLine2)
 	}
 	customData := customDataTagByFunction(t, lootEntry)
 	if customData != wantCustomData {
@@ -137,4 +156,25 @@ func mapByKey(t *testing.T, input map[string]any, key string) map[string]any {
 		t.Fatalf("%q should be map[string]any: %#v", key, input[key])
 	}
 	return raw
+}
+
+func loreLinesByKey(t *testing.T, input map[string]any, key string) []string {
+	t.Helper()
+	raw, ok := input[key].([]any)
+	if !ok {
+		t.Fatalf("%q should be []any: %#v", key, input[key])
+	}
+	out := make([]string, 0, len(raw))
+	for _, line := range raw {
+		lineMap, ok := line.(map[string]any)
+		if !ok {
+			t.Fatalf("lore line should be map[string]any: %#v", line)
+		}
+		text, ok := lineMap["text"].(string)
+		if !ok {
+			t.Fatalf("lore line text should be string: %#v", lineMap["text"])
+		}
+		out = append(out, text)
+	}
+	return out
 }

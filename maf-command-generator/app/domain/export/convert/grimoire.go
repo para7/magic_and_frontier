@@ -13,10 +13,10 @@ func GrimoireToBook(entry grimoireModel.Grimoire) string {
 
 func grimoireSpellBookModel(entry grimoireModel.Grimoire) spellBookModel {
 	return spellBookModel{
-		itemName: fmt.Sprintf("%s%d", entry.Title, entry.CastTime),
+		itemName: entry.Title,
 		lore: []string{
-			"右クリックで詠唱を開始",
-			fmt.Sprintf("effect=%d cast=%d cost=%d", entry.CastID, entry.CastTime, entry.MPCost),
+			entry.Description,
+			fmt.Sprintf("消費MP:%d 詠唱時間:%d", entry.MPCost, entry.CastTime),
 		},
 		customData: spellCustomData(entry),
 	}
