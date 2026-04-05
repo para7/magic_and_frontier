@@ -24,42 +24,76 @@ func (s *ItemEntity) ValidateJSON(newEntity Item, mas model.DBMaster) (Item, []m
 	errs = append(errs, s.ValidateStruct(newEntity)...)
 	errs = append(errs, s.ValidateRelation(newEntity, mas)...)
 
-	// item components 文字列を再生成してエンチャントの書式エラーも検出する
-	itemSNBT, enchErr := BuildItemComponents(newEntity)
-	if enchErr != "" {
+	// item components 文字列を再生成して component 構造の破綻を検出する
+	_, buildErr := BuildItemComponents(newEntity)
+	if buildErr != "" {
 		errs = append(errs, model.ValidationError{
 			Entity: "item", ID: newEntity.ID,
-			Field: "enchantments",
-			Tag:   "format", Param: enchErr,
+			Field: "minecraft.components",
+			Tag:   "format", Param: buildErr,
 		})
 	}
 
 	if len(errs) > 0 {
 		return Item{}, errs
 	}
-	newEntity.NBT = itemSNBT
 	return newEntity, nil
 }
 
 func (s *ItemEntity) ValidateStruct(newEntity Item) []model.ValidationError {
-	err := cv.Validate.Struct(newEntity)
-	if err == nil {
-		return nil
-	}
 	var errs []model.ValidationError
-	for _, fe := range err.(cv.ValidationErrors) {
-		errs = append(errs, cv.NewValidationError("item", newEntity.ID, fe))
+
+	err := cv.Validate.Struct(newEntity)
+	if err != nil {
+		for _, fe := range err.(cv.ValidationErrors) {
+			errs = append(errs, cv.NewValidationError("item", newEntity.ID, fe))
+		}
+	}
+
+	for key, value := range newEntity.Minecraft.Components {
+		normalizedKey := strings.TrimSpace(key)
+		if normalizedKey == "" {
+			errs = append(errs, model.ValidationError{
+				Entity: "item", ID: newEntity.ID,
+				Field: "minecraft.components",
+				Tag:   "format", Param: "component key is empty",
+			})
+			continue
+		}
+		if !strings.Contains(normalizedKey, ":") {
+			errs = append(errs, model.ValidationError{
+				Entity: "item", ID: newEntity.ID,
+				Field: "minecraft.components",
+				Tag:   "format", Param: fmt.Sprintf("component key must be namespaced: %q", normalizedKey),
+			})
+		}
+		if strings.TrimSpace(value) == "" {
+			errs = append(errs, model.ValidationError{
+				Entity: "item", ID: newEntity.ID,
+				Field: "minecraft.components",
+				Tag:   "format", Param: fmt.Sprintf("component value is empty: %q", normalizedKey),
+			})
+		}
 	}
 	return errs
 }
 
 func (s *ItemEntity) ValidateRelation(newEntity Item, mas model.DBMaster) []model.ValidationError {
 	var errs []model.ValidationError
-	skillID := strings.TrimSpace(newEntity.SkillID)
-	if skillID != "" && !mas.HasPassive(skillID) {
+	grimoireID := strings.TrimSpace(newEntity.Maf.GrimoireID)
+	if grimoireID != "" && !mas.HasGrimoire(grimoireID) {
 		errs = append(errs, model.ValidationError{
 			Entity: "item", ID: newEntity.ID,
-			Field: "skillId",
+			Field: "maf.grimoireId",
+			Tag:   "relation", Param: "grimoire not found",
+		})
+	}
+
+	passiveID := strings.TrimSpace(newEntity.Maf.PassiveID)
+	if passiveID != "" && !mas.HasPassive(passiveID) {
+		errs = append(errs, model.ValidationError{
+			Entity: "item", ID: newEntity.ID,
+			Field: "maf.passiveId",
 			Tag:   "relation", Param: "passive not found",
 		})
 	}

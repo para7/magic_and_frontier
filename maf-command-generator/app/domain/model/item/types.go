@@ -1,20 +1,18 @@
 package item
 
 type Item struct {
-	ID                  string `json:"id"                   validate:"trimmed_required"`
-	ItemID              string `json:"itemId"               validate:"trimmed_required"`
-	SkillID             string `json:"skillId,omitempty"`
-	CustomName          string `json:"customName"`
-	Lore                string `json:"lore"`
-	Enchantments        string `json:"enchantments"`
-	Unbreakable         bool   `json:"unbreakable"`
-	CustomModelData     string `json:"customModelData"`
-	RepairCost          string `json:"repairCost"`
-	HideFlags           string `json:"hideFlags"`
-	PotionID            string `json:"potionId"`
-	CustomPotionColor   string `json:"customPotionColor"`
-	CustomPotionEffects string `json:"customPotionEffects"`
-	AttributeModifiers  string `json:"attributeModifiers"`
-	CustomNBT           string `json:"customNbt"`
-	NBT                 string `json:"nbt"`
+	ID        string        `json:"id"        validate:"trimmed_required"`
+	Maf       ItemMaf       `json:"maf,omitempty"`
+	Minecraft MinecraftItem `json:"minecraft"`
+}
+
+type ItemMaf struct {
+	GrimoireID  string `json:"grimoireId,omitempty"`
+	PassiveID   string `json:"passiveId,omitempty"`
+	PassiveSlot int    `json:"passiveSlot,omitempty" validate:"omitempty,gte=1,lte=3"`
+}
+
+type MinecraftItem struct {
+	ItemID     string            `json:"itemId"               validate:"trimmed_required"`
+	Components map[string]string `json:"components,omitempty" validate:"omitempty,dive,keys,trimmed_required,endkeys,trimmed_required"`
 }

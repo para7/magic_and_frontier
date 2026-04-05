@@ -63,7 +63,12 @@ func TestBuildEnemyArtifactsReplace(t *testing.T) {
 	moveSpeed := 0.22
 	master := exportMasterStub{
 		items: []itemModel.Item{
-			{ID: "items_1", ItemID: "minecraft:stone", NBT: "{id:\"minecraft:stone\",Count:1b}"},
+			{
+				ID: "items_1",
+				Minecraft: itemModel.MinecraftItem{
+					ItemID: "minecraft:stone",
+				},
+			},
 		},
 		grimoires: []grimoireModel.Grimoire{
 			{ID: "grimoire_1", CastID: 1, CastTime: 10, MPCost: 5, Title: "Firebolt", Description: "Basic sample projectile spell."},

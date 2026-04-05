@@ -33,7 +33,10 @@ func BuildDropLootPool(
 			if !ok {
 				return nil, fmt.Errorf("%s: referenced item not found (%s)", context, drop.RefID)
 			}
-			entry := toItemLootEntry(item, drop.CountMin, drop.CountMax)
+			entry, err := toItemLootEntry(item, grimoiresByID, passivesByID, drop.CountMin, drop.CountMax)
+			if err != nil {
+				return nil, err
+			}
 			entry["weight"] = ToWeight(drop.Weight)
 			entries = append(entries, entry)
 		case "grimoire":
@@ -85,12 +88,25 @@ func MergeLootTablePools(base map[string]any, pool map[string]any, tablePath str
 	return base, nil
 }
 
-func toItemLootEntry(entry itemModel.Item, min, max *float64) map[string]any {
+func toItemLootEntry(
+	entry itemModel.Item,
+	grimoiresByID map[string]grimoireModel.Grimoire,
+	passivesByID map[string]passiveModel.Passive,
+	min, max *float64,
+) (map[string]any, error) {
+	customData, err := itemCustomData(entry, grimoiresByID, passivesByID)
+	if err != nil {
+		return nil, err
+	}
 	functions := []any{
 		map[string]any{"function": "minecraft:set_count", "add": false, "count": ToCountValue(min, max)},
-		map[string]any{"function": "minecraft:set_custom_data", "tag": itemCustomData(entry)},
+		map[string]any{"function": "minecraft:set_custom_data", "tag": customData},
 	}
-	if components := itemComponentsForLoot(entry); len(components) > 0 {
+	components, err := itemComponentsForLoot(entry, grimoiresByID, passivesByID)
+	if err != nil {
+		return nil, err
+	}
+	if len(components) > 0 {
 		functions = append(functions, map[string]any{
 			"function":   "minecraft:set_components",
 			"components": components,
@@ -105,9 +121,9 @@ func toItemLootEntry(entry itemModel.Item, min, max *float64) map[string]any {
 	}
 	return map[string]any{
 		"type":      "minecraft:item",
-		"name":      entry.ItemID,
+		"name":      entry.Minecraft.ItemID,
 		"functions": functions,
-	}
+	}, nil
 }
 
 func toSpellLootEntry(entry grimoireModel.Grimoire, min, max *float64) map[string]any {

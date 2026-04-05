@@ -1,0 +1,107 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": 1,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_magic\",nbt_snapshot:\"{id:\\\"minecraft:diamond_sword\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"test_sword_magic\\\"}',\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"Sample item\\\"}']}}\",grimoire_id:\"tempest01\",spell:{castid:4,cost:13,cast:40,cooltime:20,title:\"テンペスト\",description:\"敵1体に雷を落とし周辺に特大ダメージ\"}}}"
+            },
+            {
+              "components": {
+                "minecraft:consumable": {
+                  "animation": "bow",
+                  "consume_seconds": 99999,
+                  "has_consume_particles": false
+                },
+                "minecraft:custom_name": {
+                  "text": "test_sword_magic"
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Sample item"
+                  }
+                ]
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "minecraft:diamond_sword",
+          "type": "minecraft:item",
+          "weight": 1
+        },
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": 1,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_passive\",nbt_snapshot:\"{id:\\\"minecraft:diamond_sword\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"test_sword_passive\\\"}',\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"Sample item\\\"}']}}\",hasPassive:1b,passiveId:\"regeneration\",passiveSlot:1,passiveCondition:\"always\"}}"
+            },
+            {
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "test_sword_passive"
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Sample item"
+                  }
+                ]
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "minecraft:diamond_sword",
+          "type": "minecraft:item",
+          "weight": 1
+        },
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": 1,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_both\",nbt_snapshot:\"{id:\\\"minecraft:diamond_sword\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"test_sword_both\\\"}',\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"Sample item\\\"}']}}\",grimoire_id:\"tempest01\",hasPassive:1b,passiveId:\"regeneration\",passiveSlot:1,passiveCondition:\"always\",spell:{castid:4,cost:13,cast:40,cooltime:20,title:\"テンペスト\",description:\"敵1体に雷を落とし周辺に特大ダメージ\"}}}"
+            },
+            {
+              "components": {
+                "minecraft:consumable": {
+                  "animation": "bow",
+                  "consume_seconds": 99999,
+                  "has_consume_particles": false
+                },
+                "minecraft:custom_name": {
+                  "text": "test_sword_both"
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Sample item"
+                  }
+                ]
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "minecraft:diamond_sword",
+          "type": "minecraft:item",
+          "weight": 1
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "type": "minecraft:generic"
+}

@@ -15,7 +15,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:stone\",source_id:\"items_1\",nbt_snapshot:\"{id:\\\"minecraft:stone\\\",Count:1b,tag:{display:{Name:'{\\\"text\\\":\\\"Starter Stone\\\"}',Lore:['{\\\"text\\\":\\\"Sample item\\\"}']},Enchantments:[{id:\\\"minecraft:aqua_affinity\\\",lvl:1s},{id:\\\"minecraft:bane_of_arthropods\\\",lvl:9s}]}}\"}}"
+              "tag": "{maf:{item_id:\"minecraft:stone\",source_id:\"items_1\",nbt_snapshot:\"{id:\\\"minecraft:stone\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"Starter Stone\\\"}',\\\"minecraft:enchantments\\\":{\\\"minecraft:aqua_affinity\\\":1,\\\"minecraft:bane_of_arthropods\\\":9},\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"Sample item\\\"}']}}\"}}"
             },
             {
               "components": {

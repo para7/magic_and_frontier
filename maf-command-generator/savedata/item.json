@@ -2,20 +2,55 @@
   "entries": [
     {
       "id": "items_1",
-      "itemId": "minecraft:stone",
-      "customName": "Starter Stone",
-      "lore": "Sample item",
-      "enchantments": "minecraft:aqua_affinity 1\nminecraft:bane_of_arthropods 9",
-      "unbreakable": false,
-      "customModelData": "",
-      "repairCost": "",
-      "hideFlags": "",
-      "potionId": "",
-      "customPotionColor": "",
-      "customPotionEffects": "",
-      "attributeModifiers": "",
-      "customNbt": "",
-      "nbt": "{id:\"minecraft:stone\",Count:1b,tag:{display:{Name:'{\"text\":\"Starter Stone\"}',Lore:['{\"text\":\"Sample item\"}']},Enchantments:[{id:\"minecraft:aqua_affinity\",lvl:1s},{id:\"minecraft:bane_of_arthropods\",lvl:9s}]}}"
+      "maf": {},
+      "minecraft": {
+        "itemId": "minecraft:stone",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"Starter Stone\"}'",
+          "minecraft:enchantments": "{\"minecraft:aqua_affinity\":1,\"minecraft:bane_of_arthropods\":9}",
+          "minecraft:lore": "['{\"text\":\"Sample item\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_sword_magic",
+      "maf": {
+        "grimoireId": "tempest01"
+      },
+      "minecraft": {
+        "itemId": "minecraft:diamond_sword",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_sword_magic\"}'",
+          "minecraft:lore": "['{\"text\":\"Sample item\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_sword_passive",
+      "maf": {
+        "passiveId": "regeneration"
+      },
+      "minecraft": {
+        "itemId": "minecraft:diamond_sword",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_sword_passive\"}'",
+          "minecraft:lore": "['{\"text\":\"Sample item\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_sword_both",
+      "maf": {
+        "grimoireId": "tempest01",
+        "passiveId": "regeneration"
+      },
+      "minecraft": {
+        "itemId": "minecraft:diamond_sword",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_sword_both\"}'",
+          "minecraft:lore": "['{\"text\":\"Sample item\"}']"
+        }
+      }
     }
   ]
 }

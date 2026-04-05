@@ -8,8 +8,10 @@ import (
 
 func validItem() Item {
 	return Item{
-		ID:     "item_1",
-		ItemID: "minecraft:diamond_sword",
+		ID: "item_1",
+		Minecraft: MinecraftItem{
+			ItemID: "minecraft:diamond_sword",
+		},
 	}
 }
 
@@ -52,8 +54,8 @@ func TestItemValidateStructPerField(t *testing.T) {
 	}{
 		{name: "id ok", patch: func(it *Item) { it.ID = "ok" }},
 		{name: "id ng empty", patch: func(it *Item) { it.ID = "  " }, wantErrField: "id"},
-		{name: "itemId ok", patch: func(it *Item) { it.ItemID = "minecraft:stone" }},
-		{name: "itemId ng empty", patch: func(it *Item) { it.ItemID = " " }, wantErrField: "itemId"},
+		{name: "itemId ok", patch: func(it *Item) { it.Minecraft.ItemID = "minecraft:stone" }},
+		{name: "itemId ng empty", patch: func(it *Item) { it.Minecraft.ItemID = " " }, wantErrField: "itemId"},
 	}
 
 	for _, tt := range tests {
@@ -74,15 +76,51 @@ func TestItemValidateStructPerField(t *testing.T) {
 	}
 }
 
-func TestItemComponentsEnchantmentError(t *testing.T) {
-	_, errMsg := BuildItemComponents(Item{
-		ID:           "item_1",
-		ItemID:       "minecraft:sword",
-		Enchantments: "bad_format",
-	})
-	if errMsg == "" {
-		t.Fatal("expected enchantment format error, got none")
+func TestItemValidateStructRejectsInvalidComponents(t *testing.T) {
+	entity := &ItemEntity{}
+
+	tests := []struct {
+		name       string
+		components map[string]string
+	}{
+		{name: "empty key", components: map[string]string{"": "{}"}},
+		{name: "non namespaced key", components: map[string]string{"display": "{}"}},
+		{name: "empty value", components: map[string]string{"minecraft:custom_name": "  "}},
 	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			it := validItem()
+			it.Minecraft.Components = tt.components
+			errs := entity.ValidateStruct(it)
+			if !hasFieldError(errs, "minecraft.components") {
+				t.Fatalf("expected component validation error, got %#v", errs)
+			}
+		})
+	}
+}
+
+func TestItemValidateRelationUsesMafRefs(t *testing.T) {
+	entity := &ItemEntity{}
+	t.Run("missing grimoire", func(t *testing.T) {
+		it := validItem()
+		it.Maf.GrimoireID = "grimoire_missing"
+
+		errs := entity.ValidateRelation(it, relationMissingRefsDBMaster{missingGrimoire: true})
+		if !hasFieldError(errs, "maf.grimoireId") {
+			t.Fatalf("expected maf.grimoireId relation error, got %#v", errs)
+		}
+	})
+
+	t.Run("missing passive", func(t *testing.T) {
+		it := validItem()
+		it.Maf.PassiveID = "passive_missing"
+
+		errs := entity.ValidateRelation(it, relationMissingRefsDBMaster{missingPassive: true})
+		if !hasFieldError(errs, "maf.passiveId") {
+			t.Fatalf("expected maf.passiveId relation error, got %#v", errs)
+		}
+	})
 }
 
 func TestItemValidateAllDetectsDuplicateID(t *testing.T) {
@@ -103,3 +141,12 @@ func TestItemValidateAllDetectsDuplicateID(t *testing.T) {
 	}
 	t.Fatalf("expected duplicate id error, got %#v", allErrs)
 }
+
+type relationMissingRefsDBMaster struct {
+	testDBMaster
+	missingGrimoire bool
+	missingPassive  bool
+}
+
+func (s relationMissingRefsDBMaster) HasGrimoire(string) bool { return !s.missingGrimoire }
+func (s relationMissingRefsDBMaster) HasPassive(string) bool  { return !s.missingPassive }

@@ -11,6 +11,18 @@
       "script": [
         "tell @a Passive skill activated: Sword Slash!"
       ]
+    },
+    {
+      "id": "regeneration",
+      "name": "いつでもリジェネ",
+      "condition": "always",
+      "slots": [
+        1
+      ],
+      "castid": 101,
+      "script": [
+        "execute unless entity @s[nbt={active_effects:[{id:\"minecraft:regeneration\"}]}] run effect give @s regeneration 10 0"
+      ]
     }
   ]
 }
