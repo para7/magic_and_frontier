@@ -3,6 +3,7 @@
     {
       "id": "passive_1",
       "name": "Sword Slash",
+      "role": "テスト用",
       "condition": "on_sword_hit",
       "slots": [
         1
@@ -15,6 +16,7 @@
     {
       "id": "regeneration",
       "name": "いつでもリジェネ",
+      "role": "HPが常時回復する",
       "condition": "always",
       "slots": [
         1

@@ -18,12 +18,20 @@ func PassiveToBook(entry passiveModel.Passive, slot int) string {
 	return passiveSpellBookModel(entry, slot).ToGiveItem()
 }
 
-func passiveBookTitle(entry passiveModel.Passive, slot int) string {
+func passiveItemName(entry passiveModel.Passive) string {
 	name := strings.TrimSpace(entry.Name)
 	if name == "" {
 		name = entry.ID
 	}
-	return fmt.Sprintf("%s[S%d]%d", name, slot, PassiveCastTime)
+	return fmt.Sprintf("[パッシブ設定書] %s", name)
+}
+
+func passiveSpellTitle(entry passiveModel.Passive, slot int) string {
+	name := strings.TrimSpace(entry.Name)
+	if name == "" {
+		name = entry.ID
+	}
+	return fmt.Sprintf("%s [スロット%d]", name, slot)
 }
 
 func passiveBookDescription(entry passiveModel.Passive) string {
@@ -31,6 +39,13 @@ func passiveBookDescription(entry passiveModel.Passive) string {
 		return text
 	}
 	return fmt.Sprintf("condition=%s", strings.TrimSpace(entry.Condition))
+}
+
+func passiveRoleLine(entry passiveModel.Passive) string {
+	if role := strings.TrimSpace(entry.Role); role != "" {
+		return role
+	}
+	return passiveBookDescription(entry)
 }
 
 func passiveSpellCustomData(entry passiveModel.Passive, slot int) string {
@@ -43,17 +58,17 @@ func passiveSpellCustomData(entry passiveModel.Passive, slot int) string {
 		PassiveMPCost,
 		PassiveCastTime,
 		0,
-		JsonString(passiveBookTitle(entry, slot)),
+		JsonString(passiveSpellTitle(entry, slot)),
 		JsonString(passiveBookDescription(entry)),
 	)
 }
 
 func passiveSpellBookModel(entry passiveModel.Passive, slot int) spellBookModel {
 	return spellBookModel{
-		itemName: passiveBookTitle(entry, slot),
+		itemName: passiveItemName(entry),
 		lore: []string{
-			"右クリックでパッシブを設定",
-			fmt.Sprintf("passive=%s slot=%d cast=%d cost=%d", entry.ID, slot, PassiveCastTime, PassiveMPCost),
+			passiveRoleLine(entry),
+			fmt.Sprintf("パッシブスキル / スロット%d", slot),
 		},
 		customData: passiveSpellCustomData(entry, slot),
 	}

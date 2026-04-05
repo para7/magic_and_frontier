@@ -65,6 +65,7 @@ func TestPassiveBookAndLootShareModel(t *testing.T) {
 	entry := passiveModel.Passive{
 		ID:          "passive_1",
 		Name:        "Quickstep",
+		Role:        "素早く動ける",
 		Condition:   "always",
 		Slots:       []int{1, 2},
 		CastID:      100,
@@ -73,9 +74,9 @@ func TestPassiveBookAndLootShareModel(t *testing.T) {
 	slot := 2
 
 	book := PassiveToBook(entry, slot)
-	wantTitle := passiveBookTitle(entry, slot)
-	if !strings.Contains(book, fmt.Sprintf("minecraft:item_name={text:%s}", JsonString(wantTitle))) {
-		t.Fatalf("book should contain passive title; got: %s", book)
+	wantItemName := passiveItemName(entry)
+	if !strings.Contains(book, fmt.Sprintf("minecraft:item_name={text:%s}", JsonString(wantItemName))) {
+		t.Fatalf("book should contain passive item name; got: %s", book)
 	}
 	wantCustomData := passiveSpellCustomData(entry, slot)
 	if !strings.Contains(book, "minecraft:custom_data="+wantCustomData) {
@@ -85,8 +86,19 @@ func TestPassiveBookAndLootShareModel(t *testing.T) {
 	lootEntry := toPassiveLootEntry(entry, slot, nil, nil)
 	components := lootComponentsByFunction(t, lootEntry)
 	itemNameComponent := mapByKey(t, components, "minecraft:item_name")
-	if itemNameComponent["text"] != wantTitle {
+	if itemNameComponent["text"] != wantItemName {
 		t.Fatalf("loot item_name mismatch: %#v", itemNameComponent)
+	}
+	lore := loreLinesByKey(t, components, "minecraft:lore")
+	if len(lore) != 2 {
+		t.Fatalf("loot lore line count = %d, want 2", len(lore))
+	}
+	if lore[0] != entry.Role {
+		t.Fatalf("loot lore[0] mismatch: got %q want %q", lore[0], entry.Role)
+	}
+	wantSlotLine := fmt.Sprintf("パッシブスキル / スロット%d", slot)
+	if lore[1] != wantSlotLine {
+		t.Fatalf("loot lore[1] mismatch: got %q want %q", lore[1], wantSlotLine)
 	}
 	customData := customDataTagByFunction(t, lootEntry)
 	if customData != wantCustomData {

@@ -48,13 +48,10 @@ func TestBuildPassiveArtifactsBuildsEffectAndSlotGrimoire(t *testing.T) {
 	if !strings.Contains(grimoires[0].GiveBody, `give @p minecraft:book[`) {
 		t.Fatalf("unexpected slot1 give body: %q", grimoires[0].GiveBody)
 	}
-	if !strings.Contains(grimoires[0].ApplyBody, `data modify storage p7:maf passive.tmp.slot set value 1`) {
-		t.Fatalf("unexpected slot1 apply slot body: %q", grimoires[0].ApplyBody)
-	}
-	if !strings.Contains(grimoires[0].ApplyBody, `data modify storage p7:maf passive.tmp.id set value "passive_1"`) {
+	if !strings.Contains(grimoires[0].ApplyBody, `data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].passive.slot1.id set value "passive_1"`) {
 		t.Fatalf("unexpected slot1 apply id body: %q", grimoires[0].ApplyBody)
 	}
-	if !strings.Contains(grimoires[0].ApplyBody, `function maf:passive/apply/set_slot_by_uuid with storage p7:maf passive.tmp`) {
+	if !strings.Contains(grimoires[0].ApplyBody, "function #oh_my_dat:please") {
 		t.Fatalf("unexpected slot1 apply function call: %q", grimoires[0].ApplyBody)
 	}
 	if !strings.Contains(grimoires[0].ApplyBody, `tellraw @s [{"text":"[slot1]に[Quickstep]を設定しました"}]`) {
@@ -202,8 +199,8 @@ func TestExportDatapackWritesPassiveArtifactsAndSelectExec(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(applyBody), `function maf:passive/apply/set_slot_by_uuid with storage p7:maf passive.tmp`) {
-		t.Fatalf("passive apply should contain uuid helper call: %s", string(applyBody))
+	if !strings.Contains(string(applyBody), "function #oh_my_dat:please") {
+		t.Fatalf("passive apply should contain oh_my_dat function call: %s", string(applyBody))
 	}
 	if !strings.Contains(string(applyBody), `tellraw @s [{"text":"[slot1]に[Quickstep]を設定しました"}]`) {
 		t.Fatalf("passive apply should contain success message: %s", string(applyBody))
