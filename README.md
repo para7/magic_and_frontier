@@ -7,6 +7,10 @@
 旧TUSB風データパックの後継 <https://github.com/para7/Minecraft_Datapack>  
 前作のプレイ動画 <https://youtu.be/F4YhRD_rlPU>
 
+## 必須データパック
+
+Oh! My Dat! / 赤石愛 様 https://github.com/Ai-Akaishi/OhMyDat
+
 ## 暫定開発スケジュール
 
 ### 2026

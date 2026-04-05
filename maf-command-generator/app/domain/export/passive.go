@@ -25,8 +25,6 @@ type PassiveGrimoireFunction struct {
 	Book       string
 }
 
-const passiveApplyByUUIDFunctionID = "set_slot_by_uuid"
-const passiveApplyByUUIDLogicalDir = "passive/apply"
 
 func BuildPassiveArtifacts(master DBMaster, applyDir string) ([]PassiveEffectFunction, []PassiveGrimoireFunction, error) {
 	if master == nil {
@@ -142,17 +140,9 @@ func passiveDisplayName(name, fallbackID string) string {
 
 func passiveApplyBody(slot int, passiveID string, displayName string) string {
 	setMessage := fmt.Sprintf("[slot%d]に[%s]を設定しました", slot, displayName)
-	applyByUUIDRef := functionRefName(passiveApplyByUUIDLogicalDir, passiveApplyByUUIDFunctionID)
 	return strings.Join([]string{
-		"data remove storage p7:maf passive.tmp",
-		"data modify storage p7:maf passive.tmp.uuid set from entity @s UUID",
-		"execute store result storage p7:maf passive.tmp.u0 int 1 run data get storage p7:maf passive.tmp.uuid[0]",
-		"execute store result storage p7:maf passive.tmp.u1 int 1 run data get storage p7:maf passive.tmp.uuid[1]",
-		"execute store result storage p7:maf passive.tmp.u2 int 1 run data get storage p7:maf passive.tmp.uuid[2]",
-		"execute store result storage p7:maf passive.tmp.u3 int 1 run data get storage p7:maf passive.tmp.uuid[3]",
-		fmt.Sprintf("data modify storage p7:maf passive.tmp.slot set value %d", slot),
-		fmt.Sprintf("data modify storage p7:maf passive.tmp.id set value %s", ec.JsonString(passiveID)),
-		fmt.Sprintf("function %s with storage p7:maf passive.tmp", applyByUUIDRef),
+		"function #oh_my_dat:please",
+		fmt.Sprintf("data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].passive.slot%d.id set value %s", slot, ec.JsonString(passiveID)),
 		fmt.Sprintf(`tellraw @s [{"text":%s}]`, ec.JsonString(setMessage)),
 	}, "\n")
 }
