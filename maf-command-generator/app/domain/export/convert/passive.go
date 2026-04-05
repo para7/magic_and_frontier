@@ -15,19 +15,7 @@ func PassiveDerivedCastID(baseCastID, slot int) int {
 }
 
 func PassiveToBook(entry passiveModel.Passive, slot int) string {
-	itemName := fmt.Sprintf(`{text:%s}`, JsonString(passiveBookTitle(entry, slot)))
-	lore := fmt.Sprintf(
-		`[{text:%s},{text:%s}]`,
-		JsonString("右クリックでパッシブを設定"),
-		JsonString(fmt.Sprintf("passive=%s slot=%d cast=%d cost=%d", entry.ID, slot, PassiveCastTime, PassiveMPCost)),
-	)
-	consumable := `{consume_seconds:99999,animation:"bow",has_consume_particles:false}`
-	customData := passiveSpellCustomData(entry, slot)
-
-	return fmt.Sprintf(
-		`minecraft:book[minecraft:item_name=%s,minecraft:lore=%s,minecraft:consumable=%s,minecraft:custom_data=%s]`,
-		itemName, lore, consumable, customData,
-	)
+	return passiveSpellBookModel(entry, slot).ToGiveItem()
 }
 
 func passiveBookTitle(entry passiveModel.Passive, slot int) string {
@@ -60,17 +48,13 @@ func passiveSpellCustomData(entry passiveModel.Passive, slot int) string {
 	)
 }
 
-func passiveLootComponents(entry passiveModel.Passive, slot int) map[string]any {
-	return map[string]any{
-		"minecraft:item_name": map[string]any{"text": passiveBookTitle(entry, slot)},
-		"minecraft:lore": []any{
-			map[string]any{"text": "右クリックでパッシブを設定"},
-			map[string]any{"text": fmt.Sprintf("passive=%s slot=%d cast=%d cost=%d", entry.ID, slot, PassiveCastTime, PassiveMPCost)},
+func passiveSpellBookModel(entry passiveModel.Passive, slot int) spellBookModel {
+	return spellBookModel{
+		itemName: passiveBookTitle(entry, slot),
+		lore: []string{
+			"右クリックでパッシブを設定",
+			fmt.Sprintf("passive=%s slot=%d cast=%d cost=%d", entry.ID, slot, PassiveCastTime, PassiveMPCost),
 		},
-		"minecraft:consumable": map[string]any{
-			"consume_seconds":       99999.0,
-			"animation":             "bow",
-			"has_consume_particles": false,
-		},
+		customData: passiveSpellCustomData(entry, slot),
 	}
 }

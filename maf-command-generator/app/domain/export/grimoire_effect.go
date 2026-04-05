@@ -18,12 +18,11 @@ const (
 )
 
 type GrimoireEffectFunction struct {
-	ID           string
-	CastID       int
-	Body         string
-	FunctionRef  string
-	SelectScript string
-	Book         string
+	ID          string
+	CastID      int
+	Body        string
+	FunctionRef string
+	Book        string
 }
 
 func BuildGrimoireArtifacts(master DBMaster, effectDir string) []GrimoireEffectFunction {
@@ -36,14 +35,12 @@ func BuildGrimoireArtifacts(master DBMaster, effectDir string) []GrimoireEffectF
 
 	for _, entry := range grimoires {
 		functionRef := functionRefName(effectDir, entry.ID)
-		selectScript := fmt.Sprintf("execute if entity @s[scores={mafEffectID=%d}] run function %s", entry.CastID, functionRef)
 		entries = append(entries, GrimoireEffectFunction{
-			ID:           entry.ID,
-			CastID:       entry.CastID,
-			Body:         strings.Join(entry.Script, "\n"),
-			FunctionRef:  functionRef,
-			SelectScript: selectScript,
-			Book:         ec.GrimoireToBook(entry),
+			ID:          entry.ID,
+			CastID:      entry.CastID,
+			Body:        strings.Join(entry.Script, "\n"),
+			FunctionRef: functionRef,
+			Book:        ec.GrimoireToBook(entry),
 		})
 	}
 
@@ -52,9 +49,10 @@ func BuildGrimoireArtifacts(master DBMaster, effectDir string) []GrimoireEffectF
 
 func WriteGrimoireArtifacts(spellEffectDir string, selectExecFile string, effects []GrimoireEffectFunction, selectLines []string) error {
 	if selectLines == nil {
-		selectLines = make([]string, 0, len(effects))
-		for _, entry := range effects {
-			selectLines = append(selectLines, entry.SelectScript)
+		var err error
+		selectLines, err = BuildSelectExecLines(effects, nil)
+		if err != nil {
+			return err
 		}
 	}
 	for _, entry := range effects {

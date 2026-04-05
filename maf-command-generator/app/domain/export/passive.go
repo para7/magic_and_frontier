@@ -15,21 +15,20 @@ type PassiveEffectFunction struct {
 }
 
 type PassiveGrimoireFunction struct {
-	PassiveID    string
-	Slot         int
-	CastID       int
-	FunctionID   string
-	ApplyRef     string
-	GiveBody     string
-	ApplyBody    string
-	SelectScript string
-	Book         string
+	PassiveID  string
+	Slot       int
+	CastID     int
+	FunctionID string
+	ApplyRef   string
+	GiveBody   string
+	ApplyBody  string
+	Book       string
 }
 
 const passiveApplyByUUIDFunctionID = "set_slot_by_uuid"
 const passiveApplyByUUIDLogicalDir = "passive/apply"
 
-func BuildPassiveArtifacts(master DBMaster, effectDir, giveDir, applyDir string) ([]PassiveEffectFunction, []PassiveGrimoireFunction, error) {
+func BuildPassiveArtifacts(master DBMaster, applyDir string) ([]PassiveEffectFunction, []PassiveGrimoireFunction, error) {
 	if master == nil {
 		return []PassiveEffectFunction{}, []PassiveGrimoireFunction{}, nil
 	}
@@ -56,15 +55,14 @@ func BuildPassiveArtifacts(master DBMaster, effectDir, giveDir, applyDir string)
 			displayName := passiveDisplayName(entry.Name, entry.ID)
 			applyBody := passiveApplyBody(slot, entry.ID, displayName)
 			grimoires = append(grimoires, PassiveGrimoireFunction{
-				PassiveID:    entry.ID,
-				Slot:         slot,
-				CastID:       castID,
-				FunctionID:   functionID,
-				ApplyRef:     applyRef,
-				GiveBody:     fmt.Sprintf("give @p %s 1", book),
-				ApplyBody:    applyBody,
-				SelectScript: fmt.Sprintf("execute if entity @s[scores={mafEffectID=%d}] run function %s", castID, applyRef),
-				Book:         book,
+				PassiveID:  entry.ID,
+				Slot:       slot,
+				CastID:     castID,
+				FunctionID: functionID,
+				ApplyRef:   applyRef,
+				GiveBody:   fmt.Sprintf("give @p %s 1", book),
+				ApplyBody:  applyBody,
+				Book:       book,
 			})
 		}
 	}
@@ -120,10 +118,14 @@ func BuildSelectExecLines(grimoires []GrimoireEffectFunction, passiveGrimoires [
 			return nil, fmt.Errorf("duplicate castid %d between %s and %s", entry.CastID, prev, source)
 		}
 		seen[entry.CastID] = source
-		lines = append(lines, entry.SelectScript)
+		lines = append(lines, castSelectExecLine(entry.CastID, entry.ApplyRef))
 	}
 
 	return lines, nil
+}
+
+func castSelectExecLine(castID int, functionRef string) string {
+	return fmt.Sprintf("execute if entity @s[scores={mafEffectID=%d}] run function %s", castID, functionRef)
 }
 
 func passiveGrimoireFunctionID(passiveID string, slot int) string {

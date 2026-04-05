@@ -26,13 +26,13 @@ func TestBuildGrimoireArtifactsBuildsEffectsAndSelectExec(t *testing.T) {
 		t.Fatalf("effects[1] = %#v", effects[1])
 	}
 
-	wantSelect0 := "execute if entity @s[scores={mafEffectID=2}] run function maf:generated/grimoire/effect/fire"
-	wantSelect1 := "execute if entity @s[scores={mafEffectID=9}] run function maf:generated/grimoire/effect/ice"
-	if effects[0].SelectScript != wantSelect0 {
-		t.Fatalf("effects[0].SelectScript = %q, want %q", effects[0].SelectScript, wantSelect0)
+	wantRef0 := "maf:generated/grimoire/effect/fire"
+	wantRef1 := "maf:generated/grimoire/effect/ice"
+	if effects[0].FunctionRef != wantRef0 {
+		t.Fatalf("effects[0].FunctionRef = %q, want %q", effects[0].FunctionRef, wantRef0)
 	}
-	if effects[1].SelectScript != wantSelect1 {
-		t.Fatalf("effects[1].SelectScript = %q, want %q", effects[1].SelectScript, wantSelect1)
+	if effects[1].FunctionRef != wantRef1 {
+		t.Fatalf("effects[1].FunctionRef = %q, want %q", effects[1].FunctionRef, wantRef1)
 	}
 }
 

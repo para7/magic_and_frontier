@@ -127,24 +127,14 @@ func toItemLootEntry(
 }
 
 func toSpellLootEntry(entry grimoireModel.Grimoire, min, max *float64) map[string]any {
+	book := grimoireSpellBookModel(entry)
 	functions := []any{
 		map[string]any{"function": "minecraft:set_count", "add": false, "count": ToCountValue(min, max)},
 		map[string]any{
-			"function": "minecraft:set_components",
-			"components": map[string]any{
-				"minecraft:item_name": map[string]any{"text": fmt.Sprintf("%s%d", entry.Title, entry.CastTime)},
-				"minecraft:lore": []any{
-					map[string]any{"text": "右クリックで詠唱を開始"},
-					map[string]any{"text": fmt.Sprintf("effect=%d cast=%d cost=%d", entry.CastID, entry.CastTime, entry.MPCost)},
-				},
-				"minecraft:consumable": map[string]any{
-					"consume_seconds":       99999.0,
-					"animation":             "bow",
-					"has_consume_particles": false,
-				},
-			},
+			"function":   "minecraft:set_components",
+			"components": book.LootComponents(),
 		},
-		map[string]any{"function": "minecraft:set_custom_data", "tag": spellCustomData(entry)},
+		map[string]any{"function": "minecraft:set_custom_data", "tag": book.customData},
 	}
 	return map[string]any{
 		"type":      "minecraft:item",
@@ -154,13 +144,14 @@ func toSpellLootEntry(entry grimoireModel.Grimoire, min, max *float64) map[strin
 }
 
 func toPassiveLootEntry(entry passiveModel.Passive, slot int, min, max *float64) map[string]any {
+	book := passiveSpellBookModel(entry, slot)
 	functions := []any{
 		map[string]any{"function": "minecraft:set_count", "add": false, "count": ToCountValue(min, max)},
 		map[string]any{
 			"function":   "minecraft:set_components",
-			"components": passiveLootComponents(entry, slot),
+			"components": book.LootComponents(),
 		},
-		map[string]any{"function": "minecraft:set_custom_data", "tag": passiveSpellCustomData(entry, slot)},
+		map[string]any{"function": "minecraft:set_custom_data", "tag": book.customData},
 	}
 	return map[string]any{
 		"type":      "minecraft:item",

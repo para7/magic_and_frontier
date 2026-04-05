@@ -16,15 +16,6 @@ type exportMasterStub struct {
 	enemies     []enemyModel.Enemy
 }
 
-func (s exportMasterStub) GetGrimoireByID(id string) (grimoireModel.Grimoire, bool) {
-	for _, g := range s.grimoires {
-		if g.ID == id {
-			return g, true
-		}
-	}
-	return grimoireModel.Grimoire{}, false
-}
-
 func (s exportMasterStub) ListGrimoires() []grimoireModel.Grimoire {
 	out := make([]grimoireModel.Grimoire, len(s.grimoires))
 	copy(out, s.grimoires)

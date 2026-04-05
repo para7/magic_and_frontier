@@ -7,18 +7,19 @@ import (
 )
 
 // GrimoireToBook は独自形式のグリモアのデータをマインクラフトの本に変換する
-func GrimoireToBook(grimoire grimoireModel.Grimoire) string {
-	itemName := fmt.Sprintf(`{text:"%s%d"}`, grimoire.Title, grimoire.CastTime)
-	lore := fmt.Sprintf(`[{text:"右クリックで詠唱を開始"},{text:"effect=%d cast=%d cost=%d"}]`,
-		grimoire.CastID, grimoire.CastTime, grimoire.MPCost)
-	consumable := `{consume_seconds:99999,animation:"bow",has_consume_particles:false}`
-	customData := fmt.Sprintf(`{maf:{grimoire_id:"%s",spell:{castid:%d,cost:%d,cast:%d,cooltime:%d,title:"%s",description:"%s"}}}`,
-		grimoire.ID, grimoire.CastID, grimoire.MPCost, grimoire.CastTime, grimoire.CoolTime, grimoire.Title, grimoire.Description)
+func GrimoireToBook(entry grimoireModel.Grimoire) string {
+	return grimoireSpellBookModel(entry).ToGiveItem()
+}
 
-	return fmt.Sprintf(
-		`minecraft:book[minecraft:item_name=%s,minecraft:lore=%s,minecraft:consumable=%s,minecraft:custom_data=%s]`,
-		itemName, lore, consumable, customData,
-	)
+func grimoireSpellBookModel(entry grimoireModel.Grimoire) spellBookModel {
+	return spellBookModel{
+		itemName: fmt.Sprintf("%s%d", entry.Title, entry.CastTime),
+		lore: []string{
+			"右クリックで詠唱を開始",
+			fmt.Sprintf("effect=%d cast=%d cost=%d", entry.CastID, entry.CastTime, entry.MPCost),
+		},
+		customData: spellCustomData(entry),
+	}
 }
 
 func spellCustomData(entry grimoireModel.Grimoire) string {

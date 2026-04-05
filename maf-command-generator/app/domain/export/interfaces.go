@@ -9,7 +9,6 @@ import (
 )
 
 type DBMaster interface {
-	GetGrimoireByID(id string) (grimoireModel.Grimoire, bool)
 	ListGrimoires() []grimoireModel.Grimoire
 	ListPassives() []passiveModel.Passive
 	ListItems() []itemModel.Item

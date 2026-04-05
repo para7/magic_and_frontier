@@ -26,7 +26,7 @@ func TestBuildPassiveArtifactsBuildsEffectAndSlotGrimoire(t *testing.T) {
 		},
 	}
 
-	effects, grimoires, err := BuildPassiveArtifacts(master, "generated/passive/effect", "generated/passive/give", "generated/passive/apply")
+	effects, grimoires, err := BuildPassiveArtifacts(master, "generated/passive/apply")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,7 +79,7 @@ func TestBuildPassiveArtifactsUsesIDWhenNameIsBlank(t *testing.T) {
 		},
 	}
 
-	_, grimoires, err := BuildPassiveArtifacts(master, "generated/passive/effect", "generated/passive/give", "generated/passive/apply")
+	_, grimoires, err := BuildPassiveArtifacts(master, "generated/passive/apply")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,10 +94,10 @@ func TestBuildPassiveArtifactsUsesIDWhenNameIsBlank(t *testing.T) {
 func TestBuildSelectExecLinesDetectsDuplicateCastID(t *testing.T) {
 	_, err := BuildSelectExecLines(
 		[]GrimoireEffectFunction{
-			{ID: "fire", CastID: 1001, SelectScript: "execute if entity @s[scores={mafEffectID=1001}] run function maf:generated/grimoire/effect/fire"},
+			{ID: "fire", CastID: 1001},
 		},
 		[]PassiveGrimoireFunction{
-			{PassiveID: "passive_1", Slot: 1, CastID: 1001, SelectScript: "execute if entity @s[scores={mafEffectID=1001}] run function maf:generated/passive/grimoire/passive_1_slot1"},
+			{PassiveID: "passive_1", Slot: 1, CastID: 1001, ApplyRef: "maf:generated/passive/apply/passive_1_slot1"},
 		},
 	)
 	if err == nil {
@@ -228,5 +228,55 @@ func TestExportDatapackWritesPassiveArtifactsAndSelectExec(t *testing.T) {
 	}
 	if !strings.Contains(string(grimoireSetupBody), `"2" set value "maf:generated/grimoire/effect/fire"`) {
 		t.Fatalf("setup map should contain castid mapping: %s", string(grimoireSetupBody))
+	}
+}
+
+func TestExportDatapackUsesDefaultPassiveGivePathAndIgnoresLegacyField(t *testing.T) {
+	root := t.TempDir()
+	settingsPath := filepath.Join(root, "export_settings.json")
+	settings := map[string]any{
+		"outputRoot": filepath.Join(root, "out"),
+		"exportPaths": map[string]any{
+			"grimoireEffect":     "generated/grimoire/effect",
+			"grimoireSelectFile": "generated/grimoire/selectexec.mcfunction",
+			"grimoireDebug":      "generated/grimoire/give",
+			"passiveEffect":      "generated/passive/effect",
+			"passiveApply":       "generated/passive/apply",
+			"passiveGrimoire":    "legacy/passive/grimoire",
+			"enemy":              "generated/enemy/spawn",
+			"enemySkill":         "generated/enemy/skill",
+			"enemyLoot":          "generated/enemy/loot",
+		},
+	}
+	data, err := json.Marshal(settings)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(settingsPath, data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg := config.LoadConfig()
+	cfg.ExportSettingsPath = settingsPath
+	cfg.MinecraftLootTableRoot = filepath.Join(root, "minecraft", "loot_table")
+
+	master := exportMasterStub{
+		passives: []passiveModel.Passive{
+			{ID: "passive_1", Name: "Quickstep", Condition: "always", Slots: []int{1}, CastID: 100, Script: []string{"say passive"}},
+		},
+	}
+
+	if err := ExportDatapack(master, cfg); err != nil {
+		t.Fatal(err)
+	}
+
+	defaultGivePath := filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "give", "passive_1_slot1.mcfunction")
+	if _, err := os.Stat(defaultGivePath); err != nil {
+		t.Fatalf("default passive give file should exist: %v", err)
+	}
+
+	legacyGivePath := filepath.Join(root, "out", "data", "maf", "function", "legacy", "passive", "grimoire", "passive_1_slot1.mcfunction")
+	if _, err := os.Stat(legacyGivePath); !os.IsNotExist(err) {
+		t.Fatalf("legacy passiveGrimoire path should not be used: %v", err)
 	}
 }

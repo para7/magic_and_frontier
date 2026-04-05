@@ -18,7 +18,6 @@ type ExportPaths struct {
 	PassiveEffect      string `json:"passiveEffect"`
 	PassiveGive        string `json:"passiveGive"`
 	PassiveApply       string `json:"passiveApply"`
-	PassiveGrimoire    string `json:"passiveGrimoire"`
 	Enemy              string `json:"enemy"`
 	EnemySkill         string `json:"enemySkill"`
 	EnemyLoot          string `json:"enemyLoot"`
