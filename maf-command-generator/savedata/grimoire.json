@@ -2,7 +2,6 @@
   "entries": [
     {
       "id": "prominence01",
-      "castid": 2,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 7,
@@ -28,7 +27,6 @@
     },
     {
       "id": "absolutezero01",
-      "castid": 3,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 11,
@@ -80,7 +78,6 @@
     },
     {
       "id": "tempest01",
-      "castid": 4,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 13,
@@ -116,7 +113,6 @@
     },
     {
       "id": "poison01",
-      "castid": 5,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 10,
@@ -147,7 +143,6 @@
     },
     {
       "id": "earthshake01",
-      "castid": 6,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 4,
@@ -174,7 +169,6 @@
     },
     {
       "id": "healing01",
-      "castid": 7,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 13,
@@ -202,7 +196,6 @@
     },
     {
       "id": "barrier01",
-      "castid": 8,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 22,
@@ -225,7 +218,6 @@
     },
     {
       "id": "refresh01",
-      "castid": 9,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 17,
@@ -258,7 +250,6 @@
     },
     {
       "id": "holy01",
-      "castid": 10,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 30,
@@ -283,7 +274,6 @@
     },
     {
       "id": "sacrifice01",
-      "castid": 11,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 23,
@@ -312,7 +302,6 @@
     },
     {
       "id": "tornado01",
-      "castid": 12,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 6,
@@ -338,7 +327,6 @@
     },
     {
       "id": "sweep01",
-      "castid": 13,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 14,
@@ -360,7 +348,6 @@
     },
     {
       "id": "airrider01",
-      "castid": 14,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 18,
@@ -387,7 +374,6 @@
     },
     {
       "id": "gravity01",
-      "castid": 15,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 9,
@@ -417,7 +403,6 @@
     },
     {
       "id": "hover01",
-      "castid": 16,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 18,
@@ -441,7 +426,6 @@
     },
     {
       "id": "floor01",
-      "castid": 17,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 11,
@@ -463,7 +447,6 @@
     },
     {
       "id": "wall01",
-      "castid": 18,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 9,
@@ -493,7 +476,6 @@
     },
     {
       "id": "roof01",
-      "castid": 19,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 10,
@@ -524,7 +506,6 @@
     },
     {
       "id": "earthextend01",
-      "castid": 20,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 17,
@@ -547,7 +528,6 @@
     },
     {
       "id": "cushion01",
-      "castid": 21,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 14,
@@ -573,7 +553,6 @@
     },
     {
       "id": "disaster01",
-      "castid": 22,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 30,
@@ -596,7 +575,6 @@
     },
     {
       "id": "phoenix01",
-      "castid": 23,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 60,
@@ -623,7 +601,6 @@
     },
     {
       "id": "teleport01",
-      "castid": 24,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 40,
@@ -647,7 +624,6 @@
     },
     {
       "id": "reinforce01",
-      "castid": 25,
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 50,

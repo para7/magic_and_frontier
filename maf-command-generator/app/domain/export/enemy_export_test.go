@@ -71,7 +71,7 @@ func TestBuildEnemyArtifactsReplace(t *testing.T) {
 			},
 		},
 		grimoires: []grimoireModel.Grimoire{
-			{ID: "grimoire_1", CastID: 1, CastTime: 10, MPCost: 5, Title: "Firebolt", Description: "Basic sample projectile spell."},
+			{ID: "grimoire_1", CastTime: 10, MPCost: 5, Title: "Firebolt", Description: "Basic sample projectile spell."},
 		},
 		enemies: []enemyModel.Enemy{
 			{
@@ -232,7 +232,6 @@ func TestBuildEnemyArtifactsWithPassiveDrop(t *testing.T) {
 				Name:      "Quickstep",
 				Condition: "always",
 				Slots:     []int{1},
-				CastID:    100,
 				Script:    []string{"say passive"},
 			},
 		},
@@ -265,7 +264,7 @@ func TestBuildEnemyArtifactsWithPassiveDrop(t *testing.T) {
 	if !strings.Contains(text, `passive:{id:\"passive_1\",slot:1`) {
 		t.Fatalf("loot table should embed passive metadata: %s", text)
 	}
-	if !strings.Contains(text, `castid:1001`) {
-		t.Fatalf("loot table should use derived passive castid: %s", text)
+	if !strings.Contains(text, `spell:{kind:\"passive\",id:\"passive_1\",slot:1`) {
+		t.Fatalf("loot table should use id-based passive spell metadata: %s", text)
 	}
 }

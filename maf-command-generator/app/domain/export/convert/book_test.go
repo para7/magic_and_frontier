@@ -12,7 +12,6 @@ import (
 func TestGrimoireBookAndLootShareModel(t *testing.T) {
 	entry := grimoireModel.Grimoire{
 		ID:          "fire_1",
-		CastID:      7,
 		CastTime:    40,
 		CoolTime:    20,
 		MPCost:      13,
@@ -68,7 +67,6 @@ func TestPassiveBookAndLootShareModel(t *testing.T) {
 		Role:        "素早く動ける",
 		Condition:   "always",
 		Slots:       []int{1, 2},
-		CastID:      100,
 		Description: "",
 	}
 	slot := 2
@@ -109,7 +107,6 @@ func TestPassiveBookAndLootShareModel(t *testing.T) {
 func TestGrimoireToBookEscapesSpecialCharacters(t *testing.T) {
 	entry := grimoireModel.Grimoire{
 		ID:          "g1",
-		CastID:      1,
 		CastTime:    10,
 		CoolTime:    0,
 		MPCost:      5,
@@ -118,6 +115,9 @@ func TestGrimoireToBookEscapesSpecialCharacters(t *testing.T) {
 	}
 
 	book := GrimoireToBook(entry)
+	if !strings.Contains(book, fmt.Sprintf("id:%s", JsonString(entry.ID))) {
+		t.Fatalf("id should be embedded in custom_data: %s", book)
+	}
 	if !strings.Contains(book, fmt.Sprintf("title:%s", JsonString(entry.Title))) {
 		t.Fatalf("title should be JSON-escaped in custom_data: %s", book)
 	}

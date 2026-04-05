@@ -8,7 +8,6 @@
       "slots": [
         1
       ],
-      "castid": 100,
       "script": [
         "tell @a Passive skill activated: Sword Slash!"
       ]
@@ -21,7 +20,6 @@
       "slots": [
         1
       ],
-      "castid": 101,
       "script": [
         "execute unless entity @s[nbt={active_effects:[{id:\"minecraft:regeneration\"}]}] run effect give @s regeneration 10 0"
       ]

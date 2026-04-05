@@ -2,7 +2,6 @@
   "outputRoot": "../datapacks/magic_and_frontier",
   "exportPaths": {
     "grimoireEffect": "generated/grimoire/effect",
-    "grimoireSelectFile": "generated/grimoire/selectexec.mcfunction",
     "grimoireDebug": "generated/grimoire/give",
     "passiveEffect": "generated/passive/effect",
     "passiveGive": "generated/passive/give",

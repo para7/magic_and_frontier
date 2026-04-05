@@ -30,7 +30,6 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 	grimoiresByID := map[string]grimoireModel.Grimoire{
 		"tempest01": {
 			ID:          "tempest01",
-			CastID:      4,
 			MPCost:      13,
 			CastTime:    40,
 			CoolTime:    20,
@@ -44,7 +43,6 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 			Name:        "いつでもリジェネ",
 			Condition:   "always",
 			Slots:       []int{1},
-			CastID:      101,
 			Description: "",
 		},
 	}
@@ -68,7 +66,7 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 	if !strings.Contains(customData, `passiveSlot:1`) {
 		t.Fatalf("passiveSlot missing from custom data: %s", customData)
 	}
-	if !strings.Contains(customData, `spell:{castid:4,cost:13,cast:40,cooltime:20`) {
+	if !strings.Contains(customData, `spell:{kind:"grimoire",id:"tempest01",cost:13,cast:40,cooltime:20`) {
 		t.Fatalf("spell metadata should be derived from grimoire: %s", customData)
 	}
 	if !strings.Contains(customData, `nbt_snapshot:"{`) {
@@ -116,7 +114,6 @@ func TestPassiveOnlyItemDoesNotBecomeRightClickSpell(t *testing.T) {
 			ID:        "regeneration",
 			Condition: "always",
 			Slots:     []int{1},
-			CastID:    101,
 		},
 	}
 

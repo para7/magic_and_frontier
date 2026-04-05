@@ -12,7 +12,6 @@ func validPassive() Passive {
 		Name:        "剣の心得",
 		Condition:   "on_sword_hit",
 		Slots:       []int{1, 2},
-		CastID:      100,
 		Description: "剣攻撃時に発動するパッシブ",
 		Script:      []string{"function maf:skill/test"},
 	}
@@ -67,8 +66,6 @@ func TestPassiveValidateStructPerField(t *testing.T) {
 		{name: "slots ng under", patch: func(p *Passive) { p.Slots = []int{0} }, wantErrField: "slots[0]"},
 		{name: "slots ng over", patch: func(p *Passive) { p.Slots = []int{4} }, wantErrField: "slots[0]"},
 		{name: "slots ng duplicate", patch: func(p *Passive) { p.Slots = []int{2, 2} }, wantErrField: "slots"},
-		{name: "castid ok", patch: func(p *Passive) { p.CastID = 1 }},
-		{name: "castid ng zero", patch: func(p *Passive) { p.CastID = 0 }, wantErrField: "castid"},
 		{name: "script ok", patch: func(p *Passive) { p.Script = []string{"function maf:test"} }},
 		{name: "script ng empty", patch: func(p *Passive) { p.Script = []string{} }, wantErrField: "script"},
 	}

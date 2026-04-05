@@ -10,10 +10,6 @@ import (
 const PassiveCastTime = 200
 const PassiveMPCost = 10
 
-func PassiveDerivedCastID(baseCastID, slot int) int {
-	return baseCastID*10 + slot
-}
-
 func PassiveToBook(entry passiveModel.Passive, slot int) string {
 	return passiveSpellBookModel(entry, slot).ToGiveItem()
 }
@@ -50,17 +46,16 @@ func passiveRoleLine(entry passiveModel.Passive) string {
 
 func passiveSpellCustomData(entry passiveModel.Passive, slot int) string {
 	return fmt.Sprintf(
-		`{maf:{passive:{id:%s,slot:%d,condition:%s},spell:{castid:%d,cost:%d,cast:%d,cooltime:%d,title:%s,description:%s}}}`,
+		`{maf:{passive:{id:%s,slot:%d,condition:%s},%s}}`,
 		JsonString(entry.ID),
 		slot,
 		JsonString(strings.TrimSpace(entry.Condition)),
-		PassiveDerivedCastID(entry.CastID, slot),
-		PassiveMPCost,
-		PassiveCastTime,
-		0,
-		JsonString(passiveSpellTitle(entry, slot)),
-		JsonString(passiveBookDescription(entry)),
+		passiveSpellFragment(entry, slot),
 	)
+}
+
+func passiveSpellFragment(entry passiveModel.Passive, slot int) string {
+	return spellFragment("passive", entry.ID, &slot, PassiveMPCost, PassiveCastTime, 0, passiveSpellTitle(entry, slot), passiveBookDescription(entry))
 }
 
 func passiveSpellBookModel(entry passiveModel.Passive, slot int) spellBookModel {

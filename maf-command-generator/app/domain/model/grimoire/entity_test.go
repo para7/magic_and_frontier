@@ -9,7 +9,6 @@ import (
 func validGrimoire() Grimoire {
 	return Grimoire{
 		ID:          "grimoire_1",
-		CastID:      1,
 		CastTime:    20,
 		MPCost:      5,
 		Script:      []string{"function maf:test"},
@@ -68,26 +67,6 @@ func TestGrimoireValidateStructPerFieldOKNG(t *testing.T) {
 				g.ID = " \n "
 			},
 			wantErrField: "id",
-		},
-		{
-			name: "castid ok",
-			patch: func(g *Grimoire) {
-				g.CastID = 2
-			},
-		},
-		{
-			name: "castid ng zero",
-			patch: func(g *Grimoire) {
-				g.CastID = 0
-			},
-			wantErrField: "castid",
-		},
-		{
-			name: "castid ng negative",
-			patch: func(g *Grimoire) {
-				g.CastID = -1
-			},
-			wantErrField: "castid",
 		},
 		{
 			name: "castTime ok lower bound",

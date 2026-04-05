@@ -9,12 +9,12 @@ import (
 func TestBuildGrimoireArtifactsBuildsEffectsAndSelectExec(t *testing.T) {
 	master := exportMasterStub{
 		grimoires: []grimoireModel.Grimoire{
-			{ID: "fire", CastID: 2, Script: []string{"say fire"}},
-			{ID: "ice", CastID: 9, Script: []string{"say ice"}},
+			{ID: "fire", Script: []string{"say fire"}},
+			{ID: "ice", Script: []string{"say ice"}},
 		},
 	}
 
-	effects := BuildGrimoireArtifacts(master, "generated/grimoire/effect")
+	effects := BuildGrimoireArtifacts(master)
 
 	if len(effects) != 2 {
 		t.Fatalf("effects length = %d, want 2", len(effects))
@@ -26,18 +26,16 @@ func TestBuildGrimoireArtifactsBuildsEffectsAndSelectExec(t *testing.T) {
 		t.Fatalf("effects[1] = %#v", effects[1])
 	}
 
-	wantRef0 := "maf:generated/grimoire/effect/fire"
-	wantRef1 := "maf:generated/grimoire/effect/ice"
-	if effects[0].FunctionRef != wantRef0 {
-		t.Fatalf("effects[0].FunctionRef = %q, want %q", effects[0].FunctionRef, wantRef0)
+	if effects[0].Book == "" {
+		t.Fatalf("effects[0].Book should be populated")
 	}
-	if effects[1].FunctionRef != wantRef1 {
-		t.Fatalf("effects[1].FunctionRef = %q, want %q", effects[1].FunctionRef, wantRef1)
+	if effects[1].Book == "" {
+		t.Fatalf("effects[1].Book should be populated")
 	}
 }
 
 func TestBuildGrimoireArtifactsEmpty(t *testing.T) {
-	effects := BuildGrimoireArtifacts(exportMasterStub{}, "generated/grimoire/effect")
+	effects := BuildGrimoireArtifacts(exportMasterStub{})
 
 	if len(effects) != 0 {
 		t.Fatalf("effects length = %d, want 0", len(effects))

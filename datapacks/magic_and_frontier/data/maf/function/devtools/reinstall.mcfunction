@@ -35,7 +35,6 @@ scoreboard objectives remove mafMP
 scoreboard objectives remove mafMaxMP
 scoreboard objectives remove mafCastCost
 scoreboard objectives remove mafCastTime
-scoreboard objectives remove mafEffectID
 scoreboard objectives remove mafCastTimeMax
 scoreboard objectives remove mafMPTick
 scoreboard objectives remove const0

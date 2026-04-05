@@ -44,3 +44,11 @@ func writeJSON(path string, value any) error {
 	}
 	return os.WriteFile(path, append(data, '\n'), 0o644)
 }
+
+func removeFileIfExists(path string) error {
+	err := os.Remove(path)
+	if err == nil || os.IsNotExist(err) {
+		return nil
+	}
+	return err
+}

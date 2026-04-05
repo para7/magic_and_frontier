@@ -18,7 +18,6 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 
 	effectLogicalDir := settings.ExportPaths.GrimoireEffect
 	effectDir := filepath.Join(settings.OutputRoot, funcRoot, effectLogicalDir)
-	effectSelect := filepath.Join(settings.OutputRoot, funcRoot, settings.ExportPaths.GrimoireSelectFile)
 	debugDir := filepath.Join(settings.OutputRoot, funcRoot, settings.ExportPaths.GrimoireDebug)
 	passiveEffectLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveEffect, "generated/passive/effect")
 	passiveEffectDir := filepath.Join(settings.OutputRoot, funcRoot, passiveEffectLogicalDir)
@@ -33,19 +32,22 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	enemyLootLogicalDir := settings.ExportPaths.EnemyLoot
 	enemyLootDir := filepath.Join(settings.OutputRoot, lootRoot, enemyLootLogicalDir)
 
-	effects := BuildGrimoireArtifacts(dmas, effectLogicalDir)
-	passiveEffects, passiveGrimoires, err := BuildPassiveArtifacts(dmas, passiveApplyLogicalDir)
+	effects := BuildGrimoireArtifacts(dmas)
+	passiveEffects, passiveGrimoires, err := BuildPassiveArtifacts(dmas)
 	if err != nil {
 		return err
 	}
-	selectLines, err := BuildSelectExecLines(effects, passiveGrimoires)
-	if err != nil {
-		return err
-	}
-	if err := WriteGrimoireArtifacts(effectDir, effectSelect, effects, selectLines); err != nil {
+	if err := WriteGrimoireArtifacts(effectDir, effects); err != nil {
 		return err
 	}
 	if err := WriteGrimoireDebugArtifacts(debugDir, effects); err != nil {
+		return err
+	}
+	grimoireDir := filepath.Dir(effectDir)
+	if err := removeFileIfExists(filepath.Join(grimoireDir, "selectexec.mcfunction")); err != nil {
+		return err
+	}
+	if err := removeFileIfExists(filepath.Join(grimoireDir, "setup_effect_ref_map.mcfunction")); err != nil {
 		return err
 	}
 	if err := WritePassiveArtifacts(passiveEffectDir, passiveGiveDir, passiveApplyDir, passiveEffects, passiveGrimoires); err != nil {

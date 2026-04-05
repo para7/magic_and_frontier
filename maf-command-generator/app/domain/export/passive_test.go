@@ -20,13 +20,12 @@ func TestBuildPassiveArtifactsBuildsEffectAndSlotGrimoire(t *testing.T) {
 				Name:      "Quickstep",
 				Condition: "always",
 				Slots:     []int{2, 1},
-				CastID:    100,
 				Script:    []string{"say passive"},
 			},
 		},
 	}
 
-	effects, grimoires, err := BuildPassiveArtifacts(master, "generated/passive/apply")
+	effects, grimoires, err := BuildPassiveArtifacts(master)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,10 +38,10 @@ func TestBuildPassiveArtifactsBuildsEffectAndSlotGrimoire(t *testing.T) {
 	if len(grimoires) != 2 {
 		t.Fatalf("grimoires length = %d, want 2", len(grimoires))
 	}
-	if grimoires[0].FunctionID != "passive_1_slot1" || grimoires[0].CastID != 1001 {
+	if grimoires[0].FunctionID != "passive_1_slot1" {
 		t.Fatalf("unexpected first slot artifact: %#v", grimoires[0])
 	}
-	if grimoires[1].FunctionID != "passive_1_slot2" || grimoires[1].CastID != 1002 {
+	if grimoires[1].FunctionID != "passive_1_slot2" {
 		t.Fatalf("unexpected second slot artifact: %#v", grimoires[1])
 	}
 	if !strings.Contains(grimoires[0].GiveBody, `give @p minecraft:book[`) {
@@ -57,9 +56,6 @@ func TestBuildPassiveArtifactsBuildsEffectAndSlotGrimoire(t *testing.T) {
 	if !strings.Contains(grimoires[0].ApplyBody, `tellraw @s [{"text":"[slot1]に[Quickstep]を設定しました"}]`) {
 		t.Fatalf("unexpected slot1 apply message: %q", grimoires[0].ApplyBody)
 	}
-	if grimoires[0].ApplyRef != "maf:generated/passive/apply/passive_1_slot1" {
-		t.Fatalf("unexpected slot1 apply ref: %q", grimoires[0].ApplyRef)
-	}
 }
 
 func TestBuildPassiveArtifactsUsesIDWhenNameIsBlank(t *testing.T) {
@@ -70,13 +66,12 @@ func TestBuildPassiveArtifactsUsesIDWhenNameIsBlank(t *testing.T) {
 				Name:      "   ",
 				Condition: "always",
 				Slots:     []int{1},
-				CastID:    100,
 				Script:    []string{"say passive"},
 			},
 		},
 	}
 
-	_, grimoires, err := BuildPassiveArtifacts(master, "generated/passive/apply")
+	_, grimoires, err := BuildPassiveArtifacts(master)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,20 +80,6 @@ func TestBuildPassiveArtifactsUsesIDWhenNameIsBlank(t *testing.T) {
 	}
 	if !strings.Contains(grimoires[0].ApplyBody, `tellraw @s [{"text":"[slot1]に[passive_1]を設定しました"}]`) {
 		t.Fatalf("unexpected apply message fallback: %q", grimoires[0].ApplyBody)
-	}
-}
-
-func TestBuildSelectExecLinesDetectsDuplicateCastID(t *testing.T) {
-	_, err := BuildSelectExecLines(
-		[]GrimoireEffectFunction{
-			{ID: "fire", CastID: 1001},
-		},
-		[]PassiveGrimoireFunction{
-			{PassiveID: "passive_1", Slot: 1, CastID: 1001, ApplyRef: "maf:generated/passive/apply/passive_1_slot1"},
-		},
-	)
-	if err == nil {
-		t.Fatal("expected duplicate castid error, got nil")
 	}
 }
 
@@ -141,21 +122,20 @@ func TestWritePassiveArtifactsWritesFiles(t *testing.T) {
 	}
 }
 
-func TestExportDatapackWritesPassiveArtifactsAndSelectExec(t *testing.T) {
+func TestExportDatapackWritesPassiveArtifacts(t *testing.T) {
 	root := t.TempDir()
 	settingsPath := filepath.Join(root, "export_settings.json")
 	settings := map[string]any{
 		"outputRoot": filepath.Join(root, "out"),
 		"exportPaths": map[string]any{
-			"grimoireEffect":     "generated/grimoire/effect",
-			"grimoireSelectFile": "generated/grimoire/selectexec.mcfunction",
-			"grimoireDebug":      "generated/grimoire/give",
-			"passiveEffect":      "generated/passive/effect",
-			"passiveGive":        "generated/passive/give",
-			"passiveApply":       "generated/passive/apply",
-			"enemy":              "generated/enemy/spawn",
-			"enemySkill":         "generated/enemy/skill",
-			"enemyLoot":          "generated/enemy/loot",
+			"grimoireEffect": "generated/grimoire/effect",
+			"grimoireDebug":  "generated/grimoire/give",
+			"passiveEffect":  "generated/passive/effect",
+			"passiveGive":    "generated/passive/give",
+			"passiveApply":   "generated/passive/apply",
+			"enemy":          "generated/enemy/spawn",
+			"enemySkill":     "generated/enemy/skill",
+			"enemyLoot":      "generated/enemy/loot",
 		},
 	}
 	data, err := json.Marshal(settings)
@@ -172,10 +152,10 @@ func TestExportDatapackWritesPassiveArtifactsAndSelectExec(t *testing.T) {
 
 	master := exportMasterStub{
 		grimoires: []grimoireModel.Grimoire{
-			{ID: "fire", CastID: 2, Script: []string{"say fire"}, Title: "Fire"},
+			{ID: "fire", Script: []string{"say fire"}, Title: "Fire"},
 		},
 		passives: []passiveModel.Passive{
-			{ID: "passive_1", Name: "Quickstep", Condition: "always", Slots: []int{1}, CastID: 100, Script: []string{"say passive"}},
+			{ID: "passive_1", Name: "Quickstep", Condition: "always", Slots: []int{1}, Script: []string{"say passive"}},
 		},
 	}
 
@@ -205,26 +185,18 @@ func TestExportDatapackWritesPassiveArtifactsAndSelectExec(t *testing.T) {
 	if !strings.Contains(string(applyBody), `tellraw @s [{"text":"[slot1]に[Quickstep]を設定しました"}]`) {
 		t.Fatalf("passive apply should contain success message: %s", string(applyBody))
 	}
-	selectExecPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "grimoire", "selectexec.mcfunction")
-	selectBody, err := os.ReadFile(selectExecPath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	text := string(selectBody)
-	if !strings.Contains(text, "function maf:magic/cast/dispatch/read_effect_ref with storage p7:maf grimoire.dispatch") {
-		t.Fatalf("selectexec should contain grimoire macro-dispatch line: %s", text)
-	}
-	if !strings.Contains(text, "maf:generated/passive/apply/passive_1_slot1") {
-		t.Fatalf("selectexec should contain passive line: %s", text)
-	}
 
-	grimoireSetupPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "grimoire", grimoireSetupMapFunctionID+".mcfunction")
-	grimoireSetupBody, err := os.ReadFile(grimoireSetupPath)
-	if err != nil {
-		t.Fatalf("missing grimoire setup map file: %v", err)
+	grimoireEffectPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "grimoire", "effect", "fire.mcfunction")
+	if _, err := os.Stat(grimoireEffectPath); err != nil {
+		t.Fatalf("missing grimoire effect file: %v", err)
 	}
-	if !strings.Contains(string(grimoireSetupBody), `"2" set value "maf:generated/grimoire/effect/fire"`) {
-		t.Fatalf("setup map should contain castid mapping: %s", string(grimoireSetupBody))
+	selectExecPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "grimoire", "selectexec.mcfunction")
+	if _, err := os.Stat(selectExecPath); !os.IsNotExist(err) {
+		t.Fatalf("legacy selectexec should not be created: %v", err)
+	}
+	grimoireSetupPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "grimoire", "setup_effect_ref_map.mcfunction")
+	if _, err := os.Stat(grimoireSetupPath); !os.IsNotExist(err) {
+		t.Fatalf("legacy setup map should not be created: %v", err)
 	}
 }
 
@@ -234,15 +206,14 @@ func TestExportDatapackUsesDefaultPassiveGivePathAndIgnoresLegacyField(t *testin
 	settings := map[string]any{
 		"outputRoot": filepath.Join(root, "out"),
 		"exportPaths": map[string]any{
-			"grimoireEffect":     "generated/grimoire/effect",
-			"grimoireSelectFile": "generated/grimoire/selectexec.mcfunction",
-			"grimoireDebug":      "generated/grimoire/give",
-			"passiveEffect":      "generated/passive/effect",
-			"passiveApply":       "generated/passive/apply",
-			"passiveGrimoire":    "legacy/passive/grimoire",
-			"enemy":              "generated/enemy/spawn",
-			"enemySkill":         "generated/enemy/skill",
-			"enemyLoot":          "generated/enemy/loot",
+			"grimoireEffect":  "generated/grimoire/effect",
+			"grimoireDebug":   "generated/grimoire/give",
+			"passiveEffect":   "generated/passive/effect",
+			"passiveApply":    "generated/passive/apply",
+			"passiveGrimoire": "legacy/passive/grimoire",
+			"enemy":           "generated/enemy/spawn",
+			"enemySkill":      "generated/enemy/skill",
+			"enemyLoot":       "generated/enemy/loot",
 		},
 	}
 	data, err := json.Marshal(settings)
@@ -259,7 +230,7 @@ func TestExportDatapackUsesDefaultPassiveGivePathAndIgnoresLegacyField(t *testin
 
 	master := exportMasterStub{
 		passives: []passiveModel.Passive{
-			{ID: "passive_1", Name: "Quickstep", Condition: "always", Slots: []int{1}, CastID: 100, Script: []string{"say passive"}},
+			{ID: "passive_1", Name: "Quickstep", Condition: "always", Slots: []int{1}, Script: []string{"say passive"}},
 		},
 	}
 

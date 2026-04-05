@@ -5,8 +5,6 @@ scoreboard objectives add mafMaxMP dummy
 scoreboard objectives add mafCastCost dummy
 scoreboard objectives add mafCastTime dummy
 scoreboard objectives add mafCoolTime dummy
-# あえてmagicIDと二重にすることで、コストが違う同効果魔法の実装などを簡単に実現
-scoreboard objectives add mafEffectID dummy
 # 詠唱時間の表示用
 scoreboard objectives add mafCastTimeMax dummy
  

@@ -58,8 +58,8 @@ func newTestConfig(t *testing.T, grimoires []grimoireModel.Grimoire) files.MafCo
 
 func TestDBMasterImplExportMethods(t *testing.T) {
 	grimoires := []grimoireModel.Grimoire{
-		{ID: "g1", CastID: 1, Script: []string{"say 1"}, Title: "one"},
-		{ID: "g2", CastID: 2, Script: []string{"say 2"}, Title: "two"},
+		{ID: "g1", Script: []string{"say 1"}, Title: "one"},
+		{ID: "g2", Script: []string{"say 2"}, Title: "two"},
 	}
 	db := NewDBMaster(newTestConfig(t, grimoires))
 
@@ -83,7 +83,7 @@ func TestDBMasterImplExportMethods(t *testing.T) {
 
 func TestDBMasterImplListGrimoiresReturnsCopy(t *testing.T) {
 	grimoires := []grimoireModel.Grimoire{
-		{ID: "g1", CastID: 1, Script: []string{"say 1"}, Title: "one"},
+		{ID: "g1", Script: []string{"say 1"}, Title: "one"},
 	}
 	db := NewDBMaster(newTestConfig(t, grimoires))
 

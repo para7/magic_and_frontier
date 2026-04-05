@@ -1,5 +1,3 @@
-function maf:generated/grimoire/setup_effect_ref_map
-
 tellraw @a [{"text":"enable datapack: Magic and Frontier"}]
 execute if data storage maf:runtime initialized run return 0
 

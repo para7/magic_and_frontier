@@ -17,12 +17,11 @@ func TestExportDatapackDoesNotWriteLegacyEnemyCompatibilityWrappers(t *testing.T
 	settings := map[string]any{
 		"outputRoot": filepath.Join(root, "out"),
 		"exportPaths": map[string]any{
-			"grimoireEffect":     "generated/grimoire/effect",
-			"grimoireSelectFile": "generated/grimoire/selectexec.mcfunction",
-			"grimoireDebug":      "generated/grimoire/give",
-			"enemy":              "generated/enemy/spawn",
-			"enemySkill":         "generated/enemy/skill",
-			"enemyLoot":          "generated/enemy/loot",
+			"grimoireEffect": "generated/grimoire/effect",
+			"grimoireDebug":  "generated/grimoire/give",
+			"enemy":          "generated/enemy/spawn",
+			"enemySkill":     "generated/enemy/skill",
+			"enemyLoot":      "generated/enemy/loot",
 		},
 	}
 	data, err := json.Marshal(settings)

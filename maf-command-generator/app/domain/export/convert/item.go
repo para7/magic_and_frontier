@@ -229,7 +229,7 @@ func resolveItemSpellMeta(
 		}
 		meta.hasUseSpell = true
 		meta.grimoireID = grimoire.ID
-		meta.spellFragment = spellFragment(grimoire.CastID, grimoire.MPCost, grimoire.CastTime, grimoire.CoolTime, grimoire.Title, grimoire.Description)
+		meta.spellFragment = grimoireSpellFragment(grimoire)
 	}
 
 	passiveID := strings.TrimSpace(entry.Maf.PassiveID)
@@ -266,16 +266,4 @@ func resolvePassiveSlot(entry itemModel.Item, passive passiveModel.Passive) (int
 		return 0, fmt.Errorf("item(%s): passive(%s) has no available slots", entry.ID, passive.ID)
 	}
 	return passive.Slots[0], nil
-}
-
-func spellFragment(castID, mpCost, castTime, coolTime int, title, description string) string {
-	return fmt.Sprintf(
-		"spell:{castid:%d,cost:%d,cast:%d,cooltime:%d,title:%s,description:%s}",
-		castID,
-		mpCost,
-		castTime,
-		coolTime,
-		JsonString(title),
-		JsonString(description),
-	)
 }
