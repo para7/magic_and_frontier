@@ -8,6 +8,15 @@ import (
 	ec "maf_command_editor/app/domain/export/convert"
 )
 
+const (
+	grimoireEffectRefMapStorage      = "p7:maf grimoire.effect_ref_map"
+	grimoireDispatchStorage          = "p7:maf grimoire.dispatch"
+	grimoireDispatchHelperLogicalDir = "magic/cast/dispatch"
+	grimoireSetupMapFunctionID       = "setup_effect_ref_map"
+	grimoireReadEffectFunctionID     = "read_effect_ref"
+	grimoireRunEffectFunctionID      = "run_effect_ref"
+)
+
 type GrimoireEffectFunction struct {
 	ID           string
 	CastID       int
@@ -55,6 +64,11 @@ func WriteGrimoireArtifacts(spellEffectDir string, selectExecFile string, effect
 		}
 	}
 
+	grimoireDir := filepath.Dir(selectExecFile)
+	if err := writeFunctionFile(filepath.Join(grimoireDir, grimoireSetupMapFunctionID+".mcfunction"), buildGrimoireSetupMapBody(effects)); err != nil {
+		return err
+	}
+
 	selectExec := strings.Join(selectLines, "\n")
 	return writeFunctionFile(selectExecFile, selectExec)
 }
@@ -69,4 +83,18 @@ func WriteGrimoireDebugArtifacts(debugDir string, effects []GrimoireEffectFuncti
 		}
 	}
 	return nil
+}
+
+func buildGrimoireSetupMapBody(effects []GrimoireEffectFunction) string {
+	lines := make([]string, 0, len(effects)+1)
+	lines = append(lines, "data remove storage "+grimoireEffectRefMapStorage)
+	for _, entry := range effects {
+		lines = append(lines, fmt.Sprintf(
+			`data modify storage %s."%d" set value %s`,
+			grimoireEffectRefMapStorage,
+			entry.CastID,
+			ec.JsonString(entry.FunctionRef),
+		))
+	}
+	return strings.Join(lines, "\n")
 }

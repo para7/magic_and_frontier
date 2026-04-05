@@ -54,7 +54,7 @@ func TestBuildPassiveArtifactsBuildsEffectAndSlotGrimoire(t *testing.T) {
 	if !strings.Contains(grimoires[0].ApplyBody, `data modify storage p7:maf passive.tmp.id set value "passive_1"`) {
 		t.Fatalf("unexpected slot1 apply id body: %q", grimoires[0].ApplyBody)
 	}
-	if !strings.Contains(grimoires[0].ApplyBody, `function maf:generated/passive/apply/set_slot_by_uuid with storage p7:maf passive.tmp`) {
+	if !strings.Contains(grimoires[0].ApplyBody, `function maf:passive/apply/set_slot_by_uuid with storage p7:maf passive.tmp`) {
 		t.Fatalf("unexpected slot1 apply function call: %q", grimoires[0].ApplyBody)
 	}
 	if !strings.Contains(grimoires[0].ApplyBody, `tellraw @s [{"text":"[slot1]に[Quickstep]を設定しました"}]`) {
@@ -142,13 +142,6 @@ func TestWritePassiveArtifactsWritesFiles(t *testing.T) {
 	if string(applyBody) != "say set slot1\n" {
 		t.Fatalf("unexpected passive grimoire apply body: %q", string(applyBody))
 	}
-	applyHelperBody, err := os.ReadFile(filepath.Join(applyDir, passiveApplyByUUIDFunctionID+".mcfunction"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !strings.Contains(string(applyHelperBody), `passive.players."$(u0)"."$(u1)"."$(u2)"."$(u3)".slot$(slot).id`) {
-		t.Fatalf("unexpected passive apply helper body: %q", string(applyHelperBody))
-	}
 }
 
 func TestExportDatapackWritesPassiveArtifactsAndSelectExec(t *testing.T) {
@@ -209,15 +202,11 @@ func TestExportDatapackWritesPassiveArtifactsAndSelectExec(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(applyBody), `function maf:generated/passive/apply/set_slot_by_uuid with storage p7:maf passive.tmp`) {
+	if !strings.Contains(string(applyBody), `function maf:passive/apply/set_slot_by_uuid with storage p7:maf passive.tmp`) {
 		t.Fatalf("passive apply should contain uuid helper call: %s", string(applyBody))
 	}
 	if !strings.Contains(string(applyBody), `tellraw @s [{"text":"[slot1]に[Quickstep]を設定しました"}]`) {
 		t.Fatalf("passive apply should contain success message: %s", string(applyBody))
-	}
-	passiveApplyHelperPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "apply", passiveApplyByUUIDFunctionID+".mcfunction")
-	if _, err := os.Stat(passiveApplyHelperPath); err != nil {
-		t.Fatalf("missing passive apply helper file: %v", err)
 	}
 	selectExecPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "grimoire", "selectexec.mcfunction")
 	selectBody, err := os.ReadFile(selectExecPath)
@@ -225,10 +214,19 @@ func TestExportDatapackWritesPassiveArtifactsAndSelectExec(t *testing.T) {
 		t.Fatal(err)
 	}
 	text := string(selectBody)
-	if !strings.Contains(text, "maf:generated/grimoire/effect/fire") {
-		t.Fatalf("selectexec should contain grimoire line: %s", text)
+	if !strings.Contains(text, "function maf:magic/cast/dispatch/read_effect_ref with storage p7:maf grimoire.dispatch") {
+		t.Fatalf("selectexec should contain grimoire macro-dispatch line: %s", text)
 	}
 	if !strings.Contains(text, "maf:generated/passive/apply/passive_1_slot1") {
 		t.Fatalf("selectexec should contain passive line: %s", text)
+	}
+
+	grimoireSetupPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "grimoire", grimoireSetupMapFunctionID+".mcfunction")
+	grimoireSetupBody, err := os.ReadFile(grimoireSetupPath)
+	if err != nil {
+		t.Fatalf("missing grimoire setup map file: %v", err)
+	}
+	if !strings.Contains(string(grimoireSetupBody), `"2" set value "maf:generated/grimoire/effect/fire"`) {
+		t.Fatalf("setup map should contain castid mapping: %s", string(grimoireSetupBody))
 	}
 }

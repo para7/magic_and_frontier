@@ -27,6 +27,7 @@ type PassiveGrimoireFunction struct {
 }
 
 const passiveApplyByUUIDFunctionID = "set_slot_by_uuid"
+const passiveApplyByUUIDLogicalDir = "passive/apply"
 
 func BuildPassiveArtifacts(master DBMaster, effectDir, giveDir, applyDir string) ([]PassiveEffectFunction, []PassiveGrimoireFunction, error) {
 	if master == nil {
@@ -53,7 +54,7 @@ func BuildPassiveArtifacts(master DBMaster, effectDir, giveDir, applyDir string)
 			applyRef := functionRefName(applyDir, functionID)
 			book := ec.PassiveToBook(entry, slot)
 			displayName := passiveDisplayName(entry.Name, entry.ID)
-			applyBody := passiveApplyBody(applyDir, slot, entry.ID, displayName)
+			applyBody := passiveApplyBody(slot, entry.ID, displayName)
 			grimoires = append(grimoires, PassiveGrimoireFunction{
 				PassiveID:    entry.ID,
 				Slot:         slot,
@@ -88,16 +89,14 @@ func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []Passiv
 			return err
 		}
 	}
-	applyByUUIDPath := filepath.Join(applyDir, passiveApplyByUUIDFunctionID+".mcfunction")
-	if err := writeFunctionFile(applyByUUIDPath, passiveApplyByUUIDBody()); err != nil {
-		return err
-	}
 	return nil
 }
 
 func BuildSelectExecLines(grimoires []GrimoireEffectFunction, passiveGrimoires []PassiveGrimoireFunction) ([]string, error) {
 	seen := map[int]string{}
-	lines := make([]string, 0, len(grimoires)+len(passiveGrimoires))
+	lines := make([]string, 0, len(grimoires)+len(passiveGrimoires)+4)
+	readEffectRef := functionRefName(grimoireDispatchHelperLogicalDir, grimoireReadEffectFunctionID)
+	runEffectRef := functionRefName(grimoireDispatchHelperLogicalDir, grimoireRunEffectFunctionID)
 
 	for _, entry := range grimoires {
 		source := "grimoire(" + entry.ID + ")"
@@ -105,8 +104,16 @@ func BuildSelectExecLines(grimoires []GrimoireEffectFunction, passiveGrimoires [
 			return nil, fmt.Errorf("duplicate castid %d between %s and %s", entry.CastID, prev, source)
 		}
 		seen[entry.CastID] = source
-		lines = append(lines, entry.SelectScript)
 	}
+	if len(grimoires) > 0 {
+		lines = append(lines,
+			"data remove storage "+grimoireDispatchStorage,
+			"execute store result storage "+grimoireDispatchStorage+".castid int 1 run scoreboard players get @s mafEffectID",
+			"function "+readEffectRef+" with storage "+grimoireDispatchStorage,
+			"execute if data storage "+grimoireDispatchStorage+".ref run function "+runEffectRef+" with storage "+grimoireDispatchStorage,
+		)
+	}
+
 	for _, entry := range passiveGrimoires {
 		source := fmt.Sprintf("passive(%s,slot=%d)", entry.PassiveID, entry.Slot)
 		if prev, ok := seen[entry.CastID]; ok {
@@ -131,9 +138,9 @@ func passiveDisplayName(name, fallbackID string) string {
 	return trimmed
 }
 
-func passiveApplyBody(applyDir string, slot int, passiveID string, displayName string) string {
+func passiveApplyBody(slot int, passiveID string, displayName string) string {
 	setMessage := fmt.Sprintf("[slot%d]に[%s]を設定しました", slot, displayName)
-	applyByUUIDRef := functionRefName(applyDir, passiveApplyByUUIDFunctionID)
+	applyByUUIDRef := functionRefName(passiveApplyByUUIDLogicalDir, passiveApplyByUUIDFunctionID)
 	return strings.Join([]string{
 		"data remove storage p7:maf passive.tmp",
 		"data modify storage p7:maf passive.tmp.uuid set from entity @s UUID",
@@ -146,8 +153,4 @@ func passiveApplyBody(applyDir string, slot int, passiveID string, displayName s
 		fmt.Sprintf("function %s with storage p7:maf passive.tmp", applyByUUIDRef),
 		fmt.Sprintf(`tellraw @s [{"text":%s}]`, ec.JsonString(setMessage)),
 	}, "\n")
-}
-
-func passiveApplyByUUIDBody() string {
-	return `$data modify storage p7:maf passive.players."$(u0)"."$(u1)"."$(u2)"."$(u3)".slot$(slot).id set from storage p7:maf passive.tmp.id`
 }
