@@ -47,7 +47,7 @@ func TestBuildPassiveArtifactsBuildsEffectAndSlotGrimoire(t *testing.T) {
 	if !strings.Contains(grimoires[0].GiveBody, `give @p minecraft:book[`) {
 		t.Fatalf("unexpected slot1 give body: %q", grimoires[0].GiveBody)
 	}
-	if !strings.Contains(grimoires[0].ApplyBody, `data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].passive.slot1.id set value "passive_1"`) {
+	if !strings.Contains(grimoires[0].ApplyBody, `data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.passive.slot1.id set value "passive_1"`) {
 		t.Fatalf("unexpected slot1 apply id body: %q", grimoires[0].ApplyBody)
 	}
 	if !strings.Contains(grimoires[0].ApplyBody, "function #oh_my_dat:please") {

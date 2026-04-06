@@ -4,4 +4,4 @@ scoreboard players set @s mafCastCost 0
 scoreboard players set @s mafCastTime -1
 scoreboard players set @s mafCastTimeMax 0
 function #oh_my_dat:please
-data remove storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].magic.casting
+data remove storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting
