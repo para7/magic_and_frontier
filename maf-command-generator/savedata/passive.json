@@ -23,6 +23,22 @@
       "script": [
         "execute unless entity @s[nbt={active_effects:[{id:\"minecraft:regeneration\"}]}] run effect give @s regeneration 10 0"
       ]
+    },
+    {
+      "id": "test_bow_passive",
+      "name": "Test Bow Passive",
+      "role": "弓命中時テスト",
+      "condition": "bow",
+      "slots": [
+        1
+      ],
+      "script": [
+        "effect give @e[distance=..3] minecraft:glowing 3 10",
+        "summon minecraft:zombie ~ ~ ~"
+      ],
+      "bow": {
+        "life_sub": 100
+      }
     }
   ]
 }

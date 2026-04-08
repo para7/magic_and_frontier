@@ -8,6 +8,7 @@ function maf:magic/load
 scoreboard objectives add mafPlayerID dummy
 
 scoreboard objectives add mafMoved dummy
+scoreboard objectives add mafBowUsed minecraft.used:minecraft.bow
 
 
 scoreboard objectives add mafWalkCM minecraft.custom:minecraft.walk_one_cm

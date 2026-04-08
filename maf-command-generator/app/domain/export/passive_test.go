@@ -25,12 +25,15 @@ func TestBuildPassiveArtifactsBuildsEffectAndSlotGrimoire(t *testing.T) {
 		},
 	}
 
-	effects, grimoires, err := BuildPassiveArtifacts(master)
+	effects, bows, grimoires, err := BuildPassiveArtifacts(master)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(effects) != 1 {
 		t.Fatalf("effects length = %d, want 1", len(effects))
+	}
+	if len(bows) != 0 {
+		t.Fatalf("bows length = %d, want 0", len(bows))
 	}
 	if effects[0].ID != "passive_1" || effects[0].Body != "say passive" {
 		t.Fatalf("unexpected effects[0]: %#v", effects[0])
@@ -71,7 +74,7 @@ func TestBuildPassiveArtifactsUsesIDWhenNameIsBlank(t *testing.T) {
 		},
 	}
 
-	_, grimoires, err := BuildPassiveArtifacts(master)
+	_, _, grimoires, err := BuildPassiveArtifacts(master)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,20 +86,65 @@ func TestBuildPassiveArtifactsUsesIDWhenNameIsBlank(t *testing.T) {
 	}
 }
 
+func TestBuildPassiveArtifactsBuildsBowEffectAndBowBody(t *testing.T) {
+	master := exportMasterStub{
+		passives: []passiveModel.Passive{
+			{
+				ID:        "bow_passive",
+				Name:      "Bow Passive",
+				Condition: "bow",
+				Slots:     []int{1},
+				Script:    []string{"say bow hit", "effect give @s glowing 1 0 true"},
+				Bow:       &passiveModel.BowConfig{LifeSub: ptrInt(50)},
+			},
+		},
+	}
+
+	effects, bows, grimoires, err := BuildPassiveArtifacts(master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(effects) != 1 {
+		t.Fatalf("effects length = %d, want 1", len(effects))
+	}
+	if len(bows) != 1 {
+		t.Fatalf("bows length = %d, want 1", len(bows))
+	}
+	if len(grimoires) != 1 {
+		t.Fatalf("grimoires length = %d, want 1", len(grimoires))
+	}
+	if !strings.Contains(effects[0].Body, "mafBowUsed") {
+		t.Fatalf("bow effect should check mafBowUsed: %q", effects[0].Body)
+	}
+	if !strings.Contains(effects[0].Body, `function maf:magic/passive/tag_passive_arrow {passive_id:"bow_passive",life:1150}`) {
+		t.Fatalf("bow effect should tag arrow with passive id and life: %q", effects[0].Body)
+	}
+	if bows[0].ID != "bow_passive" {
+		t.Fatalf("unexpected bow artifact id: %#v", bows[0])
+	}
+	if bows[0].Body != "say bow hit\neffect give @s glowing 1 0 true" {
+		t.Fatalf("unexpected bow artifact body: %q", bows[0].Body)
+	}
+}
+
 func TestWritePassiveArtifactsWritesFiles(t *testing.T) {
 	root := t.TempDir()
 	effectDir := filepath.Join(root, "effect")
+	bowDir := filepath.Join(root, "bow")
 	giveDir := filepath.Join(root, "give")
 	applyDir := filepath.Join(root, "apply")
 
 	effects := []PassiveEffectFunction{
 		{ID: "passive_1", Body: "say effect"},
 	}
+	bows := []PassiveBowFunction{
+		{ID: "passive_1", Body: "say bow"},
+	}
 	grimoires := []PassiveGrimoireFunction{
 		{FunctionID: "passive_1_slot1", GiveBody: "say give", ApplyBody: "say set slot1"},
 	}
 
-	if err := WritePassiveArtifacts(effectDir, giveDir, applyDir, effects, grimoires); err != nil {
+	if err := WritePassiveArtifacts(effectDir, bowDir, giveDir, applyDir, effects, bows, grimoires); err != nil {
 		t.Fatal(err)
 	}
 	body, err := os.ReadFile(filepath.Join(effectDir, "passive_1.mcfunction"))
@@ -105,6 +153,13 @@ func TestWritePassiveArtifactsWritesFiles(t *testing.T) {
 	}
 	if string(body) != "say effect\n" {
 		t.Fatalf("unexpected passive effect body: %q", string(body))
+	}
+	bowBody, err := os.ReadFile(filepath.Join(bowDir, "passive_1.mcfunction"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(bowBody) != "say bow\n" {
+		t.Fatalf("unexpected passive bow body: %q", string(bowBody))
 	}
 	setBody, err := os.ReadFile(filepath.Join(giveDir, "passive_1_slot1.mcfunction"))
 	if err != nil {
@@ -131,6 +186,7 @@ func TestExportDatapackWritesPassiveArtifacts(t *testing.T) {
 			"grimoireEffect": "generated/grimoire/effect",
 			"grimoireDebug":  "generated/grimoire/give",
 			"passiveEffect":  "generated/passive/effect",
+			"passiveBow":     "generated/passive/bow",
 			"passiveGive":    "generated/passive/give",
 			"passiveApply":   "generated/passive/apply",
 			"enemy":          "generated/enemy/spawn",
@@ -166,6 +222,10 @@ func TestExportDatapackWritesPassiveArtifacts(t *testing.T) {
 	passiveEffectPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "effect", "passive_1.mcfunction")
 	if _, err := os.Stat(passiveEffectPath); err != nil {
 		t.Fatalf("missing passive effect file: %v", err)
+	}
+	passiveBowPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "bow", "passive_1.mcfunction")
+	if _, err := os.Stat(passiveBowPath); !os.IsNotExist(err) {
+		t.Fatalf("non-bow passive should not create bow file: %v", err)
 	}
 	passiveGrimoirePath := filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "give", "passive_1_slot1.mcfunction")
 	if _, err := os.Stat(passiveGrimoirePath); err != nil {
@@ -243,8 +303,78 @@ func TestExportDatapackUsesDefaultPassiveGivePathAndIgnoresLegacyField(t *testin
 		t.Fatalf("default passive give file should exist: %v", err)
 	}
 
+	defaultBowPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "bow")
+	if _, err := os.Stat(defaultBowPath); !os.IsNotExist(err) {
+		t.Fatalf("default passive bow dir should not be created for non-bow passive: %v", err)
+	}
+
 	legacyGivePath := filepath.Join(root, "out", "data", "maf", "function", "legacy", "passive", "grimoire", "passive_1_slot1.mcfunction")
 	if _, err := os.Stat(legacyGivePath); !os.IsNotExist(err) {
 		t.Fatalf("legacy passiveGrimoire path should not be used: %v", err)
+	}
+}
+
+func TestExportDatapackWritesPassiveBowArtifacts(t *testing.T) {
+	root := t.TempDir()
+	settingsPath := filepath.Join(root, "export_settings.json")
+	settings := map[string]any{
+		"outputRoot": filepath.Join(root, "out"),
+		"exportPaths": map[string]any{
+			"grimoireEffect": "generated/grimoire/effect",
+			"grimoireDebug":  "generated/grimoire/give",
+			"passiveEffect":  "generated/passive/effect",
+			"passiveBow":     "generated/passive/bow",
+			"passiveGive":    "generated/passive/give",
+			"passiveApply":   "generated/passive/apply",
+			"enemy":          "generated/enemy/spawn",
+			"enemySkill":     "generated/enemy/skill",
+			"enemyLoot":      "generated/enemy/loot",
+		},
+	}
+	data, err := json.Marshal(settings)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(settingsPath, data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg := config.LoadConfig()
+	cfg.ExportSettingsPath = settingsPath
+	cfg.MinecraftLootTableRoot = filepath.Join(root, "minecraft", "loot_table")
+
+	master := exportMasterStub{
+		passives: []passiveModel.Passive{
+			{
+				ID:        "bow_passive",
+				Name:      "Bow Passive",
+				Condition: "bow",
+				Slots:     []int{1},
+				Script:    []string{"say bow hit"},
+				Bow:       &passiveModel.BowConfig{LifeSub: ptrInt(10)},
+			},
+		},
+	}
+
+	if err := ExportDatapack(master, cfg); err != nil {
+		t.Fatal(err)
+	}
+
+	passiveEffectPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "effect", "bow_passive.mcfunction")
+	effectBody, err := os.ReadFile(passiveEffectPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(effectBody), "mafBowUsed") {
+		t.Fatalf("bow passive effect should contain bow trigger guard: %s", string(effectBody))
+	}
+
+	passiveBowPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "bow", "bow_passive.mcfunction")
+	bowBody, err := os.ReadFile(passiveBowPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(bowBody) != "say bow hit\n" {
+		t.Fatalf("unexpected bow passive body: %q", string(bowBody))
 	}
 }

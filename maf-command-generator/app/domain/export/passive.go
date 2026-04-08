@@ -7,9 +7,15 @@ import (
 	"strings"
 
 	ec "maf_command_editor/app/domain/export/convert"
+	passiveModel "maf_command_editor/app/domain/model/passive"
 )
 
 type PassiveEffectFunction struct {
+	ID   string
+	Body string
+}
+
+type PassiveBowFunction struct {
 	ID   string
 	Body string
 }
@@ -23,19 +29,28 @@ type PassiveGrimoireFunction struct {
 	Book       string
 }
 
-func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveGrimoireFunction, error) {
+func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveBowFunction, []PassiveGrimoireFunction, error) {
 	if master == nil {
-		return []PassiveEffectFunction{}, []PassiveGrimoireFunction{}, nil
+		return []PassiveEffectFunction{}, []PassiveBowFunction{}, []PassiveGrimoireFunction{}, nil
 	}
 
 	passives := master.ListPassives()
 	effects := make([]PassiveEffectFunction, 0, len(passives))
+	bows := make([]PassiveBowFunction, 0, len(passives))
 	grimoires := make([]PassiveGrimoireFunction, 0, len(passives))
 
 	for _, entry := range passives {
+		effectBody := strings.Join(entry.Script, "\n")
+		if entry.Condition == "bow" {
+			effectBody = buildBowEffectBody(entry.ID, resolveLifeSub(entry.Bow))
+			bows = append(bows, PassiveBowFunction{
+				ID:   entry.ID,
+				Body: strings.Join(entry.Script, "\n"),
+			})
+		}
 		effects = append(effects, PassiveEffectFunction{
 			ID:   entry.ID,
-			Body: strings.Join(entry.Script, "\n"),
+			Body: effectBody,
 		})
 
 		slots := make([]int, len(entry.Slots))
@@ -58,12 +73,18 @@ func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveG
 		}
 	}
 
-	return effects, grimoires, nil
+	return effects, bows, grimoires, nil
 }
 
-func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []PassiveEffectFunction, grimoires []PassiveGrimoireFunction) error {
+func WritePassiveArtifacts(effectDir, bowDir, giveDir, applyDir string, effects []PassiveEffectFunction, bows []PassiveBowFunction, grimoires []PassiveGrimoireFunction) error {
 	for _, entry := range effects {
 		path := filepath.Join(effectDir, entry.ID+".mcfunction")
+		if err := writeFunctionFile(path, entry.Body); err != nil {
+			return err
+		}
+	}
+	for _, entry := range bows {
+		path := filepath.Join(bowDir, entry.ID+".mcfunction")
 		if err := writeFunctionFile(path, entry.Body); err != nil {
 			return err
 		}
@@ -100,4 +121,20 @@ func passiveApplyBody(slot int, passiveID string, displayName string) string {
 		fmt.Sprintf("data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.passive.slot%d.id set value %s", slot, ec.JsonString(passiveID)),
 		fmt.Sprintf(`tellraw @s [{"text":%s}]`, ec.JsonString(setMessage)),
 	}, "\n")
+}
+
+func buildBowEffectBody(id string, lifeSub int) string {
+	lifeValue := 1200 - lifeSub
+	return strings.Join([]string{
+		"execute unless score @s mafBowUsed matches 1.. run return 0",
+		"execute store result storage maf:tmp bow_player_id int 1 run scoreboard players get @s mafPlayerID",
+		fmt.Sprintf(`execute as @e[type=arrow,distance=..5,nbt=!{inGround:1b},sort=nearest,limit=1] run function maf:magic/passive/tag_passive_arrow {passive_id:%s,life:%d}`, ec.JsonString(id), lifeValue),
+	}, "\n")
+}
+
+func resolveLifeSub(bow *passiveModel.BowConfig) int {
+	if bow == nil || bow.LifeSub == nil {
+		return 1200
+	}
+	return *bow.LifeSub
 }
