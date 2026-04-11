@@ -7,13 +7,6 @@ import (
 	"strings"
 )
 
-func normalizeFunctionBody(script string) string {
-	if strings.HasSuffix(script, "\n") {
-		return script
-	}
-	return script + "\n"
-}
-
 func resourceRefName(namespace, logicalDir, baseName string) string {
 	dir := strings.Trim(filepath.ToSlash(logicalDir), "/")
 	if dir == "" {
@@ -31,7 +24,11 @@ func writeFunctionFile(path string, script string) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err
 	}
-	return os.WriteFile(path, []byte(normalizeFunctionBody(script)), 0o755)
+	body := script
+	if !strings.HasSuffix(body, "\n") {
+		body += "\n" // mcfunction は末尾改行が必要
+	}
+	return os.WriteFile(path, []byte(body), 0o755)
 }
 
 func writeJSON(path string, value any) error {

@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	ec "maf_command_editor/app/domain/export/convert"
-	passiveModel "maf_command_editor/app/domain/model/passive"
 )
 
 type PassiveEffectFunction struct {
@@ -42,7 +41,11 @@ func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveB
 	for _, entry := range passives {
 		effectBody := strings.Join(entry.Script, "\n")
 		if entry.Condition == "bow" {
-			effectBody = buildBowEffectBody(entry.ID, resolveLifeSub(entry.Bow))
+			lifeSub := 1200 // デフォルト: 弓ヒット後の矢の生存時間 (tick)。BowConfig.LifeSub で上書き可
+			if entry.Bow != nil && entry.Bow.LifeSub != nil {
+				lifeSub = *entry.Bow.LifeSub
+			}
+			effectBody = buildBowEffectBody(entry.ID, lifeSub)
 			bows = append(bows, PassiveBowFunction{
 				ID:   entry.ID,
 				Body: strings.Join(entry.Script, "\n"),
@@ -58,9 +61,12 @@ func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveB
 		sort.Ints(slots)
 
 		for _, slot := range slots {
-			functionID := passiveGrimoireFunctionID(entry.ID, slot)
+			functionID := fmt.Sprintf("%s_slot%d", entry.ID, slot)
 			book := ec.PassiveToBook(entry, slot)
-			displayName := passiveDisplayName(entry.Name, entry.ID)
+			displayName := entry.ID // スペースのみの場合は ID にフォールバック
+			if trimmed := strings.TrimSpace(entry.Name); trimmed != "" {
+				displayName = trimmed
+			}
 			applyBody := passiveApplyBody(slot, entry.ID, displayName)
 			grimoires = append(grimoires, PassiveGrimoireFunction{
 				PassiveID:  entry.ID,
@@ -102,18 +108,6 @@ func WritePassiveArtifacts(effectDir, bowDir, giveDir, applyDir string, effects 
 	return nil
 }
 
-func passiveGrimoireFunctionID(passiveID string, slot int) string {
-	return fmt.Sprintf("%s_slot%d", passiveID, slot)
-}
-
-func passiveDisplayName(name, fallbackID string) string {
-	trimmed := strings.TrimSpace(name)
-	if trimmed == "" {
-		return fallbackID
-	}
-	return trimmed
-}
-
 func passiveApplyBody(slot int, passiveID string, displayName string) string {
 	setMessage := fmt.Sprintf("[slot%d]に[%s]を設定しました", slot, displayName)
 	return strings.Join([]string{
@@ -128,13 +122,6 @@ func buildBowEffectBody(id string, lifeSub int) string {
 	return strings.Join([]string{
 		"execute unless score @s mafBowUsed matches 1.. run return 0",
 		"execute store result storage maf:tmp bow_player_id int 1 run scoreboard players get @s mafPlayerID",
-		fmt.Sprintf(`execute as @e[type=arrow,distance=..5,nbt=!{inGround:1b},sort=nearest,limit=1] run function maf:magic/passive/tag_passive_arrow {passive_id:%s,life:%d}`, ec.JsonString(id), lifeValue),
+		fmt.Sprintf(`execute as @e[type=arrow,distance=..2,nbt=!{inGround:1b},sort=nearest,limit=1] run function maf:magic/passive/tag_passive_arrow {passive_id:%s,life:%d}`, ec.JsonString(id), lifeValue),
 	}, "\n")
-}
-
-func resolveLifeSub(bow *passiveModel.BowConfig) int {
-	if bow == nil || bow.LifeSub == nil {
-		return 1200
-	}
-	return *bow.LifeSub
 }
