@@ -14,6 +14,11 @@ type PassiveEffectFunction struct {
 	Body string
 }
 
+type PassiveBowFunction struct {
+	ID   string
+	Body string
+}
+
 type PassiveGrimoireFunction struct {
 	PassiveID  string
 	Slot       int
@@ -23,19 +28,32 @@ type PassiveGrimoireFunction struct {
 	Book       string
 }
 
-func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveGrimoireFunction, error) {
+func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveBowFunction, []PassiveGrimoireFunction, error) {
 	if master == nil {
-		return []PassiveEffectFunction{}, []PassiveGrimoireFunction{}, nil
+		return []PassiveEffectFunction{}, []PassiveBowFunction{}, []PassiveGrimoireFunction{}, nil
 	}
 
 	passives := master.ListPassives()
 	effects := make([]PassiveEffectFunction, 0, len(passives))
+	bows := make([]PassiveBowFunction, 0, len(passives))
 	grimoires := make([]PassiveGrimoireFunction, 0, len(passives))
 
 	for _, entry := range passives {
+		effectBody := strings.Join(entry.Script, "\n")
+		if entry.Condition == "bow" {
+			lifeSub := 1200 // デフォルト: 弓ヒット後の矢の生存時間 (tick)。BowConfig.LifeSub で上書き可
+			if entry.Bow != nil && entry.Bow.LifeSub != nil {
+				lifeSub = *entry.Bow.LifeSub
+			}
+			effectBody = buildBowEffectBody(entry.ID, lifeSub)
+			bows = append(bows, PassiveBowFunction{
+				ID:   entry.ID,
+				Body: strings.Join(entry.Script, "\n"),
+			})
+		}
 		effects = append(effects, PassiveEffectFunction{
 			ID:   entry.ID,
-			Body: strings.Join(entry.Script, "\n"),
+			Body: effectBody,
 		})
 
 		slots := make([]int, len(entry.Slots))
@@ -43,9 +61,12 @@ func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveG
 		sort.Ints(slots)
 
 		for _, slot := range slots {
-			functionID := passiveGrimoireFunctionID(entry.ID, slot)
+			functionID := fmt.Sprintf("%s_slot%d", entry.ID, slot)
 			book := ec.PassiveToBook(entry, slot)
-			displayName := passiveDisplayName(entry.Name, entry.ID)
+			displayName := entry.ID // スペースのみの場合は ID にフォールバック
+			if trimmed := strings.TrimSpace(entry.Name); trimmed != "" {
+				displayName = trimmed
+			}
 			applyBody := passiveApplyBody(slot, entry.ID, displayName)
 			grimoires = append(grimoires, PassiveGrimoireFunction{
 				PassiveID:  entry.ID,
@@ -58,12 +79,18 @@ func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveG
 		}
 	}
 
-	return effects, grimoires, nil
+	return effects, bows, grimoires, nil
 }
 
-func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []PassiveEffectFunction, grimoires []PassiveGrimoireFunction) error {
+func WritePassiveArtifacts(effectDir, bowDir, giveDir, applyDir string, effects []PassiveEffectFunction, bows []PassiveBowFunction, grimoires []PassiveGrimoireFunction) error {
 	for _, entry := range effects {
 		path := filepath.Join(effectDir, entry.ID+".mcfunction")
+		if err := writeFunctionFile(path, entry.Body); err != nil {
+			return err
+		}
+	}
+	for _, entry := range bows {
+		path := filepath.Join(bowDir, entry.ID+".mcfunction")
 		if err := writeFunctionFile(path, entry.Body); err != nil {
 			return err
 		}
@@ -81,23 +108,20 @@ func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []Passiv
 	return nil
 }
 
-func passiveGrimoireFunctionID(passiveID string, slot int) string {
-	return fmt.Sprintf("%s_slot%d", passiveID, slot)
-}
-
-func passiveDisplayName(name, fallbackID string) string {
-	trimmed := strings.TrimSpace(name)
-	if trimmed == "" {
-		return fallbackID
-	}
-	return trimmed
-}
-
 func passiveApplyBody(slot int, passiveID string, displayName string) string {
 	setMessage := fmt.Sprintf("[slot%d]に[%s]を設定しました", slot, displayName)
 	return strings.Join([]string{
 		"function #oh_my_dat:please",
 		fmt.Sprintf("data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.passive.slot%d.id set value %s", slot, ec.JsonString(passiveID)),
 		fmt.Sprintf(`tellraw @s [{"text":%s}]`, ec.JsonString(setMessage)),
+	}, "\n")
+}
+
+func buildBowEffectBody(id string, lifeSub int) string {
+	lifeValue := 1200 - lifeSub
+	return strings.Join([]string{
+		"execute unless score @s mafBowUsed matches 1.. run return 0",
+		"execute store result storage maf:tmp bow_player_id int 1 run scoreboard players get @s mafPlayerID",
+		fmt.Sprintf(`execute as @e[type=arrow,distance=..2,nbt=!{inGround:1b},sort=nearest,limit=1] run function maf:magic/passive/tag_passive_arrow {passive_id:%s,life:%d}`, ec.JsonString(id), lifeValue),
 	}, "\n")
 }

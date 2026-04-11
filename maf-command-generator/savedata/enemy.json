@@ -99,6 +99,30 @@
           "countMax": 1
         }
       ]
+    },
+    {
+      "id": "drop_test_bow",
+      "mobType": "minecraft:zombie",
+      "name": "Bow Passive Zombie",
+      "hp": 1,
+      "memo": "",
+      "attack": 6,
+      "defense": 2,
+      "moveSpeed": 0.22,
+      "equipment": {},
+      "enemySkillIds": [
+        "near_poison"
+      ],
+      "dropMode": "replace",
+      "drops": [
+        {
+          "kind": "item",
+          "refId": "test_bow_passive_weapon",
+          "weight": 1,
+          "countMin": 1,
+          "countMax": 1
+        }
+      ]
     }
   ]
 }

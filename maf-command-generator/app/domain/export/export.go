@@ -21,6 +21,8 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	debugDir := filepath.Join(settings.OutputRoot, funcRoot, settings.ExportPaths.GrimoireDebug)
 	passiveEffectLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveEffect, "generated/passive/effect")
 	passiveEffectDir := filepath.Join(settings.OutputRoot, funcRoot, passiveEffectLogicalDir)
+	passiveBowLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveBow, "generated/passive/bow")
+	passiveBowDir := filepath.Join(settings.OutputRoot, funcRoot, passiveBowLogicalDir)
 	passiveGiveLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveGive, "generated/passive/give")
 	passiveGiveDir := filepath.Join(settings.OutputRoot, funcRoot, passiveGiveLogicalDir)
 	passiveApplyLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveApply, "generated/passive/apply")
@@ -33,7 +35,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	enemyLootDir := filepath.Join(settings.OutputRoot, lootRoot, enemyLootLogicalDir)
 
 	effects := BuildGrimoireArtifacts(dmas)
-	passiveEffects, passiveGrimoires, err := BuildPassiveArtifacts(dmas)
+	passiveEffects, passiveBows, passiveGrimoires, err := BuildPassiveArtifacts(dmas)
 	if err != nil {
 		return err
 	}
@@ -50,7 +52,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	if err := removeFileIfExists(filepath.Join(grimoireDir, "setup_effect_ref_map.mcfunction")); err != nil {
 		return err
 	}
-	if err := WritePassiveArtifacts(passiveEffectDir, passiveGiveDir, passiveApplyDir, passiveEffects, passiveGrimoires); err != nil {
+	if err := WritePassiveArtifacts(passiveEffectDir, passiveBowDir, passiveGiveDir, passiveApplyDir, passiveEffects, passiveBows, passiveGrimoires); err != nil {
 		return err
 	}
 	skills := BuildEnemySkillArtifacts(dmas, enemySkillLogicalDir)

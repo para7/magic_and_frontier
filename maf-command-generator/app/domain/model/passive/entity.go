@@ -3,6 +3,7 @@ package passive
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	cv "maf_command_editor/app/domain/custom_validator"
 	model "maf_command_editor/app/domain/model"
@@ -40,7 +41,16 @@ func (s *PassiveEntity) ValidateStruct(newEntity Passive) []model.ValidationErro
 	return errs
 }
 
-func (s *PassiveEntity) ValidateRelation(_ Passive, _ model.DBMaster) []model.ValidationError {
+func (s *PassiveEntity) ValidateRelation(newEntity Passive, _ model.DBMaster) []model.ValidationError {
+	if newEntity.Bow != nil && strings.TrimSpace(newEntity.Condition) != "bow" {
+		return []model.ValidationError{{
+			Entity: "passive",
+			ID:     newEntity.ID,
+			Field:  "bow",
+			Tag:    "relation",
+			Param:  "bow field is only valid when condition=bow",
+		}}
+	}
 	return nil
 }
 

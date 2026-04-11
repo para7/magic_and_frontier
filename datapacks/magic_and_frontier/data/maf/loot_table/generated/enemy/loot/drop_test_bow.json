@@ -1,0 +1,46 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": 1,
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{item_id:\"minecraft:bow\",source_id:\"test_bow_passive_weapon\",nbt_snapshot:\"{id:\\\"minecraft:bow\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"test_bow_passive_weapon\\\"}',\\\"minecraft:enchantments\\\":{\\\"minecraft:power\\\":3},\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"Bow passive test\\\"}']}}\",hasPassive:1b,passiveId:\"test_bow_passive\",passiveSlot:1,passiveCondition:\"bow\"}}"
+            },
+            {
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "test_bow_passive_weapon"
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Bow passive test"
+                  }
+                ]
+              },
+              "function": "minecraft:set_components"
+            },
+            {
+              "add": false,
+              "enchantments": {
+                "minecraft:power": 3
+              },
+              "function": "minecraft:set_enchantments"
+            }
+          ],
+          "name": "minecraft:bow",
+          "type": "minecraft:item",
+          "weight": 1
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "type": "minecraft:generic"
+}

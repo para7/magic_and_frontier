@@ -49,3 +49,7 @@ func (s exportMasterStub) ListEnemies() []enemyModel.Enemy {
 func ptrFloat(v float64) *float64 {
 	return &v
 }
+
+func ptrInt(v int) *int {
+	return &v
+}

@@ -51,6 +51,21 @@
           "minecraft:lore": "['{\"text\":\"Sample item\"}']"
         }
       }
+    },
+    {
+      "id": "test_bow_passive_weapon",
+      "maf": {
+        "passiveId": "test_bow_passive",
+        "passiveSlot": 1
+      },
+      "minecraft": {
+        "itemId": "minecraft:bow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_bow_passive_weapon\"}'",
+          "minecraft:lore": "['{\"text\":\"Bow passive test\"}']",
+          "minecraft:enchantments": "{\"minecraft:power\":3}"
+        }
+      }
     }
   ]
 }

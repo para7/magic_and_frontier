@@ -12,14 +12,15 @@ type ExportSettings struct {
 }
 
 type ExportPaths struct {
-	GrimoireEffect     string `json:"grimoireEffect"`
-	GrimoireDebug      string `json:"grimoireDebug"`
-	PassiveEffect      string `json:"passiveEffect"`
-	PassiveGive        string `json:"passiveGive"`
-	PassiveApply       string `json:"passiveApply"`
-	Enemy              string `json:"enemy"`
-	EnemySkill         string `json:"enemySkill"`
-	EnemyLoot          string `json:"enemyLoot"`
+	GrimoireEffect string `json:"grimoireEffect"`
+	GrimoireDebug  string `json:"grimoireDebug"`
+	PassiveEffect  string `json:"passiveEffect"`
+	PassiveBow     string `json:"passiveBow"`
+	PassiveGive    string `json:"passiveGive"`
+	PassiveApply   string `json:"passiveApply"`
+	Enemy          string `json:"enemy"`
+	EnemySkill     string `json:"enemySkill"`
+	EnemyLoot      string `json:"enemyLoot"`
 }
 
 func LoadExportSettings(path string) (ExportSettings, error) {
