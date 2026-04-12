@@ -89,7 +89,7 @@ generated/passive/
 ```mcfunction
 execute unless score @s mafBowUsed matches 1.. run return 0
 execute store result storage maf:tmp bow_player_id int 1 run scoreboard players get @s mafPlayerID
-execute as @e[type=arrow,...] run function maf:magic/passive/tag_passive_arrow {passive_id:"...",life:N}
+execute as @e[type=arrow,...] run function maf:passive/tag_passive_arrow {passive_id:"...",life:N}
 ```
 
 - `mafBowUsed`: 弓を使った回数（バニラスコアボード）。1以上なら弓を使った
@@ -104,8 +104,8 @@ execute as @e[type=arrow,...] run function maf:magic/passive/tag_passive_arrow {
 
 ```
 maf:magic/tick
-  → maf:magic/passive/tick          (全プレイヤー毎tick)
-    → slot1/2/3 にIDがあれば → maf:magic/passive/run_effect with {id}
+  → maf:passive/tick          (全プレイヤー毎tick)
+    → slot1/2/3 にIDがあれば → maf:passive/run_effect with {id}
       → $function maf:generated/passive/effect/$(id)  (マクロ)
     → メインハンド装備にパッシブがあれば → run_mainhand_effect
       → oh_my_dat にID/slot/conditionをコピー → run_effect
@@ -123,7 +123,7 @@ effect/{id}.mcfunction (自動生成)
 
 **着弾フェーズ（advancement トリガー）:**
 ```
-advancement/arrow_hit.json → maf:magic/passive/on_arrow_hit
+advancement/arrow_hit.json → maf:passive/on_arrow_hit
   1. maf_passive_arrow タグ付き矢を探す
   2. 矢の custom_data からパッシブ情報を maf:tmp に退避
   3. HurtTime:10s のエンティティ（ダメージを受けた対象）に対して実行:
