@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	bowModel "maf_command_editor/app/domain/model/bow"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
@@ -47,7 +48,7 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 		},
 	}
 
-	customData, err := itemCustomData(entry, grimoiresByID, passivesByID)
+	customData, err := itemCustomData(entry, grimoiresByID, passivesByID, nil)
 	if err != nil {
 		t.Fatalf("itemCustomData returned error: %v", err)
 	}
@@ -73,7 +74,7 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 		t.Fatalf("nbt snapshot should be derived from components: %s", customData)
 	}
 
-	components, err := itemComponentsForLoot(entry, grimoiresByID, passivesByID)
+	components, err := itemComponentsForLoot(entry, grimoiresByID, passivesByID, nil)
 	if err != nil {
 		t.Fatalf("itemComponentsForLoot returned error: %v", err)
 	}
@@ -117,7 +118,7 @@ func TestPassiveOnlyItemDoesNotBecomeRightClickSpell(t *testing.T) {
 		},
 	}
 
-	customData, err := itemCustomData(entry, nil, passivesByID)
+	customData, err := itemCustomData(entry, nil, passivesByID, nil)
 	if err != nil {
 		t.Fatalf("itemCustomData returned error: %v", err)
 	}
@@ -128,7 +129,7 @@ func TestPassiveOnlyItemDoesNotBecomeRightClickSpell(t *testing.T) {
 		t.Fatalf("passive-only item should not embed spell metadata: %s", customData)
 	}
 
-	components, err := itemComponentsForLoot(entry, nil, passivesByID)
+	components, err := itemComponentsForLoot(entry, nil, passivesByID, nil)
 	if err != nil {
 		t.Fatalf("itemComponentsForLoot returned error: %v", err)
 	}
@@ -162,7 +163,7 @@ func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 		},
 	}
 
-	command, err := ItemToGiveCommand(entry, grimoiresByID, nil)
+	command, err := ItemToGiveCommand(entry, grimoiresByID, nil, nil)
 	if err != nil {
 		t.Fatalf("ItemToGiveCommand returned error: %v", err)
 	}
@@ -199,7 +200,7 @@ func TestItemToGiveCommandDoesNotDuplicateConsumable(t *testing.T) {
 		"tempest01": {ID: "tempest01", MPCost: 1, CastTime: 1, CoolTime: 1, Title: "Spell"},
 	}
 
-	command, err := ItemToGiveCommand(entry, grimoiresByID, nil)
+	command, err := ItemToGiveCommand(entry, grimoiresByID, nil, nil)
 	if err != nil {
 		t.Fatalf("ItemToGiveCommand returned error: %v", err)
 	}
@@ -222,11 +223,77 @@ func TestItemToGiveCommandPreservesEnchantmentsComponent(t *testing.T) {
 		},
 	}
 
-	command, err := ItemToGiveCommand(entry, nil, nil)
+	command, err := ItemToGiveCommand(entry, nil, nil, nil)
 	if err != nil {
 		t.Fatalf("ItemToGiveCommand returned error: %v", err)
 	}
 	if !strings.Contains(command, `minecraft:enchantments={"minecraft:aqua_affinity":1,"minecraft:bane_of_arthropods":9}`) {
 		t.Fatalf("enchantments component should be preserved: %s", command)
+	}
+}
+
+func TestBowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
+	entry := itemModel.Item{
+		ID: "bow_item",
+		Maf: itemModel.ItemMaf{
+			BowID: "test_full",
+		},
+		Minecraft: itemModel.MinecraftItem{
+			ItemID: "minecraft:bow",
+			Components: map[string]string{
+				"minecraft:custom_name": `'{"text":"Bow Item"}'`,
+			},
+		},
+	}
+	bowsByID := map[string]bowModel.BowPassive{
+		"test_full": {ID: "test_full"},
+	}
+
+	customData, err := itemCustomData(entry, nil, nil, bowsByID)
+	if err != nil {
+		t.Fatalf("itemCustomData returned error: %v", err)
+	}
+	if !strings.Contains(customData, `bowId:"test_full"`) {
+		t.Fatalf("bowId should be embedded: %s", customData)
+	}
+	if !strings.Contains(customData, `passiveId:"bow_test_full"`) {
+		t.Fatalf("passiveId bridge should be embedded: %s", customData)
+	}
+	if strings.Contains(customData, `hasPassive:1b`) || strings.Contains(customData, `passiveSlot:`) || strings.Contains(customData, `passiveCondition:`) {
+		t.Fatalf("bow item should not embed passive slot metadata: %s", customData)
+	}
+	if strings.Contains(customData, `spell:{`) {
+		t.Fatalf("bow item should not embed spell metadata: %s", customData)
+	}
+
+	components, err := itemComponentsForLoot(entry, nil, nil, bowsByID)
+	if err != nil {
+		t.Fatalf("itemComponentsForLoot returned error: %v", err)
+	}
+	if _, ok := components["minecraft:consumable"]; ok {
+		t.Fatalf("bow item should not become consumable: %#v", components)
+	}
+}
+
+func TestBowItemRejectsHybridGrimoireMetadata(t *testing.T) {
+	entry := itemModel.Item{
+		ID: "bow_hybrid",
+		Maf: itemModel.ItemMaf{
+			BowID:      "test_full",
+			GrimoireID: "tempest01",
+		},
+		Minecraft: itemModel.MinecraftItem{
+			ItemID: "minecraft:bow",
+		},
+	}
+	grimoiresByID := map[string]grimoireModel.Grimoire{
+		"tempest01": {ID: "tempest01", MPCost: 1, CastTime: 1, CoolTime: 1, Title: "Spell"},
+	}
+	bowsByID := map[string]bowModel.BowPassive{
+		"test_full": {ID: "test_full"},
+	}
+
+	if _, err := ItemToGiveCommand(entry, grimoiresByID, nil, bowsByID); err == nil {
+		t.Fatal("expected hybrid bow/grimoire item to be rejected")
 	}
 }

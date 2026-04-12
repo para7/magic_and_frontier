@@ -31,12 +31,18 @@ type testDBMaster struct{}
 func (testDBMaster) HasItem(string) bool               { return true }
 func (testDBMaster) HasGrimoire(string) bool           { return true }
 func (testDBMaster) HasPassive(string) bool            { return true }
+func (testDBMaster) HasBow(string) bool                { return false }
 func (testDBMaster) HasEnemySkill(string) bool         { return true }
 func (testDBMaster) HasEnemy(string) bool              { return true }
 func (testDBMaster) HasSpawnTable(string) bool         { return true }
 func (testDBMaster) HasTreasure(string) bool           { return true }
 func (testDBMaster) HasLootTable(string) bool          { return true }
 func (testDBMaster) HasMinecraftLootTable(string) bool { return true }
+
+// bowIDConflictDBMaster は condition=bow のpassiveとbowのID衝突をテストするためのモック
+type bowIDConflictDBMaster struct{ testDBMaster }
+
+func (bowIDConflictDBMaster) HasBow(string) bool { return true }
 
 func TestPassiveValidateStructAllValid(t *testing.T) {
 	entity := &PassiveEntity{}
@@ -122,6 +128,17 @@ func TestPassiveValidateRelationBowAllowedWithBowCondition(t *testing.T) {
 	errs := entity.ValidateRelation(p, testDBMaster{})
 	if len(errs) != 0 {
 		t.Fatalf("expected no relation errors, got %#v", errs)
+	}
+}
+
+func TestPassiveValidateRelationBowIDConflict(t *testing.T) {
+	entity := &PassiveEntity{}
+	p := validPassive()
+	p.Condition = "bow"
+
+	errs := entity.ValidateRelation(p, bowIDConflictDBMaster{})
+	if !hasFieldError(errs, "id") {
+		t.Fatalf("expected id conflict error, got %#v", errs)
 	}
 }
 

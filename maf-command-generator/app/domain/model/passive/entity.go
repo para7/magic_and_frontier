@@ -41,7 +41,7 @@ func (s *PassiveEntity) ValidateStruct(newEntity Passive) []model.ValidationErro
 	return errs
 }
 
-func (s *PassiveEntity) ValidateRelation(newEntity Passive, _ model.DBMaster) []model.ValidationError {
+func (s *PassiveEntity) ValidateRelation(newEntity Passive, mas model.DBMaster) []model.ValidationError {
 	if newEntity.Bow != nil && strings.TrimSpace(newEntity.Condition) != "bow" {
 		return []model.ValidationError{{
 			Entity: "passive",
@@ -49,6 +49,15 @@ func (s *PassiveEntity) ValidateRelation(newEntity Passive, _ model.DBMaster) []
 			Field:  "bow",
 			Tag:    "relation",
 			Param:  "bow field is only valid when condition=bow",
+		}}
+	}
+	if strings.TrimSpace(newEntity.Condition) == "bow" && mas.HasBow(newEntity.ID) {
+		return []model.ValidationError{{
+			Entity: "passive",
+			ID:     newEntity.ID,
+			Field:  "id",
+			Tag:    "relation",
+			Param:  "conflicts with bow id " + newEntity.ID + " in generated/passive/bow",
 		}}
 	}
 	return nil

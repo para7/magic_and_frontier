@@ -4,6 +4,7 @@ type DBMaster interface {
 	HasItem(id string) bool
 	HasGrimoire(id string) bool
 	HasPassive(id string) bool
+	HasBow(id string) bool
 	HasEnemySkill(id string) bool
 	HasEnemy(id string) bool
 	HasSpawnTable(id string) bool

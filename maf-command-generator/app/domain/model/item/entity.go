@@ -97,6 +97,40 @@ func (s *ItemEntity) ValidateRelation(newEntity Item, mas model.DBMaster) []mode
 			Tag:   "relation", Param: "passive not found",
 		})
 	}
+
+	bowID := strings.TrimSpace(newEntity.Maf.BowID)
+	if bowID == "" {
+		return errs
+	}
+
+	if strings.TrimSpace(newEntity.Minecraft.ItemID) != "minecraft:bow" {
+		errs = append(errs, model.ValidationError{
+			Entity: "item", ID: newEntity.ID,
+			Field: "minecraft.itemId",
+			Tag:   "relation", Param: "bowId requires minecraft:bow",
+		})
+	}
+	if passiveID != "" {
+		errs = append(errs, model.ValidationError{
+			Entity: "item", ID: newEntity.ID,
+			Field: "maf.passiveId",
+			Tag:   "relation", Param: "bowId cannot be combined with passiveId",
+		})
+	}
+	if grimoireID != "" {
+		errs = append(errs, model.ValidationError{
+			Entity: "item", ID: newEntity.ID,
+			Field: "maf.grimoireId",
+			Tag:   "relation", Param: "bowId cannot be combined with grimoireId",
+		})
+	}
+	if !mas.HasBow(bowID) {
+		errs = append(errs, model.ValidationError{
+			Entity: "item", ID: newEntity.ID,
+			Field: "maf.bowId",
+			Tag:   "relation", Param: "bow not found",
+		})
+	}
 	return errs
 }
 

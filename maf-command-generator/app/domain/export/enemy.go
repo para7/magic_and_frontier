@@ -7,6 +7,7 @@ import (
 
 	ec "maf_command_editor/app/domain/export/convert"
 	model "maf_command_editor/app/domain/model"
+	bowModel "maf_command_editor/app/domain/model/bow"
 	enemyModel "maf_command_editor/app/domain/model/enemy"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
@@ -41,11 +42,16 @@ func BuildEnemyArtifacts(master DBMaster, enemyLootLogicalDir, minecraftLootRoot
 	for _, entry := range passives {
 		passivesByID[entry.ID] = entry
 	}
+	bows := master.ListBows()
+	bowsByID := make(map[string]bowModel.BowPassive, len(bows))
+	for _, entry := range bows {
+		bowsByID[entry.ID] = entry
+	}
 
 	enemies := master.ListEnemies()
 	artifacts := make([]EnemyArtifact, 0, len(enemies))
 	for _, entry := range enemies {
-		pool, err := ec.BuildDropLootPool(entry.Drops, itemsByID, grimoiresByID, passivesByID, "enemy("+entry.ID+")")
+		pool, err := ec.BuildDropLootPool(entry.Drops, itemsByID, grimoiresByID, passivesByID, bowsByID, "enemy("+entry.ID+")")
 		if err != nil {
 			return nil, err
 		}

@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	ec "maf_command_editor/app/domain/export/convert"
+	bowModel "maf_command_editor/app/domain/model/bow"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	passiveModel "maf_command_editor/app/domain/model/passive"
 )
@@ -30,10 +31,15 @@ func BuildItemArtifacts(master DBMaster) ([]ItemGiveFunction, error) {
 	for _, entry := range passives {
 		passivesByID[entry.ID] = entry
 	}
+	bows := master.ListBows()
+	bowsByID := make(map[string]bowModel.BowPassive, len(bows))
+	for _, entry := range bows {
+		bowsByID[entry.ID] = entry
+	}
 
 	results := make([]ItemGiveFunction, 0, len(items))
 	for _, entry := range items {
-		body, err := ec.ItemToGiveCommand(entry, grimoiresByID, passivesByID)
+		body, err := ec.ItemToGiveCommand(entry, grimoiresByID, passivesByID, bowsByID)
 		if err != nil {
 			return nil, err
 		}

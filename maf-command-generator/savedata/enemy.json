@@ -117,7 +117,7 @@
       "drops": [
         {
           "kind": "item",
-          "refId": "test_bow_passive_weapon",
+          "refId": "test_bow_full",
           "weight": 1,
           "countMin": 1,
           "countMax": 1

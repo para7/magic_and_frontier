@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	bowModel "maf_command_editor/app/domain/model/bow"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
@@ -15,6 +16,7 @@ func ItemToGiveCommand(
 	entry itemModel.Item,
 	grimoiresByID map[string]grimoireModel.Grimoire,
 	passivesByID map[string]passiveModel.Passive,
+	bowsByID map[string]bowModel.BowPassive,
 ) (string, error) {
 	normalizedComponents, errMsg := itemModel.NormalizeComponents(entry.Minecraft.Components)
 	if errMsg != "" {
@@ -26,7 +28,7 @@ func ItemToGiveCommand(
 		components = append(components, fmt.Sprintf("%s=%s", entry.Key, entry.Value))
 	}
 
-	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID)
+	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID, bowsByID)
 	if err != nil {
 		return "", err
 	}
@@ -34,7 +36,7 @@ func ItemToGiveCommand(
 		components = append(components, "minecraft:consumable="+bookConsumableSNBT)
 	}
 
-	customData, err := itemCustomData(entry, grimoiresByID, passivesByID)
+	customData, err := itemCustomData(entry, grimoiresByID, passivesByID, bowsByID)
 	if err != nil {
 		return "", err
 	}
@@ -51,6 +53,7 @@ func itemCustomData(
 	entry itemModel.Item,
 	grimoiresByID map[string]grimoireModel.Grimoire,
 	passivesByID map[string]passiveModel.Passive,
+	bowsByID map[string]bowModel.BowPassive,
 ) (string, error) {
 	itemSNBT, _ := itemModel.BuildItemComponents(entry)
 	parts := []string{
@@ -59,15 +62,15 @@ func itemCustomData(
 		fmt.Sprintf("nbt_snapshot:%s", JsonString(itemSNBT)),
 	}
 
-	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID)
+	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID, bowsByID)
 	if err != nil {
 		return "", err
 	}
 	if spellMeta.grimoireID != "" {
 		parts = append(parts, fmt.Sprintf("grimoire_id:%s", JsonString(spellMeta.grimoireID)))
 	}
-	if len(spellMeta.passiveFragments) > 0 {
-		parts = append(parts, spellMeta.passiveFragments...)
+	if len(spellMeta.customFragments) > 0 {
+		parts = append(parts, spellMeta.customFragments...)
 	}
 	if spellMeta.spellFragment != "" {
 		parts = append(parts, spellMeta.spellFragment)
@@ -79,6 +82,7 @@ func itemComponentsForLoot(
 	entry itemModel.Item,
 	grimoiresByID map[string]grimoireModel.Grimoire,
 	passivesByID map[string]passiveModel.Passive,
+	bowsByID map[string]bowModel.BowPassive,
 ) (map[string]any, error) {
 	components := map[string]any{}
 
@@ -91,7 +95,7 @@ func itemComponentsForLoot(
 	if componentValue(entry, "minecraft:unbreakable") != "" {
 		components["minecraft:unbreakable"] = map[string]any{}
 	}
-	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID)
+	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID, bowsByID)
 	if err != nil {
 		return nil, err
 	}
@@ -244,16 +248,17 @@ func splitTopLevelSNBTList(fragment string) []string {
 }
 
 type itemSpellMeta struct {
-	hasUseSpell      bool
-	grimoireID       string
-	spellFragment    string
-	passiveFragments []string
+	hasUseSpell     bool
+	grimoireID      string
+	spellFragment   string
+	customFragments []string
 }
 
 func resolveItemSpellMeta(
 	entry itemModel.Item,
 	grimoiresByID map[string]grimoireModel.Grimoire,
 	passivesByID map[string]passiveModel.Passive,
+	bowsByID map[string]bowModel.BowPassive,
 ) (itemSpellMeta, error) {
 	meta := itemSpellMeta{}
 
@@ -268,6 +273,21 @@ func resolveItemSpellMeta(
 		meta.spellFragment = grimoireSpellFragment(grimoire)
 	}
 
+	bowID := strings.TrimSpace(entry.Maf.BowID)
+	if bowID != "" {
+		if grimoireID != "" {
+			return itemSpellMeta{}, fmt.Errorf("item(%s): bowId cannot be combined with grimoireId", entry.ID)
+		}
+		if _, ok := bowsByID[bowID]; !ok {
+			return itemSpellMeta{}, fmt.Errorf("item(%s): referenced bow not found (%s)", entry.ID, bowID)
+		}
+		meta.customFragments = append(meta.customFragments,
+			fmt.Sprintf("bowId:%s", JsonString(bowID)),
+			fmt.Sprintf("passiveId:%s", JsonString("bow_"+bowID)),
+		)
+		return meta, nil
+	}
+
 	passiveID := strings.TrimSpace(entry.Maf.PassiveID)
 	if passiveID == "" {
 		return meta, nil
@@ -280,7 +300,7 @@ func resolveItemSpellMeta(
 	if err != nil {
 		return itemSpellMeta{}, err
 	}
-	meta.passiveFragments = []string{
+	meta.customFragments = []string{
 		"hasPassive:1b",
 		fmt.Sprintf("passiveId:%s", JsonString(passive.ID)),
 		fmt.Sprintf("passiveSlot:%d", slot),

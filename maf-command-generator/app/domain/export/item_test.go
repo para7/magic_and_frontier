@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	bowModel "maf_command_editor/app/domain/model/bow"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
@@ -57,6 +58,39 @@ func TestBuildItemArtifactsBuildsGiveCommands(t *testing.T) {
 	}
 	if !strings.Contains(artifacts[0].Body, `minecraft:custom_data={maf:{`) {
 		t.Fatalf("give command should include custom_data: %q", artifacts[0].Body)
+	}
+}
+
+func TestBuildItemArtifactsBuildsBowGiveCommand(t *testing.T) {
+	master := exportMasterStub{
+		bows: []bowModel.BowPassive{
+			{ID: "test_full"},
+		},
+		items: []itemModel.Item{
+			{
+				ID: "bow_item",
+				Maf: itemModel.ItemMaf{
+					BowID: "test_full",
+				},
+				Minecraft: itemModel.MinecraftItem{
+					ItemID: "minecraft:bow",
+				},
+			},
+		},
+	}
+
+	artifacts, err := BuildItemArtifacts(master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(artifacts) != 1 {
+		t.Fatalf("artifacts length = %d, want 1", len(artifacts))
+	}
+	if !strings.Contains(artifacts[0].Body, `bowId:"test_full"`) {
+		t.Fatalf("bowId should be exported: %q", artifacts[0].Body)
+	}
+	if !strings.Contains(artifacts[0].Body, `passiveId:"bow_test_full"`) {
+		t.Fatalf("passive bridge id should be exported: %q", artifacts[0].Body)
 	}
 }
 

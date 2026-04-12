@@ -8,6 +8,9 @@ execute as @a at @s if score @s mafCastTime matches 0.. run function maf:magic/c
 
 execute as @a at @s run function maf:magic/passive/tick
 
+function maf:magic/bow/tick_flying
+function maf:magic/bow/tick_ground
+
 execute as @a at @s run function maf:magic/mp/mp_manage
 
 function maf:magic/mp/mpbar

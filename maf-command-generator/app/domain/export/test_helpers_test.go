@@ -1,6 +1,7 @@
 package export
 
 import (
+	bowModel "maf_command_editor/app/domain/model/bow"
 	enemyModel "maf_command_editor/app/domain/model/enemy"
 	enemyskillModel "maf_command_editor/app/domain/model/enemyskill"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
@@ -11,6 +12,7 @@ import (
 type exportMasterStub struct {
 	grimoires   []grimoireModel.Grimoire
 	passives    []passiveModel.Passive
+	bows        []bowModel.BowPassive
 	items       []itemModel.Item
 	enemySkills []enemyskillModel.EnemySkill
 	enemies     []enemyModel.Enemy
@@ -25,6 +27,12 @@ func (s exportMasterStub) ListGrimoires() []grimoireModel.Grimoire {
 func (s exportMasterStub) ListPassives() []passiveModel.Passive {
 	out := make([]passiveModel.Passive, len(s.passives))
 	copy(out, s.passives)
+	return out
+}
+
+func (s exportMasterStub) ListBows() []bowModel.BowPassive {
+	out := make([]bowModel.BowPassive, len(s.bows))
+	copy(out, s.bows)
 	return out
 }
 

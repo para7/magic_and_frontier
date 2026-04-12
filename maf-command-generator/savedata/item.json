@@ -53,17 +53,67 @@
       }
     },
     {
-      "id": "test_bow_passive_weapon",
+      "id": "test_bow_hit",
       "maf": {
-        "passiveId": "test_bow_passive",
-        "passiveSlot": 1
+        "bowId": "test_hit"
       },
       "minecraft": {
         "itemId": "minecraft:bow",
         "components": {
-          "minecraft:custom_name": "'{\"text\":\"test_bow_passive_weapon\"}'",
-          "minecraft:lore": "['{\"text\":\"Bow passive test\"}']",
-          "minecraft:enchantments": "{\"minecraft:power\":3}"
+          "minecraft:custom_name": "'{\"text\":\"test_bow_hit\"}'",
+          "minecraft:lore": "['{\"text\":\"Bow hit test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_bow_fired",
+      "maf": {
+        "bowId": "test_fired"
+      },
+      "minecraft": {
+        "itemId": "minecraft:bow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_bow_fired\"}'",
+          "minecraft:lore": "['{\"text\":\"Bow fired test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_bow_flying",
+      "maf": {
+        "bowId": "test_flying"
+      },
+      "minecraft": {
+        "itemId": "minecraft:bow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_bow_flying\"}'",
+          "minecraft:lore": "['{\"text\":\"Bow flying test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_bow_ground",
+      "maf": {
+        "bowId": "test_ground"
+      },
+      "minecraft": {
+        "itemId": "minecraft:bow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_bow_ground\"}'",
+          "minecraft:lore": "['{\"text\":\"Bow ground test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_bow_full",
+      "maf": {
+        "bowId": "test_full"
+      },
+      "minecraft": {
+        "itemId": "minecraft:bow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_bow_full\"}'",
+          "minecraft:lore": "['{\"text\":\"Bow full test\"}']"
         }
       }
     }

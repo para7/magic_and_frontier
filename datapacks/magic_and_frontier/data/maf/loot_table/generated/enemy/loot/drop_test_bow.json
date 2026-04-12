@@ -11,16 +11,16 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:bow\",source_id:\"test_bow_passive_weapon\",nbt_snapshot:\"{id:\\\"minecraft:bow\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"test_bow_passive_weapon\\\"}',\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"Bow passive test\\\"}']}}\"}}"
+              "tag": "{maf:{item_id:\"minecraft:bow\",source_id:\"test_bow_full\",nbt_snapshot:\"{id:\\\"minecraft:bow\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"test_bow_full\\\"}',\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"Bow full test\\\"}']}}\",bowId:\"test_full\",passiveId:\"bow_test_full\"}}"
             },
             {
               "components": {
                 "minecraft:custom_name": {
-                  "text": "test_bow_passive_weapon"
+                  "text": "test_bow_full"
                 },
                 "minecraft:lore": [
                   {
-                    "text": "Bow passive test"
+                    "text": "Bow full test"
                   }
                 ]
               },

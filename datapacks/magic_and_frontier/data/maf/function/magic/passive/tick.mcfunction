@@ -9,4 +9,4 @@ execute if data storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.passive
 execute if data entity @s SelectedItem.components."minecraft:custom_data".maf.passiveId run function maf:magic/passive/run_mainhand_effect
 
 # 弓着弾処理
-execute if score @s mafBowHit matches 1.. run function maf:magic/passive/on_bow_hit
+execute if score @s mafBowHit matches 1.. run function maf:magic/bow/on_bow_hit

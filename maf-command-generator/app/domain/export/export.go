@@ -29,6 +29,10 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	passiveGiveDir := filepath.Join(settings.OutputRoot, funcRoot, passiveGiveLogicalDir)
 	passiveApplyLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveApply, "generated/passive/apply")
 	passiveApplyDir := filepath.Join(settings.OutputRoot, funcRoot, passiveApplyLogicalDir)
+	bowFlyingLogicalDir := normalizePathOrDefault(settings.ExportPaths.BowFlying, "generated/bow/flying")
+	bowFlyingDir := filepath.Join(settings.OutputRoot, funcRoot, bowFlyingLogicalDir)
+	bowGroundLogicalDir := normalizePathOrDefault(settings.ExportPaths.BowGround, "generated/bow/ground")
+	bowGroundDir := filepath.Join(settings.OutputRoot, funcRoot, bowGroundLogicalDir)
 	enemySkillLogicalDir := settings.ExportPaths.EnemySkill
 	enemySkillDir := filepath.Join(settings.OutputRoot, funcRoot, enemySkillLogicalDir)
 	enemyLogicalDir := settings.ExportPaths.Enemy
@@ -38,6 +42,10 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 
 	effects := BuildGrimoireArtifacts(dmas)
 	passiveEffects, passiveBows, passiveGrimoires, err := BuildPassiveArtifacts(dmas)
+	if err != nil {
+		return err
+	}
+	bowEffects, bowHits, bowFlyings, bowGrounds, err := BuildBowArtifacts(dmas)
 	if err != nil {
 		return err
 	}
@@ -62,6 +70,9 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 		return err
 	}
 	if err := WritePassiveArtifacts(passiveEffectDir, passiveBowDir, passiveGiveDir, passiveApplyDir, passiveEffects, passiveBows, passiveGrimoires); err != nil {
+		return err
+	}
+	if err := WriteBowArtifacts(passiveEffectDir, passiveBowDir, bowFlyingDir, bowGroundDir, dmas.ListBows(), bowEffects, bowHits, bowFlyings, bowGrounds); err != nil {
 		return err
 	}
 	skills := BuildEnemySkillArtifacts(dmas, enemySkillLogicalDir)
