@@ -116,7 +116,7 @@ func TestBuildPassiveArtifactsBuildsBowEffectAndBowBody(t *testing.T) {
 	if !strings.Contains(effects[0].Body, "mafBowUsed") {
 		t.Fatalf("bow effect should check mafBowUsed: %q", effects[0].Body)
 	}
-	if !strings.Contains(effects[0].Body, `function maf:magic/passive/tag_passive_arrow {passive_id:"bow_passive",life:1150}`) {
+	if !strings.Contains(effects[0].Body, `function maf:passive/tag_passive_arrow {passive_id:"bow_passive",life:1150}`) {
 		t.Fatalf("bow effect should tag arrow with passive id and life: %q", effects[0].Body)
 	}
 	if bows[0].ID != "bow_passive" {

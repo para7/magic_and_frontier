@@ -35,10 +35,10 @@ func TestBuildBowArtifactsBuildsAllOutputs(t *testing.T) {
 	if effects[0].ID != "bow_test_full" {
 		t.Fatalf("unexpected effect id: %#v", effects[0])
 	}
-	if !strings.Contains(effects[0].Body, `function maf:magic/bow/tag_bow_arrow {bow_id:"test_full",life:1100}`) {
+	if !strings.Contains(effects[0].Body, `function maf:bow/tag_bow_arrow {bow_id:"test_full",life:1100}`) {
 		t.Fatalf("effect should tag bow arrow: %q", effects[0].Body)
 	}
-	if !strings.Contains(effects[0].Body, "function maf:magic/bow/prepare_hit_arrow") {
+	if !strings.Contains(effects[0].Body, "function maf:bow/prepare_hit_arrow") {
 		t.Fatalf("effect should prepare hit arrow: %q", effects[0].Body)
 	}
 	if !strings.Contains(effects[0].Body, "tag @s add flying") {
@@ -115,7 +115,7 @@ func TestBuildBowArtifactsSkipsEmptyOptionalScripts(t *testing.T) {
 	if len(hits) != 0 || len(flyings) != 0 || len(grounds) != 0 {
 		t.Fatalf("optional outputs should be skipped when scripts are empty: %d %d %d", len(hits), len(flyings), len(grounds))
 	}
-	if strings.Contains(effects[0].Body, "function maf:magic/bow/prepare_hit_arrow") {
+	if strings.Contains(effects[0].Body, "function maf:bow/prepare_hit_arrow") {
 		t.Fatalf("effect should not prepare hit arrow when script_hit is empty: %q", effects[0].Body)
 	}
 	if strings.Contains(effects[0].Body, "tag @s add flying") {

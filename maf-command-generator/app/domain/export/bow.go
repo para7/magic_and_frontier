@@ -123,10 +123,10 @@ func buildBowPassiveEffectBody(entry bowModel.BowPassive) string {
 	lines := []string{
 		"execute unless score @s mafBowUsed matches 1.. run return 0",
 		"execute store result storage maf:tmp bow_player_id int 1 run scoreboard players get @s mafPlayerID",
-		fmt.Sprintf(`execute as @e[type=arrow,distance=..2,nbt=!{inGround:1b},sort=nearest,limit=1] run function maf:magic/bow/tag_bow_arrow {bow_id:%s,life:%d}`, ec.JsonString(entry.ID), lifeValue),
+		fmt.Sprintf(`execute as @e[type=arrow,distance=..2,nbt=!{inGround:1b},sort=nearest,limit=1] run function maf:bow/tag_bow_arrow {bow_id:%s,life:%d}`, ec.JsonString(entry.ID), lifeValue),
 	}
 	if len(entry.ScriptHit) > 0 {
-		lines = append(lines, "execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow,sort=nearest,limit=1] run function maf:magic/bow/prepare_hit_arrow")
+		lines = append(lines, "execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow,sort=nearest,limit=1] run function maf:bow/prepare_hit_arrow")
 	}
 	if len(entry.ScriptFlying) > 0 {
 		lines = append(lines, "execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow,sort=nearest,limit=1] run tag @s add flying")

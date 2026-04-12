@@ -8,7 +8,7 @@ execute unless entity @e[type=arrow,tag=maf_passive_arrow,limit=1,sort=nearest,d
 data modify storage maf:tmp arrow_passive set from entity @e[type=arrow,tag=maf_passive_arrow,sort=nearest,limit=1] item.components."minecraft:custom_data".maf
 
 # dolphins_grace(amp:80) を持つエンティティに対してエフェクト発動
-execute as @e[nbt={active_effects:[{id:"minecraft:dolphins_grace",amplifier:80b}]}] at @s run function maf:magic/passive/run_bow_effect with storage maf:tmp arrow_passive
+execute as @e[nbt={active_effects:[{id:"minecraft:dolphins_grace",amplifier:80b}]}] at @s run function maf:passive/run_bow_effect with storage maf:tmp arrow_passive
 
 # マーカーエフェクトを除去
 effect clear @e[nbt={active_effects:[{id:"minecraft:dolphins_grace",amplifier:80b}]}] minecraft:dolphins_grace

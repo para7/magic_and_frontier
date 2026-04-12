@@ -122,6 +122,6 @@ func buildBowEffectBody(id string, lifeSub int) string {
 	return strings.Join([]string{
 		"execute unless score @s mafBowUsed matches 1.. run return 0",
 		"execute store result storage maf:tmp bow_player_id int 1 run scoreboard players get @s mafPlayerID",
-		fmt.Sprintf(`execute as @e[type=arrow,distance=..2,nbt=!{inGround:1b},sort=nearest,limit=1] run function maf:magic/passive/tag_passive_arrow {passive_id:%s,life:%d}`, ec.JsonString(id), lifeValue),
+		fmt.Sprintf(`execute as @e[type=arrow,distance=..2,nbt=!{inGround:1b},sort=nearest,limit=1] run function maf:passive/tag_passive_arrow {passive_id:%s,life:%d}`, ec.JsonString(id), lifeValue),
 	}, "\n")
 }
