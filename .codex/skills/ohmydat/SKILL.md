@@ -27,3 +27,7 @@ data remove storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].DataName
 scoreboard players set _ OhMyDatID <ID>
 function #oh_its_dat:please
 ```
+
+### 本プロジェクトにおける注意事項
+
+他のデータパックとの競合を避けるため、すべて maf. 配下のパスで扱う。
