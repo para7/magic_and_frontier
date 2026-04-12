@@ -35,3 +35,6 @@ mc-shell:
 
 mc-logs:
 	@docker compose logs -f minecraft
+
+cmd/getnbt:
+	@make mc-cmd "CMD"="data get entity @p SelectedItem"
