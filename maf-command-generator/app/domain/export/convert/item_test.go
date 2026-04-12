@@ -136,3 +136,97 @@ func TestPassiveOnlyItemDoesNotBecomeRightClickSpell(t *testing.T) {
 		t.Fatalf("passive-only item should not be consumable: %#v", components)
 	}
 }
+
+func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
+	entry := itemModel.Item{
+		ID: "items_1",
+		Maf: itemModel.ItemMaf{
+			GrimoireID: "tempest01",
+		},
+		Minecraft: itemModel.MinecraftItem{
+			ItemID: "minecraft:stone",
+			Components: map[string]string{
+				"minecraft:lore":        `['{"text":"Sample item"}']`,
+				"minecraft:custom_name": `'{"text":"Starter Stone"}'`,
+			},
+		},
+	}
+	grimoiresByID := map[string]grimoireModel.Grimoire{
+		"tempest01": {
+			ID:          "tempest01",
+			MPCost:      13,
+			CastTime:    40,
+			CoolTime:    20,
+			Title:       "テンペスト",
+			Description: "敵1体に雷を落とし周辺に特大ダメージ",
+		},
+	}
+
+	command, err := ItemToGiveCommand(entry, grimoiresByID, nil)
+	if err != nil {
+		t.Fatalf("ItemToGiveCommand returned error: %v", err)
+	}
+	if !strings.Contains(command, `give @p minecraft:stone[`) {
+		t.Fatalf("unexpected give command: %s", command)
+	}
+	if !strings.Contains(command, `minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false}`) {
+		t.Fatalf("spell item should include consumable: %s", command)
+	}
+	if !strings.Contains(command, `minecraft:custom_data={maf:{`) {
+		t.Fatalf("custom_data missing from give command: %s", command)
+	}
+	customNameIndex := strings.Index(command, "minecraft:custom_name=")
+	loreIndex := strings.Index(command, "minecraft:lore=")
+	if customNameIndex == -1 || loreIndex == -1 || customNameIndex > loreIndex {
+		t.Fatalf("components should be sorted by key: %s", command)
+	}
+}
+
+func TestItemToGiveCommandDoesNotDuplicateConsumable(t *testing.T) {
+	entry := itemModel.Item{
+		ID: "items_1",
+		Maf: itemModel.ItemMaf{
+			GrimoireID: "tempest01",
+		},
+		Minecraft: itemModel.MinecraftItem{
+			ItemID: "minecraft:stone",
+			Components: map[string]string{
+				"minecraft:consumable": `{consume_seconds:10}`,
+			},
+		},
+	}
+	grimoiresByID := map[string]grimoireModel.Grimoire{
+		"tempest01": {ID: "tempest01", MPCost: 1, CastTime: 1, CoolTime: 1, Title: "Spell"},
+	}
+
+	command, err := ItemToGiveCommand(entry, grimoiresByID, nil)
+	if err != nil {
+		t.Fatalf("ItemToGiveCommand returned error: %v", err)
+	}
+	if strings.Count(command, "minecraft:consumable=") != 1 {
+		t.Fatalf("consumable should not be duplicated: %s", command)
+	}
+	if !strings.Contains(command, `minecraft:consumable={consume_seconds:10}`) {
+		t.Fatalf("existing consumable should be preserved: %s", command)
+	}
+}
+
+func TestItemToGiveCommandPreservesEnchantmentsComponent(t *testing.T) {
+	entry := itemModel.Item{
+		ID: "items_1",
+		Minecraft: itemModel.MinecraftItem{
+			ItemID: "minecraft:stone",
+			Components: map[string]string{
+				"minecraft:enchantments": `{"minecraft:aqua_affinity":1,"minecraft:bane_of_arthropods":9}`,
+			},
+		},
+	}
+
+	command, err := ItemToGiveCommand(entry, nil, nil)
+	if err != nil {
+		t.Fatalf("ItemToGiveCommand returned error: %v", err)
+	}
+	if !strings.Contains(command, `minecraft:enchantments={"minecraft:aqua_affinity":1,"minecraft:bane_of_arthropods":9}`) {
+		t.Fatalf("enchantments component should be preserved: %s", command)
+	}
+}

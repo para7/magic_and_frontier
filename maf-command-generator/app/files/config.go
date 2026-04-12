@@ -14,6 +14,7 @@ type ExportSettings struct {
 type ExportPaths struct {
 	GrimoireEffect string `json:"grimoireEffect"`
 	GrimoireDebug  string `json:"grimoireDebug"`
+	ItemGive       string `json:"itemGive"`
 	PassiveEffect  string `json:"passiveEffect"`
 	PassiveBow     string `json:"passiveBow"`
 	PassiveGive    string `json:"passiveGive"`

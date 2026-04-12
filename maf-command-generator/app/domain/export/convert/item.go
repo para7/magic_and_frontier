@@ -11,6 +11,42 @@ import (
 	passiveModel "maf_command_editor/app/domain/model/passive"
 )
 
+func ItemToGiveCommand(
+	entry itemModel.Item,
+	grimoiresByID map[string]grimoireModel.Grimoire,
+	passivesByID map[string]passiveModel.Passive,
+) (string, error) {
+	normalizedComponents, errMsg := itemModel.NormalizeComponents(entry.Minecraft.Components)
+	if errMsg != "" {
+		return "", fmt.Errorf("item(%s): %s", entry.ID, errMsg)
+	}
+
+	components := make([]string, 0, len(normalizedComponents)+2)
+	for _, entry := range normalizedComponents {
+		components = append(components, fmt.Sprintf("%s=%s", entry.Key, entry.Value))
+	}
+
+	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID)
+	if err != nil {
+		return "", err
+	}
+	if spellMeta.hasUseSpell && componentValue(entry, "minecraft:consumable") == "" {
+		components = append(components, "minecraft:consumable="+bookConsumableSNBT)
+	}
+
+	customData, err := itemCustomData(entry, grimoiresByID, passivesByID)
+	if err != nil {
+		return "", err
+	}
+	components = append(components, "minecraft:custom_data="+customData)
+
+	itemID := strings.TrimSpace(entry.Minecraft.ItemID)
+	if len(components) == 0 {
+		return fmt.Sprintf("give @p %s 1", itemID), nil
+	}
+	return fmt.Sprintf("give @p %s[%s] 1", itemID, strings.Join(components, ",")), nil
+}
+
 func itemCustomData(
 	entry itemModel.Item,
 	grimoiresByID map[string]grimoireModel.Grimoire,

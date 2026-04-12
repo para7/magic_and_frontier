@@ -3,6 +3,7 @@
   "exportPaths": {
     "grimoireEffect": "generated/grimoire/effect",
     "grimoireDebug": "generated/grimoire/give",
+    "itemGive": "generated/item/give",
     "passiveEffect": "generated/passive/effect",
     "passiveBow": "generated/passive/bow",
     "passiveGive": "generated/passive/give",
