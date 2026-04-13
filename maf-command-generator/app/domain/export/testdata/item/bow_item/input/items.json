@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "id": "bow_item",
+      "maf": {
+        "bowId": "test_full"
+      },
+      "minecraft": {
+        "itemId": "minecraft:bow"
+      }
+    }
+  ]
+}

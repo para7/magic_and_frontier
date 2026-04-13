@@ -1,0 +1,22 @@
+{
+  "entries": [
+    {
+      "id": "enemy_1",
+      "mobType": "minecraft:zombie",
+      "hp": 20,
+      "equipment": {},
+      "enemySkillIds": [],
+      "dropMode": "replace",
+      "drops": [
+        {
+          "kind": "passive",
+          "refId": "passive_1",
+          "slot": 1,
+          "weight": 1,
+          "countMin": 1,
+          "countMax": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "id": "passive_1",
+      "name": "   ",
+      "role": "Move faster",
+      "condition": "always",
+      "slots": [
+        1
+      ],
+      "description": "Always-on passive.",
+      "script": [
+        "say passive"
+      ]
+    }
+  ]
+}

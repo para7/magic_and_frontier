@@ -1,0 +1,1 @@
+{"entries":[{"id":"test_full","name":"Test Bow","life_sub":100,"script_hit":["say hit"],"script_fired":["say fired"],"script_flying":["say flying"],"script_ground":["say ground"]}]}

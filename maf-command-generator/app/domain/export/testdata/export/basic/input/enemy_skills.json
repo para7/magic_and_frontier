@@ -1,0 +1,1 @@
+{"entries":[{"id":"near_poison","name":"Near Poison","description":"Poison nearby targets.","script":["effect give @e[distance=..2] minecraft:poison 10 2"]}]}
