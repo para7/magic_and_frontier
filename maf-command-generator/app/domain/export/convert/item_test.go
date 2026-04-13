@@ -275,6 +275,43 @@ func TestBowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
 	}
 }
 
+func TestCrossbowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
+	entry := itemModel.Item{
+		ID: "crossbow_item",
+		Maf: itemModel.ItemMaf{
+			BowID: "test_full",
+		},
+		Minecraft: itemModel.MinecraftItem{
+			ItemID: "minecraft:crossbow",
+			Components: map[string]string{
+				"minecraft:custom_name": `'{"text":"Crossbow Item"}'`,
+			},
+		},
+	}
+	bowsByID := map[string]bowModel.BowPassive{
+		"test_full": {ID: "test_full"},
+	}
+
+	customData, err := itemCustomData(entry, nil, nil, bowsByID)
+	if err != nil {
+		t.Fatalf("itemCustomData returned error: %v", err)
+	}
+	if !strings.Contains(customData, `bowId:"test_full"`) {
+		t.Fatalf("bowId should be embedded: %s", customData)
+	}
+	if !strings.Contains(customData, `passiveId:"bow_test_full"`) {
+		t.Fatalf("passiveId bridge should be embedded: %s", customData)
+	}
+
+	components, err := itemComponentsForLoot(entry, nil, nil, bowsByID)
+	if err != nil {
+		t.Fatalf("itemComponentsForLoot returned error: %v", err)
+	}
+	if _, ok := components["minecraft:consumable"]; ok {
+		t.Fatalf("crossbow item should not become consumable: %#v", components)
+	}
+}
+
 func TestBowItemRejectsHybridGrimoireMetadata(t *testing.T) {
 	entry := itemModel.Item{
 		ID: "bow_hybrid",

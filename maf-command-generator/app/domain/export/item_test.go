@@ -94,6 +94,42 @@ func TestBuildItemArtifactsBuildsBowGiveCommand(t *testing.T) {
 	}
 }
 
+func TestBuildItemArtifactsBuildsCrossbowGiveCommand(t *testing.T) {
+	master := exportMasterStub{
+		bows: []bowModel.BowPassive{
+			{ID: "test_full"},
+		},
+		items: []itemModel.Item{
+			{
+				ID: "crossbow_item",
+				Maf: itemModel.ItemMaf{
+					BowID: "test_full",
+				},
+				Minecraft: itemModel.MinecraftItem{
+					ItemID: "minecraft:crossbow",
+				},
+			},
+		},
+	}
+
+	artifacts, err := BuildItemArtifacts(master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(artifacts) != 1 {
+		t.Fatalf("artifacts length = %d, want 1", len(artifacts))
+	}
+	if !strings.Contains(artifacts[0].Body, `give @p minecraft:crossbow[`) {
+		t.Fatalf("crossbow item should export as crossbow: %q", artifacts[0].Body)
+	}
+	if !strings.Contains(artifacts[0].Body, `bowId:"test_full"`) {
+		t.Fatalf("bowId should be exported: %q", artifacts[0].Body)
+	}
+	if !strings.Contains(artifacts[0].Body, `passiveId:"bow_test_full"`) {
+		t.Fatalf("passive bridge id should be exported: %q", artifacts[0].Body)
+	}
+}
+
 func TestWriteItemArtifactsWritesFiles(t *testing.T) {
 	root := t.TempDir()
 	artifacts := []ItemGiveFunction{

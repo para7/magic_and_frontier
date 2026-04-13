@@ -209,7 +209,11 @@ scoreboard players remove @a[scores={mafCoolTime=1..}] mafCoolTime 1
 execute as @a at @s if score @s mafCastTime matches 0.. run function maf:magic/cast/tick
 
 # パッシブ効果（全プレイヤー）
-execute as @a at @s run function maf:magic/passive/tick
+execute as @a at @s run function maf:passive/tick
+
+# 弓矢の飛翔中・着地エフェクト
+function maf:bow/tick_flying
+function maf:bow/tick_ground
 
 # MP回復
 execute as @a at @s run function maf:magic/mp/mp_manage
@@ -218,4 +222,4 @@ execute as @a at @s run function maf:magic/mp/mp_manage
 function maf:magic/mp/mpbar
 ```
 
-処理順序が重要: クールダウン → 詠唱 → パッシブ → MP → 表示
+処理順序が重要: クールダウン → 詠唱 → パッシブ → 弓矢 tick → MP → 表示

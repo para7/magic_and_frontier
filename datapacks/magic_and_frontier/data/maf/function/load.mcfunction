@@ -9,6 +9,7 @@ scoreboard objectives add mafPlayerID dummy
 
 scoreboard objectives add mafMoved dummy
 scoreboard objectives add mafBowUsed minecraft.used:minecraft.bow
+scoreboard objectives add mafCrossbowUsed minecraft.used:minecraft.crossbow
 scoreboard objectives add mafBowHit dummy
 
 

@@ -121,19 +121,31 @@ func buildBowPassiveEffectBody(entry bowModel.BowPassive) string {
 	lifeValue := 1200 - lifeSub
 
 	lines := []string{
-		"execute unless score @s mafBowUsed matches 1.. run return 0",
+		"execute unless score @s mafBowUsed matches 1.. unless score @s mafCrossbowUsed matches 1.. run return 0",
 		"execute store result storage maf:tmp bow_player_id int 1 run scoreboard players get @s mafPlayerID",
-		fmt.Sprintf(`execute as @e[type=arrow,distance=..2,nbt=!{inGround:1b},sort=nearest,limit=1] run function maf:bow/tag_bow_arrow {bow_id:%s,life:%d}`, ec.JsonString(entry.ID), lifeValue),
 	}
+	lines = append(lines, buildBowTagArrowLines(
+		fmt.Sprintf(`function maf:bow/tag_bow_arrow {bow_id:%s,life:%d}`, ec.JsonString(entry.ID), lifeValue),
+	)...)
 	if len(entry.ScriptHit) > 0 {
-		lines = append(lines, "execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow,sort=nearest,limit=1] run function maf:bow/prepare_hit_arrow")
+		lines = append(lines, `execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow_new] run function maf:bow/prepare_hit_arrow`)
 	}
 	if len(entry.ScriptFlying) > 0 {
-		lines = append(lines, "execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow,sort=nearest,limit=1] run tag @s add flying")
+		lines = append(lines, `execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow_new] run tag @s add flying`)
 	}
 	if len(entry.ScriptGround) > 0 {
-		lines = append(lines, "execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow,sort=nearest,limit=1] run tag @s add ground")
+		lines = append(lines, `execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow_new] run tag @s add ground`)
 	}
-	lines = append(lines, entry.ScriptFired...)
+	for _, fired := range entry.ScriptFired {
+		lines = append(lines, fmt.Sprintf(`execute if entity @e[type=arrow,distance=..2,tag=maf_bow_arrow_new,sort=nearest,limit=1] run %s`, fired))
+	}
+	lines = append(lines, `tag @e[type=arrow,distance=..2,tag=maf_bow_arrow_new] remove maf_bow_arrow_new`)
 	return strings.Join(lines, "\n")
+}
+
+func buildBowTagArrowLines(command string) []string {
+	return []string{
+		fmt.Sprintf(`execute as @e[type=arrow,distance=..2,nbt=!{inGround:1b},sort=nearest,limit=1] run %s`, command),
+		fmt.Sprintf(`execute if data entity @s SelectedItem{id:"minecraft:crossbow"} if data entity @s SelectedItem.components."minecraft:enchantments"."minecraft:multishot" as @e[type=arrow,distance=..2,nbt=!{inGround:1b},sort=nearest,limit=3] run %s`, command),
+	}
 }

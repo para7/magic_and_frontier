@@ -55,11 +55,13 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 処理順序:
 
 1. `config/export_settings.json` から出力パスを読み込み
-2. **グリモア**: `BuildGrimoireArtifacts` → `WriteGrimoireArtifacts` + `WriteGrimoireDebugArtifacts`
-3. レガシーファイル削除（`selectexec.mcfunction`, `setup_effect_ref_map.mcfunction`）
-4. **パッシブ**: `BuildPassiveArtifacts` → `WritePassiveArtifacts`
-5. **エネミースキル**: `BuildEnemySkillArtifacts` → `WriteEnemySkillArtifacts`
-6. **エネミー**: `BuildEnemyArtifacts` → `WriteEnemyArtifacts`
+2. **グリモ���**: `BuildGrimoireArtifacts` → `WriteGrimoireArtifacts` + `WriteGrimoireDebugArtifacts`
+3. レガシーファイル���除（`selectexec.mcfunction`, `setup_effect_ref_map.mcfunction`）
+4. **アイテム**: `BuildItemArtifacts` → `WriteItemArtifacts`
+5. **パッシブ**: `BuildPassiveArtifacts` → `WritePassiveArtifacts`
+6. **弓パッシブ**: `BuildBowArtifacts` → `WriteBowArtifacts`
+7. **エネミ��スキル**: `BuildEnemySkillArtifacts` → `WriteEnemySkillArtifacts`
+8. **エネミー**: `BuildEnemyArtifacts` → `WriteEnemyArtifacts`
 
 ### Build と Write の分離
 
@@ -82,6 +84,8 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 | passiveBow | `generated/passive/bow` | `function/generated/passive/bow/` |
 | passiveGive | `generated/passive/give` | `function/generated/passive/give/` |
 | passiveApply | `generated/passive/apply` | `function/generated/passive/apply/` |
+| bowFlying | `generated/bow/flying` | `function/generated/bow/flying/` |
+| bowGround | `generated/bow/ground` | `function/generated/bow/ground/` |
 | enemySkill | (設定必須) | `function/generated/enemy/skill/` |
 | enemy | (設定必須) | `function/generated/enemy/spawn/` |
 | enemyLoot | (設定必須) | `loot_table/generated/enemy/loot/` |
@@ -156,6 +160,19 @@ PassiveGrimoireFunction { PassiveID, Slot, FunctionID, GiveBody, ApplyBody, Book
 - **bow/{id}.mcfunction**: bow パッシブの矢着弾時スクリプト
 - **give/{id}_slot{N}.mcfunction**: 設定書 give コマンド
 - **apply/{id}_slot{N}.mcfunction**: スロット書き込み処理
+
+### 弓パッシブ
+
+```
+BowEffectFunction   { ID, Body }
+BowHitFunction      { ID, Body }
+BowFlyingFunction   { ID, Body }
+BowGroundFunction   { ID, Body }
+```
+- **effect/bow_{id}.mcfunction**: 弓検知 + 矢タグ付け + ScriptFired（passiveEffectDir に出力）
+- **bow/{id}.mcfunction**: 着弾時スクリプト（ScriptHit、passiveBowDir に出力）
+- **flying/{id}_flying.mcfunction**: 飛翔中スクリプト（ScriptFlying）
+- **ground/{id}_ground.mcfunction**: 着地スクリプト（ScriptGround）
 
 ### エネミースキル
 

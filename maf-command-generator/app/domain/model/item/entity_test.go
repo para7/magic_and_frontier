@@ -144,6 +144,17 @@ func TestItemValidateRelationUsesMafRefs(t *testing.T) {
 		}
 	})
 
+	t.Run("bow accepts crossbow item", func(t *testing.T) {
+		it := validItem()
+		it.Minecraft.ItemID = "minecraft:crossbow"
+		it.Maf.BowID = "bow_1"
+
+		errs := entity.ValidateRelation(it, testDBMaster{})
+		if hasFieldError(errs, "minecraft.itemId") {
+			t.Fatalf("expected crossbow item to be accepted, got %#v", errs)
+		}
+	})
+
 	t.Run("bow rejects passive combination", func(t *testing.T) {
 		it := validItem()
 		it.Minecraft.ItemID = "minecraft:bow"

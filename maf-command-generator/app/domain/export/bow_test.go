@@ -38,17 +38,38 @@ func TestBuildBowArtifactsBuildsAllOutputs(t *testing.T) {
 	if !strings.Contains(effects[0].Body, `function maf:bow/tag_bow_arrow {bow_id:"test_full",life:1100}`) {
 		t.Fatalf("effect should tag bow arrow: %q", effects[0].Body)
 	}
-	if !strings.Contains(effects[0].Body, "function maf:bow/prepare_hit_arrow") {
-		t.Fatalf("effect should prepare hit arrow: %q", effects[0].Body)
+	if !strings.Contains(effects[0].Body, `execute as @e[type=arrow,distance=..2,nbt=!{inGround:1b},sort=nearest,limit=1] run function maf:bow/tag_bow_arrow {bow_id:"test_full",life:1100}`) {
+		t.Fatalf("effect should keep the base single-arrow tagging flow: %q", effects[0].Body)
 	}
-	if !strings.Contains(effects[0].Body, "tag @s add flying") {
+	if !strings.Contains(effects[0].Body, "mafCrossbowUsed") {
+		t.Fatalf("effect should also check mafCrossbowUsed: %q", effects[0].Body)
+	}
+	if !strings.Contains(effects[0].Body, `SelectedItem.components."minecraft:enchantments"."minecraft:multishot"`) {
+		t.Fatalf("effect should branch on multishot crossbows: %q", effects[0].Body)
+	}
+	if !strings.Contains(effects[0].Body, "limit=3") {
+		t.Fatalf("effect should target up to 3 arrows for multishot crossbows: %q", effects[0].Body)
+	}
+	if strings.Contains(effects[0].Body, `unless data entity @s SelectedItem.components."minecraft:enchantments"."minecraft:multishot"`) {
+		t.Fatalf("effect should not need a separate non-multishot crossbow branch: %q", effects[0].Body)
+	}
+	if !strings.Contains(effects[0].Body, "execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow_new] run function maf:bow/prepare_hit_arrow") {
+		t.Fatalf("effect should prepare hit arrow for all newly tagged arrows: %q", effects[0].Body)
+	}
+	if !strings.Contains(effects[0].Body, "tag=maf_bow_arrow_new") {
+		t.Fatalf("effect should use temporary tag for newly tagged arrows: %q", effects[0].Body)
+	}
+	if !strings.Contains(effects[0].Body, "tag @e[type=arrow,distance=..2,tag=maf_bow_arrow_new] remove maf_bow_arrow_new") {
+		t.Fatalf("effect should clear temporary arrow tag: %q", effects[0].Body)
+	}
+	if !strings.Contains(effects[0].Body, "execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow_new] run tag @s add flying") {
 		t.Fatalf("effect should add flying tag: %q", effects[0].Body)
 	}
-	if !strings.Contains(effects[0].Body, "tag @s add ground") {
+	if !strings.Contains(effects[0].Body, "execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow_new] run tag @s add ground") {
 		t.Fatalf("effect should add ground tag: %q", effects[0].Body)
 	}
-	if !strings.Contains(effects[0].Body, "say fired") {
-		t.Fatalf("effect should append fired script: %q", effects[0].Body)
+	if !strings.Contains(effects[0].Body, "execute if entity @e[type=arrow,distance=..2,tag=maf_bow_arrow_new,sort=nearest,limit=1] run say fired") {
+		t.Fatalf("effect should gate fired script on newly tagged arrows: %q", effects[0].Body)
 	}
 	if hits[0].Body != "say hit" {
 		t.Fatalf("unexpected hit body: %q", hits[0].Body)
@@ -227,6 +248,9 @@ func TestExportDatapackWritesBowArtifacts(t *testing.T) {
 	}
 
 	checkContains(filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "effect", "bow_test_full.mcfunction"), "say fired")
+	checkContains(filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "effect", "bow_test_full.mcfunction"), "mafCrossbowUsed")
+	checkContains(filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "effect", "bow_test_full.mcfunction"), "limit=3")
+	checkContains(filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "effect", "bow_test_full.mcfunction"), "maf_bow_arrow_new")
 	checkContains(filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "bow", "test_full.mcfunction"), "say hit")
 	checkContains(filepath.Join(root, "out", "data", "maf", "function", "generated", "bow", "flying", "test_full_flying.mcfunction"), "say flying")
 	checkContains(filepath.Join(root, "out", "data", "maf", "function", "generated", "bow", "ground", "test_full_ground.mcfunction"), "say ground")

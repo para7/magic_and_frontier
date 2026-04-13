@@ -103,11 +103,12 @@ func (s *ItemEntity) ValidateRelation(newEntity Item, mas model.DBMaster) []mode
 		return errs
 	}
 
-	if strings.TrimSpace(newEntity.Minecraft.ItemID) != "minecraft:bow" {
+	itemID := strings.TrimSpace(newEntity.Minecraft.ItemID)
+	if itemID != "minecraft:bow" && itemID != "minecraft:crossbow" {
 		errs = append(errs, model.ValidationError{
 			Entity: "item", ID: newEntity.ID,
 			Field: "minecraft.itemId",
-			Tag:   "relation", Param: "bowId requires minecraft:bow",
+			Tag:   "relation", Param: "bowId requires minecraft:bow or minecraft:crossbow",
 		})
 	}
 	if passiveID != "" {
