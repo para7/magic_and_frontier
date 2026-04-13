@@ -26,9 +26,13 @@ func hasFieldError(errs []model.ValidationError, field string) bool {
 
 type testDBMaster struct{}
 
-func (testDBMaster) HasItem(string) bool               { return true }
-func (testDBMaster) HasGrimoire(string) bool           { return true }
-func (testDBMaster) HasPassive(string) bool            { return false }
+func (testDBMaster) HasItem(string) bool     { return true }
+func (testDBMaster) HasGrimoire(string) bool { return true }
+func (testDBMaster) HasPassive(string) bool  { return false }
+func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
+	v := true
+	return model.PassiveSnapshot{ID: "passive_1", GenerateGrimoire: &v}, true
+}
 func (testDBMaster) HasBow(string) bool                { return true }
 func (testDBMaster) HasEnemySkill(string) bool         { return true }
 func (testDBMaster) HasEnemy(string) bool              { return true }

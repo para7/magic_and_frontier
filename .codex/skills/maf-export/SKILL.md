@@ -202,6 +202,14 @@ EnemyArtifact { ID, SpawnBody, LootTable }
    - 例: `DropRef.Kind="grimoire"` → `HasGrimoire(RefID)` で存在チェック
 3. **一括バリデーション**: 全レコードの重複IDチェック
 
+### 設計ガードレール（再発防止）
+
+- `ValidateDropRefs` など共通ヘルパーには汎用ルールのみ置く（存在確認・slot・範囲）
+- エンティティ固有の業務制約（例: passive の `generate_grimoire` 条件）は各 `ValidateRelation` 側で判定する
+- 必要な参照が増えたら `model.DBMaster` に正式メソッドを追加し、`entity.go` 内で場当たりのローカル interface を作らない
+- `export/convert` で validate 相当の業務エラーを返さない。失敗は validate フェーズで早期に返す
+- 生成フラグ変更で成果物が減るケースでは、`Write*Artifacts` で stale ファイル削除を実装する
+
 ### カスタムバリデータ
 
 - `maf_slug_id`: 小文字・ハイフン・アンダースコアのみ許可

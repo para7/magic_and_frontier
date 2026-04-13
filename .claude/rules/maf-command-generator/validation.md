@@ -41,3 +41,9 @@ CRLF/CR → LF 統一 + 前後空白除去。全入力テキストに適用。
 - `HasDuplicateID()`: 汎用 ID 重複検出ヘルパー
 - `NewDuplicateIDValidationError()`: ID 重複エラー生成
 - `FilterUniqueIDErrorsPerEntityID()`: unique(id) エラーを entity+id ごとに1件へ間引く
+
+## 共通バリデーションとドメイン固有バリデーションの境界
+
+- `validate_helpers.go` には「全エンティティで再利用できる機械的ルール」だけを置く
+- 特定ドメインの業務知識（例: passive の `generate_grimoire` が true でないと loot 参照不可）は各エンティティの `ValidateRelation()` で判定する
+- export/convert 側で業務ルールエラーを返す設計を避け、`make run/validate` の段階で検出できるようにする

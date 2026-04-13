@@ -90,6 +90,17 @@ func (d *DBMaster) HasPassive(id string) bool {
 	return found
 }
 
+func (d *DBMaster) GetPassive(id string) (model.PassiveSnapshot, bool) {
+	entry, found := d.passive.Find(id)
+	if !found {
+		return model.PassiveSnapshot{}, false
+	}
+	return model.PassiveSnapshot{
+		ID:               entry.ID,
+		GenerateGrimoire: entry.GenerateGrimoire,
+	}, true
+}
+
 func (d *DBMaster) HasBow(id string) bool {
 	_, found := d.bow.Find(id)
 	return found

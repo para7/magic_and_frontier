@@ -10,7 +10,8 @@
       ],
       "script": [
         "tell @a Passive skill activated: Sword Slash!"
-      ]
+      ],
+      "generate_grimoire": false
     },
     {
       "id": "regeneration",
@@ -22,7 +23,8 @@
       ],
       "script": [
         "execute unless entity @s[nbt={active_effects:[{id:\"minecraft:regeneration\"}]}] run effect give @s regeneration 10 0"
-      ]
+      ],
+      "generate_grimoire": true
     }
   ]
 }

@@ -1,9 +1,15 @@
 package model
 
+type PassiveSnapshot struct {
+	ID               string
+	GenerateGrimoire *bool
+}
+
 type DBMaster interface {
 	HasItem(id string) bool
 	HasGrimoire(id string) bool
 	HasPassive(id string) bool
+	GetPassive(id string) (PassiveSnapshot, bool)
 	HasBow(id string) bool
 	HasEnemySkill(id string) bool
 	HasEnemy(id string) bool

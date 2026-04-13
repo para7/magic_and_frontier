@@ -6,14 +6,17 @@ import (
 	model "maf_command_editor/app/domain/model"
 )
 
+func boolPtr(b bool) *bool { return &b }
+
 func validPassive() Passive {
 	return Passive{
-		ID:          "passive_1",
-		Name:        "剣の心得",
-		Condition:   "on_sword_hit",
-		Slots:       []int{1, 2},
-		Description: "剣攻撃時に発動するパッシブ",
-		Script:      []string{"function maf:skill/test"},
+		ID:               "passive_1",
+		Name:             "剣の心得",
+		Condition:        "on_sword_hit",
+		Slots:            []int{1, 2},
+		Description:      "剣攻撃時に発動するパッシブ",
+		Script:           []string{"function maf:skill/test"},
+		GenerateGrimoire: boolPtr(true),
 	}
 }
 
@@ -28,9 +31,13 @@ func hasFieldError(errs []model.ValidationError, field string) bool {
 
 type testDBMaster struct{}
 
-func (testDBMaster) HasItem(string) bool               { return true }
-func (testDBMaster) HasGrimoire(string) bool           { return true }
-func (testDBMaster) HasPassive(string) bool            { return true }
+func (testDBMaster) HasItem(string) bool     { return true }
+func (testDBMaster) HasGrimoire(string) bool { return true }
+func (testDBMaster) HasPassive(string) bool  { return true }
+func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
+	v := true
+	return model.PassiveSnapshot{ID: "passive_1", GenerateGrimoire: &v}, true
+}
 func (testDBMaster) HasBow(string) bool                { return false }
 func (testDBMaster) HasEnemySkill(string) bool         { return true }
 func (testDBMaster) HasEnemy(string) bool              { return true }
