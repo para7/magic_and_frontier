@@ -1,0 +1,1 @@
+{"entries":[{"id":"fire","castTime":40,"coolTime":20,"mpCost":7,"script":["say fire"],"title":"Fire","description":"Basic fire spell."}]}

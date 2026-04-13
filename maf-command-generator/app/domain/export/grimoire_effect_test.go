@@ -1,43 +1,26 @@
 package export
 
 import (
+	"path/filepath"
 	"testing"
-
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 )
 
-func TestBuildGrimoireArtifactsBuildsEffectsAndSelectExec(t *testing.T) {
-	master := exportMasterStub{
-		grimoires: []grimoireModel.Grimoire{
-			{ID: "fire", Script: []string{"say fire"}},
-			{ID: "ice", Script: []string{"say ice"}},
-		},
-	}
+func TestGrimoireExportFixtures(t *testing.T) {
+	cases := discoverCases(t, filepath.Join("testdata", "grimoire"))
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			master := loadFixtureMaster(t, tc.dir)
+			effects := BuildGrimoireArtifacts(master)
 
-	effects := BuildGrimoireArtifacts(master)
+			actualDir := t.TempDir()
+			if err := WriteGrimoireArtifacts(filepath.Join(actualDir, "effect"), effects); err != nil {
+				t.Fatal(err)
+			}
+			if err := WriteGrimoireDebugArtifacts(filepath.Join(actualDir, "give"), effects); err != nil {
+				t.Fatal(err)
+			}
 
-	if len(effects) != 2 {
-		t.Fatalf("effects length = %d, want 2", len(effects))
-	}
-	if effects[0].ID != "fire" || effects[0].Body != "say fire" {
-		t.Fatalf("effects[0] = %#v", effects[0])
-	}
-	if effects[1].ID != "ice" || effects[1].Body != "say ice" {
-		t.Fatalf("effects[1] = %#v", effects[1])
-	}
-
-	if effects[0].Book == "" {
-		t.Fatalf("effects[0].Book should be populated")
-	}
-	if effects[1].Book == "" {
-		t.Fatalf("effects[1].Book should be populated")
-	}
-}
-
-func TestBuildGrimoireArtifactsEmpty(t *testing.T) {
-	effects := BuildGrimoireArtifacts(exportMasterStub{})
-
-	if len(effects) != 0 {
-		t.Fatalf("effects length = %d, want 0", len(effects))
+			assertGoldenDir(t, filepath.Join(tc.dir, "output"), actualDir)
+		})
 	}
 }

@@ -1,0 +1,21 @@
+{
+  "entries": [
+    {
+      "id": "bow_passive",
+      "name": "Bow Passive",
+      "role": "Bow only",
+      "condition": "bow",
+      "slots": [
+        1
+      ],
+      "description": "Bow-triggered passive.",
+      "script": [
+        "say bow hit",
+        "effect give @s glowing 1 0 true"
+      ],
+      "bow": {
+        "life_sub": 50
+      }
+    }
+  ]
+}

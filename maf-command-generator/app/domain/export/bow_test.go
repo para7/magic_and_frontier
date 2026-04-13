@@ -11,6 +11,36 @@ import (
 	config "maf_command_editor/app/files"
 )
 
+func TestBowExportFixtures(t *testing.T) {
+	cases := discoverCases(t, filepath.Join("testdata", "bow"))
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			master := loadFixtureMaster(t, tc.dir)
+			effects, hits, flyings, grounds, err := BuildBowArtifacts(master)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			actualDir := t.TempDir()
+			if err := WriteBowArtifacts(
+				filepath.Join(actualDir, "effect"),
+				filepath.Join(actualDir, "bow"),
+				filepath.Join(actualDir, "flying"),
+				filepath.Join(actualDir, "ground"),
+				master.ListBows(),
+				effects,
+				hits,
+				flyings,
+				grounds,
+			); err != nil {
+				t.Fatal(err)
+			}
+
+			assertGoldenDir(t, filepath.Join(tc.dir, "output"), actualDir)
+		})
+	}
+}
+
 func TestBuildBowArtifactsBuildsAllOutputs(t *testing.T) {
 	master := exportMasterStub{
 		bows: []bowModel.BowPassive{
@@ -254,4 +284,8 @@ func TestExportDatapackWritesBowArtifacts(t *testing.T) {
 	checkContains(filepath.Join(root, "out", "data", "maf", "function", "generated", "passive", "bow", "test_full.mcfunction"), "say hit")
 	checkContains(filepath.Join(root, "out", "data", "maf", "function", "generated", "bow", "flying", "test_full_flying.mcfunction"), "say flying")
 	checkContains(filepath.Join(root, "out", "data", "maf", "function", "generated", "bow", "ground", "test_full_ground.mcfunction"), "say ground")
+}
+
+func ptrInt(v int) *int {
+	return &v
 }

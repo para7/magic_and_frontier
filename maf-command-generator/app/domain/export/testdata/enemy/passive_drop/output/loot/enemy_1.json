@@ -1,0 +1,47 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": 1,
+              "function": "minecraft:set_count"
+            },
+            {
+              "components": {
+                "minecraft:consumable": {
+                  "animation": "bow",
+                  "consume_seconds": 99999,
+                  "has_consume_particles": false
+                },
+                "minecraft:item_name": {
+                  "text": "[パッシブ設定書] Quickstep"
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Move faster"
+                  },
+                  {
+                    "text": "パッシブスキル / スロット1"
+                  }
+                ]
+              },
+              "function": "minecraft:set_components"
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{passive:{id:\"passive_1\",slot:1,condition:\"always\"},spell:{kind:\"passive\",id:\"passive_1\",slot:1,cost:10,cast:200,cooltime:0,title:\"Quickstep [スロット1]\",description:\"Always-on passive.\"}}}"
+            }
+          ],
+          "name": "minecraft:book",
+          "type": "minecraft:item",
+          "weight": 1
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "type": "minecraft:generic"
+}

@@ -1,0 +1,1 @@
+give @p minecraft:stone[minecraft:custom_name={"text":"Starter Stone"},minecraft:custom_data={maf:{item_id:"minecraft:stone",source_id:"items_1",nbt_snapshot:"{id:\"minecraft:stone\",count:1,components:{\"minecraft:custom_name\":'{\"text\":\"Starter Stone\"}'}}"}}] 1
