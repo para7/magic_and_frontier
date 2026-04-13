@@ -120,24 +120,3 @@ func TestDBMasterValidateAllRejectsBowEffectIDCollision(t *testing.T) {
 	}
 	t.Fatalf("expected bow/passive effect id collision error, got %#v", errs)
 }
-
-func TestDBMasterValidateAllRejectsBowHitIDCollision(t *testing.T) {
-	cfg := newTestConfig(t, nil)
-	writeState(t, cfg.PassiveStatePath, []passiveModel.Passive{
-		{ID: "test_full", Condition: "bow", Slots: []int{1}, Script: []string{"say passive"}},
-	})
-	writeState(t, cfg.BowStatePath, []bowModel.BowPassive{
-		{ID: "test_full"},
-	})
-
-	db := NewDBMaster(cfg)
-	errs := db.ValidateAll()
-	for _, recordErrs := range errs {
-		for _, err := range recordErrs {
-			if err.Entity == "passive" && err.ID == "test_full" && err.Field == "id" {
-				return
-			}
-		}
-	}
-	t.Fatalf("expected bow/passive hit id collision error, got %#v", errs)
-}

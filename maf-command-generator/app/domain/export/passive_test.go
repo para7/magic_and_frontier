@@ -10,7 +10,7 @@ func TestPassiveExportFixtures(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			master := loadFixtureMaster(t, tc.dir)
-			effects, bows, grimoires, err := BuildPassiveArtifacts(master)
+			effects, grimoires, err := BuildPassiveArtifacts(master)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -18,11 +18,9 @@ func TestPassiveExportFixtures(t *testing.T) {
 			actualDir := t.TempDir()
 			if err := WritePassiveArtifacts(
 				filepath.Join(actualDir, "effect"),
-				filepath.Join(actualDir, "bow"),
 				filepath.Join(actualDir, "give"),
 				filepath.Join(actualDir, "apply"),
 				effects,
-				bows,
 				grimoires,
 			); err != nil {
 				t.Fatal(err)

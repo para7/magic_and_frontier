@@ -227,7 +227,6 @@ func TestExportDatapackWritesBowArtifacts(t *testing.T) {
 			"grimoireEffect": "generated/grimoire/effect",
 			"grimoireDebug":  "generated/grimoire/give",
 			"passiveEffect":  "generated/passive/effect",
-			"passiveBow":     "generated/passive/bow",
 			"passiveGive":    "generated/passive/give",
 			"passiveApply":   "generated/passive/apply",
 			"bowFlying":      "generated/bow/flying",

@@ -16,7 +16,6 @@ type ExportPaths struct {
 	GrimoireDebug  string `json:"grimoireDebug"`
 	ItemGive       string `json:"itemGive"`
 	PassiveEffect  string `json:"passiveEffect"`
-	PassiveBow     string `json:"passiveBow"`
 	PassiveGive    string `json:"passiveGive"`
 	PassiveApply   string `json:"passiveApply"`
 	BowFlying      string `json:"bowFlying"`

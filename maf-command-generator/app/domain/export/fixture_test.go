@@ -175,7 +175,6 @@ func defaultFixtureExportSettings(outputRoot string) config.ExportSettings {
 			GrimoireDebug:  "generated/grimoire/give",
 			ItemGive:       "generated/item/give",
 			PassiveEffect:  "generated/passive/effect",
-			PassiveBow:     "generated/passive/bow",
 			PassiveGive:    "generated/passive/give",
 			PassiveApply:   "generated/passive/apply",
 			BowFlying:      "generated/bow/flying",

@@ -5,7 +5,6 @@
     "grimoireDebug": "generated/grimoire/give",
     "itemGive": "generated/item/give",
     "passiveEffect": "generated/passive/effect",
-    "passiveBow": "generated/passive/bow",
     "passiveGive": "generated/passive/give",
     "passiveApply": "generated/passive/apply",
     "bowFlying": "generated/bow/flying",
