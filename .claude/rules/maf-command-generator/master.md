@@ -1,6 +1,6 @@
 ---
 paths:
-  - "app/domain/master/**/*.go"
+  - "maf-command-generator/app/domain/master/**/*.go"
 ---
 
 # master 層の規約

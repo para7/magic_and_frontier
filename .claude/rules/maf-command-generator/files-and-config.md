@@ -1,8 +1,8 @@
 ---
 paths:
-  - "app/files/**/*.go"
-  - "config/**"
-  - "savedata/**"
+  - "maf-command-generator/app/files/**/*.go"
+  - "maf-command-generator/config/**"
+  - "maf-command-generator/savedata/**"
 ---
 
 # files 層・設定・データファイルの規約
@@ -17,9 +17,8 @@ paths:
 
 各エンティティの JSON データ格納。ファイル名は `MafConfig` で定義:
 
-- `grimoire.json`, `item.json`, `skill.json`（Passive）, `enemy_skill.json`
+- `grimoire.json`, `item.json`, `passive.json`, `bow.json`, `enemy_skill.json`
 - `enemy.json`, `spawn_table.json`, `treasure.json`, `loottables.json`
-- `id_counters.json`（将来用）
 
 ## 注意
 

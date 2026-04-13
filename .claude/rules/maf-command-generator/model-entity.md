@@ -1,7 +1,7 @@
 ---
 paths:
-  - "app/domain/model/**/entity.go"
-  - "app/domain/model/**/entity_test.go"
+  - "maf-command-generator/app/domain/model/**/entity.go"
+  - "maf-command-generator/app/domain/model/**/entity_test.go"
 ---
 
 # MafEntity 実装規約
@@ -29,10 +29,12 @@ paths:
 - バリデーションエラーは `[]model.ValidationError` で返す
 - `Create`/`Update` は先に `ValidateJSON` を実行し、エラー時は先頭エラーを `error` に変換して返す
 - `ValidateRelation` で他エンティティ存在確認が必要なら `mas.Has*` を使う
+- `ValidateRelation` で ID 重複チェックには `model.HasDuplicateID` を使う
+- `ValidateAll` では `model.FilterUniqueIDErrorsPerEntityID` で ID 重複エラーを間引く
 - `Find` は `(T, bool)`、`GetAll` は現在データをそのまま返す
 
 ## バリデーション
 
 - 構造体バリデーション: `custom_validator.Validate.Struct()` を使用
-- カスタムタグ: `trimmed_required`, `trimmed_min`, `trimmed_max`, `trimmed_oneof`
+- カスタムタグ: `trimmed_required`, `trimmed_min`, `trimmed_max`, `trimmed_oneof`, `maf_slug_id`
 - リレーションバリデーション: `model.ValidateDropRefs()`, `model.ValidateEquipmentSlots()` を活用

@@ -1,6 +1,6 @@
 ---
 paths:
-  - "app/**/*.go"
+  - "maf-command-generator/app/**/*.go"
 ---
 
 # レイヤーアーキテクチャ
@@ -21,10 +21,10 @@ main → cli → master → model / export → files, minecraft
 
 # インターフェース
 
-- `model.DBMaster`（`app/domain/model/interfaces.go`）: リレーションバリデーション用の `Has*` メソッド群
+- `model.DBMaster`（`maf-command-generator/app/domain/model/interfaces.go`）: リレーションバリデーション用の `Has*` メソッド群（HasItem, HasGrimoire, HasPassive, HasBow, HasEnemySkill, HasEnemy, HasSpawnTable, HasTreasure, HasLootTable, HasMinecraftLootTable）
 - `model.MafEntity[T]`（同上）: エンティティ共通の CRUD・検証・永続化インターフェース
-- `export.DBMaster`（`app/domain/export/interfaces.go`）: エクスポート専用の読取インターフェース（`Get*`/`List*`）
-- `master.DBMaster`（`app/domain/master/master.go`）: 上記2つを実装する具象型
+- `export.DBMaster`（`maf-command-generator/app/domain/export/interfaces.go`）: エクスポート専用の読取インターフェース（`List*`）
+- `master.DBMaster`（`maf-command-generator/app/domain/master/master.go`）: 上記2つを実装する具象型
 
 # ビルド
 

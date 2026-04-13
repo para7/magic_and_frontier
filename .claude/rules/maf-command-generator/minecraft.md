@@ -1,7 +1,7 @@
 ---
 paths:
-  - "app/minecraft/**/*.go"
-  - "minecraft/**"
+  - "maf-command-generator/app/minecraft/**/*.go"
+  - "maf-command-generator/minecraft/**"
 ---
 
 # minecraft パッケージの規約

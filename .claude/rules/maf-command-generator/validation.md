@@ -1,8 +1,8 @@
 ---
 paths:
-  - "app/domain/custom_validator/**/*.go"
-  - "app/domain/model/validation.go"
-  - "app/domain/model/validate_helpers.go"
+  - "maf-command-generator/app/domain/custom_validator/**/*.go"
+  - "maf-command-generator/app/domain/model/validation.go"
+  - "maf-command-generator/app/domain/model/validate_helpers.go"
 ---
 
 # バリデーションシステム
@@ -23,6 +23,7 @@ paths:
 | `trimmed_min=N` | トリム後のルーン数が N 以上 |
 | `trimmed_max=N` | トリム後のルーン数が N 以下 |
 | `trimmed_oneof=a b c` | トリム後の値がいずれかに一致 |
+| `maf_slug_id` | MAF 用スラッグ ID 形式の検証 |
 
 ### NormalizeText
 
@@ -34,6 +35,9 @@ CRLF/CR → LF 統一 + 前後空白除去。全入力テキストに適用。
 
 ## validate_helpers.go
 
-- `ValidateDropRefs()`: DropRef スライスの参照先存在確認（item/grimoire/minecraft_item）+ CountMin <= CountMax チェック
+- `ValidateDropRefs()`: DropRef スライスの参照先存在確認（item/grimoire/passive/minecraft_item）+ CountMin <= CountMax チェック。passive の場合は Slot 必須チェックも行う
 - `ValidateEquipmentSlots()`: Equipment 6 スロットの参照先存在確認
 - `IsNamespacedResourceID()`, `IsSafeNamespacedResourcePath()`, `NormalizeResourcePath()`: リソースID/パスの検証・正規化
+- `HasDuplicateID()`: 汎用 ID 重複検出ヘルパー
+- `NewDuplicateIDValidationError()`: ID 重複エラー生成
+- `FilterUniqueIDErrorsPerEntityID()`: unique(id) エラーを entity+id ごとに1件へ間引く

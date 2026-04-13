@@ -1,7 +1,7 @@
 ---
 paths:
-  - "app/cli/**/*.go"
-  - "app/main.go"
+  - "maf-command-generator/app/cli/**/*.go"
+  - "maf-command-generator/app/main.go"
 ---
 
 # CLI 層の規約
