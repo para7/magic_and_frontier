@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help mc-cmd mc-shell mc-logs
+.PHONY: help mc-cmd mc-shell mc-logs run/export
 
 help:
 	@echo "Available targets:"
@@ -35,6 +35,9 @@ mc-shell:
 
 mc-logs:
 	@docker compose logs -f minecraft
+
+run/export:
+	@$(MAKE) -C maf-command-generator run/export
 
 cmd/getnbt:
 	@make mc-cmd "CMD"="data get entity @p SelectedItem"
