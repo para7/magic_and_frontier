@@ -24,8 +24,9 @@ func ItemToGiveCommand(
 	}
 
 	components := make([]string, 0, len(normalizedComponents)+2)
-	for _, entry := range normalizedComponents {
-		components = append(components, fmt.Sprintf("%s=%s", entry.Key, entry.Value))
+	for _, component := range normalizedComponents {
+		value := normalizeItemGiveComponent(component.Key, component.Value)
+		components = append(components, fmt.Sprintf("%s=%s", component.Key, value))
 	}
 
 	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID, bowsByID)
@@ -89,6 +90,9 @@ func itemComponentsForLoot(
 	if name, ok := decodeTextComponentSNBT(componentValue(entry, "minecraft:custom_name")); ok {
 		components["minecraft:custom_name"] = name
 	}
+	if itemName, ok := decodeTextComponentSNBT(componentValue(entry, "minecraft:item_name")); ok {
+		components["minecraft:item_name"] = itemName
+	}
 	if lore, ok := decodeTextComponentListSNBT(componentValue(entry, "minecraft:lore")); ok && len(lore) > 0 {
 		components["minecraft:lore"] = lore
 	}
@@ -129,13 +133,26 @@ func componentValue(entry itemModel.Item, key string) string {
 	return strings.TrimSpace(entry.Minecraft.Components[key])
 }
 
-func decodeTextComponentSNBT(raw string) (map[string]any, bool) {
-	text, ok := decodeQuotedSNBTString(raw)
-	if !ok {
-		return nil, false
+func normalizeItemGiveComponent(key, value string) string {
+	switch key {
+	case "minecraft:custom_name", "minecraft:item_name":
+		if component, ok := decodeTextComponentSNBT(value); ok {
+			return jsonComponentValue(component)
+		}
+	case "minecraft:lore":
+		if lore, ok := decodeTextComponentListSNBT(value); ok && len(lore) > 0 {
+			return jsonComponentValue(lore)
+		}
 	}
+	return value
+}
+
+func decodeTextComponentSNBT(raw string) (map[string]any, bool) {
 	var component map[string]any
-	if err := json.Unmarshal([]byte(text), &component); err != nil {
+	if text, ok := decodeQuotedSNBTString(raw); ok {
+		raw = text
+	}
+	if err := json.Unmarshal([]byte(raw), &component); err != nil {
 		return nil, false
 	}
 	return component, true
@@ -145,6 +162,10 @@ func decodeTextComponentListSNBT(raw string) ([]any, bool) {
 	raw = strings.TrimSpace(raw)
 	if raw == "" {
 		return nil, false
+	}
+	var direct []any
+	if err := json.Unmarshal([]byte(raw), &direct); err == nil {
+		return direct, true
 	}
 	if !strings.HasPrefix(raw, "[") || !strings.HasSuffix(raw, "]") {
 		return nil, false

@@ -181,6 +181,64 @@ func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 	if customNameIndex == -1 || loreIndex == -1 || customNameIndex > loreIndex {
 		t.Fatalf("components should be sorted by key: %s", command)
 	}
+	if !strings.Contains(command, `minecraft:custom_name={"text":"Starter Stone"}`) {
+		t.Fatalf("custom_name should be normalized for give: %s", command)
+	}
+	if !strings.Contains(command, `minecraft:lore=[{"text":"Sample item"}]`) {
+		t.Fatalf("lore should be normalized for give: %s", command)
+	}
+	if strings.Contains(command, `minecraft:custom_name='{"text":"Starter Stone"}'`) {
+		t.Fatalf("quoted custom_name JSON should not remain in give output: %s", command)
+	}
+}
+
+func TestItemToGiveCommandNormalizesRawJSONTextComponents(t *testing.T) {
+	entry := itemModel.Item{
+		ID: "items_raw_json",
+		Minecraft: itemModel.MinecraftItem{
+			ItemID: "minecraft:stone",
+			Components: map[string]string{
+				"minecraft:item_name": `{"text":"Debug Title","italic":false}`,
+				"minecraft:lore":      `[{"text":"Role line"},{"text":"Extra"}]`,
+			},
+		},
+	}
+
+	command, err := ItemToGiveCommand(entry, nil, nil, nil)
+	if err != nil {
+		t.Fatalf("ItemToGiveCommand returned error: %v", err)
+	}
+	if !strings.Contains(command, `minecraft:item_name={"italic":false,"text":"Debug Title"}`) &&
+		!strings.Contains(command, `minecraft:item_name={"text":"Debug Title","italic":false}`) {
+		t.Fatalf("item_name should be preserved as a structured text component: %s", command)
+	}
+	if !strings.Contains(command, `minecraft:lore=[{"text":"Role line"},{"text":"Extra"}]`) {
+		t.Fatalf("lore should remain structured JSON for give: %s", command)
+	}
+}
+
+func TestItemToGiveCommandPreservesDirectGiveTextComponentSNBT(t *testing.T) {
+	entry := itemModel.Item{
+		ID: "items_snbt",
+		Minecraft: itemModel.MinecraftItem{
+			ItemID: "minecraft:stone",
+			Components: map[string]string{
+				"minecraft:custom_name": `{text:"Starter Stone"}`,
+				"minecraft:lore":        `[{text:"Sample item"}]`,
+			},
+		},
+	}
+
+	command, err := ItemToGiveCommand(entry, nil, nil, nil)
+	if err != nil {
+		t.Fatalf("ItemToGiveCommand returned error: %v", err)
+	}
+	if !strings.Contains(command, `minecraft:custom_name={text:"Starter Stone"}`) {
+		t.Fatalf("direct give custom_name SNBT should be preserved: %s", command)
+	}
+	if !strings.Contains(command, `minecraft:lore=[{text:"Sample item"}]`) {
+		t.Fatalf("direct give lore SNBT should be preserved: %s", command)
+	}
 }
 
 func TestItemToGiveCommandDoesNotDuplicateConsumable(t *testing.T) {

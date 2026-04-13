@@ -1,6 +1,7 @@
 package export_convert
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -24,14 +25,9 @@ func (m spellBookModel) ToGiveItem() string {
 }
 
 func (m spellBookModel) LootComponents() map[string]any {
-	lore := make([]any, 0, len(m.lore))
-	for _, line := range m.lore {
-		lore = append(lore, map[string]any{"text": line})
-	}
-
 	return map[string]any{
-		"minecraft:item_name": map[string]any{"text": m.itemName},
-		"minecraft:lore":      lore,
+		"minecraft:item_name": textComponentObject(m.itemName),
+		"minecraft:lore":      loreComponentObjects(m.lore),
 		"minecraft:consumable": map[string]any{
 			"consume_seconds":       99999.0,
 			"animation":             "bow",
@@ -44,6 +40,18 @@ func textComponentSNBT(text string) string {
 	return fmt.Sprintf(`{text:%s}`, JsonString(text))
 }
 
+func textComponentObject(text string) map[string]any {
+	return map[string]any{"text": text}
+}
+
+func loreComponentObjects(lines []string) []any {
+	lore := make([]any, 0, len(lines))
+	for _, line := range lines {
+		lore = append(lore, textComponentObject(line))
+	}
+	return lore
+}
+
 func loreComponentsSNBT(lines []string) string {
 	if len(lines) == 0 {
 		return "[]"
@@ -53,4 +61,12 @@ func loreComponentsSNBT(lines []string) string {
 		parts = append(parts, textComponentSNBT(line))
 	}
 	return "[" + strings.Join(parts, ",") + "]"
+}
+
+func jsonComponentValue(value any) string {
+	data, err := json.Marshal(value)
+	if err != nil {
+		return ""
+	}
+	return string(data)
 }
