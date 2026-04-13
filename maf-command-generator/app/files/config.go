@@ -12,14 +12,17 @@ type ExportSettings struct {
 }
 
 type ExportPaths struct {
-	GrimoireEffect     string `json:"grimoireEffect"`
-	GrimoireDebug      string `json:"grimoireDebug"`
-	PassiveEffect      string `json:"passiveEffect"`
-	PassiveGive        string `json:"passiveGive"`
-	PassiveApply       string `json:"passiveApply"`
-	Enemy              string `json:"enemy"`
-	EnemySkill         string `json:"enemySkill"`
-	EnemyLoot          string `json:"enemyLoot"`
+	GrimoireEffect string `json:"grimoireEffect"`
+	GrimoireDebug  string `json:"grimoireDebug"`
+	ItemGive       string `json:"itemGive"`
+	PassiveEffect  string `json:"passiveEffect"`
+	PassiveGive    string `json:"passiveGive"`
+	PassiveApply   string `json:"passiveApply"`
+	BowFlying      string `json:"bowFlying"`
+	BowGround      string `json:"bowGround"`
+	Enemy          string `json:"enemy"`
+	EnemySkill     string `json:"enemySkill"`
+	EnemyLoot      string `json:"enemyLoot"`
 }
 
 func LoadExportSettings(path string) (ExportSettings, error) {
@@ -36,6 +39,7 @@ type MafConfig struct {
 	ItemStatePath          string
 	GrimoireStatePath      string
 	PassiveStatePath       string
+	BowStatePath           string
 	EnemySkillStatePath    string
 	EnemyStatePath         string
 	SpawnTableStatePath    string
@@ -51,6 +55,7 @@ func LoadConfig() MafConfig {
 		ItemStatePath:          filepath.Clean(filepath.Join("savedata", "item.json")),
 		GrimoireStatePath:      filepath.Clean(filepath.Join("savedata", "grimoire.json")),
 		PassiveStatePath:       filepath.Clean(filepath.Join("savedata", "passive.json")),
+		BowStatePath:           filepath.Clean(filepath.Join("savedata", "bow.json")),
 		EnemySkillStatePath:    filepath.Clean(filepath.Join("savedata", "enemy_skill.json")),
 		EnemyStatePath:         filepath.Clean(filepath.Join("savedata", "enemy.json")),
 		SpawnTableStatePath:    filepath.Clean(filepath.Join("savedata", "spawn_table.json")),

@@ -1,0 +1,75 @@
+{
+  "pools": [
+    {
+      "entries": [
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "max": 3,
+                "min": 1,
+                "type": "minecraft:uniform"
+              },
+              "function": "minecraft:set_count"
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{item_id:\"minecraft:stone\",source_id:\"items_1\",nbt_snapshot:\"{id:\\\"minecraft:stone\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"Starter Stone\\\"}'}}\"}}"
+            },
+            {
+              "components": {
+                "minecraft:custom_name": {
+                  "text": "Starter Stone"
+                }
+              },
+              "function": "minecraft:set_components"
+            }
+          ],
+          "name": "minecraft:stone",
+          "type": "minecraft:item",
+          "weight": 70
+        },
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": 1,
+              "function": "minecraft:set_count"
+            },
+            {
+              "components": {
+                "minecraft:consumable": {
+                  "animation": "bow",
+                  "consume_seconds": 99999,
+                  "has_consume_particles": false
+                },
+                "minecraft:item_name": {
+                  "text": "Fire"
+                },
+                "minecraft:lore": [
+                  {
+                    "text": "Basic fire spell."
+                  },
+                  {
+                    "text": "消費MP:7 詠唱時間:40"
+                  }
+                ]
+              },
+              "function": "minecraft:set_components"
+            },
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{maf:{grimoire_id:\"fire\",spell:{kind:\"grimoire\",id:\"fire\",cost:7,cast:40,cooltime:20,title:\"Fire\",description:\"Basic fire spell.\"}}}"
+            }
+          ],
+          "name": "minecraft:book",
+          "type": "minecraft:item",
+          "weight": 30
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "type": "minecraft:generic"
+}

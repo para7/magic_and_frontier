@@ -1,0 +1,30 @@
+{
+  "entries": [
+    {
+      "id": "enemy_1",
+      "mobType": "minecraft:zombie",
+      "name": "Fixture Zombie",
+      "hp": 20,
+      "equipment": {
+        "mainhand": {
+          "kind": "item",
+          "refId": "items_1",
+          "count": 1
+        }
+      },
+      "enemySkillIds": [
+        "near_poison"
+      ],
+      "dropMode": "replace",
+      "drops": [
+        {
+          "kind": "item",
+          "refId": "items_1",
+          "weight": 1,
+          "countMin": 1,
+          "countMax": 1
+        }
+      ]
+    }
+  ]
+}

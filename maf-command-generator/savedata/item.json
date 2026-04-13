@@ -51,6 +51,206 @@
           "minecraft:lore": "['{\"text\":\"Sample item\"}']"
         }
       }
+    },
+    {
+      "id": "test_bow_hit",
+      "maf": {
+        "bowId": "test_hit"
+      },
+      "minecraft": {
+        "itemId": "minecraft:bow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_bow_hit\"}'",
+          "minecraft:lore": "['{\"text\":\"Bow hit test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_bow_fired",
+      "maf": {
+        "bowId": "test_fired"
+      },
+      "minecraft": {
+        "itemId": "minecraft:bow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_bow_fired\"}'",
+          "minecraft:lore": "['{\"text\":\"Bow fired test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_bow_flying",
+      "maf": {
+        "bowId": "test_flying"
+      },
+      "minecraft": {
+        "itemId": "minecraft:bow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_bow_flying\"}'",
+          "minecraft:lore": "['{\"text\":\"Bow flying test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_bow_ground",
+      "maf": {
+        "bowId": "test_ground"
+      },
+      "minecraft": {
+        "itemId": "minecraft:bow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_bow_ground\"}'",
+          "minecraft:lore": "['{\"text\":\"Bow ground test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_bow_full",
+      "maf": {
+        "bowId": "test_full"
+      },
+      "minecraft": {
+        "itemId": "minecraft:bow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_bow_full\"}'",
+          "minecraft:lore": "['{\"text\":\"Bow full test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_crossbow_hit",
+      "maf": {
+        "bowId": "test_hit"
+      },
+      "minecraft": {
+        "itemId": "minecraft:crossbow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_crossbow_hit\"}'",
+          "minecraft:lore": "['{\"text\":\"Crossbow hit test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_crossbow_fired",
+      "maf": {
+        "bowId": "test_fired"
+      },
+      "minecraft": {
+        "itemId": "minecraft:crossbow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_crossbow_fired\"}'",
+          "minecraft:lore": "['{\"text\":\"Crossbow fired test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_crossbow_flying",
+      "maf": {
+        "bowId": "test_flying"
+      },
+      "minecraft": {
+        "itemId": "minecraft:crossbow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_crossbow_flying\"}'",
+          "minecraft:lore": "['{\"text\":\"Crossbow flying test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_crossbow_ground",
+      "maf": {
+        "bowId": "test_ground"
+      },
+      "minecraft": {
+        "itemId": "minecraft:crossbow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_crossbow_ground\"}'",
+          "minecraft:lore": "['{\"text\":\"Crossbow ground test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_crossbow_full",
+      "maf": {
+        "bowId": "test_full"
+      },
+      "minecraft": {
+        "itemId": "minecraft:crossbow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_crossbow_full\"}'",
+          "minecraft:lore": "['{\"text\":\"Crossbow full test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_crossbow_ms_hit",
+      "maf": {
+        "bowId": "test_hit"
+      },
+      "minecraft": {
+        "itemId": "minecraft:crossbow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_crossbow_ms_hit\"}'",
+          "minecraft:enchantments": "{\"minecraft:multishot\":1}",
+          "minecraft:lore": "['{\"text\":\"Crossbow multishot hit test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_crossbow_ms_fired",
+      "maf": {
+        "bowId": "test_fired"
+      },
+      "minecraft": {
+        "itemId": "minecraft:crossbow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_crossbow_ms_fired\"}'",
+          "minecraft:enchantments": "{\"minecraft:multishot\":1}",
+          "minecraft:lore": "['{\"text\":\"Crossbow multishot fired test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_crossbow_ms_flying",
+      "maf": {
+        "bowId": "test_flying"
+      },
+      "minecraft": {
+        "itemId": "minecraft:crossbow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_crossbow_ms_flying\"}'",
+          "minecraft:enchantments": "{\"minecraft:multishot\":1}",
+          "minecraft:lore": "['{\"text\":\"Crossbow multishot flying test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_crossbow_ms_ground",
+      "maf": {
+        "bowId": "test_ground"
+      },
+      "minecraft": {
+        "itemId": "minecraft:crossbow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_crossbow_ms_ground\"}'",
+          "minecraft:enchantments": "{\"minecraft:multishot\":1}",
+          "minecraft:lore": "['{\"text\":\"Crossbow multishot ground test\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_crossbow_ms_full",
+      "maf": {
+        "bowId": "test_full"
+      },
+      "minecraft": {
+        "itemId": "minecraft:crossbow",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_crossbow_ms_full\"}'",
+          "minecraft:enchantments": "{\"minecraft:multishot\":1}",
+          "minecraft:lore": "['{\"text\":\"Crossbow multishot full test\"}']"
+        }
+      }
     }
   ]
 }

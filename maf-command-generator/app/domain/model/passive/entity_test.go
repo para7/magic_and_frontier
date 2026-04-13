@@ -31,6 +31,7 @@ type testDBMaster struct{}
 func (testDBMaster) HasItem(string) bool               { return true }
 func (testDBMaster) HasGrimoire(string) bool           { return true }
 func (testDBMaster) HasPassive(string) bool            { return true }
+func (testDBMaster) HasBow(string) bool                { return false }
 func (testDBMaster) HasEnemySkill(string) bool         { return true }
 func (testDBMaster) HasEnemy(string) bool              { return true }
 func (testDBMaster) HasSpawnTable(string) bool         { return true }
@@ -66,8 +67,11 @@ func TestPassiveValidateStructPerField(t *testing.T) {
 		{name: "name ok empty", patch: func(p *Passive) { p.Name = "" }},
 		{name: "name ok max", patch: func(p *Passive) { p.Name = string(make([]rune, 80)) }},
 		{name: "name ng over max", patch: func(p *Passive) { p.Name = string(make([]rune, 81)) }, wantErrField: "name"},
-		{name: "condition ok", patch: func(p *Passive) { p.Condition = "always" }},
+		{name: "condition ok always", patch: func(p *Passive) { p.Condition = "always" }},
+		{name: "condition ok sword", patch: func(p *Passive) { p.Condition = "on_sword_hit" }},
 		{name: "condition ng empty", patch: func(p *Passive) { p.Condition = " " }, wantErrField: "condition"},
+		{name: "condition ng unknown", patch: func(p *Passive) { p.Condition = "unknown" }, wantErrField: "condition"},
+		{name: "condition ng bow", patch: func(p *Passive) { p.Condition = "bow" }, wantErrField: "condition"},
 		{name: "slots ok", patch: func(p *Passive) { p.Slots = []int{1, 3} }},
 		{name: "slots ng empty", patch: func(p *Passive) { p.Slots = nil }, wantErrField: "slots"},
 		{name: "slots ng under", patch: func(p *Passive) { p.Slots = []int{0} }, wantErrField: "slots[0]"},

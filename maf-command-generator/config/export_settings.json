@@ -3,9 +3,12 @@
   "exportPaths": {
     "grimoireEffect": "generated/grimoire/effect",
     "grimoireDebug": "generated/grimoire/give",
+    "itemGive": "generated/item/give",
     "passiveEffect": "generated/passive/effect",
     "passiveGive": "generated/passive/give",
     "passiveApply": "generated/passive/apply",
+    "bowFlying": "generated/bow/flying",
+    "bowGround": "generated/bow/ground",
     "enemy": "generated/enemy/spawn",
     "enemySkill": "generated/enemy/skill",
     "enemyLoot": "generated/enemy/loot"

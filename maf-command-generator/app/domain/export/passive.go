@@ -33,9 +33,10 @@ func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveG
 	grimoires := make([]PassiveGrimoireFunction, 0, len(passives))
 
 	for _, entry := range passives {
+		effectBody := strings.Join(entry.Script, "\n")
 		effects = append(effects, PassiveEffectFunction{
 			ID:   entry.ID,
-			Body: strings.Join(entry.Script, "\n"),
+			Body: effectBody,
 		})
 
 		slots := make([]int, len(entry.Slots))
@@ -43,9 +44,12 @@ func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveG
 		sort.Ints(slots)
 
 		for _, slot := range slots {
-			functionID := passiveGrimoireFunctionID(entry.ID, slot)
+			functionID := fmt.Sprintf("%s_slot%d", entry.ID, slot)
 			book := ec.PassiveToBook(entry, slot)
-			displayName := passiveDisplayName(entry.Name, entry.ID)
+			displayName := entry.ID // スペースのみの場合は ID にフォールバック
+			if trimmed := strings.TrimSpace(entry.Name); trimmed != "" {
+				displayName = trimmed
+			}
 			applyBody := passiveApplyBody(slot, entry.ID, displayName)
 			grimoires = append(grimoires, PassiveGrimoireFunction{
 				PassiveID:  entry.ID,
@@ -79,18 +83,6 @@ func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []Passiv
 		}
 	}
 	return nil
-}
-
-func passiveGrimoireFunctionID(passiveID string, slot int) string {
-	return fmt.Sprintf("%s_slot%d", passiveID, slot)
-}
-
-func passiveDisplayName(name, fallbackID string) string {
-	trimmed := strings.TrimSpace(name)
-	if trimmed == "" {
-		return fallbackID
-	}
-	return trimmed
 }
 
 func passiveApplyBody(slot int, passiveID string, displayName string) string {

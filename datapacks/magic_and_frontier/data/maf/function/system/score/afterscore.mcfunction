@@ -8,5 +8,7 @@ scoreboard players set @a mafSprintCM 0
 scoreboard players set @a mafSwimCM 0
 scoreboard players set @a mafWalkWaterCM 0
 scoreboard players set @a mafUnderWaterCM 0
+scoreboard players set @a mafBowUsed 0
+scoreboard players set @a mafCrossbowUsed 0
 
 scoreboard players set @a mafLogin 0

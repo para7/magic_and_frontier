@@ -1,0 +1,21 @@
+{
+  "entries": [
+    {
+      "id": "enemy_2",
+      "mobType": "minecraft:zombie",
+      "hp": 20,
+      "equipment": {},
+      "enemySkillIds": [],
+      "dropMode": "append",
+      "drops": [
+        {
+          "kind": "minecraft_item",
+          "refId": "minecraft:apple",
+          "weight": 1,
+          "countMin": 1,
+          "countMax": 1
+        }
+      ]
+    }
+  ]
+}

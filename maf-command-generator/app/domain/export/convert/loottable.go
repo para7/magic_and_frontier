@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	model "maf_command_editor/app/domain/model"
+	bowModel "maf_command_editor/app/domain/model/bow"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
@@ -14,6 +15,7 @@ func BuildDropLootPool(
 	itemsByID map[string]itemModel.Item,
 	grimoiresByID map[string]grimoireModel.Grimoire,
 	passivesByID map[string]passiveModel.Passive,
+	bowsByID map[string]bowModel.BowPassive,
 	context string,
 ) (map[string]any, error) {
 	entries := make([]any, 0, len(drops))
@@ -33,7 +35,7 @@ func BuildDropLootPool(
 			if !ok {
 				return nil, fmt.Errorf("%s: referenced item not found (%s)", context, drop.RefID)
 			}
-			entry, err := toItemLootEntry(item, grimoiresByID, passivesByID, drop.CountMin, drop.CountMax)
+			entry, err := toItemLootEntry(item, grimoiresByID, passivesByID, bowsByID, drop.CountMin, drop.CountMax)
 			if err != nil {
 				return nil, err
 			}
@@ -92,9 +94,10 @@ func toItemLootEntry(
 	entry itemModel.Item,
 	grimoiresByID map[string]grimoireModel.Grimoire,
 	passivesByID map[string]passiveModel.Passive,
+	bowsByID map[string]bowModel.BowPassive,
 	min, max *float64,
 ) (map[string]any, error) {
-	customData, err := itemCustomData(entry, grimoiresByID, passivesByID)
+	customData, err := itemCustomData(entry, grimoiresByID, passivesByID, bowsByID)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +105,7 @@ func toItemLootEntry(
 		map[string]any{"function": "minecraft:set_count", "add": false, "count": ToCountValue(min, max)},
 		map[string]any{"function": "minecraft:set_custom_data", "tag": customData},
 	}
-	components, err := itemComponentsForLoot(entry, grimoiresByID, passivesByID)
+	components, err := itemComponentsForLoot(entry, grimoiresByID, passivesByID, bowsByID)
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,19 @@
+{
+  "criteria": {
+    "arrow_hit": {
+      "trigger": "minecraft:player_hurt_entity",
+      "conditions": {
+        "damage": {
+          "type": {
+            "direct_entity": {
+              "type": "minecraft:arrow"
+            }
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "maf:passive/on_arrow_hit"
+  }
+}

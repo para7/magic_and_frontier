@@ -29,6 +29,7 @@ type testDBMaster struct{}
 func (testDBMaster) HasItem(string) bool               { return true }
 func (testDBMaster) HasGrimoire(string) bool           { return true }
 func (testDBMaster) HasPassive(string) bool            { return true }
+func (testDBMaster) HasBow(string) bool                { return true }
 func (testDBMaster) HasEnemySkill(string) bool         { return true }
 func (testDBMaster) HasEnemy(string) bool              { return true }
 func (testDBMaster) HasSpawnTable(string) bool         { return true }
@@ -121,6 +122,62 @@ func TestItemValidateRelationUsesMafRefs(t *testing.T) {
 			t.Fatalf("expected maf.passiveId relation error, got %#v", errs)
 		}
 	})
+
+	t.Run("missing bow", func(t *testing.T) {
+		it := validItem()
+		it.Maf.BowID = "bow_missing"
+		it.Minecraft.ItemID = "minecraft:bow"
+
+		errs := entity.ValidateRelation(it, relationMissingRefsDBMaster{missingBow: true})
+		if !hasFieldError(errs, "maf.bowId") {
+			t.Fatalf("expected maf.bowId relation error, got %#v", errs)
+		}
+	})
+
+	t.Run("bow requires bow item", func(t *testing.T) {
+		it := validItem()
+		it.Maf.BowID = "bow_1"
+
+		errs := entity.ValidateRelation(it, testDBMaster{})
+		if !hasFieldError(errs, "minecraft.itemId") {
+			t.Fatalf("expected minecraft.itemId relation error, got %#v", errs)
+		}
+	})
+
+	t.Run("bow accepts crossbow item", func(t *testing.T) {
+		it := validItem()
+		it.Minecraft.ItemID = "minecraft:crossbow"
+		it.Maf.BowID = "bow_1"
+
+		errs := entity.ValidateRelation(it, testDBMaster{})
+		if hasFieldError(errs, "minecraft.itemId") {
+			t.Fatalf("expected crossbow item to be accepted, got %#v", errs)
+		}
+	})
+
+	t.Run("bow rejects passive combination", func(t *testing.T) {
+		it := validItem()
+		it.Minecraft.ItemID = "minecraft:bow"
+		it.Maf.BowID = "bow_1"
+		it.Maf.PassiveID = "passive_1"
+
+		errs := entity.ValidateRelation(it, testDBMaster{})
+		if !hasFieldError(errs, "maf.passiveId") {
+			t.Fatalf("expected maf.passiveId relation error, got %#v", errs)
+		}
+	})
+
+	t.Run("bow rejects grimoire combination", func(t *testing.T) {
+		it := validItem()
+		it.Minecraft.ItemID = "minecraft:bow"
+		it.Maf.BowID = "bow_1"
+		it.Maf.GrimoireID = "grimoire_1"
+
+		errs := entity.ValidateRelation(it, testDBMaster{})
+		if !hasFieldError(errs, "maf.grimoireId") {
+			t.Fatalf("expected maf.grimoireId relation error, got %#v", errs)
+		}
+	})
 }
 
 func TestItemValidateAllDetectsDuplicateID(t *testing.T) {
@@ -146,7 +203,9 @@ type relationMissingRefsDBMaster struct {
 	testDBMaster
 	missingGrimoire bool
 	missingPassive  bool
+	missingBow      bool
 }
 
 func (s relationMissingRefsDBMaster) HasGrimoire(string) bool { return !s.missingGrimoire }
 func (s relationMissingRefsDBMaster) HasPassive(string) bool  { return !s.missingPassive }
+func (s relationMissingRefsDBMaster) HasBow(string) bool      { return !s.missingBow }

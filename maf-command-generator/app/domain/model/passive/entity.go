@@ -40,7 +40,7 @@ func (s *PassiveEntity) ValidateStruct(newEntity Passive) []model.ValidationErro
 	return errs
 }
 
-func (s *PassiveEntity) ValidateRelation(_ Passive, _ model.DBMaster) []model.ValidationError {
+func (s *PassiveEntity) ValidateRelation(newEntity Passive, mas model.DBMaster) []model.ValidationError {
 	return nil
 }
 

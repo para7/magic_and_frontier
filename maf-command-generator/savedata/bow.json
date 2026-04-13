@@ -1,0 +1,75 @@
+{
+  "entries": [
+    {
+      "id": "test_hit",
+      "name": "Test Bow Passive",
+      "role": "弓命中時テスト",
+      "slots": [],
+      "life_sub": 100,
+      "script_hit": [
+        "effect give @e[distance=..4] minecraft:glowing 3 10",
+        "effect give @e[distance=..4,type=!minecraft:player] minecraft:levitation 1 2",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 1 2 1",
+        "tell @a \"矢の効果が発動しました\"",
+        "summon minecraft:zombie ~ ~ ~"
+      ]
+    },
+    {
+      "id": "test_fired",
+      "name": "Test Bow Passive",
+      "role": "弓発射時テスト",
+      "slots": [],
+      "life_sub": 100,
+      "script_fired": [
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 1 1.5 1"
+      ]
+    },
+    {
+      "id": "test_flying",
+      "name": "Test Bow Passive",
+      "role": "矢飛行中時テスト",
+      "slots": [],
+      "life_sub": 100,
+      "script_flying": [
+        "particle minecraft:happy_villager ~ ~ ~ 0.4 0.4 0.4 0 5 force",
+        "playsound minecraft:entity.experience_orb.pickup player @a ~ ~ ~ 0.15 2.0"
+      ]
+    },
+    {
+      "id": "test_ground",
+      "name": "Test Bow Passive",
+      "role": "矢着弾時テスト",
+      "slots": [],
+      "life_sub": 100,
+      "script_ground": [
+        "summon minecraft:skeleton",
+        "kill @s"
+      ]
+    },
+    {
+      "id": "test_full",
+      "name": "Test Bow Passive",
+      "role": "弓スキルフルテスト",
+      "slots": [],
+      "life_sub": 100,
+      "script_hit": [
+        "effect give @e[distance=..4] minecraft:glowing 3 10",
+        "effect give @e[distance=..4,type=!minecraft:player] minecraft:levitation 1 2",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 1 2 1",
+        "tell @a \"矢の効果が発動しました\"",
+        "summon minecraft:zombie ~ ~ ~"
+      ],
+      "script_fired": [
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 1 1.5 1"
+      ],
+      "script_flying": [
+        "particle minecraft:happy_villager ~ ~ ~ 0.4 0.4 0.4 0 5 force",
+        "playsound minecraft:entity.experience_orb.pickup player @a ~ ~ ~ 0.15 2.0"
+      ],
+      "script_ground": [
+        "summon minecraft:skeleton",
+        "kill @s"
+      ]
+    }
+  ]
+}

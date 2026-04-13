@@ -1,5 +1,5 @@
 ---
-paths: datapacks/magic_and_frontier
+paths: ["datapacks/magic_and_frontier"]
 ---
 
 # datapacks
@@ -32,14 +32,28 @@ Minecraft Version 26.1
   - `mp_manage.mcfunction` — MP消費・回復ロジック
   - `mpbar.mcfunction` / `mpbar_init.mcfunction` — MPバー表示
   - `mpbar_per_player_dispatch.mcfunction` / `mpbar_player_macro.mcfunction` — プレイヤーごとのMPバー
-- `passive/` — パッシブ効果
-  - `tick.mcfunction` — パッシブティック
-  - `run_effect.mcfunction` — 装備パッシブ効果実行
-  - `run_mainhand_effect.mcfunction` — メインハンド装備パッシブ
-  - `run_bow_effect.mcfunction` — 弓パッシブ効果実行
-  - `tag_passive_arrow.mcfunction` — パッシブ矢タグ付け
-  - `on_arrow_hit.mcfunction` — 矢着弾時処理
 - `exec/set_magic.mcfunction` — 魔法セット
+
+#### passive/ — パッシブ効果
+- `tick.mcfunction` — パッシブティック（スロット1〜3 + メインハンド + 弓着弾チェック）
+- `run_effect.mcfunction` — 装備パッシブ効果実行ディスパッチ
+- `run_mainhand_effect.mcfunction` — メインハンド装備パッシブ
+- `run_bow_effect.mcfunction` — パッシブ弓効果実行ディスパッチ
+- `tag_passive_arrow.mcfunction` — パッシブ矢タグ付け（マクロ関数）
+- `on_arrow_hit.mcfunction` — 矢着弾フラグセット（advancement コールバック）
+- `on_bow_hit.mcfunction` — パッシブ弓着弾処理本体
+
+#### bow/ — 弓パッシブ共有ランタイム
+- `tag_bow_arrow.mcfunction` — 弓矢へのデータ埋め込み（マクロ関数）
+- `prepare_hit_arrow.mcfunction` — hit マーカー（hit タグ + dolphins_grace）付与
+- `on_bow_hit.mcfunction` — 弓着弾処理エントリ
+- `process_hit_arrows.mcfunction` — shooterPlayerID で矢をフィルタ
+- `resolve_hit_arrow.mcfunction` — 個別矢の着弾解決
+- `run_bow_effect.mcfunction` — hit スクリプトディスパッチ
+- `tick_flying.mcfunction` — 飛翔中矢の毎 tick 処理
+- `run_flying.mcfunction` — flying スクリプトディスパッチ
+- `tick_ground.mcfunction` — 着地矢の毎 tick 処理
+- `run_ground.mcfunction` — ground スクリプトディスパッチ
 
 #### system/ — スコアボード・ID管理
 - `score/prescore.mcfunction` / `score/afterscore.mcfunction` — スコアボードの前処理/後処理
@@ -59,10 +73,12 @@ maf-command-generator で生成。直接編集禁止。
 
 - `grimoire/effect/` — 魔法書エフェクト（24種: sweep, teleport, healing, tornado, barrier, etc.）
 - `grimoire/give/` — 魔法書giveコマンド（上記と対応する24種）
-- `passive/effect/` — パッシブ効果（passive_1, regeneration, test_bow_passive）
+- `passive/effect/` — パッシブ効果 + 弓パッシブ effect（bow_ プレフィックス付き）
 - `passive/give/` — パッシブ装備giveコマンド
 - `passive/apply/` — パッシブ装備適用処理
-- `passive/bow/` — 弓パッシブ効果
+- `passive/bow/` — 弓パッシブ着弾時効果（ScriptHit）
+- `bow/flying/` — 弓パッシブ飛翔中効果（ScriptFlying）
+- `bow/ground/` — 弓パッシブ着地効果（ScriptGround）
 - `enemy/spawn/` — 敵スポーン（poison_zombie, drop_test, drop_test_bow）
 - `enemy/skill/` — 敵スキル（main, near_poison）
 

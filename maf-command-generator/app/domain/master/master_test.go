@@ -6,7 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	bowModel "maf_command_editor/app/domain/model/bow"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
+	passiveModel "maf_command_editor/app/domain/model/passive"
 	"maf_command_editor/app/files"
 )
 
@@ -38,6 +40,7 @@ func newTestConfig(t *testing.T, grimoires []grimoireModel.Grimoire) files.MafCo
 	writeState(t, p("grimoire.json"), grimoires)
 	writeState[struct{}](t, p("item.json"), nil)
 	writeState[struct{}](t, p("passive.json"), nil)
+	writeState[struct{}](t, p("bow.json"), nil)
 	writeState[struct{}](t, p("enemy_skill.json"), nil)
 	writeState[struct{}](t, p("enemy.json"), nil)
 	writeState[struct{}](t, p("spawn_table.json"), nil)
@@ -48,6 +51,7 @@ func newTestConfig(t *testing.T, grimoires []grimoireModel.Grimoire) files.MafCo
 	cfg.GrimoireStatePath = p("grimoire.json")
 	cfg.ItemStatePath = p("item.json")
 	cfg.PassiveStatePath = p("passive.json")
+	cfg.BowStatePath = p("bow.json")
 	cfg.EnemySkillStatePath = p("enemy_skill.json")
 	cfg.EnemyStatePath = p("enemy.json")
 	cfg.SpawnTableStatePath = p("spawn_table.json")
@@ -94,4 +98,25 @@ func TestDBMasterImplListGrimoiresReturnsCopy(t *testing.T) {
 	if again[0].Title != "one" {
 		t.Fatalf("internal state must not be affected by caller mutation, got %q", again[0].Title)
 	}
+}
+
+func TestDBMasterValidateAllRejectsBowEffectIDCollision(t *testing.T) {
+	cfg := newTestConfig(t, nil)
+	writeState(t, cfg.PassiveStatePath, []passiveModel.Passive{
+		{ID: "bow_test_full", Condition: "always", Slots: []int{1}, Script: []string{"say passive"}},
+	})
+	writeState(t, cfg.BowStatePath, []bowModel.BowPassive{
+		{ID: "test_full"},
+	})
+
+	db := NewDBMaster(cfg)
+	errs := db.ValidateAll()
+	for _, recordErrs := range errs {
+		for _, err := range recordErrs {
+			if err.Entity == "bow" && err.ID == "test_full" && err.Field == "id" {
+				return
+			}
+		}
+	}
+	t.Fatalf("expected bow/passive effect id collision error, got %#v", errs)
 }

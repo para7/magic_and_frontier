@@ -6,6 +6,11 @@ import (
 	"strings"
 )
 
+type NormalizedComponent struct {
+	Key   string
+	Value string
+}
+
 func BuildItemComponents(entry Item) (string, string) {
 	itemParts := []string{
 		fmt.Sprintf("id:%q", strings.TrimSpace(entry.Minecraft.ItemID)),
@@ -22,6 +27,19 @@ func BuildItemComponents(entry Item) (string, string) {
 }
 
 func buildComponentParts(components map[string]string) ([]string, string) {
+	entries, errMsg := NormalizeComponents(components)
+	if errMsg != "" {
+		return nil, errMsg
+	}
+
+	parts := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		parts = append(parts, fmt.Sprintf("%q:%s", entry.Key, entry.Value))
+	}
+	return parts, ""
+}
+
+func NormalizeComponents(components map[string]string) ([]NormalizedComponent, string) {
 	if len(components) == 0 {
 		return nil, ""
 	}
@@ -45,9 +63,12 @@ func buildComponentParts(components map[string]string) ([]string, string) {
 	}
 
 	sort.Strings(keys)
-	parts := make([]string, 0, len(keys))
+	entries := make([]NormalizedComponent, 0, len(keys))
 	for _, key := range keys {
-		parts = append(parts, fmt.Sprintf("%q:%s", key, normalizedValues[key]))
+		entries = append(entries, NormalizedComponent{
+			Key:   key,
+			Value: normalizedValues[key],
+		})
 	}
-	return parts, ""
+	return entries, ""
 }

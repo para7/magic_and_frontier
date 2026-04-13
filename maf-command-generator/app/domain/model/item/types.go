@@ -10,6 +10,7 @@ type ItemMaf struct {
 	GrimoireID  string `json:"grimoireId,omitempty"`
 	PassiveID   string `json:"passiveId,omitempty"`
 	PassiveSlot int    `json:"passiveSlot,omitempty" validate:"omitempty,gte=1,lte=3"`
+	BowID       string `json:"bowId,omitempty"`
 }
 
 type MinecraftItem struct {

@@ -1,6 +1,7 @@
 package export
 
 import (
+	bowModel "maf_command_editor/app/domain/model/bow"
 	enemyModel "maf_command_editor/app/domain/model/enemy"
 	enemyskillModel "maf_command_editor/app/domain/model/enemyskill"
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
@@ -11,6 +12,7 @@ import (
 type DBMaster interface {
 	ListGrimoires() []grimoireModel.Grimoire
 	ListPassives() []passiveModel.Passive
+	ListBows() []bowModel.BowPassive
 	ListItems() []itemModel.Item
 	ListEnemySkills() []enemyskillModel.EnemySkill
 	ListEnemies() []enemyModel.Enemy

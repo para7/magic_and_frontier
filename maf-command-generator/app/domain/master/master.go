@@ -5,6 +5,7 @@ import (
 	"log"
 
 	model "maf_command_editor/app/domain/model"
+	"maf_command_editor/app/domain/model/bow"
 	"maf_command_editor/app/domain/model/enemy"
 	"maf_command_editor/app/domain/model/enemyskill"
 	"maf_command_editor/app/domain/model/grimoire"
@@ -21,6 +22,7 @@ type DBMaster struct {
 	grimoire   model.MafEntity[grimoire.Grimoire]
 	item       model.MafEntity[item.Item]
 	passive    model.MafEntity[passive.Passive]
+	bow        model.MafEntity[bow.BowPassive]
 	enemyskill model.MafEntity[enemyskill.EnemySkill]
 	enemy      model.MafEntity[enemy.Enemy]
 	spawntable model.MafEntity[spawntable.SpawnTable]
@@ -49,6 +51,9 @@ func NewDBMaster(cfg config.MafConfig) *DBMaster {
 
 	d.passive = passive.NewPassiveEntity(cfg.PassiveStatePath)
 	load("passive", d.passive.Load)
+
+	d.bow = bow.NewBowEntity(cfg.BowStatePath)
+	load("bow", d.bow.Load)
 
 	d.enemyskill = enemyskill.NewEnemySkillEntity(cfg.EnemySkillStatePath)
 	load("enemyskill", d.enemyskill.Load)
@@ -82,6 +87,11 @@ func (d *DBMaster) HasItem(id string) bool {
 
 func (d *DBMaster) HasPassive(id string) bool {
 	_, found := d.passive.Find(id)
+	return found
+}
+
+func (d *DBMaster) HasBow(id string) bool {
+	_, found := d.bow.Find(id)
 	return found
 }
 
@@ -125,6 +135,7 @@ func (d *DBMaster) ValidateAll() [][]model.ValidationError {
 	result = append(result, d.grimoire.ValidateAll(d)...)
 	result = append(result, d.item.ValidateAll(d)...)
 	result = append(result, d.passive.ValidateAll(d)...)
+	result = append(result, d.bow.ValidateAll(d)...)
 	result = append(result, d.enemyskill.ValidateAll(d)...)
 	result = append(result, d.enemy.ValidateAll(d)...)
 	result = append(result, d.spawntable.ValidateAll(d)...)
@@ -173,6 +184,13 @@ func (d *DBMaster) GetItemByID(id string) (item.Item, bool) {
 func (d *DBMaster) ListPassives() []passive.Passive {
 	entries := d.passive.GetAll()
 	result := make([]passive.Passive, len(entries))
+	copy(result, entries)
+	return result
+}
+
+func (d *DBMaster) ListBows() []bow.BowPassive {
+	entries := d.bow.GetAll()
+	result := make([]bow.BowPassive, len(entries))
 	copy(result, entries)
 	return result
 }

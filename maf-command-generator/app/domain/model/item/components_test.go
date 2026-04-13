@@ -80,3 +80,22 @@ func TestBuildItemComponentsRejectsInvalidComponentKey(t *testing.T) {
 		t.Fatal("expected invalid component key error, got none")
 	}
 }
+
+func TestNormalizeComponentsTrimsAndSortsKeys(t *testing.T) {
+	entries, errMsg := NormalizeComponents(map[string]string{
+		" minecraft:z ": " {} ",
+		"minecraft:a":   " {levels:{\"minecraft:sharpness\":5}} ",
+	})
+	if errMsg != "" {
+		t.Fatalf("unexpected error: %s", errMsg)
+	}
+	if len(entries) != 2 {
+		t.Fatalf("entries length = %d, want 2", len(entries))
+	}
+	if entries[0].Key != "minecraft:a" || entries[0].Value != `{levels:{"minecraft:sharpness":5}}` {
+		t.Fatalf("unexpected first entry: %#v", entries[0])
+	}
+	if entries[1].Key != "minecraft:z" || entries[1].Value != "{}" {
+		t.Fatalf("unexpected second entry: %#v", entries[1])
+	}
+}
