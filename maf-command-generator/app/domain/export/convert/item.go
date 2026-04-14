@@ -73,6 +73,9 @@ func itemCustomData(
 	if len(spellMeta.customFragments) > 0 {
 		parts = append(parts, spellMeta.customFragments...)
 	}
+	if entry.Maf.MaxMP != nil {
+		parts = append(parts, fmt.Sprintf("maxmp:%d", *entry.Maf.MaxMP))
+	}
 	if spellMeta.spellFragment != "" {
 		parts = append(parts, spellMeta.spellFragment)
 	}

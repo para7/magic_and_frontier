@@ -264,6 +264,162 @@
           "minecraft:lore": "['{\"text\":\"Crossbow multishot full test\"}']"
         }
       }
+    },
+    {
+      "id": "test_mp_head_leather",
+      "maf": {
+        "maxmp": -20
+      },
+      "minecraft": {
+        "itemId": "minecraft:leather_helmet",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_head_leather\"}'",
+          "minecraft:lore": "['{\"text\":\"head mp -20\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_mp_body_leather",
+      "maf": {
+        "maxmp": 20
+      },
+      "minecraft": {
+        "itemId": "minecraft:leather_chestplate",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_body_leather\"}'",
+          "minecraft:lore": "['{\"text\":\"body mp +20\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_mp_head_gold",
+      "maf": {
+        "maxmp": -20
+      },
+      "minecraft": {
+        "itemId": "minecraft:golden_helmet",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_head_gold\"}'",
+          "minecraft:lore": "['{\"text\":\"head mp -20\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_mp_body_gold",
+      "maf": {
+        "maxmp": 20
+      },
+      "minecraft": {
+        "itemId": "minecraft:golden_chestplate",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_body_gold\"}'",
+          "minecraft:lore": "['{\"text\":\"body mp +20\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_mp_head_chain",
+      "maf": {
+        "maxmp": -20
+      },
+      "minecraft": {
+        "itemId": "minecraft:chainmail_helmet",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_head_chain\"}'",
+          "minecraft:lore": "['{\"text\":\"head mp -20\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_mp_body_chain",
+      "maf": {
+        "maxmp": 20
+      },
+      "minecraft": {
+        "itemId": "minecraft:chainmail_chestplate",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_body_chain\"}'",
+          "minecraft:lore": "['{\"text\":\"body mp +20\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_mp_head_iron",
+      "maf": {
+        "maxmp": -20
+      },
+      "minecraft": {
+        "itemId": "minecraft:iron_helmet",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_head_iron\"}'",
+          "minecraft:lore": "['{\"text\":\"head mp -20\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_mp_body_iron",
+      "maf": {
+        "maxmp": 20
+      },
+      "minecraft": {
+        "itemId": "minecraft:iron_chestplate",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_body_iron\"}'",
+          "minecraft:lore": "['{\"text\":\"body mp +20\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_mp_head_diamond",
+      "maf": {
+        "maxmp": -20
+      },
+      "minecraft": {
+        "itemId": "minecraft:diamond_helmet",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_head_diamond\"}'",
+          "minecraft:lore": "['{\"text\":\"head mp -20\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_mp_body_diamond",
+      "maf": {
+        "maxmp": 20
+      },
+      "minecraft": {
+        "itemId": "minecraft:diamond_chestplate",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_body_diamond\"}'",
+          "minecraft:lore": "['{\"text\":\"body mp +20\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_mp_head_netherite",
+      "maf": {
+        "maxmp": -20
+      },
+      "minecraft": {
+        "itemId": "minecraft:netherite_helmet",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_head_netherite\"}'",
+          "minecraft:lore": "['{\"text\":\"head mp -20\"}']"
+        }
+      }
+    },
+    {
+      "id": "test_mp_body_netherite",
+      "maf": {
+        "maxmp": 20
+      },
+      "minecraft": {
+        "itemId": "minecraft:netherite_chestplate",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"test_mp_body_netherite\"}'",
+          "minecraft:lore": "['{\"text\":\"body mp +20\"}']"
+        }
+      }
     }
   ]
 }

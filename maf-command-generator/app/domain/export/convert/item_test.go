@@ -138,6 +138,27 @@ func TestPassiveOnlyItemDoesNotBecomeRightClickSpell(t *testing.T) {
 	}
 }
 
+func TestItemCustomDataEmbedsMaxMPWhenConfigured(t *testing.T) {
+	maxMP := -12
+	entry := itemModel.Item{
+		ID: "items_with_maxmp",
+		Maf: itemModel.ItemMaf{
+			MaxMP: &maxMP,
+		},
+		Minecraft: itemModel.MinecraftItem{
+			ItemID: "minecraft:stone",
+		},
+	}
+
+	customData, err := itemCustomData(entry, nil, nil, nil)
+	if err != nil {
+		t.Fatalf("itemCustomData returned error: %v", err)
+	}
+	if !strings.Contains(customData, `maxmp:-12`) {
+		t.Fatalf("maxmp should be embedded into custom data: %s", customData)
+	}
+}
+
 func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 	entry := itemModel.Item{
 		ID: "items_1",

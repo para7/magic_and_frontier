@@ -11,6 +11,7 @@ type ItemMaf struct {
 	PassiveID   string `json:"passiveId,omitempty"`
 	PassiveSlot int    `json:"passiveSlot,omitempty" validate:"omitempty,gte=1,lte=3"`
 	BowID       string `json:"bowId,omitempty"`
+	MaxMP       *int   `json:"maxmp,omitempty"`
 }
 
 type MinecraftItem struct {
