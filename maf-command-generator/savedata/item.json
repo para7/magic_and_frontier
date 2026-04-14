@@ -39,6 +39,19 @@
       }
     },
     {
+      "id": "test_sword_passive_attack",
+      "maf": {
+        "passiveId": "passive_1"
+      },
+      "minecraft": {
+        "itemId": "minecraft:diamond_sword",
+        "components": {
+          "minecraft:custom_name": "'{\"text\":\"攻撃パッシブテスト\"}'",
+          "minecraft:lore": "['{\"text\":\"攻撃パッシブテスト\"}']"
+        }
+      }
+    },
+    {
       "id": "test_sword_both",
       "maf": {
         "grimoireId": "tempest01",

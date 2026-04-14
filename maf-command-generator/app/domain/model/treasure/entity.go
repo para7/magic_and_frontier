@@ -68,7 +68,33 @@ func (s *TreasureEntity) ValidateRelation(newEntity Treasure, mas model.DBMaster
 	}
 
 	errs = append(errs, model.ValidateDropRefs("treasure", newEntity.ID, "lootPools", newEntity.LootPools, mas)...)
+	errs = append(errs, validatePassiveLootEligibility("treasure", newEntity.ID, "lootPools", newEntity.LootPools, mas)...)
 
+	return errs
+}
+
+func validatePassiveLootEligibility(entity, id, prefix string, drops []model.DropRef, mas model.DBMaster) []model.ValidationError {
+	var errs []model.ValidationError
+	for i, d := range drops {
+		if strings.TrimSpace(d.Kind) != "passive" {
+			continue
+		}
+		refID := strings.TrimSpace(d.RefID)
+		if refID == "" {
+			continue
+		}
+		passive, found := mas.GetPassive(refID)
+		if !found {
+			continue
+		}
+		if passive.GenerateGrimoire == nil || !*passive.GenerateGrimoire {
+			errs = append(errs, model.ValidationError{
+				Entity: entity, ID: id,
+				Field: fmt.Sprintf("%s[%d].refId", prefix, i),
+				Tag:   "relation", Param: "passive generate_grimoire must be true when kind=passive",
+			})
+		}
+	}
 	return errs
 }
 

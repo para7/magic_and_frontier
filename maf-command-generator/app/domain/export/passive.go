@@ -2,6 +2,7 @@ package export
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -39,26 +40,28 @@ func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveG
 			Body: effectBody,
 		})
 
-		slots := make([]int, len(entry.Slots))
-		copy(slots, entry.Slots)
-		sort.Ints(slots)
+		if entry.GenerateGrimoire != nil && *entry.GenerateGrimoire {
+			slots := make([]int, len(entry.Slots))
+			copy(slots, entry.Slots)
+			sort.Ints(slots)
 
-		for _, slot := range slots {
-			functionID := fmt.Sprintf("%s_slot%d", entry.ID, slot)
-			book := ec.PassiveToBook(entry, slot)
-			displayName := entry.ID // スペースのみの場合は ID にフォールバック
-			if trimmed := strings.TrimSpace(entry.Name); trimmed != "" {
-				displayName = trimmed
+			for _, slot := range slots {
+				functionID := fmt.Sprintf("%s_slot%d", entry.ID, slot)
+				book := ec.PassiveToBook(entry, slot)
+				displayName := entry.ID // スペースのみの場合は ID にフォールバック
+				if trimmed := strings.TrimSpace(entry.Name); trimmed != "" {
+					displayName = trimmed
+				}
+				applyBody := passiveApplyBody(slot, entry.ID, entry.Condition, displayName)
+				grimoires = append(grimoires, PassiveGrimoireFunction{
+					PassiveID:  entry.ID,
+					Slot:       slot,
+					FunctionID: functionID,
+					GiveBody:   fmt.Sprintf("give @p %s 1", book),
+					ApplyBody:  applyBody,
+					Book:       book,
+				})
 			}
-			applyBody := passiveApplyBody(slot, entry.ID, displayName)
-			grimoires = append(grimoires, PassiveGrimoireFunction{
-				PassiveID:  entry.ID,
-				Slot:       slot,
-				FunctionID: functionID,
-				GiveBody:   fmt.Sprintf("give @p %s 1", book),
-				ApplyBody:  applyBody,
-				Book:       book,
-			})
 		}
 	}
 
@@ -71,6 +74,12 @@ func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []Passiv
 		if err := writeFunctionFile(path, entry.Body); err != nil {
 			return err
 		}
+	}
+	if err := removePassiveSlotFunctionFiles(giveDir); err != nil {
+		return err
+	}
+	if err := removePassiveSlotFunctionFiles(applyDir); err != nil {
+		return err
 	}
 	for _, entry := range grimoires {
 		givePath := filepath.Join(giveDir, entry.FunctionID+".mcfunction")
@@ -85,11 +94,25 @@ func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []Passiv
 	return nil
 }
 
-func passiveApplyBody(slot int, passiveID string, displayName string) string {
+func removePassiveSlotFunctionFiles(dir string) error {
+	files, err := filepath.Glob(filepath.Join(dir, "*_slot*.mcfunction"))
+	if err != nil {
+		return err
+	}
+	for _, path := range files {
+		if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
+			return err
+		}
+	}
+	return nil
+}
+
+func passiveApplyBody(slot int, passiveID string, condition string, displayName string) string {
 	setMessage := fmt.Sprintf("[slot%d]に[%s]を設定しました", slot, displayName)
 	return strings.Join([]string{
 		"function #oh_my_dat:please",
 		fmt.Sprintf("data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.passive.slot%d.id set value %s", slot, ec.JsonString(passiveID)),
+		fmt.Sprintf("data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.passive.slot%d.condition set value %s", slot, ec.JsonString(condition)),
 		fmt.Sprintf(`tellraw @s [{"text":%s}]`, ec.JsonString(setMessage)),
 	}, "\n")
 }

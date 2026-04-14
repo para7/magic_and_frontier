@@ -11,6 +11,8 @@ scoreboard objectives add mafMoved dummy
 scoreboard objectives add mafBowUsed minecraft.used:minecraft.bow
 scoreboard objectives add mafCrossbowUsed minecraft.used:minecraft.crossbow
 scoreboard objectives add mafBowHit dummy
+# 近接攻撃時に1
+scoreboard objectives add mafMeleeHit dummy
 
 
 scoreboard objectives add mafWalkCM minecraft.custom:minecraft.walk_one_cm

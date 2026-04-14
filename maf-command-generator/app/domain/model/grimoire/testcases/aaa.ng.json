@@ -1,0 +1,15 @@
+{
+  "entries": [
+    {
+      "id": "Grimoire_test_ng",
+      "castTime": 20,
+      "coolTime": 10,
+      "mpCost": 5,
+      "script": [
+        "function maf:test_ng"
+      ],
+      "title": "Test NG",
+      "description": "invalid id testcase"
+    }
+  ]
+}

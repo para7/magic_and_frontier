@@ -6,14 +6,17 @@ import (
 	model "maf_command_editor/app/domain/model"
 )
 
+func boolPtr(b bool) *bool { return &b }
+
 func validPassive() Passive {
 	return Passive{
-		ID:          "passive_1",
-		Name:        "剣の心得",
-		Condition:   "on_sword_hit",
-		Slots:       []int{1, 2},
-		Description: "剣攻撃時に発動するパッシブ",
-		Script:      []string{"function maf:skill/test"},
+		ID:               "passive_1",
+		Name:             "剣の心得",
+		Condition:        "attack",
+		Slots:            []int{1, 2},
+		Description:      "剣攻撃時に発動するパッシブ",
+		Script:           []string{"function maf:skill/test"},
+		GenerateGrimoire: boolPtr(true),
 	}
 }
 
@@ -28,9 +31,13 @@ func hasFieldError(errs []model.ValidationError, field string) bool {
 
 type testDBMaster struct{}
 
-func (testDBMaster) HasItem(string) bool               { return true }
-func (testDBMaster) HasGrimoire(string) bool           { return true }
-func (testDBMaster) HasPassive(string) bool            { return true }
+func (testDBMaster) HasItem(string) bool     { return true }
+func (testDBMaster) HasGrimoire(string) bool { return true }
+func (testDBMaster) HasPassive(string) bool  { return true }
+func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
+	v := true
+	return model.PassiveSnapshot{ID: "passive_1", GenerateGrimoire: &v}, true
+}
 func (testDBMaster) HasBow(string) bool                { return false }
 func (testDBMaster) HasEnemySkill(string) bool         { return true }
 func (testDBMaster) HasEnemy(string) bool              { return true }
@@ -68,10 +75,12 @@ func TestPassiveValidateStructPerField(t *testing.T) {
 		{name: "name ok max", patch: func(p *Passive) { p.Name = string(make([]rune, 80)) }},
 		{name: "name ng over max", patch: func(p *Passive) { p.Name = string(make([]rune, 81)) }, wantErrField: "name"},
 		{name: "condition ok always", patch: func(p *Passive) { p.Condition = "always" }},
-		{name: "condition ok sword", patch: func(p *Passive) { p.Condition = "on_sword_hit" }},
+		{name: "condition ok attack", patch: func(p *Passive) { p.Condition = "attack" }},
+		{name: "condition ok none", patch: func(p *Passive) { p.Condition = "none" }},
 		{name: "condition ng empty", patch: func(p *Passive) { p.Condition = " " }, wantErrField: "condition"},
 		{name: "condition ng unknown", patch: func(p *Passive) { p.Condition = "unknown" }, wantErrField: "condition"},
 		{name: "condition ng bow", patch: func(p *Passive) { p.Condition = "bow" }, wantErrField: "condition"},
+		{name: "condition ng on_sword_hit", patch: func(p *Passive) { p.Condition = "on_sword_hit" }, wantErrField: "condition"},
 		{name: "slots ok", patch: func(p *Passive) { p.Slots = []int{1, 3} }},
 		{name: "slots ng empty", patch: func(p *Passive) { p.Slots = nil }, wantErrField: "slots"},
 		{name: "slots ng under", patch: func(p *Passive) { p.Slots = []int{0} }, wantErrField: "slots[0]"},

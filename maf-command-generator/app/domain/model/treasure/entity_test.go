@@ -29,9 +29,13 @@ func hasFieldError(errs []model.ValidationError, field string) bool {
 
 type testDBMaster struct{}
 
-func (testDBMaster) HasItem(string) bool               { return true }
-func (testDBMaster) HasGrimoire(string) bool           { return true }
-func (testDBMaster) HasPassive(string) bool            { return true }
+func (testDBMaster) HasItem(string) bool     { return true }
+func (testDBMaster) HasGrimoire(string) bool { return true }
+func (testDBMaster) HasPassive(string) bool  { return true }
+func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
+	v := true
+	return model.PassiveSnapshot{ID: "passive_1", GenerateGrimoire: &v}, true
+}
 func (testDBMaster) HasBow(string) bool                { return true }
 func (testDBMaster) HasEnemySkill(string) bool         { return true }
 func (testDBMaster) HasEnemy(string) bool              { return true }
@@ -98,4 +102,22 @@ func TestTreasureValidateAllDetectsDuplicateID(t *testing.T) {
 		}
 	}
 	t.Fatalf("expected duplicate id error, got %#v", allErrs)
+}
+
+type passiveNotGeneratableDBMaster struct{ testDBMaster }
+
+func (passiveNotGeneratableDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
+	v := false
+	return model.PassiveSnapshot{ID: "passive_1", GenerateGrimoire: &v}, true
+}
+
+func TestTreasureValidateRelationRejectsPassiveWithGenerateGrimoireFalse(t *testing.T) {
+	entity := &TreasureEntity{}
+	slot := 1
+	tr := validTreasure()
+	tr.LootPools = []model.DropRef{{Kind: "passive", RefID: "passive_1", Slot: &slot, Weight: 1}}
+	errs := entity.ValidateRelation(tr, passiveNotGeneratableDBMaster{})
+	if !hasFieldError(errs, "lootPools[0].refId") {
+		t.Fatalf("expected passive generate_grimoire relation error, got %#v", errs)
+	}
 }

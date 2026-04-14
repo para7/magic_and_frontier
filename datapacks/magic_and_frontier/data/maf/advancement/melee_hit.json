@@ -1,0 +1,19 @@
+{
+  "criteria": {
+    "melee_hit": {
+      "trigger": "minecraft:player_hurt_entity",
+      "conditions": {
+        "damage": {
+          "type": {
+            "direct_entity": {
+              "type": "minecraft:player"
+            }
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "maf:passive/on_melee_hit"
+  }
+}

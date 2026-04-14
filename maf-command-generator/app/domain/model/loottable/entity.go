@@ -3,6 +3,7 @@ package loottable
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	cv "maf_command_editor/app/domain/custom_validator"
 	model "maf_command_editor/app/domain/model"
@@ -41,7 +42,35 @@ func (s *LootTableEntity) ValidateStruct(newEntity LootTable) []model.Validation
 }
 
 func (s *LootTableEntity) ValidateRelation(newEntity LootTable, mas model.DBMaster) []model.ValidationError {
-	return model.ValidateDropRefs("loottable", newEntity.ID, "lootPools", newEntity.LootPools, mas)
+	var errs []model.ValidationError
+	errs = append(errs, model.ValidateDropRefs("loottable", newEntity.ID, "lootPools", newEntity.LootPools, mas)...)
+	errs = append(errs, validatePassiveLootEligibility("loottable", newEntity.ID, "lootPools", newEntity.LootPools, mas)...)
+	return errs
+}
+
+func validatePassiveLootEligibility(entity, id, prefix string, drops []model.DropRef, mas model.DBMaster) []model.ValidationError {
+	var errs []model.ValidationError
+	for i, d := range drops {
+		if strings.TrimSpace(d.Kind) != "passive" {
+			continue
+		}
+		refID := strings.TrimSpace(d.RefID)
+		if refID == "" {
+			continue
+		}
+		passive, found := mas.GetPassive(refID)
+		if !found {
+			continue
+		}
+		if passive.GenerateGrimoire == nil || !*passive.GenerateGrimoire {
+			errs = append(errs, model.ValidationError{
+				Entity: entity, ID: id,
+				Field: fmt.Sprintf("%s[%d].refId", prefix, i),
+				Tag:   "relation", Param: "passive generate_grimoire must be true when kind=passive",
+			})
+		}
+	}
+	return errs
 }
 
 func (s *LootTableEntity) Create(newEntity LootTable, mas model.DBMaster) error {

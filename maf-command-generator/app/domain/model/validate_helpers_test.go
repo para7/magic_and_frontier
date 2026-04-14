@@ -6,9 +6,13 @@ type validateHelpersMasterStub struct {
 	passive bool
 }
 
-func (s validateHelpersMasterStub) HasItem(string) bool               { return true }
-func (s validateHelpersMasterStub) HasGrimoire(string) bool           { return true }
-func (s validateHelpersMasterStub) HasPassive(string) bool            { return s.passive }
+func (s validateHelpersMasterStub) HasItem(string) bool     { return true }
+func (s validateHelpersMasterStub) HasGrimoire(string) bool { return true }
+func (s validateHelpersMasterStub) HasPassive(string) bool  { return s.passive }
+func (s validateHelpersMasterStub) GetPassive(string) (PassiveSnapshot, bool) {
+	v := true
+	return PassiveSnapshot{ID: "passive_1", GenerateGrimoire: &v}, true
+}
 func (s validateHelpersMasterStub) HasBow(string) bool                { return true }
 func (s validateHelpersMasterStub) HasEnemySkill(string) bool         { return true }
 func (s validateHelpersMasterStub) HasEnemy(string) bool              { return true }

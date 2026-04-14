@@ -1,6 +1,7 @@
 package export
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -28,5 +29,35 @@ func TestPassiveExportFixtures(t *testing.T) {
 
 			assertGoldenDir(t, filepath.Join(tc.dir, "output"), actualDir)
 		})
+	}
+}
+
+func TestWritePassiveArtifactsRemovesStaleSlotFunctions(t *testing.T) {
+	root := t.TempDir()
+	giveDir := filepath.Join(root, "give")
+	applyDir := filepath.Join(root, "apply")
+
+	if err := writeFunctionFile(filepath.Join(giveDir, "stale_slot1.mcfunction"), ""); err != nil {
+		t.Fatal(err)
+	}
+	if err := writeFunctionFile(filepath.Join(applyDir, "stale_slot1.mcfunction"), ""); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := WritePassiveArtifacts(
+		filepath.Join(root, "effect"),
+		giveDir,
+		applyDir,
+		[]PassiveEffectFunction{{ID: "passive_1", Body: "say effect"}},
+		nil,
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := os.Stat(filepath.Join(giveDir, "stale_slot1.mcfunction")); !os.IsNotExist(err) {
+		t.Fatalf("expected stale give function to be removed, err=%v", err)
+	}
+	if _, err := os.Stat(filepath.Join(applyDir, "stale_slot1.mcfunction")); !os.IsNotExist(err) {
+		t.Fatalf("expected stale apply function to be removed, err=%v", err)
 	}
 }

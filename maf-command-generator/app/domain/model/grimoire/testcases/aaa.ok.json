@@ -1,0 +1,15 @@
+{
+  "entries": [
+    {
+      "id": "grimoire_test_ok",
+      "castTime": 20,
+      "coolTime": 10,
+      "mpCost": 5,
+      "script": [
+        "function maf:test_ok"
+      ],
+      "title": "Test OK",
+      "description": "valid grimoire testcase"
+    }
+  ]
+}

@@ -69,10 +69,36 @@ func (s *EnemyEntity) ValidateRelation(newEntity Enemy, mas model.DBMaster) []mo
 
 	// Drops の参照チェック
 	errs = append(errs, model.ValidateDropRefs("enemy", newEntity.ID, "drops", newEntity.Drops, mas)...)
+	errs = append(errs, validatePassiveLootEligibility("enemy", newEntity.ID, "drops", newEntity.Drops, mas)...)
 
 	// Equipment スロットの参照チェック
 	errs = append(errs, model.ValidateEquipmentSlots("enemy", newEntity.ID, newEntity.Equipment, mas)...)
 
+	return errs
+}
+
+func validatePassiveLootEligibility(entity, id, prefix string, drops []model.DropRef, mas model.DBMaster) []model.ValidationError {
+	var errs []model.ValidationError
+	for i, d := range drops {
+		if strings.TrimSpace(d.Kind) != "passive" {
+			continue
+		}
+		refID := strings.TrimSpace(d.RefID)
+		if refID == "" {
+			continue
+		}
+		passive, found := mas.GetPassive(refID)
+		if !found {
+			continue
+		}
+		if passive.GenerateGrimoire == nil || !*passive.GenerateGrimoire {
+			errs = append(errs, model.ValidationError{
+				Entity: entity, ID: id,
+				Field: fmt.Sprintf("%s[%d].refId", prefix, i),
+				Tag:   "relation", Param: "passive generate_grimoire must be true when kind=passive",
+			})
+		}
+	}
 	return errs
 }
 
