@@ -13,7 +13,7 @@ paths:
 |-------------|-----------|--------------|
 | Grimoire | `model/grimoire` | ID, CastTime, CoolTime, MPCost, Script, Title, Description |
 | Item | `model/item` | ID, Maf(GrimoireID/PassiveID/PassiveSlot/BowID), Minecraft(ItemID/Components) |
-| Passive | `model/passive` | ID, Name, Role, Condition(always/on_sword_hit), Slots, Description, Script |
+| Passive | `model/passive` | ID, Name, Role, Condition(always/attack/none), Slots, Description, Script |
 | BowPassive | `model/bow` | ID, Name, Role, Slots, LifeSub, ScriptHit/Fired/Flying/Ground |
 | EnemySkill | `model/enemyskill` | ID, Name, Description, Script |
 | Enemy | `model/enemy` | ID, MobType, Name, HP, Equipment, EnemySkillIDs, DropMode, Drops |

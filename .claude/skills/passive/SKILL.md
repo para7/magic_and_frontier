@@ -1,6 +1,6 @@
 ---
 name: passive
-description: パッシブスキルシステムの設計リファレンス。パッシブのデータモデル・発動条件(always/on_sword_hit/bow)・スロットシステム・生成パイプライン・ランタイム実行フローを網羅する。パッシブの新規追加、発動条件の変更、弓パッシブの調整、装備スロットの操作などで参照すること。passive, パッシブ, スロット, slot, 弓スキル, bow skill, 装備効果, on_sword_hit, always などのキーワードで使う。
+description: パッシブスキルシステムの設計リファレンス。パッシブのデータモデル・発動条件(always/attack/none)・スロットシステム・生成パイプライン・ランタイム実行フローを網羅する。パッシブの新規追加、発動条件の変更、弓パッシブの調整、装備スロットの操作などで参照すること。passive, パッシブ, スロット, slot, 弓スキル, bow skill, 装備効果, attack, always, none などのキーワードで使う。
 ---
 
 # パッシブスキルシステム
@@ -27,7 +27,7 @@ type Passive struct {
     ID               string     // スラッグID
     Name             string     // 表示名（最大80文字）
     Role             string     // 役割説明（最大200文字）
-    Condition        string     // 発動条件: "always" | "on_sword_hit" | "bow"
+    Condition        string     // 発動条件: "always" | "attack" | "none"
     Slots            []int      // 装備可能スロット（1〜3, ユニーク, 最低1つ）
     Description      string     // 効果説明（最大400文字）
     Script           []string   // 発動時コマンド（1行以上）
@@ -55,8 +55,8 @@ type BowConfig struct {
 | Condition | 発動タイミング | 処理ファイル |
 |-----------|-------------|------------|
 | `always` | 毎tick（装備中ずっと） | `passive/tick` → `run_effect` |
-| `on_sword_hit` | 剣でダメージを与えた時 | （未完全実装） |
-| `bow` | 弓を引いた時+矢着弾時 | `passive/tick` + `on_arrow_hit` |
+| `attack` | 近接攻撃でダメージを与えた時 | `advancement/melee_hit` → `passive/on_melee_hit` → `passive/tick` |
+| `none` | 自動発動なし（手動呼び出し専用） | `function maf:generated/passive/effect/{id}` を他システムから実行 |
 
 ---
 
@@ -83,11 +83,10 @@ generated/passive/
 ### 生成される成果物（各パッシブにつき複数ファイル）
 
 1. **effect/{id}.mcfunction** — 効果スクリプト
-   - `always`/`on_sword_hit`: `Script[]` をそのまま結合
-   - `bow`: 弓検知→矢タグ付けの自動生成コード（Script[] は bow/{id} に出力）
+   - `always`/`attack`/`none`: `Script[]` をそのまま結合
 2. **bow/{id}.mcfunction** — `bow` 条件のパッシブ専用。矢着弾時に実行される本体スクリプト
 3. **give/{id}_slot{N}.mcfunction** — パッシブ設定書（本）の give コマンド
-4. **apply/{id}_slot{N}.mcfunction** — `oh_my_dat` にパッシブIDを書き込む処理
+4. **apply/{id}_slot{N}.mcfunction** — `oh_my_dat` にパッシブID/conditionを書き込む処理
 
 ---
 
@@ -197,10 +196,10 @@ minecraft:custom_data={
 ## 6. パッシブ追加手順
 
 1. `savedata/passive.json` にエントリ追加
-2. `Condition` を設定（`always`/`on_sword_hit`/`bow`）
+2. `Condition` を設定（`always`/`attack`/`none`）
 3. `Slots` を設定（例: `[1, 2]` → スロット1か2に装備可能）
 4. `Script` に効果コマンドを記述
 5. `generate_grimoire` を設定（`true`: 設定書を生成する / `false`: 設定書不要）
-6. `bow` の場合は `Bow.LifeSub` も設定（矢の寿命調整）
+6. `none` は tick 自動発動しないため、必要に応じて他functionから `maf:generated/passive/effect/{id}` を呼び出す
 7. `make run/export` で生成
 8. `generate_grimoire: true` なら `/function maf:generated/passive/give/{id}_slot{N}` でテスト
