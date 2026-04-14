@@ -31,7 +31,6 @@ func TestGrimoireValidateAllWithRealJSONTestcases(t *testing.T) {
 	}
 
 	for _, file := range files {
-		file := file
 		t.Run(file, func(t *testing.T) {
 			path := filepath.Join(caseDir, file)
 			entity := NewGrimoireEntity(path)

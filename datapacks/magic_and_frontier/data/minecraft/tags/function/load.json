@@ -1,5 +1,6 @@
 {
   "values": [
-    "maf:load"
+    "maf:load",
+    "p7b:load"
   ]
 }
