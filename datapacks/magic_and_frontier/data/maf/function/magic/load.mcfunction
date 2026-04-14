@@ -1,5 +1,6 @@
 scoreboard objectives add mafMP dummy
 scoreboard objectives add mafMaxMP dummy
+scoreboard objectives add mafEquipMP dummy
 
 
 scoreboard objectives add mafCastCost dummy

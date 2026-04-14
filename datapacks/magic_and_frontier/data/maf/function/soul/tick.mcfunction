@@ -7,7 +7,7 @@ execute as @a[scores={mafSoulTick=1200..}] run scoreboard players set @s mafSoul
 
 # ソウル最大値
 # キャップ処理
-execute as @a[scores={mafSoul=101..}] run scoreboard players set @s mafSoul 100
+execute as @a[scores={mafSoul=501..}] run scoreboard players set @s mafSoul 500
 
 execute as @a[scores={mafSoulReset=1..}] run scoreboard players set @s mafSoul 0
 # MP回復も一定時間ストップ
