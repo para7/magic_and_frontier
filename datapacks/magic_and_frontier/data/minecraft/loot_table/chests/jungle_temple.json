@@ -317,6 +317,22 @@
           "name": "minecraft:book",
           "type": "minecraft:item",
           "weight": 10
+        },
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "max": 5,
+                "min": 3,
+                "type": "minecraft:uniform"
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:nether_star",
+          "type": "minecraft:item",
+          "weight": 10
         }
       ],
       "rolls": 3
