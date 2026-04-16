@@ -161,8 +161,8 @@ $function maf:generated/grimoire/effect/$(id)
 
 ```mcfunction
 # ダメージ系: undead は逆効果になるため分岐
-execute as @e[distance=1..8,type=#p7b:undead] run effect give @s minecraft:instant_health 1 1
-execute as @e[distance=1..8,type=!#p7b:undead] run effect give @s minecraft:instant_damage 1 1
+execute as @e[distance=1..8,type=#maf:undead] run effect give @s minecraft:instant_health 1 1
+execute as @e[distance=1..8,type=!#maf:undead] run effect give @s minecraft:instant_damage 1 1
 
 # ブロック操作系
 fill ~-7 ~-7 ~-7 ~7 ~7 ~7 fire replace air
@@ -175,13 +175,13 @@ playsound minecraft:entity.blaze.shoot master @a ~ ~ ~ 1.0 0.5
 tellraw @a[distance=..50] [{"selector":"@s"},{"text":" は プロミネンス を唱えた！"}]
 ```
 
-### 使用するエンティティタグ（p7BaseSystem）
+### 使用するエンティティタグ
 
 | タグ | 意味 |
 |------|------|
-| `#p7b:undead` | アンデッド分類（ゾンビ、スケルトン等） |
-| `#p7b:enemymob` | 敵モブ全般 |
-| `#p7b:friendmob` | 味方モブ（パーティ） |
+| `#maf:undead` | アンデッド分類（ゾンビ、スケルトン等） |
+| `#maf:enemymob` | 敵モブ全般 |
+| `#maf:friendmob` | 味方モブ（パーティ） |
 
 ---
 
