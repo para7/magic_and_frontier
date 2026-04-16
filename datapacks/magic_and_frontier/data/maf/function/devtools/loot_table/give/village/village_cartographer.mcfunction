@@ -1,1 +1,1 @@
-give @s chest[container_loot={loot_table:"minecraft:chests/village/village_cartographer"}]
+give @s chest[container_loot={loot_table:"minecraft:chests/village/village_cartographer"},minecraft:custom_name={"text":"chests/village/village_cartographer"}]

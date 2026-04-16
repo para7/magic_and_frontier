@@ -1,1 +1,1 @@
-give @s chest[container_loot={loot_table:"minecraft:chests/desert_pyramid"}]
+give @s chest[container_loot={loot_table:"minecraft:chests/desert_pyramid"},minecraft:custom_name={"text":"chests/desert_pyramid"}]
