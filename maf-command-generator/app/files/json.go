@@ -3,7 +3,6 @@ package files
 import (
 	"encoding/json"
 	"os"
-	"path/filepath"
 )
 
 type entriesFile[T any] struct {
@@ -31,19 +30,4 @@ func (s *JsonStore[T]) Load() ([]T, error) {
 	// s.Entries = f.Entries
 	// return nil
 	return f.Entries, nil
-}
-
-func (s *JsonStore[T]) Save(entries []T) error {
-	if entries == nil {
-		entries = []T{}
-	}
-	data, err := json.MarshalIndent(entriesFile[T]{Entries: entries}, "", "  ")
-	if err != nil {
-		return err
-	}
-	if err := os.MkdirAll(filepath.Dir(s.Path), 0o755); err != nil {
-		return err
-	}
-	data = append(data, '\n')
-	return os.WriteFile(s.Path, data, 0o644)
 }

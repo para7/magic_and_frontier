@@ -1,7 +1,6 @@
 package bow
 
 import (
-	"errors"
 	"fmt"
 
 	cv "maf_command_editor/app/domain/custom_validator"
@@ -51,46 +50,6 @@ func (s *BowEntity) ValidateRelation(newEntity BowPassive, mas model.DBMaster) [
 		}}
 	}
 	return nil
-}
-
-func (s *BowEntity) Create(newEntity BowPassive, mas model.DBMaster) error {
-	if _, errs := s.ValidateJSON(newEntity, mas); len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for _, p := range s.data {
-		if p.ID == newEntity.ID {
-			return errors.New("bow id already exists: " + newEntity.ID)
-		}
-	}
-	s.data = append(s.data, newEntity)
-	return nil
-}
-
-func (s *BowEntity) Update(newEntity BowPassive, mas model.DBMaster) error {
-	if _, errs := s.ValidateJSON(newEntity, mas); len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for i, p := range s.data {
-		if p.ID == newEntity.ID {
-			s.data[i] = newEntity
-			return nil
-		}
-	}
-	return errors.New("bow not found: " + newEntity.ID)
-}
-
-func (s *BowEntity) Delete(id string, mas model.DBMaster) error {
-	for i, p := range s.data {
-		if p.ID == id {
-			s.data = append(s.data[:i], s.data[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("bow not found: " + id)
-}
-
-func (s *BowEntity) Save() error {
-	return s.store.Save(s.data)
 }
 
 func (s *BowEntity) Load() error {

@@ -22,12 +22,6 @@ type DBMaster interface {
 // Model の共通インターフェース
 type MafEntity[T any] interface {
 	ValidateJSON(newEntity T, mas DBMaster) (T, []ValidationError)
-
-	// 主に web 画面からの操作用、メモリで保持してる配列にデータを追記する。リレーション関係を確認するため validate も行う
-	Create(newEntity T, mas DBMaster) error
-	Update(newEntity T, mas DBMaster) error
-	Delete(id string, mas DBMaster) error
-	Save() error
 	Load() error
 
 	// DBMaster との連携用
