@@ -1,0 +1,32 @@
+{
+    "type": "minecraft:chest",
+    "pools": [
+        {
+            "bonus_rolls": 0.0,
+            "entries": [
+                {
+                    "type": "maf:item",
+                    "name": "test_sword_both",
+                    "weight": 10
+                },
+                {
+                    "type": "maf:item",
+                    "name": "test_bow_full",
+                    "weight": 10
+                },
+                {
+                    "type": "maf:item",
+                    "name": "test_mp_body_diamond",
+                    "weight": 10
+                },
+                {
+                    "type": "maf:grimoire",
+                    "name": "healing01",
+                    "weight": 10
+                }
+            ],
+            "rolls": 3.0
+        }
+    ],
+    "random_sequence": "minecraft:chests/abandoned_mineshaft"
+}

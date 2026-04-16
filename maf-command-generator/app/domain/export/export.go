@@ -86,6 +86,14 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	if err := WriteEnemyArtifacts(enemyDir, enemyLootDir, enemies); err != nil {
 		return err
 	}
+
+	treasures, err := BuildTreasureArtifacts(dmas, mafconfig.LootTableSourceRoot, mafconfig.MinecraftLootTableRoot)
+	if err != nil {
+		return err
+	}
+	if err := WriteTreasureArtifacts(settings.OutputRoot, treasures); err != nil {
+		return err
+	}
 	return nil
 }
 

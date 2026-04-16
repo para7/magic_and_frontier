@@ -1,7 +1,9 @@
 package master
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
 	"log"
 
 	model "maf_command_editor/app/domain/model"
@@ -42,6 +44,15 @@ func NewDBMaster(cfg config.MafConfig) *DBMaster {
 			log.Fatalf("failed to load %s: %v", name, err)
 		}
 	}
+	loadOptional := func(name string, loader func() error) {
+		if err := loader(); err != nil {
+			if errors.Is(err, fs.ErrNotExist) {
+				log.Printf("[%s.Load] file not found, skipping", name)
+				return
+			}
+			log.Fatalf("failed to load %s: %v", name, err)
+		}
+	}
 
 	d.grimoire = grimoire.NewGrimoireEntity(cfg.GrimoireStatePath)
 	load("grimoire", d.grimoire.Load)
@@ -65,7 +76,7 @@ func NewDBMaster(cfg config.MafConfig) *DBMaster {
 	load("spawntable", d.spawntable.Load)
 
 	d.treasure = treasure.NewTreasureEntity(cfg.TreasureStatePath)
-	load("treasure", d.treasure.Load)
+	loadOptional("treasure", d.treasure.Load)
 
 	d.loottable = loottable.NewLootTableEntity(cfg.LootTablesStatePath)
 	load("loottable", d.loottable.Load)

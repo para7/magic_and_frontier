@@ -2,6 +2,7 @@ package export_convert
 
 import (
 	"fmt"
+	"strings"
 
 	model "maf_command_editor/app/domain/model"
 	bowModel "maf_command_editor/app/domain/model/bow"
@@ -72,6 +73,108 @@ func BuildDropLootPool(
 		"rolls":   1,
 		"entries": entries,
 	}, nil
+}
+
+func ResolveMafLootPools(
+	pools []any,
+	itemsByID map[string]itemModel.Item,
+	grimoiresByID map[string]grimoireModel.Grimoire,
+	passivesByID map[string]passiveModel.Passive,
+	bowsByID map[string]bowModel.BowPassive,
+	context string,
+) ([]any, error) {
+	resolved := make([]any, 0, len(pools))
+	for i, rawPool := range pools {
+		pool, ok := rawPool.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("%s: pools[%d] must be an object", context, i)
+		}
+
+		rawEntries, exists := pool["entries"]
+		if !exists || rawEntries == nil {
+			resolved = append(resolved, rawPool)
+			continue
+		}
+
+		entries, ok := rawEntries.([]any)
+		if !ok {
+			return nil, fmt.Errorf("%s: pools[%d].entries must be an array", context, i)
+		}
+
+		resolvedEntries := make([]any, 0, len(entries))
+		for j, rawEntry := range entries {
+			entryContext := fmt.Sprintf("%s: pools[%d].entries[%d]", context, i, j)
+			nextEntry, err := resolveMafLootEntry(rawEntry, itemsByID, grimoiresByID, passivesByID, bowsByID, entryContext)
+			if err != nil {
+				return nil, err
+			}
+			resolvedEntries = append(resolvedEntries, nextEntry)
+		}
+
+		nextPool := make(map[string]any, len(pool))
+		for key, value := range pool {
+			nextPool[key] = value
+		}
+		nextPool["entries"] = resolvedEntries
+		resolved = append(resolved, nextPool)
+	}
+	return resolved, nil
+}
+
+func resolveMafLootEntry(
+	rawEntry any,
+	itemsByID map[string]itemModel.Item,
+	grimoiresByID map[string]grimoireModel.Grimoire,
+	passivesByID map[string]passiveModel.Passive,
+	bowsByID map[string]bowModel.BowPassive,
+	context string,
+) (any, error) {
+	entry, ok := rawEntry.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("%s must be an object", context)
+	}
+
+	rawType, _ := entry["type"].(string)
+	entryType := strings.TrimSpace(rawType)
+	if !strings.HasPrefix(entryType, "maf:") {
+		return rawEntry, nil
+	}
+
+	rawName, _ := entry["name"].(string)
+	refID := strings.TrimSpace(rawName)
+	if refID == "" {
+		return nil, fmt.Errorf("%s: maf entry requires non-empty name", context)
+	}
+
+	weight, hasWeight := entry["weight"]
+
+	switch entryType {
+	case "maf:item":
+		item, found := itemsByID[refID]
+		if !found {
+			return nil, fmt.Errorf("%s: referenced item not found (%s)", context, refID)
+		}
+		out, err := toItemLootEntry(item, grimoiresByID, passivesByID, bowsByID, nil, nil)
+		if err != nil {
+			return nil, err
+		}
+		if hasWeight {
+			out["weight"] = weight
+		}
+		return out, nil
+	case "maf:grimoire":
+		grimoire, found := grimoiresByID[refID]
+		if !found {
+			return nil, fmt.Errorf("%s: referenced grimoire not found (%s)", context, refID)
+		}
+		out := toSpellLootEntry(grimoire, nil, nil)
+		if hasWeight {
+			out["weight"] = weight
+		}
+		return out, nil
+	default:
+		return nil, fmt.Errorf("%s: unsupported maf entry type (%s)", context, entryType)
+	}
 }
 
 func MergeLootTablePools(base map[string]any, pool map[string]any, tablePath string) (map[string]any, error) {

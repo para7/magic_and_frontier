@@ -45,6 +45,7 @@ type MafConfig struct {
 	SpawnTableStatePath    string
 	TreasureStatePath      string
 	LootTablesStatePath    string
+	LootTableSourceRoot    string
 	ExportSettingsPath     string
 	MinecraftLootTableRoot string
 }
@@ -61,6 +62,7 @@ func LoadConfig() MafConfig {
 		SpawnTableStatePath:    filepath.Clean(filepath.Join("savedata", "spawn_table")),
 		TreasureStatePath:      filepath.Clean(filepath.Join("savedata", "treasure")),
 		LootTablesStatePath:    filepath.Clean(filepath.Join("savedata", "loottables")),
+		LootTableSourceRoot:    filepath.Clean(filepath.Join("savedata", "loot_table")),
 		ExportSettingsPath:     filepath.Clean(filepath.Join("config", "export_settings.json")),
 		MinecraftLootTableRoot: filepath.Clean(filepath.Join("minecraft", "1.21.11", "loot_table")),
 	}
