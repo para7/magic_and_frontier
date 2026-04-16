@@ -15,41 +15,38 @@ func TestGrimoireValidateAllWithRealJSONTestcases(t *testing.T) {
 		t.Fatalf("read testcases dir: %v", err)
 	}
 
-	var files []string
+	var dirs []string
 	for _, entry := range dirEntries {
-		if entry.IsDir() {
+		if !entry.IsDir() {
 			continue
 		}
-		if filepath.Ext(entry.Name()) != ".json" {
-			continue
-		}
-		files = append(files, entry.Name())
+		dirs = append(dirs, entry.Name())
 	}
-	sort.Strings(files)
-	if len(files) == 0 {
-		t.Fatalf("no json testcase found in %s", caseDir)
+	sort.Strings(dirs)
+	if len(dirs) == 0 {
+		t.Fatalf("no testcase dir found in %s", caseDir)
 	}
 
-	for _, file := range files {
-		t.Run(file, func(t *testing.T) {
-			path := filepath.Join(caseDir, file)
+	for _, dir := range dirs {
+		t.Run(dir, func(t *testing.T) {
+			path := filepath.Join(caseDir, dir)
 			entity := NewGrimoireEntity(path)
 			if err := entity.Load(); err != nil {
-				t.Fatalf("load testcase %s: %v", file, err)
+				t.Fatalf("load testcase %s: %v", dir, err)
 			}
 
 			allErrs := entity.ValidateAll(testDBMaster{})
 			switch {
-			case strings.HasSuffix(file, ".ok.json"):
+			case strings.HasSuffix(dir, ".ok"):
 				if len(allErrs) != 0 {
-					t.Fatalf("expected no validation errors for %s, got %#v", file, allErrs)
+					t.Fatalf("expected no validation errors for %s, got %#v", dir, allErrs)
 				}
-			case strings.HasSuffix(file, ".ng.json"):
+			case strings.HasSuffix(dir, ".ng"):
 				if len(allErrs) == 0 {
-					t.Fatalf("expected validation errors for %s, got none", file)
+					t.Fatalf("expected validation errors for %s, got none", dir)
 				}
 			default:
-				t.Fatalf("testcase file must end with .ok.json or .ng.json: %s", file)
+				t.Fatalf("testcase dir must end with .ok or .ng: %s", dir)
 			}
 		})
 	}

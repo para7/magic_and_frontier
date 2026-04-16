@@ -1,7 +1,6 @@
 package enemyskill
 
 import (
-	"errors"
 	"fmt"
 
 	cv "maf_command_editor/app/domain/custom_validator"
@@ -42,46 +41,6 @@ func (s *EnemySkillEntity) ValidateStruct(newEntity EnemySkill) []model.Validati
 
 func (s *EnemySkillEntity) ValidateRelation(_ EnemySkill, _ model.DBMaster) []model.ValidationError {
 	return nil
-}
-
-func (s *EnemySkillEntity) Create(newEntity EnemySkill, mas model.DBMaster) error {
-	if _, errs := s.ValidateJSON(newEntity, mas); len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for _, e := range s.data {
-		if e.ID == newEntity.ID {
-			return errors.New("enemyskill id already exists: " + newEntity.ID)
-		}
-	}
-	s.data = append(s.data, newEntity)
-	return nil
-}
-
-func (s *EnemySkillEntity) Update(newEntity EnemySkill, mas model.DBMaster) error {
-	if _, errs := s.ValidateJSON(newEntity, mas); len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for i, e := range s.data {
-		if e.ID == newEntity.ID {
-			s.data[i] = newEntity
-			return nil
-		}
-	}
-	return errors.New("enemyskill not found: " + newEntity.ID)
-}
-
-func (s *EnemySkillEntity) Delete(id string, mas model.DBMaster) error {
-	for i, e := range s.data {
-		if e.ID == id {
-			s.data = append(s.data[:i], s.data[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("enemyskill not found: " + id)
-}
-
-func (s *EnemySkillEntity) Save() error {
-	return s.store.Save(s.data)
 }
 
 func (s *EnemySkillEntity) Load() error {

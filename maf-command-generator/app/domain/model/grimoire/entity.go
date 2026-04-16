@@ -1,7 +1,6 @@
 package grimoire
 
 import (
-	"errors"
 	"fmt"
 
 	cv "maf_command_editor/app/domain/custom_validator"
@@ -46,51 +45,6 @@ func (s *GrimoireEntity) ValidateRelation(newEntity Grimoire, _ model.DBMaster) 
 	// ID の重複チェックを行う
 
 	return nil
-}
-
-func (s *GrimoireEntity) Create(newEntity Grimoire, mas model.DBMaster) error {
-	// Validateを実行し、問題なければ data に追加する
-	if _, errs := s.ValidateJSON(newEntity, mas); len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for _, g := range s.data {
-		if g.ID == newEntity.ID {
-			return errors.New("grimoire id already exists: " + newEntity.ID)
-		}
-	}
-	s.data = append(s.data, newEntity)
-	return nil
-}
-
-func (s *GrimoireEntity) Update(newEntity Grimoire, mas model.DBMaster) error {
-	// Validateを実行し、問題なければdataを更新する
-	if _, errs := s.ValidateJSON(newEntity, mas); len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for i, g := range s.data {
-		if g.ID == newEntity.ID {
-			s.data[i] = newEntity
-			return nil
-		}
-	}
-	return errors.New("grimoire not found: " + newEntity.ID)
-}
-
-func (s *GrimoireEntity) Delete(id string, mas model.DBMaster) error {
-	// ほかのデータから参照されていなければ配列から削除する
-	// Grimoireは各種ルートテーブル系から参照されている可能性あり。
-	// ほかのルートテーブルはまだ実装してないのでTODOとしておく
-	for i, g := range s.data {
-		if g.ID == id {
-			s.data = append(s.data[:i], s.data[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("grimoire not found: " + id)
-}
-
-func (s *GrimoireEntity) Save() error {
-	return s.store.Save(s.data)
 }
 
 func (s *GrimoireEntity) Load() error {

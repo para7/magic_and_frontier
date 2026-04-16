@@ -1,7 +1,6 @@
 package spawntable
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -105,48 +104,6 @@ func (s *SpawnTableEntity) ValidateRelation(newEntity SpawnTable, mas model.DBMa
 	}
 
 	return errs
-}
-
-func (s *SpawnTableEntity) Create(newEntity SpawnTable, mas model.DBMaster) error {
-	validated, errs := s.ValidateJSON(newEntity, mas)
-	if len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for _, st := range s.data {
-		if st.ID == validated.ID {
-			return errors.New("spawntable id already exists: " + validated.ID)
-		}
-	}
-	s.data = append(s.data, validated)
-	return nil
-}
-
-func (s *SpawnTableEntity) Update(newEntity SpawnTable, mas model.DBMaster) error {
-	validated, errs := s.ValidateJSON(newEntity, mas)
-	if len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for i, st := range s.data {
-		if st.ID == validated.ID {
-			s.data[i] = validated
-			return nil
-		}
-	}
-	return errors.New("spawntable not found: " + validated.ID)
-}
-
-func (s *SpawnTableEntity) Delete(id string, mas model.DBMaster) error {
-	for i, st := range s.data {
-		if st.ID == id {
-			s.data = append(s.data[:i], s.data[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("spawntable not found: " + id)
-}
-
-func (s *SpawnTableEntity) Save() error {
-	return s.store.Save(s.data)
 }
 
 func (s *SpawnTableEntity) Load() error {

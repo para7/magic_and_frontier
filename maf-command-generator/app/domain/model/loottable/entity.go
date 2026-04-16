@@ -1,7 +1,6 @@
 package loottable
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -71,48 +70,6 @@ func validatePassiveLootEligibility(entity, id, prefix string, drops []model.Dro
 		}
 	}
 	return errs
-}
-
-func (s *LootTableEntity) Create(newEntity LootTable, mas model.DBMaster) error {
-	validated, errs := s.ValidateJSON(newEntity, mas)
-	if len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for _, lt := range s.data {
-		if lt.ID == validated.ID {
-			return errors.New("loottable id already exists: " + validated.ID)
-		}
-	}
-	s.data = append(s.data, validated)
-	return nil
-}
-
-func (s *LootTableEntity) Update(newEntity LootTable, mas model.DBMaster) error {
-	validated, errs := s.ValidateJSON(newEntity, mas)
-	if len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for i, lt := range s.data {
-		if lt.ID == validated.ID {
-			s.data[i] = validated
-			return nil
-		}
-	}
-	return errors.New("loottable not found: " + validated.ID)
-}
-
-func (s *LootTableEntity) Delete(id string, mas model.DBMaster) error {
-	for i, lt := range s.data {
-		if lt.ID == id {
-			s.data = append(s.data[:i], s.data[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("loottable not found: " + id)
-}
-
-func (s *LootTableEntity) Save() error {
-	return s.store.Save(s.data)
 }
 
 func (s *LootTableEntity) Load() error {

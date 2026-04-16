@@ -1,7 +1,6 @@
 package passive
 
 import (
-	"errors"
 	"fmt"
 
 	cv "maf_command_editor/app/domain/custom_validator"
@@ -42,46 +41,6 @@ func (s *PassiveEntity) ValidateStruct(newEntity Passive) []model.ValidationErro
 
 func (s *PassiveEntity) ValidateRelation(newEntity Passive, mas model.DBMaster) []model.ValidationError {
 	return nil
-}
-
-func (s *PassiveEntity) Create(newEntity Passive, mas model.DBMaster) error {
-	if _, errs := s.ValidateJSON(newEntity, mas); len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for _, p := range s.data {
-		if p.ID == newEntity.ID {
-			return errors.New("passive id already exists: " + newEntity.ID)
-		}
-	}
-	s.data = append(s.data, newEntity)
-	return nil
-}
-
-func (s *PassiveEntity) Update(newEntity Passive, mas model.DBMaster) error {
-	if _, errs := s.ValidateJSON(newEntity, mas); len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for i, p := range s.data {
-		if p.ID == newEntity.ID {
-			s.data[i] = newEntity
-			return nil
-		}
-	}
-	return errors.New("passive not found: " + newEntity.ID)
-}
-
-func (s *PassiveEntity) Delete(id string, mas model.DBMaster) error {
-	for i, p := range s.data {
-		if p.ID == id {
-			s.data = append(s.data[:i], s.data[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("passive not found: " + id)
-}
-
-func (s *PassiveEntity) Save() error {
-	return s.store.Save(s.data)
 }
 
 func (s *PassiveEntity) Load() error {

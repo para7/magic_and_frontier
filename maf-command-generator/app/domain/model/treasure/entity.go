@@ -1,7 +1,6 @@
 package treasure
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -96,48 +95,6 @@ func validatePassiveLootEligibility(entity, id, prefix string, drops []model.Dro
 		}
 	}
 	return errs
-}
-
-func (s *TreasureEntity) Create(newEntity Treasure, mas model.DBMaster) error {
-	validated, errs := s.ValidateJSON(newEntity, mas)
-	if len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for _, t := range s.data {
-		if t.ID == validated.ID {
-			return errors.New("treasure id already exists: " + validated.ID)
-		}
-	}
-	s.data = append(s.data, validated)
-	return nil
-}
-
-func (s *TreasureEntity) Update(newEntity Treasure, mas model.DBMaster) error {
-	validated, errs := s.ValidateJSON(newEntity, mas)
-	if len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for i, t := range s.data {
-		if t.ID == validated.ID {
-			s.data[i] = validated
-			return nil
-		}
-	}
-	return errors.New("treasure not found: " + validated.ID)
-}
-
-func (s *TreasureEntity) Delete(id string, mas model.DBMaster) error {
-	for i, t := range s.data {
-		if t.ID == id {
-			s.data = append(s.data[:i], s.data[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("treasure not found: " + id)
-}
-
-func (s *TreasureEntity) Save() error {
-	return s.store.Save(s.data)
 }
 
 func (s *TreasureEntity) Load() error {
