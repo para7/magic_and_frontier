@@ -1,7 +1,6 @@
 package item
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -133,48 +132,6 @@ func (s *ItemEntity) ValidateRelation(newEntity Item, mas model.DBMaster) []mode
 		})
 	}
 	return errs
-}
-
-func (s *ItemEntity) Create(newEntity Item, mas model.DBMaster) error {
-	validated, errs := s.ValidateJSON(newEntity, mas)
-	if len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for _, it := range s.data {
-		if it.ID == validated.ID {
-			return errors.New("item id already exists: " + validated.ID)
-		}
-	}
-	s.data = append(s.data, validated)
-	return nil
-}
-
-func (s *ItemEntity) Update(newEntity Item, mas model.DBMaster) error {
-	validated, errs := s.ValidateJSON(newEntity, mas)
-	if len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for i, it := range s.data {
-		if it.ID == validated.ID {
-			s.data[i] = validated
-			return nil
-		}
-	}
-	return errors.New("item not found: " + validated.ID)
-}
-
-func (s *ItemEntity) Delete(id string, mas model.DBMaster) error {
-	for i, it := range s.data {
-		if it.ID == id {
-			s.data = append(s.data[:i], s.data[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("item not found: " + id)
-}
-
-func (s *ItemEntity) Save() error {
-	return s.store.Save(s.data)
 }
 
 func (s *ItemEntity) Load() error {
