@@ -7,11 +7,7 @@ import (
 
 	ec "maf_command_editor/app/domain/export/convert"
 	model "maf_command_editor/app/domain/model"
-	bowModel "maf_command_editor/app/domain/model/bow"
 	enemyModel "maf_command_editor/app/domain/model/enemy"
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
-	itemModel "maf_command_editor/app/domain/model/item"
-	passiveModel "maf_command_editor/app/domain/model/passive"
 	mc "maf_command_editor/app/minecraft"
 )
 
@@ -25,33 +21,12 @@ func BuildEnemyArtifacts(master DBMaster, enemyLootLogicalDir, minecraftLootRoot
 	if master == nil {
 		return []EnemyArtifact{}, nil
 	}
-
-	items := master.ListItems()
-	itemsByID := make(map[string]itemModel.Item, len(items))
-	for _, entry := range items {
-		itemsByID[entry.ID] = entry
-	}
-
-	grimoires := master.ListGrimoires()
-	grimoiresByID := make(map[string]grimoireModel.Grimoire, len(grimoires))
-	for _, entry := range grimoires {
-		grimoiresByID[entry.ID] = entry
-	}
-	passives := master.ListPassives()
-	passivesByID := make(map[string]passiveModel.Passive, len(passives))
-	for _, entry := range passives {
-		passivesByID[entry.ID] = entry
-	}
-	bows := master.ListBows()
-	bowsByID := make(map[string]bowModel.BowPassive, len(bows))
-	for _, entry := range bows {
-		bowsByID[entry.ID] = entry
-	}
+	lookups := buildMasterEntityLookups(master)
 
 	enemies := master.ListEnemies()
 	artifacts := make([]EnemyArtifact, 0, len(enemies))
 	for _, entry := range enemies {
-		pool, err := ec.BuildDropLootPool(entry.Drops, itemsByID, grimoiresByID, passivesByID, bowsByID, "enemy("+entry.ID+")")
+		pool, err := ec.BuildDropLootPool(entry.Drops, lookups.itemsByID, lookups.grimoiresByID, lookups.passivesByID, lookups.bowsByID, "enemy("+entry.ID+")")
 		if err != nil {
 			return nil, err
 		}
@@ -62,7 +37,7 @@ func BuildEnemyArtifacts(master DBMaster, enemyLootLogicalDir, minecraftLootRoot
 		}
 
 		lootID := resourceRefName("maf", enemyLootLogicalDir, entry.ID)
-		lines := ec.ToEnemyFunctionLines(entry, lootID, itemsByID)
+		lines := ec.ToEnemyFunctionLines(entry, lootID, lookups.itemsByID)
 		artifacts = append(artifacts, EnemyArtifact{
 			ID:           entry.ID,
 			SummonScript: strings.Join(lines, "\n"),

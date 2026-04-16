@@ -10,10 +10,6 @@ import (
 	"strings"
 
 	ec "maf_command_editor/app/domain/export/convert"
-	bowModel "maf_command_editor/app/domain/model/bow"
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
-	itemModel "maf_command_editor/app/domain/model/item"
-	passiveModel "maf_command_editor/app/domain/model/passive"
 	mc "maf_command_editor/app/minecraft"
 )
 
@@ -39,30 +35,7 @@ func BuildTreasureArtifacts(master DBMaster, lootTableSourceRoot, minecraftLootR
 		}
 		return nil, err
 	}
-
-	items := master.ListItems()
-	itemsByID := make(map[string]itemModel.Item, len(items))
-	for _, entry := range items {
-		itemsByID[entry.ID] = entry
-	}
-
-	grimoires := master.ListGrimoires()
-	grimoiresByID := make(map[string]grimoireModel.Grimoire, len(grimoires))
-	for _, entry := range grimoires {
-		grimoiresByID[entry.ID] = entry
-	}
-
-	passives := master.ListPassives()
-	passivesByID := make(map[string]passiveModel.Passive, len(passives))
-	for _, entry := range passives {
-		passivesByID[entry.ID] = entry
-	}
-
-	bows := master.ListBows()
-	bowsByID := make(map[string]bowModel.BowPassive, len(bows))
-	for _, entry := range bows {
-		bowsByID[entry.ID] = entry
-	}
+	lookups := buildMasterEntityLookups(master)
 
 	artifacts := []TreasureArtifact{}
 	err := filepath.WalkDir(lootTableSourceRoot, func(path string, d fs.DirEntry, walkErr error) error {
@@ -93,7 +66,7 @@ func BuildTreasureArtifacts(master DBMaster, lootTableSourceRoot, minecraftLootR
 			return fmt.Errorf("%s: pools must be an array", context)
 		}
 
-		resolvedPools, err := ec.ResolveMafLootPools(pools, itemsByID, grimoiresByID, passivesByID, bowsByID, context)
+		resolvedPools, err := ec.ResolveMafLootPools(pools, lookups.itemsByID, lookups.grimoiresByID, lookups.passivesByID, lookups.bowsByID, context)
 		if err != nil {
 			return err
 		}
