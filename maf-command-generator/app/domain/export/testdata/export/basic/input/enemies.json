@@ -18,11 +18,15 @@
       "dropMode": "replace",
       "drops": [
         {
-          "kind": "item",
-          "refId": "items_1",
-          "weight": 1,
-          "countMin": 1,
-          "countMax": 1
+          "rolls": 1,
+          "entries": [
+            {
+              "type": "maf:item",
+              "name": "items_1",
+              "weight": 1,
+              "count": 1
+            }
+          ]
         }
       ]
     }

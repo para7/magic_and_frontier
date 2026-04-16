@@ -12,7 +12,6 @@ import (
 	"maf_command_editor/app/domain/model/enemyskill"
 	"maf_command_editor/app/domain/model/grimoire"
 	"maf_command_editor/app/domain/model/item"
-	"maf_command_editor/app/domain/model/loottable"
 	"maf_command_editor/app/domain/model/passive"
 	"maf_command_editor/app/domain/model/spawntable"
 	"maf_command_editor/app/domain/model/treasure"
@@ -29,7 +28,6 @@ type DBMaster struct {
 	enemy      model.MafEntity[enemy.Enemy]
 	spawntable model.MafEntity[spawntable.SpawnTable]
 	treasure   model.MafEntity[treasure.Treasure]
-	loottable  model.MafEntity[loottable.LootTable]
 
 	minecraftLootTableRoot string
 }
@@ -77,9 +75,6 @@ func NewDBMaster(cfg config.MafConfig) *DBMaster {
 
 	d.treasure = treasure.NewTreasureEntity(cfg.TreasureStatePath)
 	loadOptional("treasure", d.treasure.Load)
-
-	d.loottable = loottable.NewLootTableEntity(cfg.LootTablesStatePath)
-	load("loottable", d.loottable.Load)
 
 	return d
 }
@@ -137,11 +132,6 @@ func (d *DBMaster) HasTreasure(id string) bool {
 	return found
 }
 
-func (d *DBMaster) HasLootTable(id string) bool {
-	_, found := d.loottable.Find(id)
-	return found
-}
-
 func (d *DBMaster) HasMinecraftLootTable(tablePath string) bool {
 	exists, err := mc.Exists(d.minecraftLootTableRoot, tablePath)
 	if err != nil {
@@ -162,7 +152,6 @@ func (d *DBMaster) ValidateAll() [][]model.ValidationError {
 	result = append(result, d.enemy.ValidateAll(d)...)
 	result = append(result, d.spawntable.ValidateAll(d)...)
 	result = append(result, d.treasure.ValidateAll(d)...)
-	result = append(result, d.loottable.ValidateAll(d)...)
 
 	// SpawnTable の重複チェック（全体にまたがる検証）
 	tables := d.spawntable.GetAll()
@@ -241,13 +230,6 @@ func (d *DBMaster) ListSpawnTables() []spawntable.SpawnTable {
 func (d *DBMaster) ListTreasures() []treasure.Treasure {
 	entries := d.treasure.GetAll()
 	result := make([]treasure.Treasure, len(entries))
-	copy(result, entries)
-	return result
-}
-
-func (d *DBMaster) ListLootTables() []loottable.LootTable {
-	entries := d.loottable.GetAll()
-	result := make([]loottable.LootTable, len(entries))
 	copy(result, entries)
 	return result
 }

@@ -9,11 +9,20 @@
       "dropMode": "append",
       "drops": [
         {
-          "kind": "minecraft_item",
-          "refId": "minecraft:apple",
-          "weight": 1,
-          "countMin": 1,
-          "countMax": 1
+          "rolls": 1,
+          "entries": [
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:apple",
+              "weight": 1,
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 1
+                }
+              ]
+            }
+          ]
         }
       ]
     }

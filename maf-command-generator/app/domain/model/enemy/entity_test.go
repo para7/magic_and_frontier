@@ -38,7 +38,6 @@ func (testDBMaster) HasEnemySkill(string) bool         { return true }
 func (testDBMaster) HasEnemy(string) bool              { return true }
 func (testDBMaster) HasSpawnTable(string) bool         { return true }
 func (testDBMaster) HasTreasure(string) bool           { return true }
-func (testDBMaster) HasLootTable(string) bool          { return true }
 func (testDBMaster) HasMinecraftLootTable(string) bool { return true }
 
 func TestEnemyValidateStructAllValid(t *testing.T) {
@@ -124,11 +123,21 @@ func (passiveNotGeneratableDBMaster) GetPassive(string) (model.PassiveSnapshot, 
 
 func TestEnemyValidateRelationRejectsPassiveWithGenerateGrimoireFalse(t *testing.T) {
 	entity := &EnemyEntity{}
-	slot := 1
 	enemy := validEnemy()
-	enemy.Drops = []model.DropRef{{Kind: "passive", RefID: "passive_1", Slot: &slot, Weight: 1}}
+	enemy.Drops = []any{
+		map[string]any{
+			"rolls": 1.0,
+			"entries": []any{
+				map[string]any{
+					"type": "maf:passive",
+					"name": "passive_1",
+					"slot": 1.0,
+				},
+			},
+		},
+	}
 	errs := entity.ValidateRelation(enemy, passiveNotGeneratableDBMaster{})
-	if !hasFieldError(errs, "drops[0].refId") {
+	if !hasFieldError(errs, "drops[0].entries[0].name") {
 		t.Fatalf("expected passive generate_grimoire relation error, got %#v", errs)
 	}
 }

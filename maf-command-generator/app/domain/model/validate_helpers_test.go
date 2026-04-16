@@ -1,6 +1,9 @@
 package model
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 type validateHelpersMasterStub struct {
 	passive bool
@@ -18,7 +21,6 @@ func (s validateHelpersMasterStub) HasEnemySkill(string) bool         { return t
 func (s validateHelpersMasterStub) HasEnemy(string) bool              { return true }
 func (s validateHelpersMasterStub) HasSpawnTable(string) bool         { return true }
 func (s validateHelpersMasterStub) HasTreasure(string) bool           { return true }
-func (s validateHelpersMasterStub) HasLootTable(string) bool          { return true }
 func (s validateHelpersMasterStub) HasMinecraftLootTable(string) bool { return true }
 
 func TestValidateDropRefsPassiveRequiresSlot(t *testing.T) {
@@ -47,5 +49,63 @@ func TestValidateDropRefsNonPassiveRejectsSlot(t *testing.T) {
 	}, validateHelpersMasterStub{passive: true})
 	if len(errs) != 1 || errs[0].Field != "drops[0].slot" {
 		t.Fatalf("expected slot unsupported error, got %#v", errs)
+	}
+}
+
+func TestValidateMafLootPoolsPassiveRequiresSlot(t *testing.T) {
+	errs := ValidateMafLootPools("enemy", "enemy_1", "drops", []any{
+		map[string]any{
+			"entries": []any{
+				map[string]any{
+					"type": "maf:passive",
+					"name": "passive_1",
+				},
+			},
+		},
+	}, validateHelpersMasterStub{passive: true})
+	if len(errs) != 1 || errs[0].Field != "drops[0].entries[0].slot" {
+		t.Fatalf("expected slot required error, got %#v", errs)
+	}
+}
+
+func TestValidateMafLootPoolsRejectsInvertedCountRange(t *testing.T) {
+	errs := ValidateMafLootPools("enemy", "enemy_1", "drops", []any{
+		map[string]any{
+			"entries": []any{
+				map[string]any{
+					"type": "maf:item",
+					"name": "item_1",
+					"count": map[string]any{
+						"min": 3.0,
+						"max": 1.0,
+					},
+				},
+			},
+		},
+	}, validateHelpersMasterStub{passive: true})
+	if len(errs) != 1 {
+		t.Fatalf("expected exactly one error, got %#v", errs)
+	}
+	if errs[0].Field != "drops[0].entries[0].count" {
+		t.Fatalf("unexpected field: %#v", errs[0])
+	}
+	if !strings.Contains(errs[0].Param, "less than or equal") {
+		t.Fatalf("unexpected error param: %#v", errs[0])
+	}
+}
+
+func TestValidateMafLootPoolsRejectsUnsupportedMafType(t *testing.T) {
+	errs := ValidateMafLootPools("enemy", "enemy_1", "drops", []any{
+		map[string]any{
+			"entries": []any{
+				map[string]any{
+					"type": "maf:unknown",
+					"name": "x",
+				},
+			},
+		},
+	}, validateHelpersMasterStub{passive: true})
+	if len(errs) != 1 || errs[0].Field != "drops[0].entries[0].type" {
+		t.Fatalf("expected unsupported type error, got %#v", errs)
 	}
 }

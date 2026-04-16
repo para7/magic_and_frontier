@@ -9,12 +9,16 @@
       "dropMode": "replace",
       "drops": [
         {
-          "kind": "passive",
-          "refId": "passive_1",
-          "slot": 1,
-          "weight": 1,
-          "countMin": 1,
-          "countMax": 1
+          "rolls": 1,
+          "entries": [
+            {
+              "type": "maf:passive",
+              "name": "passive_1",
+              "slot": 1,
+              "weight": 1,
+              "count": 1
+            }
+          ]
         }
       ]
     }

@@ -46,7 +46,6 @@ func newTestConfig(t *testing.T, grimoires []grimoireModel.Grimoire) files.MafCo
 	writeState[struct{}](t, p("enemy"), nil)
 	writeState[struct{}](t, p("spawn_table"), nil)
 	writeState[struct{}](t, p("treasure"), nil)
-	writeState[struct{}](t, p("loottables"), nil)
 
 	cfg := files.LoadConfig()
 	cfg.GrimoireStatePath = p("grimoire")
@@ -57,7 +56,6 @@ func newTestConfig(t *testing.T, grimoires []grimoireModel.Grimoire) files.MafCo
 	cfg.EnemyStatePath = p("enemy")
 	cfg.SpawnTableStatePath = p("spawn_table")
 	cfg.TreasureStatePath = p("treasure")
-	cfg.LootTablesStatePath = p("loottables")
 	return cfg
 }
 

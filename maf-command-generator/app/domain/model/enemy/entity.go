@@ -67,7 +67,7 @@ func (s *EnemyEntity) ValidateRelation(newEntity Enemy, mas model.DBMaster) []mo
 	}
 
 	// Drops の参照チェック
-	errs = append(errs, model.ValidateDropRefs("enemy", newEntity.ID, "drops", newEntity.Drops, mas)...)
+	errs = append(errs, model.ValidateMafLootPools("enemy", newEntity.ID, "drops", newEntity.Drops, mas)...)
 	errs = append(errs, validatePassiveLootEligibility("enemy", newEntity.ID, "drops", newEntity.Drops, mas)...)
 
 	// Equipment スロットの参照チェック
@@ -76,28 +76,52 @@ func (s *EnemyEntity) ValidateRelation(newEntity Enemy, mas model.DBMaster) []mo
 	return errs
 }
 
-func validatePassiveLootEligibility(entity, id, prefix string, drops []model.DropRef, mas model.DBMaster) []model.ValidationError {
+func validatePassiveLootEligibility(entity, id, prefix string, drops []any, mas model.DBMaster) []model.ValidationError {
 	var errs []model.ValidationError
-	for i, d := range drops {
-		if strings.TrimSpace(d.Kind) != "passive" {
+
+	for i, rawPool := range drops {
+		pool, ok := rawPool.(map[string]any)
+		if !ok {
 			continue
 		}
-		refID := strings.TrimSpace(d.RefID)
-		if refID == "" {
+		rawEntries, exists := pool["entries"]
+		if !exists || rawEntries == nil {
 			continue
 		}
-		passive, found := mas.GetPassive(refID)
-		if !found {
+		entries, ok := rawEntries.([]any)
+		if !ok {
 			continue
 		}
-		if passive.GenerateGrimoire == nil || !*passive.GenerateGrimoire {
-			errs = append(errs, model.ValidationError{
-				Entity: entity, ID: id,
-				Field: fmt.Sprintf("%s[%d].refId", prefix, i),
-				Tag:   "relation", Param: "passive generate_grimoire must be true when kind=passive",
-			})
+
+		for j, rawEntry := range entries {
+			entry, ok := rawEntry.(map[string]any)
+			if !ok {
+				continue
+			}
+			rawType, _ := entry["type"].(string)
+			entryType := strings.TrimSpace(rawType)
+			if entryType != "maf:passive" {
+				continue
+			}
+			rawName, _ := entry["name"].(string)
+			refID := strings.TrimSpace(rawName)
+			if refID == "" {
+				continue
+			}
+			passive, found := mas.GetPassive(refID)
+			if !found {
+				continue
+			}
+			if passive.GenerateGrimoire == nil || !*passive.GenerateGrimoire {
+				errs = append(errs, model.ValidationError{
+					Entity: entity, ID: id,
+					Field: fmt.Sprintf("%s[%d].entries[%d].name", prefix, i, j),
+					Tag:   "relation", Param: "passive generate_grimoire must be true when type=maf:passive",
+				})
+			}
 		}
 	}
+
 	return errs
 }
 

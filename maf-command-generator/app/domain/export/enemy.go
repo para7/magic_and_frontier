@@ -26,12 +26,12 @@ func BuildEnemyArtifacts(master DBMaster, enemyLootLogicalDir, minecraftLootRoot
 	enemies := master.ListEnemies()
 	artifacts := make([]EnemyArtifact, 0, len(enemies))
 	for _, entry := range enemies {
-		pool, err := ec.BuildDropLootPool(entry.Drops, lookups.itemsByID, lookups.grimoiresByID, lookups.passivesByID, lookups.bowsByID, "enemy("+entry.ID+")")
+		resolvedPools, err := ec.ResolveMafLootPools(entry.Drops, lookups.itemsByID, lookups.grimoiresByID, lookups.passivesByID, lookups.bowsByID, "enemy("+entry.ID+")")
 		if err != nil {
 			return nil, err
 		}
 
-		lootTable, err := buildEnemyLootTable(entry, pool, minecraftLootRoot)
+		lootTable, err := buildEnemyLootTable(entry, resolvedPools, minecraftLootRoot)
 		if err != nil {
 			return nil, err
 		}
@@ -61,13 +61,13 @@ func WriteEnemyArtifacts(enemyDir string, enemyLootDir string, enemies []EnemyAr
 	return nil
 }
 
-func buildEnemyLootTable(entry enemyModel.Enemy, customPool map[string]any, minecraftLootRoot string) (map[string]any, error) {
+func buildEnemyLootTable(entry enemyModel.Enemy, customPools []any, minecraftLootRoot string) (map[string]any, error) {
 	dropMode := strings.TrimSpace(entry.DropMode)
 	switch dropMode {
 	case "replace":
 		return map[string]any{
 			"type":  "minecraft:generic",
-			"pools": []any{customPool},
+			"pools": customPools,
 		}, nil
 	case "append":
 		tablePath, err := enemyBaseLootTablePath(entry.MobType)
@@ -78,9 +78,16 @@ func buildEnemyLootTable(entry enemyModel.Enemy, customPool map[string]any, mine
 		if err != nil {
 			return nil, fmt.Errorf("enemy(%s): failed to load base loot table %s: %w", entry.ID, tablePath, err)
 		}
-		merged, err := ec.MergeLootTablePools(base, customPool, tablePath)
-		if err != nil {
-			return nil, err
+		merged := base
+		for i, rawPool := range customPools {
+			pool, ok := rawPool.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("enemy(%s): pools[%d] must be an object", entry.ID, i)
+			}
+			merged, err = ec.MergeLootTablePools(merged, pool, tablePath)
+			if err != nil {
+				return nil, err
+			}
 		}
 		return merged, nil
 	default:

@@ -11,70 +11,6 @@ import (
 	passiveModel "maf_command_editor/app/domain/model/passive"
 )
 
-func BuildDropLootPool(
-	drops []model.DropRef,
-	itemsByID map[string]itemModel.Item,
-	grimoiresByID map[string]grimoireModel.Grimoire,
-	passivesByID map[string]passiveModel.Passive,
-	bowsByID map[string]bowModel.BowPassive,
-	context string,
-) (map[string]any, error) {
-	entries := make([]any, 0, len(drops))
-	for _, drop := range drops {
-		switch drop.Kind {
-		case "minecraft_item":
-			entries = append(entries, map[string]any{
-				"type":   "minecraft:item",
-				"name":   drop.RefID,
-				"weight": ToWeight(drop.Weight),
-				"functions": []any{
-					map[string]any{"function": "minecraft:set_count", "count": ToCountValue(drop.CountMin, drop.CountMax)},
-				},
-			})
-		case "item":
-			item, ok := itemsByID[drop.RefID]
-			if !ok {
-				return nil, fmt.Errorf("%s: referenced item not found (%s)", context, drop.RefID)
-			}
-			entry, err := toItemLootEntry(item, grimoiresByID, passivesByID, bowsByID, drop.CountMin, drop.CountMax)
-			if err != nil {
-				return nil, err
-			}
-			entry["weight"] = ToWeight(drop.Weight)
-			entries = append(entries, entry)
-		case "grimoire":
-			entry, ok := grimoiresByID[drop.RefID]
-			if !ok {
-				return nil, fmt.Errorf("%s: referenced grimoire not found (%s)", context, drop.RefID)
-			}
-			out := toSpellLootEntry(entry, drop.CountMin, drop.CountMax)
-			out["weight"] = ToWeight(drop.Weight)
-			entries = append(entries, out)
-		case "passive":
-			if drop.Slot == nil {
-				return nil, fmt.Errorf("%s: passive drop requires slot (%s)", context, drop.RefID)
-			}
-			slot := *drop.Slot
-			entry, ok := passivesByID[drop.RefID]
-			if !ok {
-				return nil, fmt.Errorf("%s: referenced passive not found (%s)", context, drop.RefID)
-			}
-			if !passiveHasSlot(entry, slot) {
-				return nil, fmt.Errorf("%s: passive(%s) does not support slot %d", context, drop.RefID, slot)
-			}
-			out := toPassiveLootEntry(entry, slot, drop.CountMin, drop.CountMax)
-			out["weight"] = ToWeight(drop.Weight)
-			entries = append(entries, out)
-		default:
-			return nil, fmt.Errorf("%s: unsupported drop kind (%s)", context, drop.Kind)
-		}
-	}
-	return map[string]any{
-		"rolls":   1,
-		"entries": entries,
-	}, nil
-}
-
 func ResolveMafLootPools(
 	pools []any,
 	itemsByID map[string]itemModel.Item,
@@ -147,6 +83,10 @@ func resolveMafLootEntry(
 	}
 
 	weight, hasWeight := entry["weight"]
+	min, max, err := model.ParseLootEntryCount(entry)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", context, err)
+	}
 
 	switch entryType {
 	case "maf:item":
@@ -154,7 +94,7 @@ func resolveMafLootEntry(
 		if !found {
 			return nil, fmt.Errorf("%s: referenced item not found (%s)", context, refID)
 		}
-		out, err := toItemLootEntry(item, grimoiresByID, passivesByID, bowsByID, nil, nil)
+		out, err := toItemLootEntry(item, grimoiresByID, passivesByID, bowsByID, min, max)
 		if err != nil {
 			return nil, err
 		}
@@ -167,7 +107,24 @@ func resolveMafLootEntry(
 		if !found {
 			return nil, fmt.Errorf("%s: referenced grimoire not found (%s)", context, refID)
 		}
-		out := toSpellLootEntry(grimoire, nil, nil)
+		out := toSpellLootEntry(grimoire, min, max)
+		if hasWeight {
+			out["weight"] = weight
+		}
+		return out, nil
+	case "maf:passive":
+		passive, found := passivesByID[refID]
+		if !found {
+			return nil, fmt.Errorf("%s: referenced passive not found (%s)", context, refID)
+		}
+		slot, err := model.ParseLootEntrySlot(entry)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", context, err)
+		}
+		if !passiveHasSlot(passive, slot) {
+			return nil, fmt.Errorf("%s: passive(%s) does not support slot %d", context, refID, slot)
+		}
+		out := toPassiveLootEntry(passive, slot, min, max)
 		if hasWeight {
 			out["weight"] = weight
 		}
