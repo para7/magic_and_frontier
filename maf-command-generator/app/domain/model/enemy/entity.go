@@ -1,7 +1,6 @@
 package enemy
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -100,48 +99,6 @@ func validatePassiveLootEligibility(entity, id, prefix string, drops []model.Dro
 		}
 	}
 	return errs
-}
-
-func (s *EnemyEntity) Create(newEntity Enemy, mas model.DBMaster) error {
-	validated, errs := s.ValidateJSON(newEntity, mas)
-	if len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for _, e := range s.data {
-		if e.ID == validated.ID {
-			return errors.New("enemy id already exists: " + validated.ID)
-		}
-	}
-	s.data = append(s.data, validated)
-	return nil
-}
-
-func (s *EnemyEntity) Update(newEntity Enemy, mas model.DBMaster) error {
-	validated, errs := s.ValidateJSON(newEntity, mas)
-	if len(errs) > 0 {
-		return fmt.Errorf("%s.%s: %s", errs[0].Entity, errs[0].Field, errs[0].Tag)
-	}
-	for i, e := range s.data {
-		if e.ID == validated.ID {
-			s.data[i] = validated
-			return nil
-		}
-	}
-	return errors.New("enemy not found: " + validated.ID)
-}
-
-func (s *EnemyEntity) Delete(id string, mas model.DBMaster) error {
-	for i, e := range s.data {
-		if e.ID == id {
-			s.data = append(s.data[:i], s.data[i+1:]...)
-			return nil
-		}
-	}
-	return errors.New("enemy not found: " + id)
-}
-
-func (s *EnemyEntity) Save() error {
-	return s.store.Save(s.data)
 }
 
 func (s *EnemyEntity) Load() error {

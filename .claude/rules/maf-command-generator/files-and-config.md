@@ -9,7 +9,7 @@ paths:
 
 ## files パッケージ
 
-- `JsonStore[T]`: `{ "entries": [...] }` 形式の JSON ファイルを読み書きする汎用ストア
+- `JsonStore[T]`: `{ "entries": [...] }` 形式の JSON ファイルを読み込む汎用ストア
 - `MafConfig`: 全データファイルパスのハードコード設定（`LoadConfig()` で生成）
 - `ExportSettings` / `ExportPaths`: `config/export_settings.json` から読み込むエクスポート先パス設定
 
@@ -23,4 +23,3 @@ paths:
 ## 注意
 
 - `savedata/` や `config/` のデータを直接編集することは想定していない
-- データの変更は MafEntity の CRUD メソッド経由で行う
