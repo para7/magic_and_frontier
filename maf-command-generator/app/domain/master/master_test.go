@@ -16,16 +16,17 @@ type entriesFile[T any] struct {
 	Entries []T `json:"entries"`
 }
 
-func writeState[T any](t *testing.T, path string, entries []T) {
+// writeState creates a directory at dirPath and writes entries to dirPath/entity.json.
+func writeState[T any](t *testing.T, dirPath string, entries []T) {
 	t.Helper()
 	data, err := json.MarshalIndent(entriesFile[T]{Entries: entries}, "", "  ")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	if err := os.MkdirAll(dirPath, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(path, append(data, '\n'), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dirPath, "entity.json"), append(data, '\n'), 0o644); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -37,26 +38,26 @@ func newTestConfig(t *testing.T, grimoires []grimoireModel.Grimoire) files.MafCo
 	dir := t.TempDir()
 	p := func(name string) string { return filepath.Join(dir, name) }
 
-	writeState(t, p("grimoire.json"), grimoires)
-	writeState[struct{}](t, p("item.json"), nil)
-	writeState[struct{}](t, p("passive.json"), nil)
-	writeState[struct{}](t, p("bow.json"), nil)
-	writeState[struct{}](t, p("enemy_skill.json"), nil)
-	writeState[struct{}](t, p("enemy.json"), nil)
-	writeState[struct{}](t, p("spawn_table.json"), nil)
-	writeState[struct{}](t, p("treasure.json"), nil)
-	writeState[struct{}](t, p("loottables.json"), nil)
+	writeState(t, p("grimoire"), grimoires)
+	writeState[struct{}](t, p("item"), nil)
+	writeState[struct{}](t, p("passive"), nil)
+	writeState[struct{}](t, p("bow"), nil)
+	writeState[struct{}](t, p("enemy_skill"), nil)
+	writeState[struct{}](t, p("enemy"), nil)
+	writeState[struct{}](t, p("spawn_table"), nil)
+	writeState[struct{}](t, p("treasure"), nil)
+	writeState[struct{}](t, p("loottables"), nil)
 
 	cfg := files.LoadConfig()
-	cfg.GrimoireStatePath = p("grimoire.json")
-	cfg.ItemStatePath = p("item.json")
-	cfg.PassiveStatePath = p("passive.json")
-	cfg.BowStatePath = p("bow.json")
-	cfg.EnemySkillStatePath = p("enemy_skill.json")
-	cfg.EnemyStatePath = p("enemy.json")
-	cfg.SpawnTableStatePath = p("spawn_table.json")
-	cfg.TreasureStatePath = p("treasure.json")
-	cfg.LootTablesStatePath = p("loottables.json")
+	cfg.GrimoireStatePath = p("grimoire")
+	cfg.ItemStatePath = p("item")
+	cfg.PassiveStatePath = p("passive")
+	cfg.BowStatePath = p("bow")
+	cfg.EnemySkillStatePath = p("enemy_skill")
+	cfg.EnemyStatePath = p("enemy")
+	cfg.SpawnTableStatePath = p("spawn_table")
+	cfg.TreasureStatePath = p("treasure")
+	cfg.LootTablesStatePath = p("loottables")
 	return cfg
 }
 
