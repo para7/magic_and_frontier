@@ -338,7 +338,10 @@ func TestBowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
 	if !strings.Contains(customData, `passiveId:"bow_test_full"`) {
 		t.Fatalf("passiveId bridge should be embedded: %s", customData)
 	}
-	if strings.Contains(customData, `hasPassive:1b`) || strings.Contains(customData, `passiveSlot:`) || strings.Contains(customData, `passiveCondition:`) {
+	if !strings.Contains(customData, `passiveCondition:"always"`) {
+		t.Fatalf("bow item should embed passiveCondition always: %s", customData)
+	}
+	if strings.Contains(customData, `hasPassive:1b`) || strings.Contains(customData, `passiveSlot:`) {
 		t.Fatalf("bow item should not embed passive slot metadata: %s", customData)
 	}
 	if strings.Contains(customData, `spell:{`) {
@@ -380,6 +383,9 @@ func TestCrossbowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
 	}
 	if !strings.Contains(customData, `passiveId:"bow_test_full"`) {
 		t.Fatalf("passiveId bridge should be embedded: %s", customData)
+	}
+	if !strings.Contains(customData, `passiveCondition:"always"`) {
+		t.Fatalf("crossbow item should embed passiveCondition always: %s", customData)
 	}
 
 	components, err := itemComponentsForLoot(entry, nil, nil, bowsByID)

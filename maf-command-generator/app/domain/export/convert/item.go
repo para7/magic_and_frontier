@@ -308,6 +308,7 @@ func resolveItemSpellMeta(
 		meta.customFragments = append(meta.customFragments,
 			fmt.Sprintf("bowId:%s", JsonString(bowID)),
 			fmt.Sprintf("passiveId:%s", JsonString("bow_"+bowID)),
+			fmt.Sprintf("passiveCondition:%s", JsonString("always")),
 		)
 		return meta, nil
 	}

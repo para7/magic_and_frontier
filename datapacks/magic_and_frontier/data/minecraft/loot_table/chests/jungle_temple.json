@@ -232,7 +232,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:bow\",source_id:\"test_bow_full\",nbt_snapshot:\"{id:\\\"minecraft:bow\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"test_bow_full\\\"}',\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"Bow full test\\\"}']}}\",bowId:\"test_full\",passiveId:\"bow_test_full\"}}"
+              "tag": "{maf:{item_id:\"minecraft:bow\",source_id:\"test_bow_full\",nbt_snapshot:\"{id:\\\"minecraft:bow\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"test_bow_full\\\"}',\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"Bow full test\\\"}']}}\",bowId:\"test_full\",passiveId:\"bow_test_full\",passiveCondition:\"always\"}}"
             },
             {
               "components": {
