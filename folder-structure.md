@@ -42,22 +42,8 @@ data/maf/function/
 
 data/maf/advancement/   # アドバンスメント定義
 data/maf/loot_table/    # ルートテーブル定義
+data/maf/tags/          # エンティティ・ブロック・アイテムタグ定義
 data/minecraft/tags/    # Minecraftのタグ上書き（関数タグ等）
-```
-
-### datapacks/p7BaseSystem/
-
-共通基盤システム。乱数生成・初期化処理・ワープなど、ゲームシステム共通で使うユーティリティを提供する。
-
-```
-data/p7b/function/
-├── load/           # ロード処理
-├── advancement/    # アドバンスメント
-└── function/
-    ├── generate_rand.mcfunction  # 乱数生成
-    ├── init.mcfunction           # 初期化
-    ├── tick.mcfunction           # tick処理
-    └── warp.mcfunction           # ワープ
 ```
 
 ### datapacks/devtool/

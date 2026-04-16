@@ -1,3 +1,7 @@
+kill @e[tag=NextKill]
+execute as @e[tag=VoidWarp] run function maf:warp
+function maf:generate_rand
+
 # ログインした人がいればMP処理を実行
 execute if entity @a[scores={mafLogin=1..}] run function maf:system/set_player_id/run
 

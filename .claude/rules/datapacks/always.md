@@ -4,7 +4,7 @@ paths: ["datapacks/magic_and_frontier"]
 
 # datapacks
 
-Minecraft データパック群。3つのパックと設計メモで構成される。
+Minecraft データパック群。
 
 Minecraft Version 26.1
 
@@ -91,21 +91,16 @@ maf-command-generator で生成。直接編集禁止。
 - `enemy/loot/` — 敵ドロップテーブル
 - `item/items_1.json` — アイテムプール
 
-## p7BaseSystem/ — 前提パック
+### data/maf/function/ — ユーティリティ関数
+- `warp.mcfunction` — ワープ（`VoidWarp` タグ付きエンティティを void 送り）
+- `generate_rand.mcfunction` — UUID 利用の乱数生成（`p7_Rand1`〜`p7_Rand4` スコア）
+- `sword.mcfunction` — 剣使用検知（`p7_UseSword` スコア）
+- `killme.mcfunction` — エンティティを void ワープで消去
 
-名前空間 `p7b`。他のデータパックが依存する共通基盤。
-
-### data/p7b/function/ — ユーティリティ関数
-- `load.mcfunction` / `tick.mcfunction` / `init.mcfunction` — エントリポイント
-- `sword.mcfunction` — 剣関連処理
-- `warp.mcfunction` — ワープ
-- `generate_rand.mcfunction` — 乱数生成
-- `killme.mcfunction` — 自殺コマンド
-
-### data/p7b/tags/ — 共有タグ定義
+### data/maf/tags/ — タグ定義
 - `entity_type/` — mob分類（mobs, undead, zombies, skeletons, spiders, water_enemy, enemymob, enemymob_notboss, friendmob）
 - `block/` — ブロック分類（air, water）
-- `item/` — アイテム分類（swords）
+- `item/` — アイテム分類（swords, chain/copper/diamond/gold/iron/leather/netherite_armor）
 
 ## sample_pack/ — テスト用パック
 
