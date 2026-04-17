@@ -30,18 +30,19 @@ Minecraft Version 26.1
   - `run_passive_apply.mcfunction` — パッシブ適用ディスパッチ
 - `mp/` — MP管理
   - `mp_manage.mcfunction` — MP消費・回復ロジック
+  - `calc_equipment_maxmp.mcfunction` — 装備（`maxmp` custom_data）からのボーナス MaxMP 計算
   - `mpbar.mcfunction` / `mpbar_init.mcfunction` — MPバー表示
   - `mpbar_per_player_dispatch.mcfunction` / `mpbar_player_macro.mcfunction` — プレイヤーごとのMPバー
 - `exec/set_magic.mcfunction` — 魔法セット
 
 #### passive/ — パッシブ効果
-- `tick.mcfunction` — パッシブティック（スロット1〜3 + メインハンド + 弓着弾チェック）
-- `run_effect.mcfunction` — 装備パッシブ効果実行ディスパッチ
-- `run_mainhand_effect.mcfunction` — メインハンド装備パッシブ
-- `run_bow_effect.mcfunction` — パッシブ弓効果実行ディスパッチ
+- `tick.mcfunction` — パッシブティック（スロット1〜3 + メインハンド（インラインで処理）+ 弓着弾チェック）
+- `run_effect.mcfunction` — 装備パッシブ効果実行ディスパッチ（condition 判定含む）
+- `run_bow_effect.mcfunction` — パッシブ矢着弾効果実行ディスパッチ
 - `tag_passive_arrow.mcfunction` — パッシブ矢タグ付け（マクロ関数）
-- `on_arrow_hit.mcfunction` — 矢着弾フラグセット（advancement コールバック）
-- `on_bow_hit.mcfunction` — パッシブ弓着弾処理本体
+- `on_arrow_hit.mcfunction` — 矢着弾フラグセット（advancement コールバック、`mafBowHit` をインクリメント）
+- `on_bow_hit.mcfunction` — パッシブ矢着弾処理本体（passive の `bow` condition 向け）
+- `on_melee_hit.mcfunction` — 近接ヒットフラグセット（advancement コールバック、`mafMeleeHit` をインクリメント）
 
 #### bow/ — 弓パッシブ共有ランタイム
 - `tag_bow_arrow.mcfunction` — 弓矢へのデータ埋め込み（マクロ関数）
@@ -73,6 +74,7 @@ maf-command-generator で生成。直接編集禁止。
 
 - `grimoire/effect/` — 魔法書エフェクト（24種: sweep, teleport, healing, tornado, barrier, etc.）
 - `grimoire/give/` — 魔法書giveコマンド（上記と対応する24種）
+- `item/give/` — アイテム give コマンド（`maf-command-generator` の item エンティティから生成）
 - `passive/effect/` — パッシブ効果 + 弓パッシブ effect（bow_ プレフィックス付き）
 - `passive/give/` — パッシブ装備giveコマンド
 - `passive/apply/` — パッシブ装備適用処理
@@ -85,7 +87,8 @@ maf-command-generator で生成。直接編集禁止。
 ### data/maf/advancement/ — 進捗（イベントトリガー）
 - `use_grimoire.json` — 魔法書使用検知（consumable + using_item）
 - `entered_world.json` — ワールド参加検知
-- `arrow_hit.json` — 矢着弾検知
+- `arrow_hit.json` — 矢着弾検知（`passive/on_arrow_hit` を呼び出し）
+- `melee_hit.json` — 近接攻撃ヒット検知（`passive/on_melee_hit` を呼び出し、`attack` condition のパッシブ用）
 
 ### data/maf/loot_table/generated/ — 自動生成ルートテーブル
 - `enemy/loot/` — 敵ドロップテーブル
