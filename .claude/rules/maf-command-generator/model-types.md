@@ -12,14 +12,13 @@ paths:
 | エンティティ | パッケージ | 主要フィールド |
 |-------------|-----------|--------------|
 | Grimoire | `model/grimoire` | ID, CastTime, CoolTime, MPCost, Script, Title, Description |
-| Item | `model/item` | ID, Maf(GrimoireID/PassiveID/PassiveSlot/BowID), Minecraft(ItemID/Components) |
-| Passive | `model/passive` | ID, Name, Role, Condition(always/attack/none), Slots, Description, Script |
+| Item | `model/item` | ID, Maf(GrimoireID/PassiveID/PassiveSlot/BowID/MaxMP), Minecraft(ItemID/Components) |
+| Passive | `model/passive` | ID, Name, Role, Condition(always/attack/none), Slots, Description, Script, GenerateGrimoire |
 | BowPassive | `model/bow` | ID, Name, Role, Slots, LifeSub, ScriptHit/Fired/Flying/Ground |
 | EnemySkill | `model/enemyskill` | ID, Name, Description, Script |
-| Enemy | `model/enemy` | ID, MobType, Name, HP, Equipment, EnemySkillIDs, DropMode, Drops |
+| Enemy | `model/enemy` | ID, MobType, Name, HP, Memo, Attack, Defense, MoveSpeed, Equipment, EnemySkillIDs, DropMode(append/replace), Drops |
 | SpawnTable | `model/spawntable` | ID, SourceMobType, Dimension, MinX~MaxZ, BaseMobWeight, Replacements |
 | Treasure | `model/treasure` | ID, TablePath, LootPools |
-| LootTable | `model/loottable` | ID, Memo, LootPools |
 
 ## 共有型（`model/types.go`）
 
@@ -27,6 +26,8 @@ paths:
 - `EquipmentSlot`: エネミー装備スロット（Kind(minecraft_item/item), RefID, Count, DropChance）
 - `Equipment`: 6スロット（Mainhand, Offhand, Head, Chest, Legs, Feet）
 - `ReplacementEntry`: スポーンテーブルのモブ差替エントリ（EnemyID, Weight）
+
+`model/interfaces.go` で `PassiveSnapshot`（`ID`, `GenerateGrimoire`）も定義される。これは `model.DBMaster.GetPassive()` の戻り値で、`passive` エンティティ以外からパッシブ詳細を参照する際の正式な型。
 
 ## 新規エンティティ追加手順
 

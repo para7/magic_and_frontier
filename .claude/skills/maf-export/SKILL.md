@@ -55,13 +55,14 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 処理順序:
 
 1. `config/export_settings.json` から出力パスを読み込み
-2. **グリモ���**: `BuildGrimoireArtifacts` → `WriteGrimoireArtifacts` + `WriteGrimoireDebugArtifacts`
-3. レガシーファイル���除（`selectexec.mcfunction`, `setup_effect_ref_map.mcfunction`）
-4. **アイテム**: `BuildItemArtifacts` → `WriteItemArtifacts`
+2. **グリモア**: `BuildGrimoireArtifacts` → `WriteGrimoireArtifacts` + `WriteGrimoireDebugArtifacts`
+3. **アイテム**: `BuildItemArtifacts` → `WriteItemArtifacts`
+4. レガシーファイル削除（`selectexec.mcfunction`, `setup_effect_ref_map.mcfunction`）
 5. **パッシブ**: `BuildPassiveArtifacts` → `WritePassiveArtifacts`
-6. **弓パッシブ**: `BuildBowArtifacts` → `WriteBowArtifacts`
-7. **エネミ��スキル**: `BuildEnemySkillArtifacts` → `WriteEnemySkillArtifacts`
+6. **弓パッシブ**: `BuildBowArtifacts` → `WriteBowArtifacts`（出力は passive 側の `passiveEffectDir` / `passiveBowDir` + `bowFlyingDir` / `bowGroundDir` に分散）
+7. **エネミースキル**: `BuildEnemySkillArtifacts` → `WriteEnemySkillArtifacts`
 8. **エネミー**: `BuildEnemyArtifacts` → `WriteEnemyArtifacts`
+9. **トレジャー**: `BuildTreasureArtifacts` → `WriteTreasureArtifacts`（`savedata/loot_table/{namespace}/...` を走査し、`maf:*` エントリを解決。`minecraft` 名前空間はバニラ loot table にカスタムプールを追記）
 
 ### Build と Write の分離
 
@@ -80,8 +81,8 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 |---------|------------|-------|
 | grimoireEffect | `generated/grimoire/effect` | `function/generated/grimoire/effect/` |
 | grimoireDebug | `generated/grimoire/give` | `function/generated/grimoire/give/` |
+| itemGive | `generated/item/give` | `function/generated/item/give/` |
 | passiveEffect | `generated/passive/effect` | `function/generated/passive/effect/` |
-| passiveBow | `generated/passive/bow` | `function/generated/passive/bow/` |
 | passiveGive | `generated/passive/give` | `function/generated/passive/give/` |
 | passiveApply | `generated/passive/apply` | `function/generated/passive/apply/` |
 | bowFlying | `generated/bow/flying` | `function/generated/bow/flying/` |
@@ -89,6 +90,10 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 | enemySkill | (設定必須) | `function/generated/enemy/skill/` |
 | enemy | (設定必須) | `function/generated/enemy/spawn/` |
 | enemyLoot | (設定必須) | `loot_table/generated/enemy/loot/` |
+
+- 設定キーが空のとき `generated/...` のデフォルトが適用される（`normalizePathOrDefault`）
+- `passive/bow/` の出力先は `export.go` 内でハードコード（`generated/passive/bow`）されており、`export_settings.json` のキーは無い
+- Treasure エクスポートは `export_settings.json` を使わず、`MafConfig.LootTableSourceRoot` 配下のパスをそのまま `{outputRoot}/data/{namespace}/loot_table/...` に出力する
 
 パスは `{outputRoot}/data/maf/{function|loot_table}/{logicalDir}/` に展開される。
 
@@ -152,27 +157,38 @@ GrimoireEffectFunction { ID, Body, Book }
 ### パッシブ
 
 ```
-PassiveEffectFunction { ID, Body }
-PassiveBowFunction    { ID, Body }
-PassiveGrimoireFunction { PassiveID, Slot, FunctionID, GiveBody, ApplyBody, Book }
+// BuildPassiveArtifacts returns:
+[]PassiveEffectFunction    { ID, Body }
+[]PassiveGrimoireFunction  { PassiveID, Slot, FunctionID, GiveBody, ApplyBody, Book }
 ```
-- **effect/{id}.mcfunction**: 効果本体（bow の場合は自動生成の弓検知コード）
-- **bow/{id}.mcfunction**: bow パッシブの矢着弾時スクリプト
-- **give/{id}_slot{N}.mcfunction**: 設定書 give コマンド
-- **apply/{id}_slot{N}.mcfunction**: スロット書き込み処理
+- **effect/{id}.mcfunction**: `Script[]` を結合した効果本体
+- **give/{id}_slot{N}.mcfunction**: 設定書 give コマンド（`GenerateGrimoire=true` のパッシブのみ、Slots ごとに1ファイル）
+- **apply/{id}_slot{N}.mcfunction**: スロット書き込み処理（設定書使用時に呼ばれる）
 
 ### 弓パッシブ
 
 ```
-BowEffectFunction   { ID, Body }
-BowHitFunction      { ID, Body }
-BowFlyingFunction   { ID, Body }
-BowGroundFunction   { ID, Body }
+// BuildBowArtifacts returns:
+[]BowEffectFunction   { ID, Body }
+[]BowHitFunction      { ID, Body }
+[]BowFlyingFunction   { ID, Body }
+[]BowGroundFunction   { ID, Body }
 ```
-- **effect/bow_{id}.mcfunction**: 弓検知 + 矢タグ付け + ScriptFired（passiveEffectDir に出力）
-- **bow/{id}.mcfunction**: 着弾時スクリプト（ScriptHit、passiveBowDir に出力）
+- **effect/bow_{id}.mcfunction**: 弓検知 + 矢タグ付け + ScriptFired（`passiveEffectDir` に出力）
+- **bow/{id}.mcfunction**: 着弾時スクリプト（ScriptHit、`generated/passive/bow/` にハードコード出力）
 - **flying/{id}_flying.mcfunction**: 飛翔中スクリプト（ScriptFlying）
 - **ground/{id}_ground.mcfunction**: 着地スクリプト（ScriptGround）
+
+### トレジャー
+
+```
+// BuildTreasureArtifacts returns:
+[]TreasureArtifact { Namespace, RelPath, LootTable }
+```
+- `savedata/loot_table/{namespace}/{relPath}.json` の各ファイルを走査
+- `maf:item` / `maf:grimoire` / `maf:passive` エントリは `ResolveMafLootPools` でバニラ互換の loot entry に解決
+- `namespace == "minecraft"` の場合は `minecraft/1.21.11/loot_table/` のバニラ loot table をベースに `MergeLootTablePools` でプール追記
+- 出力: `{outputRoot}/data/{namespace}/loot_table/{relPath}.json`
 
 ### エネミースキル
 

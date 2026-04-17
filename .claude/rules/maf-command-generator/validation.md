@@ -36,11 +36,12 @@ CRLF/CR → LF 統一 + 前後空白除去。全入力テキストに適用。
 ## validate_helpers.go
 
 - `ValidateDropRefs()`: DropRef スライスの参照先存在確認（item/grimoire/passive/minecraft_item）+ CountMin <= CountMax チェック。passive の場合は Slot 必須チェックも行う
+- `ValidateMafLootPools()`: `maf:item` / `maf:grimoire` / `maf:passive` を含む loot pool（任意の JSON マップ）を走査して参照先・slot・count を検証する
 - `ValidateEquipmentSlots()`: Equipment 6 スロットの参照先存在確認
 - `IsNamespacedResourceID()`, `IsSafeNamespacedResourcePath()`, `NormalizeResourcePath()`: リソースID/パスの検証・正規化
-- `HasDuplicateID()`: 汎用 ID 重複検出ヘルパー
-- `NewDuplicateIDValidationError()`: ID 重複エラー生成
-- `FilterUniqueIDErrorsPerEntityID()`: unique(id) エラーを entity+id ごとに1件へ間引く
+- `ParseLootEntryCount()`, `ParseLootEntrySlot()`: loot entry JSON から count/slot を取り出すヘルパー（バリデーション + convert で共有）
+
+> ID 重複チェックは共通ヘルパーではなく、各エンティティの `ValidateAll` 内で `seenIDs map[string]bool` を使って自前で実装する。
 
 ## 共通バリデーションとドメイン固有バリデーションの境界
 

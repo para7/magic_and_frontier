@@ -44,7 +44,7 @@ type Grimoire struct {
 
 ### マスターデータ
 
-**ファイル:** `maf-command-generator/savedata/grimoire.json`
+**ファイル:** `maf-command-generator/savedata/grimoire/entity.json`（`{ "entries": [...] }` 形式。`JsonStore` が配下の `*.json` をマージロードする）
 
 24種のグリモアが定義されている。IDは `{名前}{番号}` 形式（例: `prominence01`, `healing01`）。
 
@@ -196,6 +196,8 @@ type ItemMaf struct {
     GrimoireID  string `json:"grimoireId,omitempty"`
     PassiveID   string `json:"passiveId,omitempty"`
     PassiveSlot int    `json:"passiveSlot,omitempty"`
+    BowID       string `json:"bowId,omitempty"`
+    MaxMP       *int   `json:"maxmp,omitempty"`
 }
 ```
 
