@@ -33,7 +33,7 @@ services:
             - "25565:25565/tcp"
             - "25565:25565/udp"
         volumes:
-            - ./server_26_1.jar:/mc/server.jar:ro
+            - ./server_26_1_2.jar:/mc/server.jar:ro
             - ./data:/mc/data
             - ./datapacks:/mc/data/world/datapacks
 
