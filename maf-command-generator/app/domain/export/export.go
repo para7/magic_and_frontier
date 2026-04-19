@@ -38,6 +38,8 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	enemyDir := filepath.Join(settings.OutputRoot, funcRoot, enemyLogicalDir)
 	enemyLootLogicalDir := settings.ExportPaths.EnemyLoot
 	enemyLootDir := filepath.Join(settings.OutputRoot, lootRoot, enemyLootLogicalDir)
+	spawnTableLogicalDir := normalizePathOrDefault(settings.ExportPaths.SpawnTable, "generated/enemy/replace")
+	spawnTableDir := filepath.Join(settings.OutputRoot, funcRoot, spawnTableLogicalDir)
 
 	effects := BuildGrimoireArtifacts(dmas)
 	passiveEffects, passiveGrimoires, err := BuildPassiveArtifacts(dmas)
@@ -84,6 +86,10 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 		return err
 	}
 	if err := WriteEnemyArtifacts(enemyDir, enemyLootDir, enemies); err != nil {
+		return err
+	}
+	spawnTables := BuildSpawnTableArtifacts(dmas, spawnTableLogicalDir, enemyLogicalDir)
+	if err := WriteSpawnTableArtifacts(spawnTableDir, spawnTables); err != nil {
 		return err
 	}
 

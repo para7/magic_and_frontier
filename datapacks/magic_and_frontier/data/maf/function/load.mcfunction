@@ -87,6 +87,7 @@ scoreboard objectives add mafSoulReset deathCount
 # 諸計算用
 scoreboard objectives add tmp dummy
 scoreboard objectives add tmp2 dummy
+scoreboard objectives add maf_vh_rand dummy
 
 # gamerule keepInventory true
 

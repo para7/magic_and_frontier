@@ -41,3 +41,20 @@ func TestEnemyExportFixtures(t *testing.T) {
 		})
 	}
 }
+
+func TestSpawnTableExportFixtures(t *testing.T) {
+	cases := discoverCases(t, filepath.Join("testdata", "spawn_table"))
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			master := loadFixtureMaster(t, tc.dir)
+			artifacts := BuildSpawnTableArtifacts(master, "generated/enemy/replace", "generated/enemy/spawn")
+
+			actualDir := t.TempDir()
+			if err := WriteSpawnTableArtifacts(filepath.Join(actualDir, "replace"), artifacts); err != nil {
+				t.Fatal(err)
+			}
+
+			assertGoldenDir(t, filepath.Join(tc.dir, "output"), actualDir)
+		})
+	}
+}

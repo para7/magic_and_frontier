@@ -1,7 +1,10 @@
 package spawntable
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 
 	cv "maf_command_editor/app/domain/custom_validator"
@@ -12,6 +15,23 @@ import (
 type SpawnTableEntity struct {
 	store files.JsonStore[SpawnTable]
 	data  []SpawnTable
+}
+
+type spawnTableFile struct {
+	Coordinates *spawnTableCoordinates `json:"coordinates"`
+	Entries     []SpawnTable           `json:"entries"`
+}
+
+type spawnTableCoordinates struct {
+	Dimension   string `json:"dimension"`
+	MinDistance int    `json:"minDistance"`
+	MaxDistance int    `json:"maxDistance"`
+	MinX        int    `json:"minX"`
+	MaxX        int    `json:"maxX"`
+	MinY        int    `json:"minY"`
+	MaxY        int    `json:"maxY"`
+	MinZ        int    `json:"minZ"`
+	MaxZ        int    `json:"maxZ"`
 }
 
 func NewSpawnTableEntity(path string) *SpawnTableEntity {
@@ -55,6 +75,9 @@ func (s *SpawnTableEntity) ValidateRelation(newEntity SpawnTable, mas model.DBMa
 	// 座標の Min <= Max チェック
 	if newEntity.MinX > newEntity.MaxX {
 		errs = append(errs, model.ValidationError{Entity: "spawntable", ID: newEntity.ID, Field: "minX", Tag: "lte", Param: "maxX"})
+	}
+	if newEntity.MinDistance > newEntity.MaxDistance {
+		errs = append(errs, model.ValidationError{Entity: "spawntable", ID: newEntity.ID, Field: "minDistance", Tag: "lte", Param: "maxDistance"})
 	}
 	if newEntity.MinY > newEntity.MaxY {
 		errs = append(errs, model.ValidationError{Entity: "spawntable", ID: newEntity.ID, Field: "minY", Tag: "lte", Param: "maxY"})
@@ -107,12 +130,20 @@ func (s *SpawnTableEntity) ValidateRelation(newEntity SpawnTable, mas model.DBMa
 }
 
 func (s *SpawnTableEntity) Load() error {
-	data, err := s.store.Load()
+	paths, err := filepath.Glob(filepath.Join(s.store.Path, "*.json"))
 	if err != nil {
 		return err
 	}
-	s.data = data
-	fmt.Printf("[spawntable.Load] Loaded %d records\n", len(data))
+	loaded := make([]SpawnTable, 0)
+	for _, path := range paths {
+		entries, err := loadSpawnTableFile(path)
+		if err != nil {
+			return fmt.Errorf("parsing %s: %w", filepath.Base(path), err)
+		}
+		loaded = append(loaded, entries...)
+	}
+	s.data = loaded
+	fmt.Printf("[spawntable.Load] Loaded %d records\n", len(loaded))
 	return nil
 }
 
@@ -154,4 +185,73 @@ func (s *SpawnTableEntity) Find(id string) (SpawnTable, bool) {
 
 func (s *SpawnTableEntity) GetAll() []SpawnTable {
 	return s.data
+}
+
+func loadSpawnTableFile(path string) ([]SpawnTable, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var file spawnTableFile
+	if err := json.Unmarshal(data, &file); err != nil {
+		return nil, err
+	}
+	if len(file.Entries) == 0 {
+		return []SpawnTable{}, nil
+	}
+
+	baseName := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+	out := make([]SpawnTable, 0, len(file.Entries))
+	for i, entry := range file.Entries {
+		table := entry
+		if file.Coordinates != nil {
+			table.Dimension = file.Coordinates.Dimension
+			table.MinDistance = file.Coordinates.MinDistance
+			table.MaxDistance = file.Coordinates.MaxDistance
+			table.MinX = file.Coordinates.MinX
+			table.MaxX = file.Coordinates.MaxX
+			table.MinY = file.Coordinates.MinY
+			table.MaxY = file.Coordinates.MaxY
+			table.MinZ = file.Coordinates.MinZ
+			table.MaxZ = file.Coordinates.MaxZ
+		}
+		if strings.TrimSpace(table.ID) == "" {
+			table.ID = buildSpawnTableID(baseName, i, table.SourceMobType)
+		}
+		out = append(out, table)
+	}
+	return out, nil
+}
+
+func buildSpawnTableID(fileBase string, index int, sourceMobType string) string {
+	filePart := normalizeSpawnTableIDPart(fileBase, "spawn")
+	mobPart := normalizeSpawnTableIDPart(sourceMobType, "mob")
+	return fmt.Sprintf("%s_%s_%d", filePart, mobPart, index+1)
+}
+
+func normalizeSpawnTableIDPart(raw, fallback string) string {
+	raw = strings.ToLower(strings.TrimSpace(raw))
+	if strings.Contains(raw, ":") {
+		parts := strings.SplitN(raw, ":", 2)
+		raw = parts[1]
+	}
+	var builder strings.Builder
+	prevUnderscore := false
+	for _, r := range raw {
+		switch {
+		case (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' || r == '_':
+			builder.WriteRune(r)
+			prevUnderscore = false
+		default:
+			if !prevUnderscore {
+				builder.WriteByte('_')
+				prevUnderscore = true
+			}
+		}
+	}
+	normalized := strings.Trim(builder.String(), "_")
+	if normalized == "" {
+		return fallback
+	}
+	return normalized
 }

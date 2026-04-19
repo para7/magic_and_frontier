@@ -62,7 +62,8 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 6. **弓パッシブ**: `BuildBowArtifacts` → `WriteBowArtifacts`（出力は passive 側の `passiveEffectDir` / `passiveBowDir` + `bowFlyingDir` / `bowGroundDir` に分散）
 7. **エネミースキル**: `BuildEnemySkillArtifacts` → `WriteEnemySkillArtifacts`
 8. **エネミー**: `BuildEnemyArtifacts` → `WriteEnemyArtifacts`
-9. **トレジャー**: `BuildTreasureArtifacts` → `WriteTreasureArtifacts`（`savedata/loot_table/{namespace}/...` を走査し、`maf:*` エントリを解決。`minecraft` 名前空間はバニラ loot table にカスタムプールを追記）
+9. **スポーンテーブル**: `BuildSpawnTableArtifacts` → `WriteSpawnTableArtifacts`（バニラモブを重み付き確率でカスタムエネミーに置換するディスパッチャを生成）
+10. **トレジャー**: `BuildTreasureArtifacts` → `WriteTreasureArtifacts`（`savedata/loot_table/{namespace}/...` を走査し、`maf:*` エントリを解決。`minecraft` 名前空間はバニラ loot table にカスタムプールを追記）
 
 ### Build と Write の分離
 
@@ -90,6 +91,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 | enemySkill | (設定必須) | `function/generated/enemy/skill/` |
 | enemy | (設定必須) | `function/generated/enemy/spawn/` |
 | enemyLoot | (設定必須) | `loot_table/generated/enemy/loot/` |
+| spawnTable | `generated/enemy/replace` | `function/generated/enemy/replace/` |
 
 - 設定キーが空のとき `generated/...` のデフォルトが適用される（`normalizePathOrDefault`）
 - `passive/bow/` の出力先は `export.go` 内でハードコード（`generated/passive/bow`）されており、`export_settings.json` のキーは無い
@@ -204,6 +206,17 @@ EnemyArtifact { ID, SpawnBody, LootTable }
 ```
 - **spawn/{id}.mcfunction**: summon コマンド + 装備 + スキル設定
 - **loot/{id}.json**: loot table JSON（replace/append モード対応）
+
+### スポーンテーブル
+
+```
+SpawnTableArtifact { ID, Table, MainEntry }
+```
+- **replace/main.mcfunction**: ディスパッチャ。ディメンション・距離・座標・モブタイプを条件に対応テーブル関数へ分岐
+- **replace/{id}.mcfunction**: 1..totalWeight の乱数を生成し、重み付き範囲で置換先エネミーを呼び出す。`killme` は置換レンジ（1..replaceWeight）内のみ条件実行 → `baseMobWeight` 分はバニラモブがそのまま残る
+
+マスターデータ: `savedata/spawn_table/*.json`（ファイル名 + sourceMobType からIDを自動付与）
+設定: `export_settings.json` の `spawnTable` キー（デフォルト: `generated/enemy/replace`）
 
 ---
 
