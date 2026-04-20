@@ -39,7 +39,6 @@ func (testDBMaster) HasBow(string) bool                { return true }
 func (testDBMaster) HasEnemySkill(string) bool         { return true }
 func (testDBMaster) HasEnemy(string) bool              { return true }
 func (testDBMaster) HasSpawnTable(string) bool         { return true }
-func (testDBMaster) HasTreasure(string) bool           { return true }
 func (testDBMaster) HasMinecraftLootTable(string) bool { return true }
 
 func TestGrimoireValidateStructAllValid(t *testing.T) {

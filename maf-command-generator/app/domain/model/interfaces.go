@@ -14,7 +14,6 @@ type DBMaster interface {
 	HasEnemySkill(id string) bool
 	HasEnemy(id string) bool
 	HasSpawnTable(id string) bool
-	HasTreasure(id string) bool
 	HasMinecraftLootTable(tablePath string) bool
 }
 

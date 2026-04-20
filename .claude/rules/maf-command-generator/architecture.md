@@ -21,7 +21,7 @@ main → cli → master → model / export → files, minecraft
 
 # インターフェース
 
-- `model.DBMaster`（`maf-command-generator/app/domain/model/interfaces.go`）: リレーションバリデーション用のインターフェース。`Has*` 群（HasItem, HasGrimoire, HasPassive, HasBow, HasEnemySkill, HasEnemy, HasSpawnTable, HasTreasure, HasMinecraftLootTable）に加え、業務ルール判定で参照先詳細が必要な場合の `GetPassive(id) (PassiveSnapshot, bool)` を提供
+- `model.DBMaster`（`maf-command-generator/app/domain/model/interfaces.go`）: リレーションバリデーション用のインターフェース。`Has*` 群（HasItem, HasGrimoire, HasPassive, HasBow, HasEnemySkill, HasEnemy, HasSpawnTable, HasMinecraftLootTable）に加え、業務ルール判定で参照先詳細が必要な場合の `GetPassive(id) (PassiveSnapshot, bool)` を提供
 - `model.PassiveSnapshot`（同上）: `GetPassive` が返す参照専用の軽量ビュー（`ID`, `GenerateGrimoire`）
 - `model.MafEntity[T]`（同上）: エンティティ共通のロード/検証インターフェース（`ValidateJSON`, `Load`, `ValidateAll`, `Find`, `GetAll`）
 - `export.DBMaster`（`maf-command-generator/app/domain/export/interfaces.go`）: エクスポート専用の読取インターフェース（`List*`）

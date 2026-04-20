@@ -44,7 +44,6 @@ type MafConfig struct {
 	EnemySkillStatePath    string
 	EnemyStatePath         string
 	SpawnTableStatePath    string
-	TreasureStatePath      string
 	LootTableSourceRoot    string
 	ExportSettingsPath     string
 	MinecraftLootTableRoot string
@@ -60,7 +59,6 @@ func LoadConfig() MafConfig {
 		EnemySkillStatePath:    filepath.Clean(filepath.Join("savedata", "enemy_skill")),
 		EnemyStatePath:         filepath.Clean(filepath.Join("savedata", "enemy")),
 		SpawnTableStatePath:    filepath.Clean(filepath.Join("savedata", "spawn_table")),
-		TreasureStatePath:      filepath.Clean(filepath.Join("savedata", "treasure")),
 		LootTableSourceRoot:    filepath.Clean(filepath.Join("savedata", "loot_table")),
 		ExportSettingsPath:     filepath.Clean(filepath.Join("config", "export_settings.json")),
 		MinecraftLootTableRoot: filepath.Clean(filepath.Join("minecraft", "1.21.11", "loot_table")),

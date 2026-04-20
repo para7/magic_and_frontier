@@ -1,9 +1,7 @@
 package master
 
 import (
-	"errors"
 	"fmt"
-	"io/fs"
 	"log"
 
 	model "maf_command_editor/app/domain/model"
@@ -14,7 +12,6 @@ import (
 	"maf_command_editor/app/domain/model/item"
 	"maf_command_editor/app/domain/model/passive"
 	"maf_command_editor/app/domain/model/spawntable"
-	"maf_command_editor/app/domain/model/treasure"
 	config "maf_command_editor/app/files"
 	mc "maf_command_editor/app/minecraft"
 )
@@ -27,7 +24,6 @@ type DBMaster struct {
 	enemyskill model.MafEntity[enemyskill.EnemySkill]
 	enemy      model.MafEntity[enemy.Enemy]
 	spawntable model.MafEntity[spawntable.SpawnTable]
-	treasure   model.MafEntity[treasure.Treasure]
 
 	minecraftLootTableRoot string
 }
@@ -42,16 +38,6 @@ func NewDBMaster(cfg config.MafConfig) *DBMaster {
 			log.Fatalf("failed to load %s: %v", name, err)
 		}
 	}
-	loadOptional := func(name string, loader func() error) {
-		if err := loader(); err != nil {
-			if errors.Is(err, fs.ErrNotExist) {
-				log.Printf("[%s.Load] file not found, skipping", name)
-				return
-			}
-			log.Fatalf("failed to load %s: %v", name, err)
-		}
-	}
-
 	d.grimoire = grimoire.NewGrimoireEntity(cfg.GrimoireStatePath)
 	load("grimoire", d.grimoire.Load)
 
@@ -72,9 +58,6 @@ func NewDBMaster(cfg config.MafConfig) *DBMaster {
 
 	d.spawntable = spawntable.NewSpawnTableEntity(cfg.SpawnTableStatePath)
 	load("spawntable", d.spawntable.Load)
-
-	d.treasure = treasure.NewTreasureEntity(cfg.TreasureStatePath)
-	loadOptional("treasure", d.treasure.Load)
 
 	return d
 }
@@ -127,11 +110,6 @@ func (d *DBMaster) HasSpawnTable(id string) bool {
 	return found
 }
 
-func (d *DBMaster) HasTreasure(id string) bool {
-	_, found := d.treasure.Find(id)
-	return found
-}
-
 func (d *DBMaster) HasMinecraftLootTable(tablePath string) bool {
 	exists, err := mc.Exists(d.minecraftLootTableRoot, tablePath)
 	if err != nil {
@@ -151,7 +129,6 @@ func (d *DBMaster) ValidateAll() [][]model.ValidationError {
 	result = append(result, d.enemyskill.ValidateAll(d)...)
 	result = append(result, d.enemy.ValidateAll(d)...)
 	result = append(result, d.spawntable.ValidateAll(d)...)
-	result = append(result, d.treasure.ValidateAll(d)...)
 
 	// SpawnTable の重複チェック（全体にまたがる検証）
 	tables := d.spawntable.GetAll()
@@ -223,13 +200,6 @@ func (d *DBMaster) ListEnemies() []enemy.Enemy {
 func (d *DBMaster) ListSpawnTables() []spawntable.SpawnTable {
 	entries := d.spawntable.GetAll()
 	result := make([]spawntable.SpawnTable, len(entries))
-	copy(result, entries)
-	return result
-}
-
-func (d *DBMaster) ListTreasures() []treasure.Treasure {
-	entries := d.treasure.GetAll()
-	result := make([]treasure.Treasure, len(entries))
 	copy(result, entries)
 	return result
 }

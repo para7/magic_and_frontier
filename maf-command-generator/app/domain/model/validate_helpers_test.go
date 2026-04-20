@@ -20,7 +20,6 @@ func (s validateHelpersMasterStub) HasBow(string) bool                { return t
 func (s validateHelpersMasterStub) HasEnemySkill(string) bool         { return true }
 func (s validateHelpersMasterStub) HasEnemy(string) bool              { return true }
 func (s validateHelpersMasterStub) HasSpawnTable(string) bool         { return true }
-func (s validateHelpersMasterStub) HasTreasure(string) bool           { return true }
 func (s validateHelpersMasterStub) HasMinecraftLootTable(string) bool { return true }
 
 func TestValidateDropRefsPassiveRequiresSlot(t *testing.T) {
