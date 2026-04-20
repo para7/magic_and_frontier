@@ -3,11 +3,12 @@ package enemy
 import model "maf_command_editor/app/domain/model"
 
 type PassengerEntity struct {
-	MobType    string            `json:"mobType"              validate:"trimmed_required"`
-	Name       string            `json:"name"`
-	Tags       []string          `json:"tags,omitempty"`
-	IsBaby     *bool             `json:"isBaby,omitempty"`
-	Passengers []PassengerEntity `json:"passengers,omitempty" validate:"omitempty,dive"`
+	MobType       string            `json:"mobType"              validate:"trimmed_required"`
+	Name          string            `json:"name"`
+	Tags          []string          `json:"tags,omitempty"`
+	EnemySkillIDs []string          `json:"enemySkillIds,omitempty"`
+	IsBaby        *bool             `json:"isBaby,omitempty"`
+	Passengers    []PassengerEntity `json:"passengers,omitempty" validate:"omitempty,dive"`
 }
 
 type Enemy struct {

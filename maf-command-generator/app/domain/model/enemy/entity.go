@@ -66,6 +66,11 @@ func (s *EnemyEntity) ValidateRelation(newEntity Enemy, mas model.DBMaster) []mo
 		seen[id] = true
 	}
 
+	// Passenger の EnemySkillIDs チェック
+	for i, p := range newEntity.Passengers {
+		errs = append(errs, validatePassengerSkillIDs(newEntity.ID, fmt.Sprintf("passengers[%d]", i), p, mas)...)
+	}
+
 	// Drops の参照チェック
 	errs = append(errs, model.ValidateMafLootPools("enemy", newEntity.ID, "drops", newEntity.Drops, mas)...)
 	errs = append(errs, validatePassiveLootEligibility("enemy", newEntity.ID, "drops", newEntity.Drops, mas)...)
@@ -160,6 +165,35 @@ func (s *EnemyEntity) ValidateAll(mas model.DBMaster) [][]model.ValidationError 
 		fmt.Printf("[enemy.ValidateAll] No errors found\n")
 	}
 	return result
+}
+
+func validatePassengerSkillIDs(enemyID, prefix string, p PassengerEntity, mas model.DBMaster) []model.ValidationError {
+	var errs []model.ValidationError
+	seen := map[string]bool{}
+	for i, skillID := range p.EnemySkillIDs {
+		id := strings.TrimSpace(skillID)
+		if id == "" {
+			continue
+		}
+		if !mas.HasEnemySkill(id) {
+			errs = append(errs, model.ValidationError{
+				Entity: "enemy", ID: enemyID,
+				Field: fmt.Sprintf("%s.enemySkillIds[%d]", prefix, i),
+				Tag:   "relation", Param: "enemyskill not found",
+			})
+		} else if seen[id] {
+			errs = append(errs, model.ValidationError{
+				Entity: "enemy", ID: enemyID,
+				Field: fmt.Sprintf("%s.enemySkillIds[%d]", prefix, i),
+				Tag:   "relation", Param: "duplicate enemyskill id",
+			})
+		}
+		seen[id] = true
+	}
+	for i, nested := range p.Passengers {
+		errs = append(errs, validatePassengerSkillIDs(enemyID, fmt.Sprintf("%s.passengers[%d]", prefix, i), nested, mas)...)
+	}
+	return errs
 }
 
 func (s *EnemyEntity) Find(id string) (Enemy, bool) {

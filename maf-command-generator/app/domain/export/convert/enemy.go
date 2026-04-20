@@ -62,11 +62,17 @@ func passengerNBT(p enemyModel.PassengerEntity) string {
 	if p.Name != "" {
 		parts = append(parts, fmt.Sprintf("CustomName:%s", JsonString(p.Name)))
 	}
-	if len(p.Tags) > 0 {
-		tags := make([]string, 0, len(p.Tags))
-		for _, t := range p.Tags {
-			tags = append(tags, JsonString(t))
-		}
+	tags := make([]string, 0, len(p.Tags)+len(p.EnemySkillIDs)*2+1)
+	for _, t := range p.Tags {
+		tags = append(tags, JsonString(t))
+	}
+	if len(p.EnemySkillIDs) > 0 {
+		tags = append(tags, JsonString("EnemySkill"))
+	}
+	for _, skillID := range p.EnemySkillIDs {
+		tags = append(tags, JsonString(skillID), JsonString("maf_enemy_skill_"+skillID))
+	}
+	if len(tags) > 0 {
 		parts = append(parts, fmt.Sprintf("Tags:[%s]", strings.Join(tags, ",")))
 	}
 	if p.IsBaby != nil && *p.IsBaby {

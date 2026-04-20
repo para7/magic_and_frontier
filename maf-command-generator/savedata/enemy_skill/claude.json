@@ -1,0 +1,11 @@
+{
+  "entries": [
+    {
+      "id": "creeper_instant_explode",
+      "description": "Fuseを0に設定し、起爆限界時間に達した・またはプレイヤーに反応した瞬間に即座に爆発させる",
+      "script": [
+        "data modify entity @s Fuse set value 1s"
+      ]
+    }
+  ]
+}

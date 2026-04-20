@@ -110,3 +110,10 @@ maf-command-generator で生成。直接編集禁止。
 ## sample_pack/ — テスト用パック
 
 Docker マウント検証用の最小パック。`sample:ping` を load 時に実行するだけ。
+
+## mcfunction スクリプト規約
+
+### 一時スコアボード
+
+一時計算には `tmp` / `tmp2` スコアボードを使用する（`load.mcfunction` で定義済み）。
+`mafMP` 等の用途固定スコアボードを一時計算に流用しない。

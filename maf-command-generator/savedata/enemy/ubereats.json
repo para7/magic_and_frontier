@@ -14,6 +14,9 @@
                     "name": "ウーバーイーツ",
                     "tags": [
                         "maf_vh_checked"
+                    ],
+                    "enemySkillIds": [
+                        "creeper_instant_explode"
                     ]
                 }
             ]
