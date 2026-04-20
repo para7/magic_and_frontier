@@ -1,0 +1,22 @@
+{
+    "entries": [
+        {
+            "id": "ubereats",
+            "mobType": "minecraft:zombie",
+            "name": "配達員",
+            "hp": 20,
+            "isBaby": true,
+            "dropMode": "replace",
+            "drops": [],
+            "passengers": [
+                {
+                    "mobType": "minecraft:creeper",
+                    "name": "ウーバーイーツ",
+                    "tags": [
+                        "maf_vh_checked"
+                    ]
+                }
+            ]
+        }
+    ]
+}

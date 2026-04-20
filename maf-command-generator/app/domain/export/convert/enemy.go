@@ -25,6 +25,9 @@ func enemySummonNBT(lootID string, entry enemyModel.Enemy, itemsByID map[string]
 	if entry.Name != "" {
 		parts = append(parts, fmt.Sprintf("CustomName:{text:%s}", JsonString(entry.Name)))
 	}
+	if entry.IsBaby != nil && *entry.IsBaby {
+		parts = append(parts, "IsBaby:1b")
+	}
 	if tags := enemyTags(entry); len(tags) > 0 {
 		parts = append(parts, fmt.Sprintf("Tags:[%s]", strings.Join(tags, ",")))
 	}
@@ -36,6 +39,41 @@ func enemySummonNBT(lootID string, entry enemyModel.Enemy, itemsByID map[string]
 	}
 	if armorItems, armorDrops := equipmentArray(itemsByID, entry.Equipment.Feet, entry.Equipment.Legs, entry.Equipment.Chest, entry.Equipment.Head); armorItems != "" {
 		parts = append(parts, "ArmorItems:["+armorItems+"]", "ArmorDropChances:["+armorDrops+"]")
+	}
+	if pnbt := passengersNBT(entry.Passengers); pnbt != "" {
+		parts = append(parts, "Passengers:["+pnbt+"]")
+	}
+	return "{" + strings.Join(parts, ",") + "}"
+}
+
+func passengersNBT(passengers []enemyModel.PassengerEntity) string {
+	if len(passengers) == 0 {
+		return ""
+	}
+	parts := make([]string, 0, len(passengers))
+	for _, p := range passengers {
+		parts = append(parts, passengerNBT(p))
+	}
+	return strings.Join(parts, ",")
+}
+
+func passengerNBT(p enemyModel.PassengerEntity) string {
+	parts := []string{fmt.Sprintf("id:%s", JsonString(p.MobType))}
+	if p.Name != "" {
+		parts = append(parts, fmt.Sprintf("CustomName:%s", JsonString(p.Name)))
+	}
+	if len(p.Tags) > 0 {
+		tags := make([]string, 0, len(p.Tags))
+		for _, t := range p.Tags {
+			tags = append(tags, JsonString(t))
+		}
+		parts = append(parts, fmt.Sprintf("Tags:[%s]", strings.Join(tags, ",")))
+	}
+	if p.IsBaby != nil && *p.IsBaby {
+		parts = append(parts, "IsBaby:1b")
+	}
+	if nested := passengersNBT(p.Passengers); nested != "" {
+		parts = append(parts, "Passengers:["+nested+"]")
 	}
 	return "{" + strings.Join(parts, ",") + "}"
 }
