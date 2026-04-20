@@ -9,6 +9,7 @@ execute store result score @s mafCastCost run data get storage oh_my_dat: _[-4][
 execute store result score @s mafCastTime run data get storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting.cast
 execute store result score @s mafCastTimeMax run data get storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting.cast
 execute store result score @s mafCoolTime run data get storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting.cooltime
+scoreboard players operation @s mafCoolTimeMax = @s mafCoolTime
 
 execute if score @s mafCastCost > @s mafMP run scoreboard players set @s mafCastTime -1
 execute if score @s mafCastCost > @s mafMP run tellraw @s [{"text":"MPが足りません！ 消費MP: "},{"score":{"name":"@s","objective":"mafCastCost"}}]

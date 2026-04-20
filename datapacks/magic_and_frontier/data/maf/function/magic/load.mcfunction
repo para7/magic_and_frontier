@@ -6,6 +6,7 @@ scoreboard objectives add mafEquipMP dummy
 scoreboard objectives add mafCastCost dummy
 scoreboard objectives add mafCastTime dummy
 scoreboard objectives add mafCoolTime dummy
+scoreboard objectives add mafCoolTimeMax dummy
 # 詠唱時間の表示用
 scoreboard objectives add mafCastTimeMax dummy
  
