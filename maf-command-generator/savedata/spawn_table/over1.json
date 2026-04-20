@@ -1,0 +1,34 @@
+{
+  "coordinates": {
+    "dimension": "minecraft:overworld",
+    "minDistance": 0,
+    "maxDistance": 1000,
+    "minX": -99999999,
+    "maxX": 99999999,
+    "minZ": -99999999,
+    "maxZ": 99999999,
+    "minY": -64,
+    "maxY": 320
+  },
+  "entries": [
+    {
+      "sourceMobType": "minecraft:zombie",
+      "baseMob": {
+        "weight": 30,
+        "attributes": {
+          "hp": 100
+        }
+      },
+      "replacements": [
+        {
+          "enemyId": "drop_test",
+          "weight": 30
+        },
+        {
+          "enemyId": "poison_zombie",
+          "weight": 40
+        }
+      ]
+    }
+  ]
+}

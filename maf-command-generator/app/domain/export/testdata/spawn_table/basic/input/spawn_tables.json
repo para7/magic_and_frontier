@@ -1,0 +1,28 @@
+{
+  "entries": [
+    {
+      "id": "overworld_zombies",
+      "sourceMobType": "minecraft:zombie",
+      "dimension": "minecraft:overworld",
+      "minDistance": 0,
+      "maxDistance": 1000,
+      "minX": -100,
+      "maxX": 100,
+      "minY": -64,
+      "maxY": 320,
+      "minZ": -100,
+      "maxZ": 100,
+      "baseMobWeight": 30,
+      "replacements": [
+        {
+          "enemyId": "enemy_1",
+          "weight": 30
+        },
+        {
+          "enemyId": "enemy_2",
+          "weight": 40
+        }
+      ]
+    }
+  ]
+}

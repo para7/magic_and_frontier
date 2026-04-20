@@ -23,6 +23,7 @@ type ExportPaths struct {
 	Enemy          string `json:"enemy"`
 	EnemySkill     string `json:"enemySkill"`
 	EnemyLoot      string `json:"enemyLoot"`
+	SpawnTable     string `json:"spawnTable"`
 }
 
 func LoadExportSettings(path string) (ExportSettings, error) {

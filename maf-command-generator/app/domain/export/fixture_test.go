@@ -17,6 +17,7 @@ import (
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
+	spawntableModel "maf_command_editor/app/domain/model/spawntable"
 	config "maf_command_editor/app/files"
 )
 
@@ -67,6 +68,7 @@ func loadFixtureMaster(t *testing.T, caseDir string) exportMasterStub {
 		items:       loadEntries[itemModel.Item](t, inputDir, "items.json"),
 		enemySkills: loadEntries[enemyskillModel.EnemySkill](t, inputDir, "enemy_skills.json"),
 		enemies:     loadEntries[enemyModel.Enemy](t, inputDir, "enemies.json"),
+		spawnTables: loadEntries[spawntableModel.SpawnTable](t, inputDir, "spawn_tables.json"),
 	}
 }
 
@@ -182,6 +184,7 @@ func defaultFixtureExportSettings(outputRoot string) config.ExportSettings {
 			Enemy:          "generated/enemy/spawn",
 			EnemySkill:     "generated/enemy/skill",
 			EnemyLoot:      "generated/enemy/loot",
+			SpawnTable:     "generated/enemy/replace",
 		},
 	}
 }

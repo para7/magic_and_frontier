@@ -7,6 +7,7 @@ import (
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
+	spawntableModel "maf_command_editor/app/domain/model/spawntable"
 )
 
 type DBMaster interface {
@@ -16,4 +17,5 @@ type DBMaster interface {
 	ListItems() []itemModel.Item
 	ListEnemySkills() []enemyskillModel.EnemySkill
 	ListEnemies() []enemyModel.Enemy
+	ListSpawnTables() []spawntableModel.SpawnTable
 }

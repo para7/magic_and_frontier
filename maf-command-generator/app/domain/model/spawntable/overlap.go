@@ -2,7 +2,8 @@ package spawntable
 
 // RangesOverlap は2つのスポーンテーブルの座標範囲が重なるかどうかを判定する。
 func RangesOverlap(left, right SpawnTable) bool {
-	return intervalOverlap(left.MinX, left.MaxX, right.MinX, right.MaxX) &&
+	return intervalOverlap(left.MinDistance, left.MaxDistance, right.MinDistance, right.MaxDistance) &&
+		intervalOverlap(left.MinX, left.MaxX, right.MinX, right.MaxX) &&
 		intervalOverlap(left.MinY, left.MaxY, right.MinY, right.MaxY) &&
 		intervalOverlap(left.MinZ, left.MaxZ, right.MinZ, right.MaxZ)
 }

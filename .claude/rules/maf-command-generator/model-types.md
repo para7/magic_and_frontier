@@ -17,7 +17,7 @@ paths:
 | BowPassive | `model/bow` | ID, Name, Role, Slots, LifeSub, ScriptHit/Fired/Flying/Ground |
 | EnemySkill | `model/enemyskill` | ID, Name, Description, Script |
 | Enemy | `model/enemy` | ID, MobType, Name, HP, Memo, Attack, Defense, MoveSpeed, Equipment, EnemySkillIDs, DropMode(append/replace), Drops |
-| SpawnTable | `model/spawntable` | ID, SourceMobType, Dimension, MinX~MaxZ, BaseMobWeight, Replacements |
+| SpawnTable | `model/spawntable` | ID, SourceMobType, Dimension, MinDistance/MaxDistance, MinX~MaxZ, BaseMob(Weight + 任意 Attributes), Replacements |
 | Treasure | `model/treasure` | ID, TablePath, LootPools |
 
 ## 共有型（`model/types.go`）
@@ -26,6 +26,10 @@ paths:
 - `EquipmentSlot`: エネミー装備スロット（Kind(minecraft_item/item), RefID, Count, DropChance）
 - `Equipment`: 6スロット（Mainhand, Offhand, Head, Chest, Legs, Feet）
 - `ReplacementEntry`: スポーンテーブルのモブ差替エントリ（EnemyID, Weight）
+- `BaseMob`（`model/spawntable/types.go`）: バニラモブ残存スロットの定義（Weight, 任意 Attributes）
+- `BaseMobAttributes`: 残存バニラモブに上書きする属性。`HP` / `Attack` / `Defense` / `MoveSpeed` すべて `*float64`（omitempty）。export 側で `Health` と `Attributes[{generic.max_health, generic.attack_damage, generic.armor, generic.movement_speed}]` の NBT に変換される
+
+> SpawnTable は `BaseMobWeight int` を直接持たない。`GetBaseMobWeight()` / `GetBaseMobAttributes()` 経由で取得する。旧 `baseMobWeight` スカラーの savedata は `UnmarshalJSON` で `BaseMob{Weight}` へ昇格される（後方互換）。
 
 `model/interfaces.go` で `PassiveSnapshot`（`ID`, `GenerateGrimoire`）も定義される。これは `model.DBMaster.GetPassive()` の戻り値で、`passive` エンティティ以外からパッシブ詳細を参照する際の正式な型。
 

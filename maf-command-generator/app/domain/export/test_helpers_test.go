@@ -7,6 +7,7 @@ import (
 	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
+	spawntableModel "maf_command_editor/app/domain/model/spawntable"
 )
 
 type exportMasterStub struct {
@@ -16,6 +17,7 @@ type exportMasterStub struct {
 	items       []itemModel.Item
 	enemySkills []enemyskillModel.EnemySkill
 	enemies     []enemyModel.Enemy
+	spawnTables []spawntableModel.SpawnTable
 }
 
 func (s exportMasterStub) ListGrimoires() []grimoireModel.Grimoire {
@@ -51,5 +53,11 @@ func (s exportMasterStub) ListEnemySkills() []enemyskillModel.EnemySkill {
 func (s exportMasterStub) ListEnemies() []enemyModel.Enemy {
 	out := make([]enemyModel.Enemy, len(s.enemies))
 	copy(out, s.enemies)
+	return out
+}
+
+func (s exportMasterStub) ListSpawnTables() []spawntableModel.SpawnTable {
+	out := make([]spawntableModel.SpawnTable, len(s.spawnTables))
+	copy(out, s.spawnTables)
 	return out
 }

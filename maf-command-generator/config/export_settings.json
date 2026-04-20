@@ -11,6 +11,7 @@
     "bowGround": "generated/bow/ground",
     "enemy": "generated/enemy/spawn",
     "enemySkill": "generated/enemy/skill",
-    "enemyLoot": "generated/enemy/loot"
+    "enemyLoot": "generated/enemy/loot",
+    "spawnTable": "generated/enemy/replace"
   }
 }

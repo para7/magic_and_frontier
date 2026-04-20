@@ -1,0 +1,36 @@
+{
+  "entries": [
+    {
+      "id": "overworld_zombies_attributes",
+      "sourceMobType": "minecraft:zombie",
+      "dimension": "minecraft:overworld",
+      "minDistance": 0,
+      "maxDistance": 1000,
+      "minX": -100,
+      "maxX": 100,
+      "minY": -64,
+      "maxY": 320,
+      "minZ": -100,
+      "maxZ": 100,
+      "baseMob": {
+        "weight": 30,
+        "attributes": {
+          "hp": 100,
+          "attack": 6,
+          "defense": 2,
+          "moveSpeed": 0.22
+        }
+      },
+      "replacements": [
+        {
+          "enemyId": "enemy_1",
+          "weight": 30
+        },
+        {
+          "enemyId": "enemy_2",
+          "weight": 40
+        }
+      ]
+    }
+  ]
+}
