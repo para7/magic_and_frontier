@@ -13,7 +13,12 @@
   "entries": [
     {
       "sourceMobType": "minecraft:zombie",
-      "baseMobWeight": 30,
+      "baseMob": {
+        "weight": 30,
+        "attributes": {
+          "hp": 100
+        }
+      },
       "replacements": [
         {
           "enemyId": "drop_test",

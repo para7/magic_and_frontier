@@ -88,7 +88,7 @@ func (s *SpawnTableEntity) ValidateRelation(newEntity SpawnTable, mas model.DBMa
 
 	// Replacements の参照チェック
 	seen := map[string]bool{}
-	totalWeight := newEntity.BaseMobWeight
+	totalWeight := newEntity.GetBaseMobWeight()
 	for i, r := range newEntity.Replacements {
 		enemyID := strings.TrimSpace(r.EnemyID)
 		if !mas.HasEnemy(enemyID) {
@@ -118,14 +118,47 @@ func (s *SpawnTableEntity) ValidateRelation(newEntity SpawnTable, mas model.DBMa
 		seen[enemyID] = true
 		totalWeight += r.Weight
 	}
+	errs = append(errs, validateBaseMobAttributes(newEntity.ID, newEntity.GetBaseMobAttributes())...)
 	if totalWeight <= 0 {
 		errs = append(errs, model.ValidationError{
 			Entity: "spawntable", ID: newEntity.ID,
-			Field: "baseMobWeight",
+			Field: "baseMob.weight",
 			Tag:   "relation", Param: "total weight must be > 0",
 		})
 	}
 
+	return errs
+}
+
+func validateBaseMobAttributes(id string, attrs *BaseMobAttributes) []model.ValidationError {
+	if attrs == nil {
+		return nil
+	}
+
+	var errs []model.ValidationError
+	appendRangeError := func(field string, value *float64, min, max float64) {
+		if value == nil {
+			return
+		}
+		if *value < min {
+			errs = append(errs, model.ValidationError{
+				Entity: "spawntable", ID: id,
+				Field: field, Tag: "gte", Param: fmt.Sprintf("%g", min),
+			})
+			return
+		}
+		if *value > max {
+			errs = append(errs, model.ValidationError{
+				Entity: "spawntable", ID: id,
+				Field: field, Tag: "lte", Param: fmt.Sprintf("%g", max),
+			})
+		}
+	}
+
+	appendRangeError("baseMob.attributes.hp", attrs.HP, 1, 100000)
+	appendRangeError("baseMob.attributes.attack", attrs.Attack, 0, 100000)
+	appendRangeError("baseMob.attributes.defense", attrs.Defense, 0, 100000)
+	appendRangeError("baseMob.attributes.moveSpeed", attrs.MoveSpeed, 0, 100000)
 	return errs
 }
 

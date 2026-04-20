@@ -3,6 +3,7 @@ package export
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	spawntableModel "maf_command_editor/app/domain/model/spawntable"
@@ -44,7 +45,7 @@ func WriteSpawnTableArtifacts(dir string, artifacts []SpawnTableArtifact) error 
 }
 
 func buildSpawnTableArtifact(table spawntableModel.SpawnTable, replaceLogicalDir, enemyLogicalDir string) SpawnTableArtifact {
-	totalWeight := table.BaseMobWeight
+	totalWeight := table.GetBaseMobWeight()
 	for _, replacement := range table.Replacements {
 		totalWeight += replacement.Weight
 	}
@@ -70,6 +71,15 @@ func buildSpawnTableArtifact(table spawntableModel.SpawnTable, replaceLogicalDir
 		"execute if score @s maf_vh_rand matches 1..%d run function maf:killme",
 		replaceWeight,
 	))
+	baseStart := replaceWeight + 1
+	if baseMergeNBT, ok := baseMobMergeNBT(table.GetBaseMobAttributes()); ok && baseStart <= totalWeight {
+		bodyLines = append(bodyLines, fmt.Sprintf(
+			"execute if score @s maf_vh_rand matches %d..%d run data merge entity @s %s",
+			baseStart,
+			totalWeight,
+			baseMergeNBT,
+		))
+	}
 
 	dx := table.MaxX - table.MinX
 	dy := table.MaxY - table.MinY
@@ -93,4 +103,37 @@ func buildSpawnTableArtifact(table spawntableModel.SpawnTable, replaceLogicalDir
 			functionRefName(replaceLogicalDir, table.ID),
 		),
 	}
+}
+func baseMobMergeNBT(attrs *spawntableModel.BaseMobAttributes) (string, bool) {
+	if attrs == nil {
+		return "", false
+	}
+
+	parts := make([]string, 0, 2)
+	attributeValues := make([]string, 0, 4)
+	if attrs.HP != nil {
+		value := formatNBTFloat(*attrs.HP)
+		parts = append(parts, fmt.Sprintf("Health:%sf", value))
+		attributeValues = append(attributeValues, fmt.Sprintf("{Name:generic.max_health,Base:%s}", value))
+	}
+	if attrs.Attack != nil {
+		attributeValues = append(attributeValues, fmt.Sprintf("{Name:generic.attack_damage,Base:%s}", formatNBTFloat(*attrs.Attack)))
+	}
+	if attrs.Defense != nil {
+		attributeValues = append(attributeValues, fmt.Sprintf("{Name:generic.armor,Base:%s}", formatNBTFloat(*attrs.Defense)))
+	}
+	if attrs.MoveSpeed != nil {
+		attributeValues = append(attributeValues, fmt.Sprintf("{Name:generic.movement_speed,Base:%s}", formatNBTFloat(*attrs.MoveSpeed)))
+	}
+	if len(attributeValues) > 0 {
+		parts = append(parts, fmt.Sprintf("Attributes:[%s]", strings.Join(attributeValues, ",")))
+	}
+	if len(parts) == 0 {
+		return "", false
+	}
+	return "{" + strings.Join(parts, ",") + "}", true
+}
+
+func formatNBTFloat(v float64) string {
+	return strconv.FormatFloat(v, 'f', -1, 64)
 }
