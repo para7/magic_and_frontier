@@ -63,7 +63,8 @@ Minecraft Version 26.1
 #### その他
 - `devtools/reinstall.mcfunction` — 再インストール
 - `devtools/passive_clear.mcfunction` — パッシブクリア
-- `enemy/tick.mcfunction` — 敵ティック処理
+- `enemy/tick.mcfunction` — 敵ティック処理（`EnemySkill` タグ付きエンティティのスキル駆動 + `maf_vh_checked` 未付与の全エンティティに対して `maf:enemy/replace` を呼ぶ）
+- `enemy/replace.mcfunction` — 未チェックエンティティに `maf_vh_checked` タグを付与してから `maf:generated/enemy/replace/main` にディスパッチ（スポーンテーブル適用のエントリポイント）
 - `skill/sword_slash.mcfunction` — 剣スキル
 - `soul/tick.mcfunction` — ソウルシステムティック
 - `test/tick.mcfunction` — テスト用ティック
@@ -83,6 +84,7 @@ maf-command-generator で生成。直接編集禁止。
 - `bow/ground/` — 弓パッシブ着地効果（ScriptGround）
 - `enemy/spawn/` — 敵スポーン（poison_zombie, drop_test, drop_test_bow）
 - `enemy/skill/` — 敵スキル（main, near_poison）
+- `enemy/replace/` — スポーンテーブル置換（`main.mcfunction` がディメンション/距離/座標/mobType でディスパッチ、`{id}.mcfunction` が `maf_vh_rand` スコア乱数で置換先エネミー呼出 + 残存モブ属性上書き）
 
 ### data/maf/advancement/ — 進捗（イベントトリガー）
 - `use_grimoire.json` — 魔法書使用検知（consumable + using_item）

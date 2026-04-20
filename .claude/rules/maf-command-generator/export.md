@@ -22,6 +22,7 @@ export 層は `export.DBMaster` 経由でデータを読み取り、Minecraft �
 | `bow.go` | `BuildBowArtifacts` / `WriteBowArtifacts` |
 | `enemyskill.go` | `BuildEnemySkillArtifacts` / `WriteEnemySkillArtifacts` |
 | `enemy.go` | `BuildEnemyArtifacts` / `WriteEnemyArtifacts` |
+| `spawntable.go` | `BuildSpawnTableArtifacts` / `WriteSpawnTableArtifacts`（バニラモブを重み付き確率でカスタムエネミーに置換。`main.mcfunction` がディスパッチャ、各 `{id}.mcfunction` が `maf_vh_rand` スコアで分岐。`BaseMob.Attributes` があれば残存バニラモブに `data merge entity` で Health / Attributes NBT を書き込む） |
 | `treasure.go` | `BuildTreasureArtifacts` / `WriteTreasureArtifacts`（`LootTableSourceRoot` 配下の JSON を走査し、`maf:*` エントリ解決 + `minecraft:` 名前空間はバニラとマージ） |
 
 ## convert/ サブパッケージ（export_convert）

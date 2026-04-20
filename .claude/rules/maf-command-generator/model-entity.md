@@ -29,6 +29,12 @@ paths:
 - ID 重複チェックは `ValidateAll` 内で `map[string]bool` の `seenIDs` を使った走査で検出し、重複分を `Tag:"unique"` の `ValidationError` として追加する（汎用ヘルパーは未提供）
 - `Find` は `(T, bool)`、`GetAll` は現在データをそのまま返す
 
+### 例外: SpawnTable
+
+`model/spawntable/entity.go` は `JsonStore` の汎用 `entries` 配列ではなく、独自の `{coordinates, entries}` 形式を読む。`Load()` は `savedata/spawn_table/*.json` を glob で走査し、ファイル単位の `coordinates`（`dimension`, `minDistance/maxDistance`, `minX~maxZ`）を各 `entries[i]` に複製してから `SpawnTable` に展開する。`id` が空のエントリはファイル名 + `sourceMobType` + index から `buildSpawnTableID` で自動付与される（小文字化・namespace 除去・非英数の `_` 置換）。新規エンティティでこの形式を真似る場合は `store` を使わず `*.json` 走査 + 独自パーサで実装する。
+
+`ValidateRelation` では `BaseMob` 配下の属性範囲チェック（`validateBaseMobAttributes`: hp 1..100000, attack/defense/moveSpeed 0..100000）と `minDistance <= maxDistance` もここで実施する。
+
 ## バリデーション
 
 - 構造体バリデーション: `custom_validator.Validate.Struct()` を使用
