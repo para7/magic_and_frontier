@@ -31,8 +31,8 @@ func enemySummonNBT(lootID string, entry enemyModel.Enemy, itemsByID map[string]
 	if tags := enemyTags(entry); len(tags) > 0 {
 		parts = append(parts, fmt.Sprintf("Tags:[%s]", strings.Join(tags, ",")))
 	}
-	if attrs := enemyAttributes(entry); len(attrs) > 0 {
-		parts = append(parts, fmt.Sprintf("Attributes:[%s]", strings.Join(attrs, ",")))
+	if attrs := enemyattributes(entry); len(attrs) > 0 {
+		parts = append(parts, fmt.Sprintf("attributes:[%s]", strings.Join(attrs, ",")))
 	}
 	if handItems, handDrops := equipmentArray(itemsByID, entry.Equipment.Mainhand, entry.Equipment.Offhand); handItems != "" {
 		parts = append(parts, "HandItems:["+handItems+"]", "HandDropChances:["+handDrops+"]")
@@ -62,6 +62,25 @@ func passengerNBT(p enemyModel.PassengerEntity) string {
 	if p.Name != "" {
 		parts = append(parts, fmt.Sprintf("CustomName:%s", JsonString(p.Name)))
 	}
+
+	attrs := []string{}
+	if p.HP != nil {
+		attrs = append(attrs, fmt.Sprintf("{id:\"minecraft:max_health\",base:%s}", formatFloat(*p.HP)))
+		parts = append(parts, fmt.Sprintf("Health:%sf", formatFloat(*p.HP)))
+	}
+	if p.Attack != nil {
+		attrs = append(attrs, fmt.Sprintf("{id:\"minecraft:attack_damage\",base:%s}", formatFloat(*p.Attack)))
+	}
+	if p.Defense != nil {
+		attrs = append(attrs, fmt.Sprintf("{id:\"minecraft:armor\",base:%s}", formatFloat(*p.Defense)))
+	}
+	if p.MoveSpeed != nil {
+		attrs = append(attrs, fmt.Sprintf("{id:\"minecraft:movement_speed\",base:%s}", formatFloat(*p.MoveSpeed)))
+	}
+	if len(attrs) > 0 {
+		parts = append(parts, fmt.Sprintf("attributes:[%s]", strings.Join(attrs, ",")))
+	}
+
 	tags := make([]string, 0, len(p.Tags)+len(p.EnemySkillIDs)*2+1)
 	for _, t := range p.Tags {
 		tags = append(tags, JsonString(t))
@@ -99,18 +118,18 @@ func enemyTags(entry enemyModel.Enemy) []string {
 	return tags
 }
 
-func enemyAttributes(entry enemyModel.Enemy) []string {
+func enemyattributes(entry enemyModel.Enemy) []string {
 	attrs := []string{
-		fmt.Sprintf("{Name:generic.max_health,Base:%s}", formatFloat(entry.HP)),
+		fmt.Sprintf("{id:\"minecraft:max_health\",base:%s}", formatFloat(entry.HP)),
 	}
 	if entry.Attack != nil {
-		attrs = append(attrs, fmt.Sprintf("{Name:generic.attack_damage,Base:%s}", formatFloat(*entry.Attack)))
+		attrs = append(attrs, fmt.Sprintf("{id:\"minecraft:attack_damage\",base:%s}", formatFloat(*entry.Attack)))
 	}
 	if entry.Defense != nil {
-		attrs = append(attrs, fmt.Sprintf("{Name:generic.armor,Base:%s}", formatFloat(*entry.Defense)))
+		attrs = append(attrs, fmt.Sprintf("{id:\"minecraft:armor\",base:%s}", formatFloat(*entry.Defense)))
 	}
 	if entry.MoveSpeed != nil {
-		attrs = append(attrs, fmt.Sprintf("{Name:generic.movement_speed,Base:%s}", formatFloat(*entry.MoveSpeed)))
+		attrs = append(attrs, fmt.Sprintf("{id:\"minecraft:movement_speed\",base:%s}", formatFloat(*entry.MoveSpeed)))
 	}
 	return attrs
 }

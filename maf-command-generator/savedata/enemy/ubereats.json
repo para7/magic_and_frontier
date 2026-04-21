@@ -4,7 +4,7 @@
             "id": "ubereats",
             "mobType": "minecraft:zombie",
             "name": "配達員",
-            "hp": 20,
+            "hp": 2,
             "isBaby": true,
             "dropMode": "replace",
             "drops": [],
@@ -15,6 +15,7 @@
                     "tags": [
                         "maf_vh_checked"
                     ],
+                    "moveSpeed": 0,
                     "enemySkillIds": [
                         "creeper_instant_explode"
                     ]

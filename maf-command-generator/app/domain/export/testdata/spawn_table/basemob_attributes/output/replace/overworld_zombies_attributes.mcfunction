@@ -3,4 +3,4 @@ execute store result score @s maf_vh_rand run random value 1..100
 execute if score @s maf_vh_rand matches 1..30 run function maf:generated/enemy/spawn/enemy_1
 execute if score @s maf_vh_rand matches 31..70 run function maf:generated/enemy/spawn/enemy_2
 execute if score @s maf_vh_rand matches 1..70 run function maf:killme
-execute if score @s maf_vh_rand matches 71..100 run data merge entity @s {Health:100f,Attributes:[{Name:generic.max_health,Base:100},{Name:generic.attack_damage,Base:6},{Name:generic.armor,Base:2},{Name:generic.movement_speed,Base:0.22}]}
+execute if score @s maf_vh_rand matches 71..100 run data merge entity @s {Health:100f,attributes:[{id:"minecraft:max_health",base:100},{id:"minecraft:attack_damage",base:6},{id:"minecraft:armor",base:2},{id:"minecraft:movement_speed",base:0.22}]}

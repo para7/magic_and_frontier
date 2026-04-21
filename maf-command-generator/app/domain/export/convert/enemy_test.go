@@ -35,7 +35,7 @@ func TestEnemySummonNBTIncludesIsBabyAndPassengers(t *testing.T) {
 	}
 
 	got := enemySummonNBT("maf:generated/enemy/loot/drop_test", entry, nil)
-	want := `{Health:20f,DeathLootTable:"maf:generated/enemy/loot/drop_test",CustomName:{text:"配達員"},IsBaby:1b,Tags:["maf_enemy","maf_enemy_drop_test","maf_vh_checked"],Attributes:[{Name:generic.max_health,Base:20}],HandItems:[{},{}],HandDropChances:[0.085F,0.085F],ArmorItems:[{},{},{},{}],ArmorDropChances:[0.085F,0.085F,0.085F,0.085F],Passengers:[{id:"minecraft:creeper",CustomName:"ウーバーイーツ",Tags:["maf_vh_checked"],Passengers:[{id:"minecraft:chicken",IsBaby:1b}]}]}`
+	want := `{Health:20f,DeathLootTable:"maf:generated/enemy/loot/drop_test",CustomName:{text:"配達員"},IsBaby:1b,Tags:["maf_enemy","maf_enemy_drop_test","maf_vh_checked"],attributes:[{id:"minecraft:max_health",base:20}],HandItems:[{},{}],HandDropChances:[0.085F,0.085F],ArmorItems:[{},{},{},{}],ArmorDropChances:[0.085F,0.085F,0.085F,0.085F],Passengers:[{id:"minecraft:creeper",CustomName:"ウーバーイーツ",Tags:["maf_vh_checked"],Passengers:[{id:"minecraft:chicken",IsBaby:1b}]}]}`
 	if got != want {
 		t.Fatalf("unexpected summon nbt\nwant: %s\ngot:  %s", want, got)
 	}

@@ -114,19 +114,19 @@ func baseMobMergeNBT(attrs *spawntableModel.BaseMobAttributes) (string, bool) {
 	if attrs.HP != nil {
 		value := formatNBTFloat(*attrs.HP)
 		parts = append(parts, fmt.Sprintf("Health:%sf", value))
-		attributeValues = append(attributeValues, fmt.Sprintf("{Name:generic.max_health,Base:%s}", value))
+		attributeValues = append(attributeValues, fmt.Sprintf("{id:\"minecraft:max_health\",base:%s}", value))
 	}
 	if attrs.Attack != nil {
-		attributeValues = append(attributeValues, fmt.Sprintf("{Name:generic.attack_damage,Base:%s}", formatNBTFloat(*attrs.Attack)))
+		attributeValues = append(attributeValues, fmt.Sprintf("{id:\"minecraft:attack_damage\",base:%s}", formatNBTFloat(*attrs.Attack)))
 	}
 	if attrs.Defense != nil {
-		attributeValues = append(attributeValues, fmt.Sprintf("{Name:generic.armor,Base:%s}", formatNBTFloat(*attrs.Defense)))
+		attributeValues = append(attributeValues, fmt.Sprintf("{id:\"minecraft:armor\",base:%s}", formatNBTFloat(*attrs.Defense)))
 	}
 	if attrs.MoveSpeed != nil {
-		attributeValues = append(attributeValues, fmt.Sprintf("{Name:generic.movement_speed,Base:%s}", formatNBTFloat(*attrs.MoveSpeed)))
+		attributeValues = append(attributeValues, fmt.Sprintf("{id:\"minecraft:movement_speed\",base:%s}", formatNBTFloat(*attrs.MoveSpeed)))
 	}
 	if len(attributeValues) > 0 {
-		parts = append(parts, fmt.Sprintf("Attributes:[%s]", strings.Join(attributeValues, ",")))
+		parts = append(parts, fmt.Sprintf("attributes:[%s]", strings.Join(attributeValues, ",")))
 	}
 	if len(parts) == 0 {
 		return "", false

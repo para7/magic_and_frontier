@@ -5,6 +5,10 @@ import model "maf_command_editor/app/domain/model"
 type PassengerEntity struct {
 	MobType       string            `json:"mobType"              validate:"trimmed_required"`
 	Name          string            `json:"name"`
+	HP            *float64          `json:"hp,omitempty"         validate:"omitempty,gte=1,lte=100000"`
+	Attack        *float64          `json:"attack,omitempty"     validate:"omitempty,gte=0,lte=100000"`
+	Defense       *float64          `json:"defense,omitempty"    validate:"omitempty,gte=0,lte=100000"`
+	MoveSpeed     *float64          `json:"moveSpeed,omitempty"  validate:"omitempty,gte=0,lte=100000"`
 	Tags          []string          `json:"tags,omitempty"`
 	EnemySkillIDs []string          `json:"enemySkillIds,omitempty"`
 	IsBaby        *bool             `json:"isBaby,omitempty"`
