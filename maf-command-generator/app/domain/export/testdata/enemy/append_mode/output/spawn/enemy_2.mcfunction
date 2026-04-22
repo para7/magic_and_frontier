@@ -1,3 +1,3 @@
 # enemyId=enemy_2 mobType=minecraft:zombie
 # dropMode=append
-summon minecraft:zombie ~ ~ ~ {Health:20f,DeathLootTable:"maf:generated/enemy/loot/enemy_2",Tags:["maf_enemy","maf_enemy_enemy_2","maf_vh_checked"],attributes:[{id:"minecraft:max_health",base:20}],HandItems:[{},{}],HandDropChances:[0.085F,0.085F],ArmorItems:[{},{},{},{}],ArmorDropChances:[0.085F,0.085F,0.085F,0.085F]}
+summon minecraft:zombie ~ ~ ~ {DeathLootTable:"maf:generated/enemy/loot/enemy_2",Health:20,Tags:["maf_enemy","maf_enemy_enemy_2","maf_vh_checked"],attributes:[{base:20,id:"minecraft:max_health"}]}

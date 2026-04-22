@@ -3,24 +3,34 @@
     {
       "id": "enemy_1",
       "mobType": "minecraft:zombie",
-      "hp": 20,
-      "equipment": {},
-      "enemySkillIds": [],
-      "dropMode": "replace",
-      "drops": [
-        {
-          "rolls": 1,
-          "entries": [
-            {
-              "type": "maf:passive",
-              "name": "passive_1",
-              "slot": 1,
-              "weight": 1,
-              "count": 1
-            }
-          ]
-        }
-      ]
+      "minecraft": {
+        "Health": 20,
+        "attributes": [
+          {
+            "id": "minecraft:max_health",
+            "base": 20
+          }
+        ]
+      },
+      "maf": {
+        "equipment": {},
+        "enemySkillIds": [],
+        "dropMode": "replace",
+        "drops": [
+          {
+            "rolls": 1,
+            "entries": [
+              {
+                "type": "maf:passive",
+                "name": "passive_1",
+                "slot": 1,
+                "weight": 1,
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

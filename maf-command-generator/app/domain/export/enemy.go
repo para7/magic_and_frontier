@@ -26,7 +26,7 @@ func BuildEnemyArtifacts(master DBMaster, enemyLootLogicalDir, minecraftLootRoot
 	enemies := master.ListEnemies()
 	artifacts := make([]EnemyArtifact, 0, len(enemies))
 	for _, entry := range enemies {
-		resolvedPools, err := ec.ResolveMafLootPools(entry.Drops, lookups.itemsByID, lookups.grimoiresByID, lookups.passivesByID, lookups.bowsByID, "enemy("+entry.ID+")")
+		resolvedPools, err := ec.ResolveMafLootPools(entry.Maf.Drops, lookups.itemsByID, lookups.grimoiresByID, lookups.passivesByID, lookups.bowsByID, "enemy("+entry.ID+")")
 		if err != nil {
 			return nil, err
 		}
@@ -62,7 +62,7 @@ func WriteEnemyArtifacts(enemyDir string, enemyLootDir string, enemies []EnemyAr
 }
 
 func buildEnemyLootTable(entry enemyModel.Enemy, customPools []any, minecraftLootRoot string) (map[string]any, error) {
-	dropMode := strings.TrimSpace(entry.DropMode)
+	dropMode := strings.TrimSpace(entry.Maf.DropMode)
 	switch dropMode {
 	case "replace":
 		return map[string]any{
@@ -91,7 +91,7 @@ func buildEnemyLootTable(entry enemyModel.Enemy, customPools []any, minecraftLoo
 		}
 		return merged, nil
 	default:
-		return nil, fmt.Errorf("enemy(%s): unsupported dropMode %q", entry.ID, entry.DropMode)
+		return nil, fmt.Errorf("enemy(%s): unsupported dropMode %q", entry.ID, entry.Maf.DropMode)
 	}
 }
 

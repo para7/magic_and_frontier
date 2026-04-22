@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "id": "testitem",
+      "maf": {},
+      "minecraft": {
+        "itemId": "minecraft:stone",
+        "components": {
+          "minecraft:custom_name": "{\"text\":\"Starter Stone\"}",
+          "minecraft:enchantments": "{\"minecraft:aqua_affinity\":1,\"minecraft:bane_of_arthropods\":9}",
+          "minecraft:lore": "[{\"text\":\"Sample item\"}]"
+        }
+      }
+    }
+  ]
+}

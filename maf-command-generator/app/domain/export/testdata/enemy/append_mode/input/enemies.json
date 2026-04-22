@@ -3,28 +3,38 @@
     {
       "id": "enemy_2",
       "mobType": "minecraft:zombie",
-      "hp": 20,
-      "equipment": {},
-      "enemySkillIds": [],
-      "dropMode": "append",
-      "drops": [
-        {
-          "rolls": 1,
-          "entries": [
-            {
-              "type": "minecraft:item",
-              "name": "minecraft:apple",
-              "weight": 1,
-              "functions": [
-                {
-                  "function": "minecraft:set_count",
-                  "count": 1
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "minecraft": {
+        "Health": 20,
+        "attributes": [
+          {
+            "id": "minecraft:max_health",
+            "base": 20
+          }
+        ]
+      },
+      "maf": {
+        "equipment": {},
+        "enemySkillIds": [],
+        "dropMode": "append",
+        "drops": [
+          {
+            "rolls": 1,
+            "entries": [
+              {
+                "type": "minecraft:item",
+                "name": "minecraft:apple",
+                "weight": 1,
+                "functions": [
+                  {
+                    "function": "minecraft:set_count",
+                    "count": 1
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

@@ -3,44 +3,64 @@
     {
       "id": "enemy_1",
       "mobType": "minecraft:zombie",
-      "name": "Sample Zombie",
-      "hp": 40,
-      "attack": 6,
-      "defense": 2,
-      "moveSpeed": 0.22,
-      "equipment": {
-        "mainhand": {
-          "kind": "item",
-          "refId": "items_1",
-          "count": 1
-        }
+      "memo": "",
+      "minecraft": {
+        "Health": 40,
+        "CustomName": "{\"text\":\"Sample Zombie\"}",
+        "attributes": [
+          {
+            "id": "minecraft:max_health",
+            "base": 40
+          },
+          {
+            "id": "minecraft:attack_damage",
+            "base": 6
+          },
+          {
+            "id": "minecraft:armor",
+            "base": 2
+          },
+          {
+            "id": "minecraft:movement_speed",
+            "base": 0.22
+          }
+        ]
       },
-      "enemySkillIds": [
-        "near_poison"
-      ],
-      "dropMode": "replace",
-      "drops": [
-        {
-          "rolls": 1,
-          "entries": [
-            {
-              "type": "maf:item",
-              "name": "items_1",
-              "weight": 70,
-              "count": {
-                "min": 1,
-                "max": 3
+      "maf": {
+        "equipment": {
+          "mainhand": {
+            "kind": "item",
+            "refId": "items_1",
+            "count": 1
+          }
+        },
+        "enemySkillIds": [
+          "near_poison"
+        ],
+        "dropMode": "replace",
+        "drops": [
+          {
+            "rolls": 1,
+            "entries": [
+              {
+                "type": "maf:item",
+                "name": "items_1",
+                "weight": 70,
+                "count": {
+                  "min": 1,
+                  "max": 3
+                }
+              },
+              {
+                "type": "maf:grimoire",
+                "name": "fire",
+                "weight": 30,
+                "count": 1
               }
-            },
-            {
-              "type": "maf:grimoire",
-              "name": "fire",
-              "weight": 30,
-              "count": 1
-            }
-          ]
-        }
-      ]
+            ]
+          }
+        ]
+      }
     }
   ]
 }

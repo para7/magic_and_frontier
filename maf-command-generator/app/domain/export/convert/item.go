@@ -58,9 +58,9 @@ func itemCustomData(
 ) (string, error) {
 	itemSNBT, _ := itemModel.BuildItemComponents(entry)
 	parts := []string{
-		fmt.Sprintf("item_id:%s", JsonString(entry.Minecraft.ItemID)),
-		fmt.Sprintf("source_id:%s", JsonString(entry.ID)),
-		fmt.Sprintf("nbt_snapshot:%s", JsonString(itemSNBT)),
+		fmt.Sprintf("item_id:%s", SNBTString(entry.Minecraft.ItemID)),
+		fmt.Sprintf("source_id:%s", SNBTString(entry.ID)),
+		fmt.Sprintf("nbt_snapshot:%s", itemSNBT),
 	}
 
 	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID, bowsByID)
@@ -68,7 +68,7 @@ func itemCustomData(
 		return "", err
 	}
 	if spellMeta.grimoireID != "" {
-		parts = append(parts, fmt.Sprintf("grimoire_id:%s", JsonString(spellMeta.grimoireID)))
+		parts = append(parts, fmt.Sprintf("grimoire_id:%s", SNBTString(spellMeta.grimoireID)))
 	}
 	if len(spellMeta.customFragments) > 0 {
 		parts = append(parts, spellMeta.customFragments...)
@@ -306,9 +306,9 @@ func resolveItemSpellMeta(
 			return itemSpellMeta{}, fmt.Errorf("item(%s): referenced bow not found (%s)", entry.ID, bowID)
 		}
 		meta.customFragments = append(meta.customFragments,
-			fmt.Sprintf("bowId:%s", JsonString(bowID)),
-			fmt.Sprintf("passiveId:%s", JsonString("bow_"+bowID)),
-			fmt.Sprintf("passiveCondition:%s", JsonString("always")),
+			fmt.Sprintf("bowId:%s", SNBTString(bowID)),
+			fmt.Sprintf("passiveId:%s", SNBTString("bow_"+bowID)),
+			fmt.Sprintf("passiveCondition:%s", SNBTString("always")),
 		)
 		return meta, nil
 	}
@@ -327,9 +327,9 @@ func resolveItemSpellMeta(
 	}
 	meta.customFragments = []string{
 		"hasPassive:1b",
-		fmt.Sprintf("passiveId:%s", JsonString(passive.ID)),
+		fmt.Sprintf("passiveId:%s", SNBTString(passive.ID)),
 		fmt.Sprintf("passiveSlot:%d", slot),
-		fmt.Sprintf("passiveCondition:%s", JsonString(strings.TrimSpace(passive.Condition))),
+		fmt.Sprintf("passiveCondition:%s", SNBTString(strings.TrimSpace(passive.Condition))),
 	}
 	return meta, nil
 }

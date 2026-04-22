@@ -70,7 +70,7 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 	if !strings.Contains(customData, `spell:{kind:"grimoire",id:"tempest01",cost:13,cast:40,cooltime:20`) {
 		t.Fatalf("spell metadata should be derived from grimoire: %s", customData)
 	}
-	if !strings.Contains(customData, `nbt_snapshot:"{`) {
+	if !strings.Contains(customData, `nbt_snapshot:{`) {
 		t.Fatalf("nbt snapshot should be derived from components: %s", customData)
 	}
 
@@ -208,7 +208,7 @@ func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 	if !strings.Contains(command, `minecraft:lore=[{"text":"Sample item"}]`) {
 		t.Fatalf("lore should be normalized for give: %s", command)
 	}
-	if strings.Contains(command, `minecraft:custom_name='{"text":"Starter Stone"}'`) {
+	if strings.Contains(command, `minecraft:custom_name="{\"text\":\"Starter Stone\"}"`) {
 		t.Fatalf("quoted custom_name JSON should not remain in give output: %s", command)
 	}
 }

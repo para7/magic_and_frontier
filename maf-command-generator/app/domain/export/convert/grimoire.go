@@ -23,7 +23,7 @@ func grimoireSpellBookModel(entry grimoireModel.Grimoire) spellBookModel {
 }
 
 func spellCustomData(entry grimoireModel.Grimoire) string {
-	return fmt.Sprintf("{maf:{grimoire_id:%s,%s}}", JsonString(entry.ID), grimoireSpellFragment(entry))
+	return fmt.Sprintf("{maf:{grimoire_id:%s,%s}}", SNBTString(entry.ID), grimoireSpellFragment(entry))
 }
 
 func grimoireSpellFragment(entry grimoireModel.Grimoire) string {
@@ -34,24 +34,24 @@ func spellFragment(kind string, id string, slot *int, mpCost, castTime, coolTime
 	if slot != nil {
 		return fmt.Sprintf(
 			"spell:{kind:%s,id:%s,slot:%d,cost:%d,cast:%d,cooltime:%d,title:%s,description:%s}",
-			JsonString(kind),
-			JsonString(id),
+			SNBTString(kind),
+			SNBTString(id),
 			*slot,
 			mpCost,
 			castTime,
 			coolTime,
-			JsonString(title),
-			JsonString(description),
+			SNBTString(title),
+			SNBTString(description),
 		)
 	}
 	return fmt.Sprintf(
 		"spell:{kind:%s,id:%s,cost:%d,cast:%d,cooltime:%d,title:%s,description:%s}",
-		JsonString(kind),
-		JsonString(id),
+		SNBTString(kind),
+		SNBTString(id),
 		mpCost,
 		castTime,
 		coolTime,
-		JsonString(title),
-		JsonString(description),
+		SNBTString(title),
+		SNBTString(description),
 	)
 }

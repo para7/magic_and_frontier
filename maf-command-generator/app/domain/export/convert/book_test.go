@@ -20,7 +20,7 @@ func TestGrimoireBookAndLootShareModel(t *testing.T) {
 	}
 
 	book := GrimoireToBook(entry)
-	wantItemName := fmt.Sprintf("minecraft:item_name={text:%s}", JsonString(entry.Title))
+	wantItemName := fmt.Sprintf("minecraft:item_name={text:%s}", SNBTString(entry.Title))
 	if !strings.Contains(book, wantItemName) {
 		t.Fatalf("book should contain escaped item_name; got: %s", book)
 	}
@@ -73,7 +73,7 @@ func TestPassiveBookAndLootShareModel(t *testing.T) {
 
 	book := PassiveToBook(entry, slot)
 	wantItemName := passiveItemName(entry)
-	if !strings.Contains(book, fmt.Sprintf("minecraft:item_name={text:%s}", JsonString(wantItemName))) {
+	if !strings.Contains(book, fmt.Sprintf("minecraft:item_name={text:%s}", SNBTString(wantItemName))) {
 		t.Fatalf("book should contain passive item name; got: %s", book)
 	}
 	wantCustomData := passiveSpellCustomData(entry, slot)
@@ -115,14 +115,14 @@ func TestGrimoireToBookEscapesSpecialCharacters(t *testing.T) {
 	}
 
 	book := GrimoireToBook(entry)
-	if !strings.Contains(book, fmt.Sprintf("id:%s", JsonString(entry.ID))) {
+	if !strings.Contains(book, fmt.Sprintf("id:%s", SNBTString(entry.ID))) {
 		t.Fatalf("id should be embedded in custom_data: %s", book)
 	}
-	if !strings.Contains(book, fmt.Sprintf("title:%s", JsonString(entry.Title))) {
-		t.Fatalf("title should be JSON-escaped in custom_data: %s", book)
+	if !strings.Contains(book, fmt.Sprintf("title:%s", SNBTString(entry.Title))) {
+		t.Fatalf("title should be SNBT-escaped in custom_data: %s", book)
 	}
-	if !strings.Contains(book, fmt.Sprintf("description:%s", JsonString(entry.Description))) {
-		t.Fatalf("description should be JSON-escaped in custom_data: %s", book)
+	if !strings.Contains(book, fmt.Sprintf("description:%s", SNBTString(entry.Description))) {
+		t.Fatalf("description should be SNBT-escaped in custom_data: %s", book)
 	}
 }
 
