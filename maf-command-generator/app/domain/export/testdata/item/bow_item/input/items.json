@@ -5,9 +5,8 @@
       "maf": {
         "bowId": "test_full"
       },
-      "minecraft": {
-        "itemId": "minecraft:bow"
-      }
+      "minecraft": {},
+      "itemId": "minecraft:bow"
     }
   ]
 }

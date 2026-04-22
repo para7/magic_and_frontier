@@ -23,16 +23,6 @@ func (s *ItemEntity) ValidateJSON(newEntity Item, mas model.DBMaster) (Item, []m
 	errs = append(errs, s.ValidateStruct(newEntity)...)
 	errs = append(errs, s.ValidateRelation(newEntity, mas)...)
 
-	// item components 文字列を再生成して component 構造の破綻を検出する
-	_, buildErr := BuildItemComponents(newEntity)
-	if buildErr != "" {
-		errs = append(errs, model.ValidationError{
-			Entity: "item", ID: newEntity.ID,
-			Field: "minecraft.components",
-			Tag:   "format", Param: buildErr,
-		})
-	}
-
 	if len(errs) > 0 {
 		return Item{}, errs
 	}
@@ -46,32 +36,6 @@ func (s *ItemEntity) ValidateStruct(newEntity Item) []model.ValidationError {
 	if err != nil {
 		for _, fe := range err.(cv.ValidationErrors) {
 			errs = append(errs, cv.NewValidationError("item", newEntity.ID, fe))
-		}
-	}
-
-	for key, value := range newEntity.Minecraft.Components {
-		normalizedKey := strings.TrimSpace(key)
-		if normalizedKey == "" {
-			errs = append(errs, model.ValidationError{
-				Entity: "item", ID: newEntity.ID,
-				Field: "minecraft.components",
-				Tag:   "format", Param: "component key is empty",
-			})
-			continue
-		}
-		if !strings.Contains(normalizedKey, ":") {
-			errs = append(errs, model.ValidationError{
-				Entity: "item", ID: newEntity.ID,
-				Field: "minecraft.components",
-				Tag:   "format", Param: fmt.Sprintf("component key must be namespaced: %q", normalizedKey),
-			})
-		}
-		if strings.TrimSpace(value) == "" {
-			errs = append(errs, model.ValidationError{
-				Entity: "item", ID: newEntity.ID,
-				Field: "minecraft.components",
-				Tag:   "format", Param: fmt.Sprintf("component value is empty: %q", normalizedKey),
-			})
 		}
 	}
 	return errs
@@ -102,11 +66,11 @@ func (s *ItemEntity) ValidateRelation(newEntity Item, mas model.DBMaster) []mode
 		return errs
 	}
 
-	itemID := strings.TrimSpace(newEntity.Minecraft.ItemID)
+	itemID := strings.TrimSpace(newEntity.ItemID)
 	if itemID != "minecraft:bow" && itemID != "minecraft:crossbow" {
 		errs = append(errs, model.ValidationError{
 			Entity: "item", ID: newEntity.ID,
-			Field: "minecraft.itemId",
+			Field: "itemId",
 			Tag:   "relation", Param: "bowId requires minecraft:bow or minecraft:crossbow",
 		})
 	}

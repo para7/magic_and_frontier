@@ -206,8 +206,8 @@ func resolveEquipmentItemID(slot *model.EquipmentSlot, itemsByID map[string]item
 		return ""
 	}
 	if slot.Kind == "item" {
-		if entry, ok := itemsByID[slot.RefID]; ok && entry.Minecraft.ItemID != "" {
-			return entry.Minecraft.ItemID
+		if entry, ok := itemsByID[slot.RefID]; ok && entry.ItemID != "" {
+			return entry.ItemID
 		}
 	}
 	return slot.RefID

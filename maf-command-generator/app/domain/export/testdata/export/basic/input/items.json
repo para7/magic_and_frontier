@@ -1,1 +1,15 @@
-{"entries":[{"id":"items_1","minecraft":{"itemId":"minecraft:stone","components":{"minecraft:custom_name":"'{\"text\":\"Starter Stone\"}'"}}}]}
+{
+  "entries": [
+    {
+      "id": "items_1",
+      "minecraft": {
+        "components": {
+          "minecraft:custom_name": {
+            "text": "Starter Stone"
+          }
+        }
+      },
+      "itemId": "minecraft:stone"
+    }
+  ]
+}

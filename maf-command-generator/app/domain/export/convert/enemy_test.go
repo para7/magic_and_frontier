@@ -51,7 +51,7 @@ func TestEnemySummonNBTMergesMinecraftAndMaf(t *testing.T) {
 	}
 
 	itemsByID := map[string]itemModel.Item{
-		"items_1": {Minecraft: itemModel.MinecraftItem{ItemID: "minecraft:stone"}},
+		"items_1": {ItemID: "minecraft:stone"},
 	}
 
 	got := enemySummonNBT("maf:generated/enemy/loot/drop_test", entry, itemsByID)

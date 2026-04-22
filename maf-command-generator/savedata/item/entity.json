@@ -4,13 +4,22 @@
       "id": "items_1",
       "maf": {},
       "minecraft": {
-        "itemId": "minecraft:stone",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"Starter Stone\"}",
-          "minecraft:enchantments": "{\"minecraft:aqua_affinity\":1,\"minecraft:bane_of_arthropods\":9}",
-          "minecraft:lore": "[{\"text\":\"Sample item\"}]"
+          "minecraft:custom_name": {
+            "text": "Starter Stone"
+          },
+          "minecraft:enchantments": {
+            "minecraft:aqua_affinity": 1,
+            "minecraft:bane_of_arthropods": 9
+          },
+          "minecraft:lore": [
+            {
+              "text": "Sample item"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:stone"
     },
     {
       "id": "test_sword_magic",
@@ -18,12 +27,18 @@
         "grimoireId": "tempest01"
       },
       "minecraft": {
-        "itemId": "minecraft:diamond_sword",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_sword_magic\"}",
-          "minecraft:lore": "[{\"text\":\"Sample item\"}]"
+          "minecraft:custom_name": {
+            "text": "test_sword_magic"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Sample item"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:diamond_sword"
     },
     {
       "id": "test_sword_passive",
@@ -31,12 +46,18 @@
         "passiveId": "regeneration"
       },
       "minecraft": {
-        "itemId": "minecraft:diamond_sword",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_sword_passive\"}",
-          "minecraft:lore": "[{\"text\":\"Sample item\"}]"
+          "minecraft:custom_name": {
+            "text": "test_sword_passive"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Sample item"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:diamond_sword"
     },
     {
       "id": "test_sword_passive_attack",
@@ -44,12 +65,18 @@
         "passiveId": "passive_1"
       },
       "minecraft": {
-        "itemId": "minecraft:diamond_sword",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"攻撃パッシブテスト\"}",
-          "minecraft:lore": "[{\"text\":\"攻撃パッシブテスト\"}]"
+          "minecraft:custom_name": {
+            "text": "攻撃パッシブテスト"
+          },
+          "minecraft:lore": [
+            {
+              "text": "攻撃パッシブテスト"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:diamond_sword"
     },
     {
       "id": "test_sword_both",
@@ -58,12 +85,18 @@
         "passiveId": "regeneration"
       },
       "minecraft": {
-        "itemId": "minecraft:diamond_sword",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_sword_both\"}",
-          "minecraft:lore": "[{\"text\":\"Sample item\"}]"
+          "minecraft:custom_name": {
+            "text": "test_sword_both"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Sample item"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:diamond_sword"
     },
     {
       "id": "test_bow_hit",
@@ -71,12 +104,18 @@
         "bowId": "test_hit"
       },
       "minecraft": {
-        "itemId": "minecraft:bow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_bow_hit\"}",
-          "minecraft:lore": "[{\"text\":\"Bow hit test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_bow_hit"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Bow hit test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:bow"
     },
     {
       "id": "test_bow_fired",
@@ -84,12 +123,18 @@
         "bowId": "test_fired"
       },
       "minecraft": {
-        "itemId": "minecraft:bow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_bow_fired\"}",
-          "minecraft:lore": "[{\"text\":\"Bow fired test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_bow_fired"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Bow fired test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:bow"
     },
     {
       "id": "test_bow_flying",
@@ -97,12 +142,18 @@
         "bowId": "test_flying"
       },
       "minecraft": {
-        "itemId": "minecraft:bow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_bow_flying\"}",
-          "minecraft:lore": "[{\"text\":\"Bow flying test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_bow_flying"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Bow flying test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:bow"
     },
     {
       "id": "test_bow_ground",
@@ -110,12 +161,18 @@
         "bowId": "test_ground"
       },
       "minecraft": {
-        "itemId": "minecraft:bow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_bow_ground\"}",
-          "minecraft:lore": "[{\"text\":\"Bow ground test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_bow_ground"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Bow ground test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:bow"
     },
     {
       "id": "test_bow_full",
@@ -123,12 +180,18 @@
         "bowId": "test_full"
       },
       "minecraft": {
-        "itemId": "minecraft:bow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_bow_full\"}",
-          "minecraft:lore": "[{\"text\":\"Bow full test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_bow_full"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Bow full test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:bow"
     },
     {
       "id": "test_crossbow_hit",
@@ -136,12 +199,18 @@
         "bowId": "test_hit"
       },
       "minecraft": {
-        "itemId": "minecraft:crossbow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_crossbow_hit\"}",
-          "minecraft:lore": "[{\"text\":\"Crossbow hit test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_crossbow_hit"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Crossbow hit test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:crossbow"
     },
     {
       "id": "test_crossbow_fired",
@@ -149,12 +218,18 @@
         "bowId": "test_fired"
       },
       "minecraft": {
-        "itemId": "minecraft:crossbow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_crossbow_fired\"}",
-          "minecraft:lore": "[{\"text\":\"Crossbow fired test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_crossbow_fired"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Crossbow fired test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:crossbow"
     },
     {
       "id": "test_crossbow_flying",
@@ -162,12 +237,18 @@
         "bowId": "test_flying"
       },
       "minecraft": {
-        "itemId": "minecraft:crossbow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_crossbow_flying\"}",
-          "minecraft:lore": "[{\"text\":\"Crossbow flying test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_crossbow_flying"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Crossbow flying test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:crossbow"
     },
     {
       "id": "test_crossbow_ground",
@@ -175,12 +256,18 @@
         "bowId": "test_ground"
       },
       "minecraft": {
-        "itemId": "minecraft:crossbow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_crossbow_ground\"}",
-          "minecraft:lore": "[{\"text\":\"Crossbow ground test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_crossbow_ground"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Crossbow ground test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:crossbow"
     },
     {
       "id": "test_crossbow_full",
@@ -188,12 +275,18 @@
         "bowId": "test_full"
       },
       "minecraft": {
-        "itemId": "minecraft:crossbow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_crossbow_full\"}",
-          "minecraft:lore": "[{\"text\":\"Crossbow full test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_crossbow_full"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Crossbow full test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:crossbow"
     },
     {
       "id": "test_crossbow_ms_hit",
@@ -201,13 +294,21 @@
         "bowId": "test_hit"
       },
       "minecraft": {
-        "itemId": "minecraft:crossbow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_crossbow_ms_hit\"}",
-          "minecraft:enchantments": "{\"minecraft:multishot\":1}",
-          "minecraft:lore": "[{\"text\":\"Crossbow multishot hit test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_crossbow_ms_hit"
+          },
+          "minecraft:enchantments": {
+            "minecraft:multishot": 1
+          },
+          "minecraft:lore": [
+            {
+              "text": "Crossbow multishot hit test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:crossbow"
     },
     {
       "id": "test_crossbow_ms_fired",
@@ -215,13 +316,21 @@
         "bowId": "test_fired"
       },
       "minecraft": {
-        "itemId": "minecraft:crossbow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_crossbow_ms_fired\"}",
-          "minecraft:enchantments": "{\"minecraft:multishot\":1}",
-          "minecraft:lore": "[{\"text\":\"Crossbow multishot fired test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_crossbow_ms_fired"
+          },
+          "minecraft:enchantments": {
+            "minecraft:multishot": 1
+          },
+          "minecraft:lore": [
+            {
+              "text": "Crossbow multishot fired test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:crossbow"
     },
     {
       "id": "test_crossbow_ms_flying",
@@ -229,13 +338,21 @@
         "bowId": "test_flying"
       },
       "minecraft": {
-        "itemId": "minecraft:crossbow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_crossbow_ms_flying\"}",
-          "minecraft:enchantments": "{\"minecraft:multishot\":1}",
-          "minecraft:lore": "[{\"text\":\"Crossbow multishot flying test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_crossbow_ms_flying"
+          },
+          "minecraft:enchantments": {
+            "minecraft:multishot": 1
+          },
+          "minecraft:lore": [
+            {
+              "text": "Crossbow multishot flying test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:crossbow"
     },
     {
       "id": "test_crossbow_ms_ground",
@@ -243,13 +360,21 @@
         "bowId": "test_ground"
       },
       "minecraft": {
-        "itemId": "minecraft:crossbow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_crossbow_ms_ground\"}",
-          "minecraft:enchantments": "{\"minecraft:multishot\":1}",
-          "minecraft:lore": "[{\"text\":\"Crossbow multishot ground test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_crossbow_ms_ground"
+          },
+          "minecraft:enchantments": {
+            "minecraft:multishot": 1
+          },
+          "minecraft:lore": [
+            {
+              "text": "Crossbow multishot ground test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:crossbow"
     },
     {
       "id": "test_crossbow_ms_full",
@@ -257,13 +382,21 @@
         "bowId": "test_full"
       },
       "minecraft": {
-        "itemId": "minecraft:crossbow",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_crossbow_ms_full\"}",
-          "minecraft:enchantments": "{\"minecraft:multishot\":1}",
-          "minecraft:lore": "[{\"text\":\"Crossbow multishot full test\"}]"
+          "minecraft:custom_name": {
+            "text": "test_crossbow_ms_full"
+          },
+          "minecraft:enchantments": {
+            "minecraft:multishot": 1
+          },
+          "minecraft:lore": [
+            {
+              "text": "Crossbow multishot full test"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:crossbow"
     },
     {
       "id": "test_mp_head_leather",
@@ -271,12 +404,18 @@
         "maxmp": -20
       },
       "minecraft": {
-        "itemId": "minecraft:leather_helmet",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_head_leather\"}",
-          "minecraft:lore": "[{\"text\":\"head mp -20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_head_leather"
+          },
+          "minecraft:lore": [
+            {
+              "text": "head mp -20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:leather_helmet"
     },
     {
       "id": "test_mp_body_leather",
@@ -284,12 +423,18 @@
         "maxmp": 20
       },
       "minecraft": {
-        "itemId": "minecraft:leather_chestplate",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_body_leather\"}",
-          "minecraft:lore": "[{\"text\":\"body mp +20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_body_leather"
+          },
+          "minecraft:lore": [
+            {
+              "text": "body mp +20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:leather_chestplate"
     },
     {
       "id": "test_mp_head_gold",
@@ -297,12 +442,18 @@
         "maxmp": -20
       },
       "minecraft": {
-        "itemId": "minecraft:golden_helmet",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_head_gold\"}",
-          "minecraft:lore": "[{\"text\":\"head mp -20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_head_gold"
+          },
+          "minecraft:lore": [
+            {
+              "text": "head mp -20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:golden_helmet"
     },
     {
       "id": "test_mp_body_gold",
@@ -310,12 +461,18 @@
         "maxmp": 20
       },
       "minecraft": {
-        "itemId": "minecraft:golden_chestplate",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_body_gold\"}",
-          "minecraft:lore": "[{\"text\":\"body mp +20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_body_gold"
+          },
+          "minecraft:lore": [
+            {
+              "text": "body mp +20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:golden_chestplate"
     },
     {
       "id": "test_mp_head_chain",
@@ -323,12 +480,18 @@
         "maxmp": -20
       },
       "minecraft": {
-        "itemId": "minecraft:chainmail_helmet",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_head_chain\"}",
-          "minecraft:lore": "[{\"text\":\"head mp -20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_head_chain"
+          },
+          "minecraft:lore": [
+            {
+              "text": "head mp -20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:chainmail_helmet"
     },
     {
       "id": "test_mp_body_chain",
@@ -336,12 +499,18 @@
         "maxmp": 20
       },
       "minecraft": {
-        "itemId": "minecraft:chainmail_chestplate",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_body_chain\"}",
-          "minecraft:lore": "[{\"text\":\"body mp +20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_body_chain"
+          },
+          "minecraft:lore": [
+            {
+              "text": "body mp +20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:chainmail_chestplate"
     },
     {
       "id": "test_mp_head_iron",
@@ -349,12 +518,18 @@
         "maxmp": -20
       },
       "minecraft": {
-        "itemId": "minecraft:iron_helmet",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_head_iron\"}",
-          "minecraft:lore": "[{\"text\":\"head mp -20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_head_iron"
+          },
+          "minecraft:lore": [
+            {
+              "text": "head mp -20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:iron_helmet"
     },
     {
       "id": "test_mp_body_iron",
@@ -362,12 +537,18 @@
         "maxmp": 20
       },
       "minecraft": {
-        "itemId": "minecraft:iron_chestplate",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_body_iron\"}",
-          "minecraft:lore": "[{\"text\":\"body mp +20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_body_iron"
+          },
+          "minecraft:lore": [
+            {
+              "text": "body mp +20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:iron_chestplate"
     },
     {
       "id": "test_mp_head_diamond",
@@ -375,12 +556,18 @@
         "maxmp": -20
       },
       "minecraft": {
-        "itemId": "minecraft:diamond_helmet",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_head_diamond\"}",
-          "minecraft:lore": "[{\"text\":\"head mp -20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_head_diamond"
+          },
+          "minecraft:lore": [
+            {
+              "text": "head mp -20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:diamond_helmet"
     },
     {
       "id": "test_mp_body_diamond",
@@ -388,12 +575,18 @@
         "maxmp": 20
       },
       "minecraft": {
-        "itemId": "minecraft:diamond_chestplate",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_body_diamond\"}",
-          "minecraft:lore": "[{\"text\":\"body mp +20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_body_diamond"
+          },
+          "minecraft:lore": [
+            {
+              "text": "body mp +20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:diamond_chestplate"
     },
     {
       "id": "test_mp_head_netherite",
@@ -401,12 +594,18 @@
         "maxmp": -20
       },
       "minecraft": {
-        "itemId": "minecraft:netherite_helmet",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_head_netherite\"}",
-          "minecraft:lore": "[{\"text\":\"head mp -20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_head_netherite"
+          },
+          "minecraft:lore": [
+            {
+              "text": "head mp -20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:netherite_helmet"
     },
     {
       "id": "test_mp_body_netherite",
@@ -414,12 +613,18 @@
         "maxmp": 20
       },
       "minecraft": {
-        "itemId": "minecraft:netherite_chestplate",
         "components": {
-          "minecraft:custom_name": "{\"text\":\"test_mp_body_netherite\"}",
-          "minecraft:lore": "[{\"text\":\"body mp +20\"}]"
+          "minecraft:custom_name": {
+            "text": "test_mp_body_netherite"
+          },
+          "minecraft:lore": [
+            {
+              "text": "body mp +20"
+            }
+          ]
         }
-      }
+      },
+      "itemId": "minecraft:netherite_chestplate"
     }
   ]
 }
