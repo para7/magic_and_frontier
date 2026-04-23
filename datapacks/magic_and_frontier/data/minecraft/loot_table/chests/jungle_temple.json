@@ -198,7 +198,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_both\",nbt_snapshot:\"{id:\\\"minecraft:diamond_sword\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"test_sword_both\\\"}',\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"Sample item\\\"}']}}\",grimoire_id:\"tempest01\",hasPassive:1b,passiveId:\"regeneration\",passiveSlot:1,passiveCondition:\"always\",spell:{kind:\"grimoire\",id:\"tempest01\",cost:13,cast:40,cooltime:20,title:\"テンペスト\",description:\"敵1体に雷を落とし周辺に特大ダメージ\"}}}"
+              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_both\",nbt_snapshot:{id:\"minecraft:diamond_sword\",count:1,components:{\"minecraft:custom_name\":{text:\"test_sword_both\"},\"minecraft:lore\":[{text:\"Sample item\"}]}},grimoire_id:\"tempest01\",hasPassive:1b,passiveId:\"regeneration\",passiveSlot:1,passiveCondition:\"always\",spell:{kind:\"grimoire\",id:\"tempest01\",cost:13,cast:40,cooltime:20,title:\"テンペスト\",description:\"敵1体に雷を落とし周辺に特大ダメージ\"}}}"
             },
             {
               "components": {
@@ -232,7 +232,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:bow\",source_id:\"test_bow_full\",nbt_snapshot:\"{id:\\\"minecraft:bow\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"test_bow_full\\\"}',\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"Bow full test\\\"}']}}\",bowId:\"test_full\",passiveId:\"bow_test_full\",passiveCondition:\"always\"}}"
+              "tag": "{maf:{item_id:\"minecraft:bow\",source_id:\"test_bow_full\",nbt_snapshot:{id:\"minecraft:bow\",count:1,components:{\"minecraft:custom_name\":{text:\"test_bow_full\"},\"minecraft:lore\":[{text:\"Bow full test\"}]}},bowId:\"test_full\",passiveId:\"bow_test_full\",passiveCondition:\"always\"}}"
             },
             {
               "components": {
@@ -261,7 +261,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:diamond_chestplate\",source_id:\"test_mp_body_diamond\",nbt_snapshot:\"{id:\\\"minecraft:diamond_chestplate\\\",count:1,components:{\\\"minecraft:custom_name\\\":'{\\\"text\\\":\\\"test_mp_body_diamond\\\"}',\\\"minecraft:lore\\\":['{\\\"text\\\":\\\"body mp +20\\\"}']}}\",maxmp:20}}"
+              "tag": "{maf:{item_id:\"minecraft:diamond_chestplate\",source_id:\"test_mp_body_diamond\",nbt_snapshot:{id:\"minecraft:diamond_chestplate\",count:1,components:{\"minecraft:custom_name\":{text:\"test_mp_body_diamond\"},\"minecraft:lore\":[{text:\"body mp +20\"}]}},maxmp:20}}"
             },
             {
               "components": {

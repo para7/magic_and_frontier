@@ -8,10 +8,8 @@ import (
 
 func validItem() Item {
 	return Item{
-		ID: "item_1",
-		Minecraft: MinecraftItem{
-			ItemID: "minecraft:diamond_sword",
-		},
+		ID:     "item_1",
+		ItemID: "minecraft:diamond_sword",
 	}
 }
 
@@ -57,8 +55,8 @@ func TestItemValidateStructPerField(t *testing.T) {
 	}{
 		{name: "id ok", patch: func(it *Item) { it.ID = "ok" }},
 		{name: "id ng empty", patch: func(it *Item) { it.ID = "  " }, wantErrField: "id"},
-		{name: "itemId ok", patch: func(it *Item) { it.Minecraft.ItemID = "minecraft:stone" }},
-		{name: "itemId ng empty", patch: func(it *Item) { it.Minecraft.ItemID = " " }, wantErrField: "itemId"},
+		{name: "itemId ok", patch: func(it *Item) { it.ItemID = "minecraft:stone" }},
+		{name: "itemId ng empty", patch: func(it *Item) { it.ItemID = " " }, wantErrField: "itemId"},
 	}
 
 	for _, tt := range tests {
@@ -74,30 +72,6 @@ func TestItemValidateStructPerField(t *testing.T) {
 			}
 			if !hasFieldError(errs, tt.wantErrField) {
 				t.Fatalf("expected error for field %q, got %#v", tt.wantErrField, errs)
-			}
-		})
-	}
-}
-
-func TestItemValidateStructRejectsInvalidComponents(t *testing.T) {
-	entity := &ItemEntity{}
-
-	tests := []struct {
-		name       string
-		components map[string]string
-	}{
-		{name: "empty key", components: map[string]string{"": "{}"}},
-		{name: "non namespaced key", components: map[string]string{"display": "{}"}},
-		{name: "empty value", components: map[string]string{"minecraft:custom_name": "  "}},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			it := validItem()
-			it.Minecraft.Components = tt.components
-			errs := entity.ValidateStruct(it)
-			if !hasFieldError(errs, "minecraft.components") {
-				t.Fatalf("expected component validation error, got %#v", errs)
 			}
 		})
 	}
@@ -128,7 +102,7 @@ func TestItemValidateRelationUsesMafRefs(t *testing.T) {
 	t.Run("missing bow", func(t *testing.T) {
 		it := validItem()
 		it.Maf.BowID = "bow_missing"
-		it.Minecraft.ItemID = "minecraft:bow"
+		it.ItemID = "minecraft:bow"
 
 		errs := entity.ValidateRelation(it, relationMissingRefsDBMaster{missingBow: true})
 		if !hasFieldError(errs, "maf.bowId") {
@@ -141,25 +115,25 @@ func TestItemValidateRelationUsesMafRefs(t *testing.T) {
 		it.Maf.BowID = "bow_1"
 
 		errs := entity.ValidateRelation(it, testDBMaster{})
-		if !hasFieldError(errs, "minecraft.itemId") {
-			t.Fatalf("expected minecraft.itemId relation error, got %#v", errs)
+		if !hasFieldError(errs, "itemId") {
+			t.Fatalf("expected itemId relation error, got %#v", errs)
 		}
 	})
 
 	t.Run("bow accepts crossbow item", func(t *testing.T) {
 		it := validItem()
-		it.Minecraft.ItemID = "minecraft:crossbow"
+		it.ItemID = "minecraft:crossbow"
 		it.Maf.BowID = "bow_1"
 
 		errs := entity.ValidateRelation(it, testDBMaster{})
-		if hasFieldError(errs, "minecraft.itemId") {
+		if hasFieldError(errs, "itemId") {
 			t.Fatalf("expected crossbow item to be accepted, got %#v", errs)
 		}
 	})
 
 	t.Run("bow rejects passive combination", func(t *testing.T) {
 		it := validItem()
-		it.Minecraft.ItemID = "minecraft:bow"
+		it.ItemID = "minecraft:bow"
 		it.Maf.BowID = "bow_1"
 		it.Maf.PassiveID = "passive_1"
 
@@ -171,7 +145,7 @@ func TestItemValidateRelationUsesMafRefs(t *testing.T) {
 
 	t.Run("bow rejects grimoire combination", func(t *testing.T) {
 		it := validItem()
-		it.Minecraft.ItemID = "minecraft:bow"
+		it.ItemID = "minecraft:bow"
 		it.Maf.BowID = "bow_1"
 		it.Maf.GrimoireID = "grimoire_1"
 

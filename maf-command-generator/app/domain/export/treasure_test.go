@@ -53,7 +53,7 @@ func TestBuildTreasureArtifacts(t *testing.T) {
 
 	master := exportMasterStub{
 		items: []itemModel.Item{
-			{ID: "item_1", Minecraft: itemModel.MinecraftItem{ItemID: "minecraft:stone"}},
+			{ID: "item_1", ItemID: "minecraft:stone"},
 		},
 		grimoires: []grimoireModel.Grimoire{
 			{ID: "grimoire_1", CastTime: 20, CoolTime: 40, MPCost: 10, Script: []string{"say test"}, Title: "Test"},

@@ -1,21 +1,31 @@
 package item
 
 import (
+	"encoding/json"
 	"strings"
 	"testing"
 )
 
 func TestBuildItemComponentsFormat(t *testing.T) {
 	value, errMsg := BuildItemComponents(Item{
-		ID: "item_1",
-		Minecraft: MinecraftItem{
-			ItemID: "minecraft:diamond_sword",
-			Components: map[string]string{
-				"minecraft:custom_name":       `'{"text":"Blade"}'`,
-				"minecraft:lore":              `['{"text":"line1"}','{"text":"line2"}']`,
-				"minecraft:enchantments":      `{"minecraft:sharpness":5}`,
-				"minecraft:unbreakable":       `{}`,
-				"minecraft:custom_model_data": `{floats:[42f]}`,
+		ID:     "item_1",
+		ItemID: "minecraft:diamond_sword",
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"minecraft:custom_name": map[string]any{
+					"text": "Blade",
+				},
+				"minecraft:lore": []any{
+					map[string]any{"text": "line1"},
+					map[string]any{"text": "line2"},
+				},
+				"minecraft:enchantments": map[string]any{
+					"minecraft:sharpness": json.Number("5"),
+				},
+				"minecraft:unbreakable": map[string]any{},
+				"minecraft:custom_model_data": map[string]any{
+					"floats": []any{json.Number("42")},
+				},
 			},
 		},
 	})
@@ -30,7 +40,7 @@ func TestBuildItemComponentsFormat(t *testing.T) {
 		`"minecraft:lore":[`,
 		`"minecraft:enchantments":{"minecraft:sharpness":5}`,
 		`"minecraft:unbreakable":{}`,
-		`"minecraft:custom_model_data":{floats:[42f]}`,
+		`"minecraft:custom_model_data":{floats:[42]}`,
 	}
 	for _, want := range wantIn {
 		if !strings.Contains(value, want) {
@@ -48,12 +58,12 @@ func TestBuildItemComponentsFormat(t *testing.T) {
 
 func TestBuildItemComponentsSortsComponentKeys(t *testing.T) {
 	value, errMsg := BuildItemComponents(Item{
-		ID: "item_1",
-		Minecraft: MinecraftItem{
-			ItemID: "minecraft:stone",
-			Components: map[string]string{
-				"minecraft:z": `{}`,
-				"minecraft:a": `{}`,
+		ID:     "item_1",
+		ItemID: "minecraft:stone",
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"minecraft:z": map[string]any{},
+				"minecraft:a": map[string]any{},
 			},
 		},
 	})
@@ -66,13 +76,13 @@ func TestBuildItemComponentsSortsComponentKeys(t *testing.T) {
 	}
 }
 
-func TestBuildItemComponentsRejectsInvalidComponentKey(t *testing.T) {
+func TestBuildItemComponentsRejectsEmptyComponentKey(t *testing.T) {
 	_, errMsg := BuildItemComponents(Item{
-		ID: "item_1",
-		Minecraft: MinecraftItem{
-			ItemID: "minecraft:book",
-			Components: map[string]string{
-				"display": `{}`,
+		ID:     "item_1",
+		ItemID: "minecraft:book",
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"": map[string]any{},
 			},
 		},
 	})
@@ -82,7 +92,7 @@ func TestBuildItemComponentsRejectsInvalidComponentKey(t *testing.T) {
 }
 
 func TestNormalizeComponentsTrimsAndSortsKeys(t *testing.T) {
-	entries, errMsg := NormalizeComponents(map[string]string{
+	entries, errMsg := NormalizeComponents(map[string]any{
 		" minecraft:z ": " {} ",
 		"minecraft:a":   " {levels:{\"minecraft:sharpness\":5}} ",
 	})

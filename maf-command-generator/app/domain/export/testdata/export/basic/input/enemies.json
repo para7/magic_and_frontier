@@ -3,32 +3,42 @@
     {
       "id": "enemy_1",
       "mobType": "minecraft:zombie",
-      "name": "Fixture Zombie",
-      "hp": 20,
-      "equipment": {
-        "mainhand": {
-          "kind": "item",
-          "refId": "items_1",
-          "count": 1
-        }
+      "minecraft": {
+        "Health": 20,
+        "CustomName": "{\"text\":\"Fixture Zombie\"}",
+        "attributes": [
+          {
+            "id": "minecraft:max_health",
+            "base": 20
+          }
+        ]
       },
-      "enemySkillIds": [
-        "near_poison"
-      ],
-      "dropMode": "replace",
-      "drops": [
-        {
-          "rolls": 1,
-          "entries": [
-            {
-              "type": "maf:item",
-              "name": "items_1",
-              "weight": 1,
-              "count": 1
-            }
-          ]
-        }
-      ]
+      "maf": {
+        "equipment": {
+          "mainhand": {
+            "kind": "item",
+            "refId": "items_1",
+            "count": 1
+          }
+        },
+        "enemySkillIds": [
+          "near_poison"
+        ],
+        "dropMode": "replace",
+        "drops": [
+          {
+            "rolls": 1,
+            "entries": [
+              {
+                "type": "maf:item",
+                "name": "items_1",
+                "weight": 1,
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

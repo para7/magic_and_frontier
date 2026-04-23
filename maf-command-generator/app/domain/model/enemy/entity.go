@@ -45,7 +45,7 @@ func (s *EnemyEntity) ValidateRelation(newEntity Enemy, mas model.DBMaster) []mo
 
 	// EnemySkillIDs の参照チェック
 	seen := map[string]bool{}
-	for i, skillID := range newEntity.EnemySkillIDs {
+	for i, skillID := range newEntity.Maf.EnemySkillIDs {
 		id := strings.TrimSpace(skillID)
 		if id == "" {
 			continue
@@ -53,13 +53,13 @@ func (s *EnemyEntity) ValidateRelation(newEntity Enemy, mas model.DBMaster) []mo
 		if !mas.HasEnemySkill(id) {
 			errs = append(errs, model.ValidationError{
 				Entity: "enemy", ID: newEntity.ID,
-				Field: fmt.Sprintf("enemySkillIds[%d]", i),
+				Field: fmt.Sprintf("maf.enemySkillIds[%d]", i),
 				Tag:   "relation", Param: "enemyskill not found",
 			})
 		} else if seen[id] {
 			errs = append(errs, model.ValidationError{
 				Entity: "enemy", ID: newEntity.ID,
-				Field: fmt.Sprintf("enemySkillIds[%d]", i),
+				Field: fmt.Sprintf("maf.enemySkillIds[%d]", i),
 				Tag:   "relation", Param: "duplicate enemyskill id",
 			})
 		}
@@ -72,11 +72,15 @@ func (s *EnemyEntity) ValidateRelation(newEntity Enemy, mas model.DBMaster) []mo
 	}
 
 	// Drops の参照チェック
-	errs = append(errs, model.ValidateMafLootPools("enemy", newEntity.ID, "drops", newEntity.Drops, mas)...)
-	errs = append(errs, validatePassiveLootEligibility("enemy", newEntity.ID, "drops", newEntity.Drops, mas)...)
+	errs = append(errs, model.ValidateMafLootPools("enemy", newEntity.ID, "maf.drops", newEntity.Maf.Drops, mas)...)
+	errs = append(errs, validatePassiveLootEligibility("enemy", newEntity.ID, "maf.drops", newEntity.Maf.Drops, mas)...)
 
 	// Equipment スロットの参照チェック
-	errs = append(errs, model.ValidateEquipmentSlots("enemy", newEntity.ID, newEntity.Equipment, mas)...)
+	equipmentErrs := model.ValidateEquipmentSlots("enemy", newEntity.ID, newEntity.Maf.Equipment, mas)
+	for i := range equipmentErrs {
+		equipmentErrs[i].Field = "maf." + equipmentErrs[i].Field
+	}
+	errs = append(errs, equipmentErrs...)
 
 	return errs
 }
@@ -167,10 +171,10 @@ func (s *EnemyEntity) ValidateAll(mas model.DBMaster) [][]model.ValidationError 
 	return result
 }
 
-func validatePassengerSkillIDs(enemyID, prefix string, p PassengerEntity, mas model.DBMaster) []model.ValidationError {
+func validatePassengerSkillIDs(enemyID, prefix string, p Passenger, mas model.DBMaster) []model.ValidationError {
 	var errs []model.ValidationError
 	seen := map[string]bool{}
-	for i, skillID := range p.EnemySkillIDs {
+	for i, skillID := range p.Maf.EnemySkillIDs {
 		id := strings.TrimSpace(skillID)
 		if id == "" {
 			continue
@@ -178,13 +182,13 @@ func validatePassengerSkillIDs(enemyID, prefix string, p PassengerEntity, mas mo
 		if !mas.HasEnemySkill(id) {
 			errs = append(errs, model.ValidationError{
 				Entity: "enemy", ID: enemyID,
-				Field: fmt.Sprintf("%s.enemySkillIds[%d]", prefix, i),
+				Field: fmt.Sprintf("%s.maf.enemySkillIds[%d]", prefix, i),
 				Tag:   "relation", Param: "enemyskill not found",
 			})
 		} else if seen[id] {
 			errs = append(errs, model.ValidationError{
 				Entity: "enemy", ID: enemyID,
-				Field: fmt.Sprintf("%s.enemySkillIds[%d]", prefix, i),
+				Field: fmt.Sprintf("%s.maf.enemySkillIds[%d]", prefix, i),
 				Tag:   "relation", Param: "duplicate enemyskill id",
 			})
 		}

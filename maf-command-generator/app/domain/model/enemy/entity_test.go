@@ -8,10 +8,11 @@ import (
 
 func validEnemy() Enemy {
 	return Enemy{
-		ID:       "enemy_1",
-		MobType:  "minecraft:zombie",
-		HP:       20,
-		DropMode: "append",
+		ID:      "enemy_1",
+		MobType: "minecraft:zombie",
+		Maf: EnemyMaf{
+			DropMode: "append",
+		},
 	}
 }
 
@@ -66,14 +67,10 @@ func TestEnemyValidateStructPerField(t *testing.T) {
 		{name: "id ng dot", patch: func(e *Enemy) { e.ID = "foo.bar" }, wantErrField: "id"},
 		{name: "mobType ok", patch: func(e *Enemy) { e.MobType = "minecraft:skeleton" }},
 		{name: "mobType ng empty", patch: func(e *Enemy) { e.MobType = " " }, wantErrField: "mobType"},
-		{name: "hp ok", patch: func(e *Enemy) { e.HP = 1 }},
-		{name: "hp ok max", patch: func(e *Enemy) { e.HP = 100000 }},
-		{name: "hp ng below min", patch: func(e *Enemy) { e.HP = 0 }, wantErrField: "hp"},
-		{name: "hp ng above max", patch: func(e *Enemy) { e.HP = 100001 }, wantErrField: "hp"},
-		{name: "dropMode ok append", patch: func(e *Enemy) { e.DropMode = "append" }},
-		{name: "dropMode ok replace", patch: func(e *Enemy) { e.DropMode = "replace" }},
-		{name: "dropMode ng invalid", patch: func(e *Enemy) { e.DropMode = "add" }, wantErrField: "dropMode"},
-		{name: "dropMode ng empty", patch: func(e *Enemy) { e.DropMode = "" }, wantErrField: "dropMode"},
+		{name: "dropMode ok append", patch: func(e *Enemy) { e.Maf.DropMode = "append" }},
+		{name: "dropMode ok replace", patch: func(e *Enemy) { e.Maf.DropMode = "replace" }},
+		{name: "dropMode ng invalid", patch: func(e *Enemy) { e.Maf.DropMode = "add" }, wantErrField: "dropMode"},
+		{name: "dropMode ng empty", patch: func(e *Enemy) { e.Maf.DropMode = "" }, wantErrField: "dropMode"},
 	}
 
 	for _, tt := range tests {
@@ -123,7 +120,7 @@ func (passiveNotGeneratableDBMaster) GetPassive(string) (model.PassiveSnapshot, 
 func TestEnemyValidateRelationRejectsPassiveWithGenerateGrimoireFalse(t *testing.T) {
 	entity := &EnemyEntity{}
 	enemy := validEnemy()
-	enemy.Drops = []any{
+	enemy.Maf.Drops = []any{
 		map[string]any{
 			"rolls": 1.0,
 			"entries": []any{
@@ -136,7 +133,7 @@ func TestEnemyValidateRelationRejectsPassiveWithGenerateGrimoireFalse(t *testing
 		},
 	}
 	errs := entity.ValidateRelation(enemy, passiveNotGeneratableDBMaster{})
-	if !hasFieldError(errs, "drops[0].entries[0].name") {
+	if !hasFieldError(errs, "maf.drops[0].entries[0].name") {
 		t.Fatalf("expected passive generate_grimoire relation error, got %#v", errs)
 	}
 }

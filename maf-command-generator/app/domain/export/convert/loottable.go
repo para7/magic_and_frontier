@@ -184,7 +184,7 @@ func toItemLootEntry(
 	}
 	return map[string]any{
 		"type":      "minecraft:item",
-		"name":      entry.Minecraft.ItemID,
+		"name":      entry.ItemID,
 		"functions": functions,
 	}, nil
 }

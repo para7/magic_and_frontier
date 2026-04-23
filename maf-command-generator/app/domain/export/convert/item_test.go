@@ -12,18 +12,21 @@ import (
 
 func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 	entry := itemModel.Item{
-		ID: "items_1",
+		ID:     "items_1",
+		ItemID: "minecraft:stone",
 		Maf: itemModel.ItemMaf{
 			GrimoireID: "tempest01",
 			PassiveID:  "regeneration",
 		},
-		Minecraft: itemModel.MinecraftItem{
-			ItemID: "minecraft:stone",
-			Components: map[string]string{
-				"minecraft:custom_name":  `'{"text":"Starter Stone"}'`,
-				"minecraft:lore":         `['{"text":"Sample item"}']`,
-				"minecraft:unbreakable":  `{}`,
-				"minecraft:enchantments": `{"minecraft:sharpness":5}`,
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"minecraft:custom_name": map[string]any{"text": "Starter Stone"},
+				"minecraft:lore": []any{
+					map[string]any{"text": "Sample item"},
+				},
+				"minecraft:unbreakable":  map[string]any{},
+				"minecraft:enchantments": map[string]any{"minecraft:sharpness": 5},
+				"minecraft:foo":          map[string]any{"bar": true},
 			},
 		},
 	}
@@ -70,7 +73,7 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 	if !strings.Contains(customData, `spell:{kind:"grimoire",id:"tempest01",cost:13,cast:40,cooltime:20`) {
 		t.Fatalf("spell metadata should be derived from grimoire: %s", customData)
 	}
-	if !strings.Contains(customData, `nbt_snapshot:"{`) {
+	if !strings.Contains(customData, `nbt_snapshot:{`) {
 		t.Fatalf("nbt snapshot should be derived from components: %s", customData)
 	}
 
@@ -87,26 +90,32 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 	if _, ok := components["minecraft:unbreakable"]; !ok {
 		t.Fatalf("unbreakable should be exported: %#v", components)
 	}
+	if _, ok := components["minecraft:foo"]; !ok {
+		t.Fatalf("minecraft custom component should pass through: %#v", components)
+	}
+	if _, ok := components["minecraft:enchantments"]; ok {
+		t.Fatalf("enchantments should be handled by set_enchantments: %#v", components)
+	}
 	if _, ok := components["minecraft:consumable"]; !ok {
 		t.Fatalf("consumable should be added for spell items: %#v", components)
 	}
 
 	enchantments := itemEnchantmentsForLoot(entry)
-	if enchantments["minecraft:sharpness"] != float64(5) {
+	if enchantments["minecraft:sharpness"] != 5 {
 		t.Fatalf("unexpected enchantments: %#v", enchantments)
 	}
 }
 
 func TestPassiveOnlyItemDoesNotBecomeRightClickSpell(t *testing.T) {
 	entry := itemModel.Item{
-		ID: "items_passive_only",
+		ID:     "items_passive_only",
+		ItemID: "minecraft:stone",
 		Maf: itemModel.ItemMaf{
 			PassiveID: "regeneration",
 		},
-		Minecraft: itemModel.MinecraftItem{
-			ItemID: "minecraft:stone",
-			Components: map[string]string{
-				"minecraft:custom_name": `'{"text":"Passive Only"}'`,
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"minecraft:custom_name": map[string]any{"text": "Passive Only"},
 			},
 		},
 	}
@@ -141,12 +150,10 @@ func TestPassiveOnlyItemDoesNotBecomeRightClickSpell(t *testing.T) {
 func TestItemCustomDataEmbedsMaxMPWhenConfigured(t *testing.T) {
 	maxMP := -12
 	entry := itemModel.Item{
-		ID: "items_with_maxmp",
+		ID:     "items_with_maxmp",
+		ItemID: "minecraft:stone",
 		Maf: itemModel.ItemMaf{
 			MaxMP: &maxMP,
-		},
-		Minecraft: itemModel.MinecraftItem{
-			ItemID: "minecraft:stone",
 		},
 	}
 
@@ -161,15 +168,17 @@ func TestItemCustomDataEmbedsMaxMPWhenConfigured(t *testing.T) {
 
 func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 	entry := itemModel.Item{
-		ID: "items_1",
+		ID:     "items_1",
+		ItemID: "minecraft:stone",
 		Maf: itemModel.ItemMaf{
 			GrimoireID: "tempest01",
 		},
-		Minecraft: itemModel.MinecraftItem{
-			ItemID: "minecraft:stone",
-			Components: map[string]string{
-				"minecraft:lore":        `['{"text":"Sample item"}']`,
-				"minecraft:custom_name": `'{"text":"Starter Stone"}'`,
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"minecraft:lore": []any{
+					map[string]any{"text": "Sample item"},
+				},
+				"minecraft:custom_name": map[string]any{"text": "Starter Stone"},
 			},
 		},
 	}
@@ -202,76 +211,24 @@ func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 	if customNameIndex == -1 || loreIndex == -1 || customNameIndex > loreIndex {
 		t.Fatalf("components should be sorted by key: %s", command)
 	}
-	if !strings.Contains(command, `minecraft:custom_name={"text":"Starter Stone"}`) {
-		t.Fatalf("custom_name should be normalized for give: %s", command)
-	}
-	if !strings.Contains(command, `minecraft:lore=[{"text":"Sample item"}]`) {
-		t.Fatalf("lore should be normalized for give: %s", command)
-	}
-	if strings.Contains(command, `minecraft:custom_name='{"text":"Starter Stone"}'`) {
-		t.Fatalf("quoted custom_name JSON should not remain in give output: %s", command)
-	}
-}
-
-func TestItemToGiveCommandNormalizesRawJSONTextComponents(t *testing.T) {
-	entry := itemModel.Item{
-		ID: "items_raw_json",
-		Minecraft: itemModel.MinecraftItem{
-			ItemID: "minecraft:stone",
-			Components: map[string]string{
-				"minecraft:item_name": `{"text":"Debug Title","italic":false}`,
-				"minecraft:lore":      `[{"text":"Role line"},{"text":"Extra"}]`,
-			},
-		},
-	}
-
-	command, err := ItemToGiveCommand(entry, nil, nil, nil)
-	if err != nil {
-		t.Fatalf("ItemToGiveCommand returned error: %v", err)
-	}
-	if !strings.Contains(command, `minecraft:item_name={"italic":false,"text":"Debug Title"}`) &&
-		!strings.Contains(command, `minecraft:item_name={"text":"Debug Title","italic":false}`) {
-		t.Fatalf("item_name should be preserved as a structured text component: %s", command)
-	}
-	if !strings.Contains(command, `minecraft:lore=[{"text":"Role line"},{"text":"Extra"}]`) {
-		t.Fatalf("lore should remain structured JSON for give: %s", command)
-	}
-}
-
-func TestItemToGiveCommandPreservesDirectGiveTextComponentSNBT(t *testing.T) {
-	entry := itemModel.Item{
-		ID: "items_snbt",
-		Minecraft: itemModel.MinecraftItem{
-			ItemID: "minecraft:stone",
-			Components: map[string]string{
-				"minecraft:custom_name": `{text:"Starter Stone"}`,
-				"minecraft:lore":        `[{text:"Sample item"}]`,
-			},
-		},
-	}
-
-	command, err := ItemToGiveCommand(entry, nil, nil, nil)
-	if err != nil {
-		t.Fatalf("ItemToGiveCommand returned error: %v", err)
-	}
 	if !strings.Contains(command, `minecraft:custom_name={text:"Starter Stone"}`) {
-		t.Fatalf("direct give custom_name SNBT should be preserved: %s", command)
+		t.Fatalf("custom_name should be rendered from JSON object: %s", command)
 	}
 	if !strings.Contains(command, `minecraft:lore=[{text:"Sample item"}]`) {
-		t.Fatalf("direct give lore SNBT should be preserved: %s", command)
+		t.Fatalf("lore should be rendered from JSON array: %s", command)
 	}
 }
 
-func TestItemToGiveCommandDoesNotDuplicateConsumable(t *testing.T) {
+func TestItemToGiveCommandOverridesMinecraftConsumableForSpellItems(t *testing.T) {
 	entry := itemModel.Item{
-		ID: "items_1",
+		ID:     "items_1",
+		ItemID: "minecraft:stone",
 		Maf: itemModel.ItemMaf{
 			GrimoireID: "tempest01",
 		},
-		Minecraft: itemModel.MinecraftItem{
-			ItemID: "minecraft:stone",
-			Components: map[string]string{
-				"minecraft:consumable": `{consume_seconds:10}`,
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"minecraft:consumable": map[string]any{"consume_seconds": 10},
 			},
 		},
 	}
@@ -284,20 +241,54 @@ func TestItemToGiveCommandDoesNotDuplicateConsumable(t *testing.T) {
 		t.Fatalf("ItemToGiveCommand returned error: %v", err)
 	}
 	if strings.Count(command, "minecraft:consumable=") != 1 {
-		t.Fatalf("consumable should not be duplicated: %s", command)
+		t.Fatalf("consumable should appear exactly once: %s", command)
 	}
-	if !strings.Contains(command, `minecraft:consumable={consume_seconds:10}`) {
-		t.Fatalf("existing consumable should be preserved: %s", command)
+	if !strings.Contains(command, `minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false}`) {
+		t.Fatalf("maf consumable should override minecraft value: %s", command)
+	}
+}
+
+func TestItemComponentsForLootOverridesMinecraftConsumableForSpellItems(t *testing.T) {
+	entry := itemModel.Item{
+		ID:     "items_1",
+		ItemID: "minecraft:stone",
+		Maf: itemModel.ItemMaf{
+			GrimoireID: "tempest01",
+		},
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"minecraft:consumable":  map[string]any{"consume_seconds": 10},
+				"minecraft:custom_data": map[string]any{"legacy": true},
+			},
+		},
+	}
+	grimoiresByID := map[string]grimoireModel.Grimoire{
+		"tempest01": {ID: "tempest01", MPCost: 1, CastTime: 1, CoolTime: 1, Title: "Spell"},
+	}
+
+	components, err := itemComponentsForLoot(entry, grimoiresByID, nil, nil)
+	if err != nil {
+		t.Fatalf("itemComponentsForLoot returned error: %v", err)
+	}
+	consumable, ok := components["minecraft:consumable"].(map[string]any)
+	if !ok {
+		t.Fatalf("consumable should be map: %#v", components["minecraft:consumable"])
+	}
+	if consumable["consume_seconds"] != 99999.0 {
+		t.Fatalf("consume_seconds should be overwritten: %#v", consumable)
+	}
+	if _, ok := components["minecraft:custom_data"]; ok {
+		t.Fatalf("custom_data should be excluded from set_components: %#v", components)
 	}
 }
 
 func TestItemToGiveCommandPreservesEnchantmentsComponent(t *testing.T) {
 	entry := itemModel.Item{
-		ID: "items_1",
-		Minecraft: itemModel.MinecraftItem{
-			ItemID: "minecraft:stone",
-			Components: map[string]string{
-				"minecraft:enchantments": `{"minecraft:aqua_affinity":1,"minecraft:bane_of_arthropods":9}`,
+		ID:     "items_1",
+		ItemID: "minecraft:stone",
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"minecraft:enchantments": map[string]any{"minecraft:aqua_affinity": 1, "minecraft:bane_of_arthropods": 9},
 			},
 		},
 	}
@@ -306,21 +297,21 @@ func TestItemToGiveCommandPreservesEnchantmentsComponent(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ItemToGiveCommand returned error: %v", err)
 	}
-	if !strings.Contains(command, `minecraft:enchantments={"minecraft:aqua_affinity":1,"minecraft:bane_of_arthropods":9}`) {
+	if !strings.Contains(command, `minecraft:enchantments={`) {
 		t.Fatalf("enchantments component should be preserved: %s", command)
 	}
 }
 
 func TestBowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
 	entry := itemModel.Item{
-		ID: "bow_item",
+		ID:     "bow_item",
+		ItemID: "minecraft:bow",
 		Maf: itemModel.ItemMaf{
 			BowID: "test_full",
 		},
-		Minecraft: itemModel.MinecraftItem{
-			ItemID: "minecraft:bow",
-			Components: map[string]string{
-				"minecraft:custom_name": `'{"text":"Bow Item"}'`,
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"minecraft:custom_name": map[string]any{"text": "Bow Item"},
 			},
 		},
 	}
@@ -359,15 +350,10 @@ func TestBowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
 
 func TestCrossbowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
 	entry := itemModel.Item{
-		ID: "crossbow_item",
+		ID:     "crossbow_item",
+		ItemID: "minecraft:crossbow",
 		Maf: itemModel.ItemMaf{
 			BowID: "test_full",
-		},
-		Minecraft: itemModel.MinecraftItem{
-			ItemID: "minecraft:crossbow",
-			Components: map[string]string{
-				"minecraft:custom_name": `'{"text":"Crossbow Item"}'`,
-			},
 		},
 	}
 	bowsByID := map[string]bowModel.BowPassive{
@@ -399,13 +385,11 @@ func TestCrossbowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
 
 func TestBowItemRejectsHybridGrimoireMetadata(t *testing.T) {
 	entry := itemModel.Item{
-		ID: "bow_hybrid",
+		ID:     "bow_hybrid",
+		ItemID: "minecraft:bow",
 		Maf: itemModel.ItemMaf{
 			BowID:      "test_full",
 			GrimoireID: "tempest01",
-		},
-		Minecraft: itemModel.MinecraftItem{
-			ItemID: "minecraft:bow",
 		},
 	}
 	grimoiresByID := map[string]grimoireModel.Grimoire{

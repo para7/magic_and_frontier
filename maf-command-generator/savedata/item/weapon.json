@@ -1,0 +1,40 @@
+{
+  "entries": [
+    {
+      "id": "business_bag",
+      "maf": {},
+      "minecraft": {
+        "components": {
+          "minecraft:attribute_modifiers": [
+            {
+              "id": "23fddbc6-8718-42f8-9d5c-b741dac56099",
+              "type": "movement_speed",
+              "amount": 0.2,
+              "operation": "add_multiplied_base",
+              "slot": "mainhand"
+            },
+            {
+              "id": "4b816b52-4fbc-4d7c-af09-ef8d025e8dfc",
+              "type": "movement_speed",
+              "amount": 0.2,
+              "operation": "add_multiplied_base",
+              "slot": "offhand"
+            }
+          ],
+          "minecraft:custom_name": {
+            "text": "ビジネスバッグ"
+          },
+          "minecraft:enchantments": {
+            "minecraft:sharpness": 10
+          },
+          "minecraft:lore": [
+            {
+              "text": "お世話になっております。"
+            }
+          ]
+        }
+      },
+      "itemId": "minecraft:bundle"
+    }
+  ]
+}

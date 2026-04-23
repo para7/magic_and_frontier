@@ -49,10 +49,8 @@ func TestResolveMafLootPoolsExpandsMafEntries(t *testing.T) {
 		pools,
 		map[string]itemModel.Item{
 			"item_1": {
-				ID: "item_1",
-				Minecraft: itemModel.MinecraftItem{
-					ItemID: "minecraft:stone",
-				},
+				ID:     "item_1",
+				ItemID: "minecraft:stone",
 			},
 		},
 		map[string]grimoireModel.Grimoire{
@@ -177,10 +175,8 @@ func TestResolveMafLootPoolsRejectsInvertedCountRange(t *testing.T) {
 		pools,
 		map[string]itemModel.Item{
 			"item_1": {
-				ID: "item_1",
-				Minecraft: itemModel.MinecraftItem{
-					ItemID: "minecraft:stone",
-				},
+				ID:     "item_1",
+				ItemID: "minecraft:stone",
 			},
 		},
 		nil,

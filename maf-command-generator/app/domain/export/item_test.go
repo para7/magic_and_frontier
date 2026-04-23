@@ -44,16 +44,18 @@ func TestBuildItemArtifactsBuildsGiveCommands(t *testing.T) {
 		},
 		items: []itemModel.Item{
 			{
-				ID: "items_1",
+				ID:     "items_1",
+				ItemID: "minecraft:stone",
 				Maf: itemModel.ItemMaf{
 					GrimoireID: "tempest01",
 					PassiveID:  "regeneration",
 				},
-				Minecraft: itemModel.MinecraftItem{
-					ItemID: "minecraft:stone",
-					Components: map[string]string{
-						"minecraft:custom_name": `'{"text":"Starter Stone"}'`,
-						"minecraft:lore":        `['{"text":"Sample item"}']`,
+				Minecraft: map[string]any{
+					"components": map[string]any{
+						"minecraft:custom_name": map[string]any{"text": "Starter Stone"},
+						"minecraft:lore": []any{
+							map[string]any{"text": "Sample item"},
+						},
 					},
 				},
 			},
@@ -88,12 +90,10 @@ func TestBuildItemArtifactsBuildsBowGiveCommand(t *testing.T) {
 		},
 		items: []itemModel.Item{
 			{
-				ID: "bow_item",
+				ID:     "bow_item",
+				ItemID: "minecraft:bow",
 				Maf: itemModel.ItemMaf{
 					BowID: "test_full",
-				},
-				Minecraft: itemModel.MinecraftItem{
-					ItemID: "minecraft:bow",
 				},
 			},
 		},
@@ -121,12 +121,10 @@ func TestBuildItemArtifactsBuildsCrossbowGiveCommand(t *testing.T) {
 		},
 		items: []itemModel.Item{
 			{
-				ID: "crossbow_item",
+				ID:     "crossbow_item",
+				ItemID: "minecraft:crossbow",
 				Maf: itemModel.ItemMaf{
 					BowID: "test_full",
-				},
-				Minecraft: itemModel.MinecraftItem{
-					ItemID: "minecraft:crossbow",
 				},
 			},
 		},
@@ -198,11 +196,11 @@ func TestExportDatapackWritesItemArtifacts(t *testing.T) {
 	master := exportMasterStub{
 		items: []itemModel.Item{
 			{
-				ID: "items_1",
-				Minecraft: itemModel.MinecraftItem{
-					ItemID: "minecraft:stone",
-					Components: map[string]string{
-						"minecraft:custom_name": `'{"text":"Starter Stone"}'`,
+				ID:     "items_1",
+				ItemID: "minecraft:stone",
+				Minecraft: map[string]any{
+					"components": map[string]any{
+						"minecraft:custom_name": map[string]any{"text": "Starter Stone"},
 					},
 				},
 			},
@@ -254,8 +252,8 @@ func TestExportDatapackUsesDefaultItemGivePathWhenUnset(t *testing.T) {
 	master := exportMasterStub{
 		items: []itemModel.Item{
 			{
-				ID:        "items_1",
-				Minecraft: itemModel.MinecraftItem{ItemID: "minecraft:stone"},
+				ID:     "items_1",
+				ItemID: "minecraft:stone",
 			},
 		},
 	}

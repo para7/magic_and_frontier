@@ -47,9 +47,9 @@ func passiveRoleLine(entry passiveModel.Passive) string {
 func passiveSpellCustomData(entry passiveModel.Passive, slot int) string {
 	return fmt.Sprintf(
 		`{maf:{passive:{id:%s,slot:%d,condition:%s},%s}}`,
-		JsonString(entry.ID),
+		SNBTString(entry.ID),
 		slot,
-		JsonString(strings.TrimSpace(entry.Condition)),
+		SNBTString(strings.TrimSpace(entry.Condition)),
 		passiveSpellFragment(entry, slot),
 	)
 }

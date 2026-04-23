@@ -37,7 +37,7 @@ func (m spellBookModel) LootComponents() map[string]any {
 }
 
 func textComponentSNBT(text string) string {
-	return fmt.Sprintf(`{text:%s}`, JsonString(text))
+	return fmt.Sprintf(`{text:%s}`, SNBTString(text))
 }
 
 func textComponentObject(text string) map[string]any {
