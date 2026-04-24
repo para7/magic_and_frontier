@@ -27,18 +27,14 @@ export 層は `export.DBMaster` 経由でデータを読み取り、Minecraft �
 
 ## convert/ サブパッケージ（export_convert）
 
-| ファイル | 公開関数 | 内容 |
-|---------|---------|------|
-| `json.go` | `JsonString`, `ToCountValue`, `ToWeight` | JSON文字列化・float変換・loot カウント/重みヘルパー |
-| `grimoire.go` | `GrimoireToBook` | グリモア → 本アイテム SNBT 変換 |
-| `passive.go` | `PassiveToBook`, `PassiveCastTime`, `PassiveMPCost` | パッシブ → 本アイテム SNBT 変換（詠唱時間 200tick / MP 10 固定） |
-| `book.go` | `spellBookModel`（内部） | グリモア/パッシブ共通の本アイテム生成モデル。`ToGiveItem()` / `LootComponents()` を持つ |
-| `item.go` | `ItemToGiveCommand` | アイテム give コマンド文字列を生成（内部で custom_data・コンポーネント・エンチャントを組み立て） |
-| `loottable.go` | `ResolveMafLootPools`, `MergeLootTablePools` | `maf:item` / `maf:grimoire` / `maf:passive` エントリをバニラ互換の loot entry に解決、バニラ loot table へプール追記 |
-| `enemy.go` | `ToEnemyFunctionLines` | エネミー summon NBT と function 行生成 |
+エンティティデータを `.mcfunction` コマンド文字列や loot table JSON に変換する純粋関数群。主な変換:
 
-このサブパッケージは `export` パッケージを逆インポートしてはならない（循環防止）。
-import alias は `ec "maf_command_editor/app/domain/export/convert"` を使用。
+- グリモア/パッシブ → 本アイテム SNBT（`spellBookModel` 共通基盤、パッシブは詠唱 200tick / MP 10 固定）
+- アイテム → give コマンド SNBT（custom_data・コンポーネント・エンチャント組み立て）
+- `maf:*` loot エントリ → バニラ互換 loot entry 解決・マージ
+- エネミー → summon NBT + function 行
+
+`export` パッケージを逆インポートしてはならない（循環防止）。import alias: `ec "maf_command_editor/app/domain/export/convert"`
 
 ## 設計原則
 
