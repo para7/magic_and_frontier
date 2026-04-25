@@ -65,3 +65,9 @@ data/maf/
 ## sample_pack/
 
 Docker マウント検証用の最小パック。`sample:ping` を load 時に実行するだけ。
+
+## 変更後チェック（必須）
+
+- `datapacks/` 配下のファイルを編集した場合は、RCON 経由で必ず `reload` を実行して再読込結果を確認する
+- 実行コマンド: `make mc-cmd CMD='reload'`
+- `reload` 実行結果にエラー（構文エラー、関数ロード失敗など）が出ないことを確認する
