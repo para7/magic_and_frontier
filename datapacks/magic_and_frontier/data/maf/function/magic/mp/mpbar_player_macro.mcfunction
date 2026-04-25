@@ -9,7 +9,9 @@ $execute if entity @s[scores={mafCastTime=..0,mafCoolTime=1..}] run bossbar set 
 $execute if entity @s[scores={mafCastTime=..0,mafCoolTime=1..}] run bossbar set minecraft:mpbar$(mpbar_id) style progress
 $execute if entity @s[scores={mafCastTime=..0,mafCoolTime=1..}] run bossbar set minecraft:mpbar$(mpbar_id) name [{"text":"MP "},{"score":{"name":"@s","objective":"mafMP"}},{"text": " / "}, {"score":{"name":"@s","objective":"mafMaxMP"}}]
 $execute if entity @s[scores={mafCastTime=..0,mafCoolTime=1..}] run execute store result bossbar minecraft:mpbar$(mpbar_id) max run scoreboard players get @s mafCoolTimeMax
-$execute if entity @s[scores={mafCastTime=..0,mafCoolTime=1..}] run execute store result bossbar minecraft:mpbar$(mpbar_id) value run scoreboard players get @s mafCoolTime
+execute if entity @s[scores={mafCastTime=..0,mafCoolTime=1..}] run scoreboard players operation @s tmp = @s mafCoolTimeMax
+execute if entity @s[scores={mafCastTime=..0,mafCoolTime=1..}] run scoreboard players operation @s tmp -= @s mafCoolTime
+$execute if entity @s[scores={mafCastTime=..0,mafCoolTime=1..}] run execute store result bossbar minecraft:mpbar$(mpbar_id) value run scoreboard players get @s tmp
 $execute if entity @s[scores={mafCastTime=..0,mafCoolTime=..0}] run bossbar set minecraft:mpbar$(mpbar_id) color green
 $execute if entity @s[scores={mafCastTime=..0,mafCoolTime=..0}] run bossbar set minecraft:mpbar$(mpbar_id) style progress
 $execute if entity @s[scores={mafCastTime=..0,mafCoolTime=..0}] run bossbar set minecraft:mpbar$(mpbar_id) name [{"text":"MP "},{"score":{"name":"@s","objective":"mafMP"}},{"text": " / "}, {"score":{"name":"@s","objective":"mafMaxMP"}}]
