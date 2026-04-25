@@ -1,7 +1,7 @@
 {
   "entries": [
     {
-      "id": "prominence01",
+      "id": "old_prominence01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 7,
@@ -22,7 +22,7 @@
       "description": "周囲炎上+ダメージ+移動低下"
     },
     {
-      "id": "absolutezero01",
+      "id": "old_absolutezero01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 11,
@@ -59,7 +59,7 @@
       "description": "水を凍らせ氷上の存在に大ダメージ"
     },
     {
-      "id": "tempest01",
+      "id": "old_tempest01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 13,
@@ -88,7 +88,7 @@
       "description": "敵1体に雷を落とし周辺に特大ダメージ"
     },
     {
-      "id": "poison01",
+      "id": "old_poison01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 10,
@@ -112,7 +112,7 @@
       "description": "最寄りの敵の周囲に毒を与え、弱体化"
     },
     {
-      "id": "earthshake01",
+      "id": "old_earthshake01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 4,
@@ -133,7 +133,7 @@
       "description": "地上の敵にダメージ"
     },
     {
-      "id": "healing01",
+      "id": "old_healing01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 13,
@@ -153,7 +153,7 @@
       "description": "周囲に即時回復+リジェネ"
     },
     {
-      "id": "barrier01",
+      "id": "old_barrier01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 22,
@@ -171,7 +171,7 @@
       "description": "周囲のダメージを緩和"
     },
     {
-      "id": "refresh01",
+      "id": "old_refresh01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 17,
@@ -197,7 +197,7 @@
       "description": "周囲の状態異常回復"
     },
     {
-      "id": "holy01",
+      "id": "old_holy01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 30,
@@ -217,7 +217,7 @@
       "description": "近くのアンデッドに特大ダメージ"
     },
     {
-      "id": "sacrifice01",
+      "id": "old_sacrifice01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 23,
@@ -239,7 +239,7 @@
       "description": "自分の体力を犠牲に周囲に特大回復"
     },
     {
-      "id": "tornado01",
+      "id": "old_tornado01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 6,
@@ -258,7 +258,7 @@
       "description": "周囲のモブを打ち上げる"
     },
     {
-      "id": "sweep01",
+      "id": "old_sweep01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 14,
@@ -274,7 +274,7 @@
       "description": "近くのアイテムをかき集める"
     },
     {
-      "id": "airrider01",
+      "id": "old_airrider01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 18,
@@ -293,7 +293,7 @@
       "description": "機動力を大幅に高める"
     },
     {
-      "id": "gravity01",
+      "id": "old_gravity01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 9,
@@ -313,7 +313,7 @@
       "description": "空中の敵を地面に落とす"
     },
     {
-      "id": "hover01",
+      "id": "old_hover01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 18,
@@ -330,7 +330,7 @@
       "description": "空中に停滞する"
     },
     {
-      "id": "floor01",
+      "id": "old_floor01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 11,
@@ -346,7 +346,7 @@
       "description": "床を展開"
     },
     {
-      "id": "wall01",
+      "id": "old_wall01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 9,
@@ -365,7 +365,7 @@
       "description": "自分を壁で囲い緊急回避"
     },
     {
-      "id": "roof01",
+      "id": "old_roof01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 10,
@@ -385,7 +385,7 @@
       "description": "屋根を作り出す"
     },
     {
-      "id": "earthextend01",
+      "id": "old_earthextend01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 17,
@@ -402,7 +402,7 @@
       "description": "足元の水や溶岩を固める"
     },
     {
-      "id": "cushion01",
+      "id": "old_cushion01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 14,
@@ -419,7 +419,7 @@
       "description": "手持ちのスライムブロックを足元に設置する"
     },
     {
-      "id": "disaster01",
+      "id": "old_disaster01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 30,
@@ -434,7 +434,7 @@
       "title": "ディザスター"
     },
     {
-      "id": "phoenix01",
+      "id": "old_phoenix01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 60,
@@ -454,7 +454,7 @@
       "title": "フェニックス"
     },
     {
-      "id": "teleport01",
+      "id": "old_teleport01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 40,
@@ -473,7 +473,7 @@
       "title": "テレポート"
     },
     {
-      "id": "reinforce01",
+      "id": "old_reinforce01",
       "castTime": 40,
       "coolTime": 20,
       "mpCost": 50,

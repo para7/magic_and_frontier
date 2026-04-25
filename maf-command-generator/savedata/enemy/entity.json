@@ -114,7 +114,7 @@
               },
               {
                 "type": "maf:grimoire",
-                "name": "prominence01",
+                "name": "old_prominence01",
                 "weight": 30,
                 "count": 1
               }
@@ -174,7 +174,7 @@
               },
               {
                 "type": "maf:grimoire",
-                "name": "prominence01",
+                "name": "old_prominence01",
                 "weight": 30,
                 "count": 1
               }
