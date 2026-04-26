@@ -28,7 +28,8 @@ disable-model-invocation: true
 3. ファイルに書き戻す
 4. `cd maf-command-generator && make run/export` でエクスポート
 5. `make mc-cmd CMD='reload'` でデータパックリロード
-6. `make mc-cmd CMD='function maf:generated/passive/give/[id]_slot[N]'` を実行し、"Unknown or incomplete command" が出ないことを確認（slot番号は定義したslots[0]を使う。文法チェックのみ・動作の正確さは検証外）
+6. `make mc-cmd CMD='function maf:generated/passive/give/[id]_slot[N]'` を実行し、"Unknown or incomplete command" が出ないことを確認（slot番号は定義したslots[0]を使う。アイテム生成の文法チェック）
+7. `make mc-cmd CMD='function maf:generated/passive/effect/[id]'` を実行してスクリプトを実際に発動し、エラーログ・"Unknown or incomplete command" が出ないことを確認（`give` チェックではスクリプト側のコマンドミスを検出できないため必須）
 
 ## JSONスキーマ
 
