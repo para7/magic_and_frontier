@@ -1,0 +1,26 @@
+{
+  "entries": [
+    {
+      "id": "debug_mp",
+      "maf": {
+        "maxmp": 9999
+      },
+      "minecraft": {
+        "components": {
+          "minecraft:custom_name": {
+            "text": "MP最大"
+          },
+          "minecraft:lore": [
+            {
+              "text": "もし本アイテムを正規手段で入手した場合は"
+            },
+            {
+              "text": "開発者へ報告をお願いいたします。"
+            }
+          ]
+        }
+      },
+      "itemId": "minecraft:diamond_chestplate"
+    }
+  ]
+}
