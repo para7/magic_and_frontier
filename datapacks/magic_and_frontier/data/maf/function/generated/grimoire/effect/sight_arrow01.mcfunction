@@ -1,0 +1,29 @@
+kill @e[type=minecraft:arrow,tag=maf_spell_arrow_preview,distance=..64]
+kill @e[type=minecraft:area_effect_cloud,tag=maf_spell_arrow_origin,distance=..64]
+kill @e[type=minecraft:area_effect_cloud,tag=maf_spell_arrow_target,distance=..64]
+execute at @s anchored eyes rotated as @s run summon minecraft:arrow ^ ^ ^1 {Tags:["maf_spell_arrow_preview"],pickup:0b,crit:1b,damage:8.0d}
+execute at @s anchored eyes rotated as @s run summon minecraft:area_effect_cloud ^ ^ ^1 {Tags:["maf_spell_arrow_origin"],Duration:2,Radius:0.0f,WaitTime:0,ReapplicationDelay:0}
+execute at @s anchored eyes rotated as @s run summon minecraft:area_effect_cloud ^ ^ ^25 {Tags:["maf_spell_arrow_target"],Duration:2,Radius:0.0f,WaitTime:0,ReapplicationDelay:0}
+scoreboard players set #maf_arrow_ox tmp 0
+scoreboard players set #maf_arrow_oy tmp 0
+scoreboard players set #maf_arrow_oz tmp 0
+scoreboard players set #maf_arrow_tx tmp 0
+scoreboard players set #maf_arrow_ty tmp 0
+scoreboard players set #maf_arrow_tz tmp 0
+execute store result score #maf_arrow_ox tmp run data get entity @e[type=minecraft:area_effect_cloud,tag=maf_spell_arrow_origin,sort=nearest,limit=1,distance=..6] Pos[0] 100
+execute store result score #maf_arrow_oy tmp run data get entity @e[type=minecraft:area_effect_cloud,tag=maf_spell_arrow_origin,sort=nearest,limit=1,distance=..6] Pos[1] 100
+execute store result score #maf_arrow_oz tmp run data get entity @e[type=minecraft:area_effect_cloud,tag=maf_spell_arrow_origin,sort=nearest,limit=1,distance=..6] Pos[2] 100
+execute store result score #maf_arrow_tx tmp run data get entity @e[type=minecraft:area_effect_cloud,tag=maf_spell_arrow_target,sort=nearest,limit=1,distance=..30] Pos[0] 100
+execute store result score #maf_arrow_ty tmp run data get entity @e[type=minecraft:area_effect_cloud,tag=maf_spell_arrow_target,sort=nearest,limit=1,distance=..30] Pos[1] 100
+execute store result score #maf_arrow_tz tmp run data get entity @e[type=minecraft:area_effect_cloud,tag=maf_spell_arrow_target,sort=nearest,limit=1,distance=..30] Pos[2] 100
+scoreboard players operation #maf_arrow_tx tmp -= #maf_arrow_ox tmp
+scoreboard players operation #maf_arrow_ty tmp -= #maf_arrow_oy tmp
+scoreboard players operation #maf_arrow_tz tmp -= #maf_arrow_oz tmp
+execute store result entity @e[type=minecraft:arrow,tag=maf_spell_arrow_preview,sort=nearest,limit=1,distance=..6] Motion[0] double 0.001 run scoreboard players get #maf_arrow_tx tmp
+execute store result entity @e[type=minecraft:arrow,tag=maf_spell_arrow_preview,sort=nearest,limit=1,distance=..6] Motion[1] double 0.001 run scoreboard players get #maf_arrow_ty tmp
+execute store result entity @e[type=minecraft:arrow,tag=maf_spell_arrow_preview,sort=nearest,limit=1,distance=..6] Motion[2] double 0.001 run scoreboard players get #maf_arrow_tz tmp
+execute as @e[type=minecraft:arrow,tag=maf_spell_arrow_preview,sort=nearest,limit=1,distance=..8] at @s run particle minecraft:crit ~ ~ ~ 0.12 0.12 0.12 0.01 8 force
+kill @e[type=minecraft:area_effect_cloud,tag=maf_spell_arrow_origin,distance=..64]
+kill @e[type=minecraft:area_effect_cloud,tag=maf_spell_arrow_target,distance=..64]
+playsound minecraft:entity.arrow.shoot master @a ~ ~ ~ 1.0 1.0
+tellraw @a[distance=..50] [{"selector":"@s"},{"text":" は サイト・アロー を唱えた！"}]
