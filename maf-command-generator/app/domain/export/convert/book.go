@@ -1,7 +1,6 @@
 package export_convert
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -61,12 +60,4 @@ func loreComponentsSNBT(lines []string) string {
 		parts = append(parts, textComponentSNBT(line))
 	}
 	return "[" + strings.Join(parts, ",") + "]"
-}
-
-func jsonComponentValue(value any) string {
-	data, err := json.Marshal(value)
-	if err != nil {
-		return ""
-	}
-	return string(data)
 }
