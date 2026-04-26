@@ -1,0 +1,16 @@
+{
+    "entries": [
+        {
+            "id": "devtool_mpmax",
+            "castTime": 0,
+            "coolTime": 0,
+            "mpCost": 0,
+            "title": "MPソウル全回復",
+            "description": "もし本アイテムを正規手段で入手した場合は開発者へ報告をお願いいたします。",
+            "script": [
+                "scoreboard players add @s mafMP 9999",
+                "scoreboard players add @s mafSoul 9999"
+            ]
+        }
+    ]
+}
