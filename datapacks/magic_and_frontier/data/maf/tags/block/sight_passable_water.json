@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "#maf:sight_passable",
+    "#maf:water"
+  ]
+}

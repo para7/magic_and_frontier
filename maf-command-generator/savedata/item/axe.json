@@ -1,0 +1,23 @@
+{
+    "entries": [
+        {
+            "id": "tomahawk_axe01",
+            "maf": {
+                "grimoireId": "tomahawk01"
+            },
+            "minecraft": {
+                "components": {
+                    "minecraft:custom_name": {
+                        "text": "投擲斧"
+                    },
+                    "minecraft:lore": [
+                        {
+                            "text": "投擲に向いた小型の斧"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:wooden_axe"
+        }
+    ]
+}
