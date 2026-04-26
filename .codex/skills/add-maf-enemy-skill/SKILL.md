@@ -6,7 +6,8 @@ disable-model-invocation: true
 
 # エネミースキル追加
 
-**対象ファイル:** `maf-command-generator/savedata/enemy_skill/claude.json`
+**対象ファイル:** `maf-command-generator/savedata/enemy_skill/claude.json` ユーザー生成物とAI生成物を分けるため、claude.json に必ず出力すること。ファイルがなければ新規作成する。
+
 
 エネミースキルはモブが一定間隔で発動するスキル。Enemyエンティティの `enemySkillIds` から参照される。
 

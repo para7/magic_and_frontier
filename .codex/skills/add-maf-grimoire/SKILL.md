@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 **対象ファイル:** `maf-command-generator/savedata/grimoire/claude.json`
 
+ユーザー生成物とAI生成物を分けるため、claude.json に必ず出力すること。ファイルがなければ新規作成する。
+
 **実装方針:** `savedata/` 配下のJSONのみ参照・編集する。`maf-command-generator/app/` の Goコードは読まない。
 
 ## 要件整理

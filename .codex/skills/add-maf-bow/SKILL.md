@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # 弓パッシブ追加
 
-**対象ファイル:** `maf-command-generator/savedata/bow/claude.json`
+**対象ファイル:** `maf-command-generator/savedata/bow/claude.json` ユーザー生成物とAI生成物を分けるため、claude.json に必ず出力すること。ファイルがなければ新規作成する。
 
 弓パッシブは矢の挙動（発射・飛行・着弾・命中）に付与するスキル。Passiveとは別エンティティ。
 
