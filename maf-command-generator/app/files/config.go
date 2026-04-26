@@ -8,6 +8,7 @@ import (
 
 type ExportSettings struct {
 	OutputRoot  string      `json:"outputRoot"`
+	CleanPaths  []string    `json:"cleanPaths"`
 	ExportPaths ExportPaths `json:"exportPaths"`
 }
 

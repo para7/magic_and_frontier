@@ -15,6 +15,9 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	if err != nil {
 		return err
 	}
+	if err := cleanupConfiguredPaths(settings.OutputRoot, settings.CleanPaths); err != nil {
+		return err
+	}
 
 	effectLogicalDir := settings.ExportPaths.GrimoireEffect
 	effectDir := filepath.Join(settings.OutputRoot, funcRoot, effectLogicalDir)

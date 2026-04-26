@@ -1,5 +1,9 @@
 {
   "outputRoot": "../datapacks/magic_and_frontier",
+  "cleanPaths": [
+    "../datapacks/magic_and_frontier/data/maf/function/generated",
+    "../datapacks/magic_and_frontier/data/maf/loot_table/generated"
+  ],
   "exportPaths": {
     "grimoireEffect": "generated/grimoire/effect",
     "grimoireDebug": "generated/grimoire/give",
