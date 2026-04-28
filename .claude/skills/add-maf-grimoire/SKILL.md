@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 **対象ファイル:** `maf-command-generator/savedata/grimoire/claude.json`
 
+ユーザー生成物とAI生成物を分けるため、claude.json に必ず出力すること。ファイルがなければ新規作成する。
+
 **実装方針:** `savedata/` 配下のJSONのみ参照・編集する。`maf-command-generator/app/` の Goコードは読まない。
 
 ## 要件整理
@@ -17,7 +19,6 @@ disable-model-invocation: true
 - グリモアID（例: thunder01 ／ 小文字・アンダースコア・ハイフンのみ）
 - スペル名（表示名）
 - 効果（範囲・対象・強さ）
-- castTime / coolTime / mpCost（未定なら目安を提案して確認）
 - 演出（パーティクル・サウンド）の有無・種類
 
 ## 手順
@@ -41,7 +42,7 @@ disable-model-invocation: true
       "coolTime": 20,              // 必須: クールダウン(tick)。通常20(1秒)
       "mpCost": 10,                // 必須: 消費MP(0〜60程度)
       "script": [                  // 必須: 発動時mcfunctionコマンド(1行以上)
-        "effect give @e[distance=..8,type=!#maf:undead] minecraft:instant_damage 1 1",
+        "execute as @e[type=#maf:enemymob,distance=..8,nbt={OnGround:1b}] run damage @s 6 minecraft:magic",
         "playsound minecraft:entity.evoker.cast_spell master @a ~ ~ ~ 2 2",
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は スペル名 を唱えた！\"}]"
       ],
@@ -72,14 +73,13 @@ tellraw @a[distance=..50] [{"selector":"@s"},{"text":" は スペル名 を唱�
 | `#maf:enemymob` | 敵モブ全般 |
 | `#maf:friendmob` | 味方モブ |
 
-## mpCost目安
+## コスト設定
 
-| 強さ | mpCost |
-|------|--------|
-| 弱い | 4〜8 |
-| 中程度 | 9〜18 |
-| 強い | 19〜30 |
-| 超強力 | 31〜60 |
+実装は試作とし、細かな数値は後に調整するため、ユーザーからの指定がなければ以下の数値で固定する。
+
+mpCost: 10
+castTime: 20
+coolTime: 20
 
 ## 参照スキル
 
