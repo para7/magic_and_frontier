@@ -13,9 +13,9 @@
       ],
       "title": "ソーンバインド",
       "description": "周囲8ブロックの地上にいる敵にダメージを与え、移動を遅くする"
-    }
-    ,{
-      "id": "poison01",
+    },
+    {
+      "id": "poison_circle01",
       "castTime": 20,
       "coolTime": 20,
       "mpCost": 10,
@@ -26,6 +26,23 @@
       ],
       "title": "ポイズン",
       "description": "周囲8ブロックの敵に強力な毒(Poison III)を10秒間与える"
+    },
+    {
+      "id": "poison_sight01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute at @s anchored eyes rotated as @s run summon minecraft:area_effect_cloud ^ ^ ^4 {Tags:[\"maf_poison_sight_center\"],Duration:8,Radius:0.0f,WaitTime:0,ReapplicationDelay:0}",
+        "execute as @e[type=#maf:enemymob,distance=..20] at @s if entity @e[type=minecraft:area_effect_cloud,tag=maf_poison_sight_center,distance=..3.5,limit=1] run effect give @s minecraft:poison 10 10",
+        "execute at @e[type=minecraft:area_effect_cloud,tag=maf_poison_sight_center,distance=..20,sort=nearest,limit=1] run particle minecraft:witch ~ ~0.2 ~ 1.8 0.1 1.8 0.01 80 force",
+        "execute at @e[type=minecraft:area_effect_cloud,tag=maf_poison_sight_center,distance=..20,sort=nearest,limit=1] run particle minecraft:spore_blossom_air ~ ~0.2 ~ 1.8 0.2 1.8 0.01 32 force",
+        "kill @e[type=minecraft:area_effect_cloud,tag=maf_poison_sight_center,distance=..20]",
+        "playsound minecraft:entity.witch.throw master @a ~ ~ ~ 1.5 1.1",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ポイズンサイト を唱えた！\"}]"
+      ],
+      "title": "ポイズンサイト",
+      "description": "視線の4ブロック先を中心に半径3.5ブロックの円範囲へ毒(Poison II)を10秒間与える"
     }
   ]
 }
