@@ -26,7 +26,10 @@ type testDBMaster struct{}
 
 func (testDBMaster) HasItem(string) bool     { return true }
 func (testDBMaster) HasGrimoire(string) bool { return true }
-func (testDBMaster) HasPassive(string) bool  { return true }
+func (testDBMaster) GetGrimoire(string) (model.GrimoireSnapshot, bool) {
+	return model.GrimoireSnapshot{ID: "grimoire_1", LootEnable: true}, true
+}
+func (testDBMaster) HasPassive(string) bool { return true }
 func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
 	v := true
 	return model.PassiveSnapshot{ID: "passive_1", GenerateGrimoire: &v}, true

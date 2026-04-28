@@ -69,6 +69,17 @@ func (d *DBMaster) HasGrimoire(id string) bool {
 	return found
 }
 
+func (d *DBMaster) GetGrimoire(id string) (model.GrimoireSnapshot, bool) {
+	entry, found := d.grimoire.Find(id)
+	if !found {
+		return model.GrimoireSnapshot{}, false
+	}
+	return model.GrimoireSnapshot{
+		ID:         entry.ID,
+		LootEnable: entry.IsLootEnabled(),
+	}, true
+}
+
 func (d *DBMaster) HasItem(id string) bool {
 	_, found := d.item.Find(id)
 	return found

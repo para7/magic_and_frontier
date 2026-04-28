@@ -1,10 +1,13 @@
 package grimoire
 
 import (
+	"encoding/json"
 	"testing"
 
 	model "maf_command_editor/app/domain/model"
 )
+
+func boolPtr(b bool) *bool { return &b }
 
 func validGrimoire() Grimoire {
 	return Grimoire{
@@ -30,7 +33,10 @@ type testDBMaster struct{}
 
 func (testDBMaster) HasItem(string) bool     { return true }
 func (testDBMaster) HasGrimoire(string) bool { return true }
-func (testDBMaster) HasPassive(string) bool  { return true }
+func (testDBMaster) GetGrimoire(string) (model.GrimoireSnapshot, bool) {
+	return model.GrimoireSnapshot{ID: "grimoire_1", LootEnable: true}, true
+}
+func (testDBMaster) HasPassive(string) bool { return true }
 func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
 	v := true
 	return model.PassiveSnapshot{ID: "passive_1", GenerateGrimoire: &v}, true
@@ -202,6 +208,24 @@ func TestGrimoireValidateStructPerFieldOKNG(t *testing.T) {
 				g.Description = "some description"
 			},
 		},
+		{
+			name: "loot_enable ok true",
+			patch: func(g *Grimoire) {
+				g.LootEnable = boolPtr(true)
+			},
+		},
+		{
+			name: "loot_enable ok false",
+			patch: func(g *Grimoire) {
+				g.LootEnable = boolPtr(false)
+			},
+		},
+		{
+			name: "loot_enable ok nil defaults true",
+			patch: func(g *Grimoire) {
+				g.LootEnable = nil
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -244,4 +268,26 @@ func TestGrimoireValidateAllDetectsDuplicateID(t *testing.T) {
 		}
 	}
 	t.Fatalf("expected duplicate id error, got %#v", allErrs)
+}
+
+func TestGrimoireUnmarshalJSONDefaultsLootEnableToTrue(t *testing.T) {
+	var g Grimoire
+	if err := json.Unmarshal([]byte(`{"id":"g1"}`), &g); err != nil {
+		t.Fatalf("unexpected unmarshal error: %v", err)
+	}
+
+	if g.LootEnable == nil || !*g.LootEnable {
+		t.Fatalf("expected loot_enable to default true, got %#v", g.LootEnable)
+	}
+}
+
+func TestGrimoireUnmarshalJSONKeepsExplicitLootEnableFalse(t *testing.T) {
+	var g Grimoire
+	if err := json.Unmarshal([]byte(`{"id":"g1","loot_enable":false}`), &g); err != nil {
+		t.Fatalf("unexpected unmarshal error: %v", err)
+	}
+
+	if g.LootEnable == nil || *g.LootEnable {
+		t.Fatalf("expected loot_enable to stay false, got %#v", g.LootEnable)
+	}
 }
