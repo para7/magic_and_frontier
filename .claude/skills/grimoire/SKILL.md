@@ -11,6 +11,7 @@ description: グリモア（魔導書）システムの設計リファレンス�
 
 - **magic-casting**: 詠唱パイプライン（キャスト・クールダウン・MP消費の共通基盤）。グリモアとパッシブの両方が使う
 - **passive**: パッシブスキルシステム。詠唱パイプラインを共有するがトリガー方式が異なる
+- **sight**: 視線判定ユーティリティ。`Script[]` で視線方向の敵を対象にするグリモアで使う
 - **ohmydat**: プレイヤー個別ストレージ。詠唱データの一時保存先
 - **maf-export**: Go ジェネレータのエクスポートパイプライン全体
 
@@ -173,6 +174,19 @@ execute as @a[distance=..10] run effect give @s minecraft:regeneration 10 1
 # 演出: サウンド + テルロー
 playsound minecraft:entity.blaze.shoot master @a ~ ~ ~ 1.0 0.5
 tellraw @a[distance=..50] [{"selector":"@s"},{"text":" は プロミネンス を唱えた！"}]
+```
+
+### 視線方向の敵を対象にする
+
+プレイヤーが見ている方向のモブを対象にしたい場合は **sight スキル** を参照。`function maf:common/sight/eyes_tagged` でタグ付けし、`maf_sight_target` / `maf_sight_candidate` で絞り込む。
+
+```mcfunction
+tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
+tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
+function maf:common/sight/eyes_tagged
+execute as @e[type=#maf:enemymob,tag=maf_sight_target,distance=..15,sort=nearest,limit=1] run effect give @s minecraft:wither 3 1
+tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
+tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
 ```
 
 ### 使用するエンティティタグ
