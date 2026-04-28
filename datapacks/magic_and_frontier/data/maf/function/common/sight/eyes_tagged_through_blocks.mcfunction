@@ -1,3 +1,5 @@
+tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
+tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
 execute at @s anchored eyes rotated as @s positioned ^ ^ ^0.5 as @e[type=#maf:enemymob,distance=..2.0] run tag @s add maf_sight_candidate
 execute unless entity @e[type=#maf:enemymob,tag=maf_sight_target,limit=1] at @s anchored eyes rotated as @s positioned ^ ^ ^0.5 as @e[type=#maf:enemymob,distance=..2.0,sort=nearest,limit=1] run tag @s add maf_sight_target
 execute at @s anchored eyes rotated as @s positioned ^ ^ ^1 as @e[type=#maf:enemymob,distance=..2.0] run tag @s add maf_sight_candidate

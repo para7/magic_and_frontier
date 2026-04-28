@@ -1,3 +1,5 @@
+tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
+tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
 execute at @s anchored eyes rotated as @s positioned ^ ^ ^0.5 if block ~ ~ ~ #maf:water run return 0
 execute at @s anchored eyes rotated as @s positioned ^ ^ ^0.5 if block ~ ~ ~ minecraft:lava run return 0
 execute at @s anchored eyes rotated as @s positioned ^ ^ ^0.5 unless block ~ ~ ~ #maf:sight_passable run return 0

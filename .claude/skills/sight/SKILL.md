@@ -67,29 +67,22 @@ description: 視線判定（ライン・オブ・サイト）システムの設�
 視線判定を使うエフェクト関数の標準的な書き方:
 
 ```mcfunction
-# 1. 前回の残りタグをクリア（必須）
-tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
-tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
-
-# 2. 視線判定を実行（@s = プレイヤー）
+# 1. 視線判定を実行（@s = プレイヤー）
+#    タグのクリアは関数内部の先頭で行われる
 function maf:common/sight/eyes_tagged
 
-# 3. タグを使って効果を適用
+# 2. タグを使って効果を適用
 #   単体対象（最近傍1体）
 execute as @e[type=#maf:enemymob,tag=maf_sight_target,distance=..8,sort=nearest,limit=1] run damage @s 20 minecraft:player_attack
 #   全候補（視線ライン上の全員）
 effect give @e[type=#maf:enemymob,tag=maf_sight_candidate,distance=..20] minecraft:glowing 1 0 true
-
-# 4. タグをクリーンアップ（必須）
-tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
-tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
 ```
+
+タグのクリアは各視線関数の先頭で自動的に行われるため、呼び出し元での前後クリアは不要。
 
 ### 水中で使う場合
 
 ```mcfunction
-tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
-tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
 function maf:common/sight/eyes_tagged_water
 # ... 以降同じ
 ```
@@ -97,8 +90,6 @@ function maf:common/sight/eyes_tagged_water
 ### ブロックを無視する場合
 
 ```mcfunction
-tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
-tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
 function maf:common/sight/eyes_tagged_through_blocks
 # ... 以降同じ
 ```
@@ -110,25 +101,17 @@ function maf:common/sight/eyes_tagged_through_blocks
 ### tomahawk01（単体ダメージ、射程8）
 
 ```mcfunction
-tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
-tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
 function maf:common/sight/eyes_tagged
 execute as @e[type=#maf:enemymob,tag=maf_sight_target,distance=..8,sort=nearest,limit=1] run damage @s 20 minecraft:player_attack
 execute as @e[type=#maf:enemymob,tag=maf_sight_target,distance=..8,sort=nearest,limit=1] at @s run particle minecraft:crit ~ ~0.9 ~ 0.3 0.5 0.3 0.01 20 force
-tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
-tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
 ```
 
 ### sight_levitation01（単体浮遊 + 全候補グロー、水透過）
 
 ```mcfunction
-tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
-tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
 function maf:common/sight/eyes_tagged_water
 execute as @e[type=#maf:enemymob,tag=maf_sight_target,distance=..20,sort=nearest,limit=1] run effect give @s minecraft:levitation 1 1
 effect give @e[type=#maf:enemymob,tag=maf_sight_candidate,distance=..20] minecraft:glowing 1 0 true
-tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate
-tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
 ```
 
 ---
@@ -141,18 +124,14 @@ tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target
 {
   "id": "my_spell01",
   "script": [
-    "tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target",
-    "tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate",
     "function maf:common/sight/eyes_tagged",
-    "execute as @e[type=#maf:enemymob,tag=maf_sight_target,distance=..15,sort=nearest,limit=1] run effect give @s minecraft:wither 3 1",
-    "tag @e[type=#maf:enemymob,tag=maf_sight_candidate] remove maf_sight_candidate",
-    "tag @e[type=#maf:enemymob,tag=maf_sight_target] remove maf_sight_target"
+    "execute as @e[type=#maf:enemymob,tag=maf_sight_target,distance=..15,sort=nearest,limit=1] run effect give @s minecraft:wither 3 1"
   ]
 }
 ```
 
 ### 注意点
 
-- タグのクリアは **関数の前後両方** で行う。前でクリアしないと別の魔法が残したタグに誤ヒットする。後でクリアしないとタグが残り、次フレームで誤動作する。
+- タグのクリアは各視線関数の **先頭** で行われる。呼び出し元での手動クリアは不要。
 - `distance=..N` の射程フィルタは視線関数の最大30ブロックより短く設定してよい（魔法ごとの射程で制御）。
 - `sort=nearest,limit=1` を忘れると複数のターゲットに効果が発動する場合がある。
