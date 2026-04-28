@@ -29,7 +29,10 @@ type testDBMaster struct{}
 
 func (testDBMaster) HasItem(string) bool     { return true }
 func (testDBMaster) HasGrimoire(string) bool { return true }
-func (testDBMaster) HasPassive(string) bool  { return true }
+func (testDBMaster) GetGrimoire(string) (model.GrimoireSnapshot, bool) {
+	return model.GrimoireSnapshot{ID: "grimoire_1", LootEnable: true}, true
+}
+func (testDBMaster) HasPassive(string) bool { return true }
 func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
 	v := true
 	return model.PassiveSnapshot{ID: "passive_1", GenerateGrimoire: &v}, true
@@ -135,5 +138,31 @@ func TestEnemyValidateRelationRejectsPassiveWithGenerateGrimoireFalse(t *testing
 	errs := entity.ValidateRelation(enemy, passiveNotGeneratableDBMaster{})
 	if !hasFieldError(errs, "maf.drops[0].entries[0].name") {
 		t.Fatalf("expected passive generate_grimoire relation error, got %#v", errs)
+	}
+}
+
+type grimoireLootDisabledDBMaster struct{ testDBMaster }
+
+func (grimoireLootDisabledDBMaster) GetGrimoire(string) (model.GrimoireSnapshot, bool) {
+	return model.GrimoireSnapshot{ID: "grimoire_1", LootEnable: false}, true
+}
+
+func TestEnemyValidateRelationRejectsGrimoireWithLootEnableFalse(t *testing.T) {
+	entity := &EnemyEntity{}
+	enemy := validEnemy()
+	enemy.Maf.Drops = []any{
+		map[string]any{
+			"rolls": 1.0,
+			"entries": []any{
+				map[string]any{
+					"type": "maf:grimoire",
+					"name": "grimoire_1",
+				},
+			},
+		},
+	}
+	errs := entity.ValidateRelation(enemy, grimoireLootDisabledDBMaster{})
+	if !hasFieldError(errs, "maf.drops[0].entries[0].name") {
+		t.Fatalf("expected grimoire loot_enable relation error, got %#v", errs)
 	}
 }
