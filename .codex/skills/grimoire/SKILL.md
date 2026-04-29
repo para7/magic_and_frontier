@@ -175,6 +175,20 @@ playsound minecraft:entity.blaze.shoot master @a ~ ~ ~ 1.0 0.5
 tellraw @a[distance=..50] [{"selector":"@s"},{"text":" は プロミネンス を唱えた！"}]
 ```
 
+### 視線処理の亜種: sight 円範囲ターゲット
+
+視線先の一点（例: 4ブロック先）を中心に円範囲で敵を拾う場合は、`maf:common/sight/eyes_circle_tagged` を使う。
+
+```mcfunction
+function maf:common/sight/eyes_circle_tagged {forward:4.0,radius:3.5,particleCount:80}
+effect give @e[type=#maf:enemymob,tag=maf_sight_circle_target] minecraft:poison 10 10
+```
+
+- 引数は `forward` / `radius` / `particleCount` の3つが必須
+- 対象タグは `maf_sight_circle_target`
+- 共通処理側で `minecraft:witch` パーティクルを出すため、個別スペル演出は重複しないように調整する
+- マクロ関数内で `$(...)` を使う行は、行頭に `$` が必須（例: `$execute ... $(radius) ...`）
+
 ### 使用するエンティティタグ
 
 | タグ | 意味 |

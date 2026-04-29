@@ -37,11 +37,9 @@
       "coolTime": 20,
       "mpCost": 10,
       "script": [
-        "execute at @s anchored eyes rotated as @s run summon minecraft:area_effect_cloud ^ ^ ^4 {Tags:[\"maf_poison_sight_center\"],Duration:8,Radius:0.0f,WaitTime:0,ReapplicationDelay:0}",
-        "execute as @e[type=#maf:enemymob,distance=..20] at @s if entity @e[type=minecraft:area_effect_cloud,tag=maf_poison_sight_center,distance=..3.5,limit=1] run effect give @s minecraft:poison 10 10",
-        "execute at @e[type=minecraft:area_effect_cloud,tag=maf_poison_sight_center,distance=..20,sort=nearest,limit=1] run particle minecraft:witch ~ ~0.2 ~ 1.8 0.1 1.8 0.01 80 force",
-        "execute at @e[type=minecraft:area_effect_cloud,tag=maf_poison_sight_center,distance=..20,sort=nearest,limit=1] run particle minecraft:spore_blossom_air ~ ~0.2 ~ 1.8 0.2 1.8 0.01 32 force",
-        "kill @e[type=minecraft:area_effect_cloud,tag=maf_poison_sight_center,distance=..20]",
+        "function maf:common/sight/eyes_circle_tagged {forward:4.0,radius:3.5,particleCount:80}",
+        "effect give @e[type=#maf:enemymob,tag=maf_sight_circle_target] minecraft:poison 10 10",
+        "execute as @e[type=#maf:enemymob,tag=maf_sight_circle_target] at @s run particle minecraft:spore_blossom_air ~ ~0.2 ~ 0.75 0.2 0.75 0.01 8 force",
         "playsound minecraft:entity.witch.throw master @a ~ ~ ~ 1.5 1.1",
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ポイズンサイト を唱えた！\"}]"
       ],
@@ -69,16 +67,30 @@
       "coolTime": 20,
       "mpCost": 10,
       "script": [
-        "execute at @s anchored eyes rotated as @s run summon minecraft:area_effect_cloud ^ ^ ^4 {Tags:[\"maf_tornado_sight_center\"],Duration:8,Radius:0.0f,WaitTime:0,ReapplicationDelay:0}",
-        "execute as @e[type=#maf:enemymob,distance=..20] at @s if entity @e[type=minecraft:area_effect_cloud,tag=maf_tornado_sight_center,distance=..3.5,limit=1] run data modify entity @s Motion set value [0.0d, 1.8d, 0.0d]",
-        "execute at @e[type=minecraft:area_effect_cloud,tag=maf_tornado_sight_center,distance=..20,sort=nearest,limit=1] run particle minecraft:cloud ~ ~0.2 ~ 1.8 0.1 1.8 0.01 100 force",
-        "execute at @e[type=minecraft:area_effect_cloud,tag=maf_tornado_sight_center,distance=..20,sort=nearest,limit=1] run particle minecraft:campfire_cosy_smoke ~ ~0.5 ~ 1.8 0.1 1.8 0.01 60 force",
-        "kill @e[type=minecraft:area_effect_cloud,tag=maf_tornado_sight_center,distance=..20]",
+        "function maf:common/sight/eyes_circle_tagged {forward:4.0,radius:3.5,particleCount:80}",
+        "execute as @e[type=#maf:enemymob,tag=maf_sight_circle_target] run data modify entity @s Motion set value [0.0d, 1.8d, 0.0d]",
+        "execute as @e[type=#maf:enemymob,tag=maf_sight_circle_target] at @s run particle minecraft:cloud ~ ~0.2 ~ 0.75 0.1 0.75 0.01 10 force",
+        "execute as @e[type=#maf:enemymob,tag=maf_sight_circle_target] at @s run particle minecraft:campfire_cosy_smoke ~ ~0.5 ~ 0.75 0.1 0.75 0.01 6 force",
         "playsound minecraft:entity.ender_dragon.flap master @a ~ ~ ~ 1.5 1.5",
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は トルネードサイト を唱えた！\"}]"
       ],
       "title": "トルネードサイト",
       "description": "視線の4ブロック先を中心に半径3.5ブロックの範囲の敵を竜巻で打ち上げる"
+    },
+    {
+      "id": "requiem01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:undead,distance=..8] run damage @s 20 minecraft:magic",
+        "execute at @s run particle minecraft:soul_fire_flame ~ ~0.2 ~ 4.0 0.2 4.0 0.01 200 force",
+        "execute as @e[type=#maf:undead,distance=..8] at @s run particle minecraft:soul ~ ~0.5 ~ 0.5 0.5 0.5 0.01 5 force",
+        "playsound minecraft:block.bell.resonate master @a ~ ~ ~ 2.0 0.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レクイエム を唱えた！\"}]"
+      ],
+      "title": "レクイエム",
+      "description": "周囲8ブロックのアンデッドに大ダメージを与える"
     }
   ]
 }

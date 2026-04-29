@@ -60,10 +60,16 @@ disable-model-invocation: true
 # 味方バフ
 effect give @e[type=#maf:friendmob,distance=..10] minecraft:regeneration 10 0
 
+# 視線先円範囲（sight亜種）
+function maf:common/sight/eyes_circle_tagged {forward:4.0,radius:3.5,particleCount:80}
+effect give @e[type=#maf:enemymob,tag=maf_sight_circle_target] minecraft:poison 10 10
+
 # 演出
 playsound minecraft:entity.blaze.shoot master @a ~ ~ ~ 1.0 0.5
 tellraw @a[distance=..50] [{"selector":"@s"},{"text":" は スペル名 を唱えた！"}]
 ```
+
+`eyes_circle_tagged` は `forward` / `radius` / `particleCount` が必須。共通側で `witch` が出るため、同じ中心演出を重複させない。
 
 ## エンティティタグ
 
