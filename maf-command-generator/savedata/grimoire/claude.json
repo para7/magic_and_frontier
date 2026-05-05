@@ -78,6 +78,18 @@
       "description": "視線の4ブロック先を中心に半径3.5ブロックの範囲の敵を竜巻で打ち上げる"
     },
     {
+      "id": "explode01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:enemymob,distance=..32,limit=1,sort=nearest] at @s run summon minecraft:creeper ~ ~ ~ {NoAI:1b,Fuse:0s,ExplosionRadius:4b,Tags:[\"vh\"]}",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は エクスプロウド を唱えた！\"}]"
+      ],
+      "title": "エクスプロウド",
+      "description": "最も近い敵モブの位置にクリーパーを召喚して即爆破する"
+    },
+    {
       "id": "requiem01",
       "castTime": 20,
       "coolTime": 20,
