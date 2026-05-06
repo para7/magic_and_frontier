@@ -9,16 +9,16 @@ execute unless data storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buf
 data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_current set from storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_queue[0]
 data remove storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_queue[0]
 
-# tick_function が定義されていればバフ効果を実行
-execute if data storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_current.tick_function run function maf:buff/run_tick with storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_current
+# バフ効果を実行
+function maf:buff/run_tick with storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_current
 
 # 残りティックを1減算して tmp に保存
 execute store result score @s tmp run data get storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_current.tick
 scoreboard players remove @s tmp 1
 execute store result storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_current.tick int 1 run scoreboard players get @s tmp
 
-# tick が 0 以下 → 期限切れ。destructor があれば実行して破棄
-execute if score @s tmp matches ..0 if data storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_current.destructor_function run function maf:buff/run_destructor with storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_current
+# tick が 0 以下 → 期限切れ。destructor を実行して破棄
+execute if score @s tmp matches ..0 run function maf:buff/run_destructor with storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_current
 # tick が 1 以上 → 次ティックへ継続
 execute if score @s tmp matches 1.. run data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff append from storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.buff_current
 

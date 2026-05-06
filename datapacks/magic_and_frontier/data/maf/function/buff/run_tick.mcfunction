@@ -1,1 +1,1 @@
-$function maf:buff/tick/$(tick_function)
+$function maf:buff/data/$(buff_category)/$(buff_id)/tick
