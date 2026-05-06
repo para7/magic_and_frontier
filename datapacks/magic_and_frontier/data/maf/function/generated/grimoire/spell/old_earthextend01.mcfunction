@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"grimoire",id:"old_earthextend01",cost:17,cast:40,cooltime:20,title:"アースエクステンド",description:"足元の水や溶岩を固める"}

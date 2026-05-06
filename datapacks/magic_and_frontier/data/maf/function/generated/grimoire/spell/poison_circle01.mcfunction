@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"grimoire",id:"poison_circle01",cost:10,cast:20,cooltime:20,title:"ポイズン",description:"周囲8ブロックの敵に強力な毒(Poison III)を10秒間与える"}

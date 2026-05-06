@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"grimoire",id:"sight_levitation01",cost:1,cast:10,cooltime:10,title:"サイト・リフト",description:"視線方向の狭い範囲に浮遊を付与する"}

@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"passive",id:"regeneration",slot:1,cost:10,cast:200,cooltime:0,title:"いつでもリジェネ [スロット1]",description:"condition=always"}
