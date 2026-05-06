@@ -9,6 +9,7 @@ execute if entity @a[scores={mafLogin=1..}] run function maf:system/set_player_i
 execute as @a run function maf:system/score/prescore
 
 # 処理開始
+execute as @a at @s run function maf:buff/tick
 function maf:magic/tick
 function maf:soul/tick
 function maf:enemy/tick

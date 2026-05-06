@@ -1,0 +1,23 @@
+{
+    "entries": [
+        {
+            "id": "parry_sword01",
+            "maf": {
+                "grimoireId": "parry01"
+            },
+            "minecraft": {
+                "components": {
+                    "minecraft:custom_name": {
+                        "text": "パリィソード"
+                    },
+                    "minecraft:lore": [
+                        {
+                            "text": "攻撃を弾ける剣"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:iron_sword"
+        }
+    ]
+}
