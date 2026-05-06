@@ -87,7 +87,7 @@ function maf:common/buff/set {buff_id:"parry",tick:10,tick_function:"parry_tick"
 
 入力データ:
 
-- `maf-command-generator/savedata/grimoire/claude.json` の `parry01`
+- `maf-command-generator/savedata/grimoire/ai_workspace.json` の `parry01`
 - 生成物: `datapacks/magic_and_frontier/data/maf/function/generated/grimoire/effect/parry01.mcfunction`
 
 発動時:

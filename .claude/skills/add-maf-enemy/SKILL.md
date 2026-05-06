@@ -1,12 +1,12 @@
 ---
 name: add-maf-enemy
-description: maf-command-generatorのsavedataにカスタムエネミー（敵モブ）を追加するスキル。enemy, エネミー, 敵, カスタムモブ, ボス, ゾンビ強化, モブ追加 などの新規作成が出たら使う。savedata/enemy/claude.json への書き込みを担う。
+description: maf-command-generatorのsavedataにカスタムエネミー（敵モブ）を追加するスキル。enemy, エネミー, 敵, カスタムモブ, ボス, ゾンビ強化, モブ追加 などの新規作成が出たら使う。savedata/enemy/ai_workspace.json への書き込みを担う。
 disable-model-invocation: true
 ---
 
 # カスタムエネミー追加
 
-**対象ファイル:** `maf-command-generator/savedata/enemy/claude.json`
+**対象ファイル:** `maf-command-generator/savedata/enemy/ai_workspace.json`
 
 **実装方針:** `savedata/` 配下のJSONのみ参照・編集する。`maf-command-generator/app/` の Goコードは読まない。
 
@@ -23,7 +23,7 @@ disable-model-invocation: true
 
 ## 手順
 
-1. `claude.json` が存在すれば読み込む。なければ `{"entries": []}` として扱う
+1. `ai_workspace.json` が存在すれば読み込む。なければ `{"entries": []}` として扱う
 2. `entries` に新エントリを追加
 3. ファイルに書き戻す
 4. `cd maf-command-generator && make run/export` でエクスポート

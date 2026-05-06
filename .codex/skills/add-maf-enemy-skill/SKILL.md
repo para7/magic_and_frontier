@@ -1,12 +1,12 @@
 ---
 name: add-maf-enemy-skill
-description: maf-command-generatorのsavedataにエネミースキル（敵モブが使用するスキル）を追加するスキル。enemy_skill, エネミースキル, 敵スキル, モブスキル, 毒攻撃, 範囲攻撃 などの新規追加が出たら使う。savedata/enemy_skill/claude.json への書き込みを担う。
+description: maf-command-generatorのsavedataにエネミースキル（敵モブが使用するスキル）を追加するスキル。enemy_skill, エネミースキル, 敵スキル, モブスキル, 毒攻撃, 範囲攻撃 などの新規追加が出たら使う。savedata/enemy_skill/ai_workspace.json への書き込みを担う。
 disable-model-invocation: true
 ---
 
 # エネミースキル追加
 
-**対象ファイル:** `maf-command-generator/savedata/enemy_skill/claude.json` ユーザー生成物とAI生成物を分けるため、claude.json に必ず出力すること。ファイルがなければ新規作成する。
+**対象ファイル:** `maf-command-generator/savedata/enemy_skill/ai_workspace.json` ユーザー生成物とAI生成物を分けるため、ai_workspace.json に必ず出力すること。ファイルがなければ新規作成する。
 
 
 エネミースキルはモブが一定間隔で発動するスキル。Enemyエンティティの `enemySkillIds` から参照される。
@@ -24,7 +24,7 @@ disable-model-invocation: true
 
 ## 手順
 
-1. `claude.json` が存在すれば読み込む。なければ `{"entries": []}` として扱う
+1. `ai_workspace.json` が存在すれば読み込む。なければ `{"entries": []}` として扱う
 2. `entries` に新エントリを追加
 3. ファイルに書き戻す
 4. `cd maf-command-generator && make run/export` でエクスポート
@@ -71,7 +71,7 @@ playsound minecraft:entity.blaze.shoot master @a ~ ~ ~ 1 0.8
 
 ## Enemyへの紐付け
 
-作成したエネミースキルは、`add-maf-enemy` スキル（またはenemyのclaude.json）で `enemySkillIds` にIDを追加して使用する:
+作成したエネミースキルは、`add-maf-enemy` スキル（またはenemyのai_workspace.json）で `enemySkillIds` にIDを追加して使用する:
 
 ```json
 "enemySkillIds": ["near_poison", "my_new_skill"]

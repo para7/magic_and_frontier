@@ -1,12 +1,12 @@
 ---
 name: add-maf-item
-description: maf-command-generatorのsavedataにアイテムを追加するスキル。item, アイテム, 武器, 防具, 装備, 剣, 弓, ヘルメット, チェストプレート などの新規追加が出たら使う。savedata/item/claude.json への書き込みを担う。
+description: maf-command-generatorのsavedataにアイテムを追加するスキル。item, アイテム, 武器, 防具, 装備, 剣, 弓, ヘルメット, チェストプレート などの新規追加が出たら使う。savedata/item/ai_workspace.json への書き込みを担う。
 disable-model-invocation: true
 ---
 
 # アイテム追加
 
-**対象ファイル:** `maf-command-generator/savedata/item/claude.json` ユーザー生成物とAI生成物を分けるため、claude.json に必ず出力すること。ファイルがなければ新規作成する。
+**対象ファイル:** `maf-command-generator/savedata/item/ai_workspace.json` ユーザー生成物とAI生成物を分けるため、ai_workspace.json に必ず出力すること。ファイルがなければ新規作成する。
 
 **実装方針:** `savedata/` 配下のJSONのみ参照・編集する。`maf-command-generator/app/` の Goコードは読まない。
 
@@ -23,7 +23,7 @@ disable-model-invocation: true
 
 ## 手順
 
-1. `claude.json` が存在すれば読み込む。なければ `{"entries": []}` として扱う
+1. `ai_workspace.json` が存在すれば読み込む。なければ `{"entries": []}` として扱う
 2. `entries` に新エントリを追加
 3. ファイルに書き戻す
 4. `cd maf-command-generator && make run/export` でエクスポート

@@ -1,12 +1,12 @@
 ---
 name: add-maf-bow
-description: maf-command-generatorのsavedataに弓パッシブ（矢の効果スキル）を追加するスキル。bow, 弓, 矢, 弓パッシブ, 矢効果, 着弾エフェクト, 飛行エフェクト などの新規追加が出たら使う。savedata/bow/claude.json への書き込みを担う。
+description: maf-command-generatorのsavedataに弓パッシブ（矢の効果スキル）を追加するスキル。bow, 弓, 矢, 弓パッシブ, 矢効果, 着弾エフェクト, 飛行エフェクト などの新規追加が出たら使う。savedata/bow/ai_workspace.json への書き込みを担う。
 disable-model-invocation: true
 ---
 
 # 弓パッシブ追加
 
-**対象ファイル:** `maf-command-generator/savedata/bow/claude.json` ユーザー生成物とAI生成物を分けるため、claude.json に必ず出力すること。ファイルがなければ新規作成する。
+**対象ファイル:** `maf-command-generator/savedata/bow/ai_workspace.json` ユーザー生成物とAI生成物を分けるため、ai_workspace.json に必ず出力すること。ファイルがなければ新規作成する。
 
 弓パッシブは矢の挙動（発射・飛行・着弾・命中）に付与するスキル。Passiveとは別エンティティ。
 
@@ -23,7 +23,7 @@ disable-model-invocation: true
 
 ## 手順
 
-1. `claude.json` が存在すれば読み込む。なければ `{"entries": []}` として扱う
+1. `ai_workspace.json` が存在すれば読み込む。なければ `{"entries": []}` として扱う
 2. `entries` に新エントリを追加
 3. ファイルに書き戻す
 4. `cd maf-command-generator && make run/export` でエクスポート
