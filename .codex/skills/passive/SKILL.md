@@ -77,7 +77,8 @@ generated/passive/
     ├── effect/{id}.mcfunction        — 効果スクリプト
     ├── bow/{id}.mcfunction           — 弓パッシブ専用スクリプト
     ├── give/{id}_slot{N}.mcfunction  — 設定書 give コマンド
-    └── apply/{id}_slot{N}.mcfunction — スロット書き込み処理
+    ├── apply/{id}_slot{N}.mcfunction — スロット書き込み処理
+    └── spell/{id}_slot{N}.mcfunction — 設定書使用時の casting ロード
 ```
 
 ### 生成される成果物（各パッシブにつき複数ファイル）
@@ -87,6 +88,7 @@ generated/passive/
 2. **bow/{id}.mcfunction** — `bow` 条件のパッシブ専用。矢着弾時に実行される本体スクリプト
 3. **give/{id}_slot{N}.mcfunction** — パッシブ設定書（本）の give コマンド
 4. **apply/{id}_slot{N}.mcfunction** — `oh_my_dat` にパッシブID/conditionを書き込む処理
+5. **spell/{id}_slot{N}.mcfunction** — `oh_my_dat:...maf.magic.casting` に `kind:"passive"` の詠唱データを書き込む処理
 
 ---
 
@@ -143,8 +145,8 @@ advancement/arrow_hit.json → maf:passive/on_arrow_hit
 
 ### 4c. パッシブ設定書の使用（装備処理）
 
-パッシブ設定書も `minecraft:book` アイテムで、`spell.kind:"passive"` を持つ。  
-使用すると通常の詠唱パイプラインを通り、`cast/exec` で `kind:"passive"` を検知:
+パッシブ設定書も `minecraft:book` アイテムで、`maf.passive.{id,slot,condition}` を持つ。  
+使用すると `magic/use_grimoire` が `generated/passive/spell/{id}_slot{slot}` を呼んで casting を作り、通常の詠唱パイプラインを通る:
 
 ```
 cast/exec → run_passive_apply with {id, slot}
@@ -185,11 +187,12 @@ minecraft:custom_data={
     passiveId: "regeneration",
     passiveSlot: 1,
     passiveCondition: "always",
-    passive: {id:"regeneration", slot:1, condition:"always", ...},
-    spell: {kind:"passive", id:"regeneration", slot:1, cost:10, cast:200, ...}
+    passive: {id:"regeneration", slot:1, condition:"always"}
   }
 }
 ```
+
+`cost/cast/cooltime/title/description` はアイテムへ埋め込まず、`generated/passive/spell/{id}_slot{N}.mcfunction` から実行時に `maf.magic.casting` へロードする。
 
 ---
 

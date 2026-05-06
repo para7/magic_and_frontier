@@ -6,12 +6,14 @@ import (
 	"strings"
 
 	ec "maf_command_editor/app/domain/export/convert"
+	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 )
 
 type GrimoireEffectFunction struct {
-	ID   string
-	Body string
-	Book string
+	ID        string
+	Body      string
+	Book      string
+	SpellBody string
 }
 
 func BuildGrimoireArtifacts(master DBMaster) []GrimoireEffectFunction {
@@ -24,13 +26,24 @@ func BuildGrimoireArtifacts(master DBMaster) []GrimoireEffectFunction {
 
 	for _, entry := range grimoires {
 		entries = append(entries, GrimoireEffectFunction{
-			ID:   entry.ID,
-			Body: strings.Join(entry.Script, "\n"),
-			Book: ec.GrimoireToBook(entry),
+			ID:        entry.ID,
+			Body:      strings.Join(entry.Script, "\n"),
+			Book:      ec.GrimoireToBook(entry),
+			SpellBody: grimoireSpellLoaderBody(entry),
 		})
 	}
 
 	return entries
+}
+
+func WriteGrimoireSpellArtifacts(spellDir string, effects []GrimoireEffectFunction) error {
+	for _, entry := range effects {
+		path := filepath.Join(spellDir, entry.ID+".mcfunction")
+		if err := writeFunctionFile(path, entry.SpellBody); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func WriteGrimoireArtifacts(spellEffectDir string, effects []GrimoireEffectFunction) error {
@@ -41,6 +54,13 @@ func WriteGrimoireArtifacts(spellEffectDir string, effects []GrimoireEffectFunct
 		}
 	}
 	return nil
+}
+
+func grimoireSpellLoaderBody(entry grimoireModel.Grimoire) string {
+	return fmt.Sprintf(
+		"data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value %s",
+		ec.GrimoireCastingDataSNBT(entry),
+	)
 }
 
 // デバッグ用の give コマンドを生成

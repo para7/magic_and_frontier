@@ -104,9 +104,6 @@ func itemCustomData(
 	if entry.Maf.MaxMP != nil {
 		parts = append(parts, fmt.Sprintf("maxmp:%d", *entry.Maf.MaxMP))
 	}
-	if spellMeta.spellFragment != "" {
-		parts = append(parts, spellMeta.spellFragment)
-	}
 	return "{maf:{" + strings.Join(parts, ",") + "}}", nil
 }
 
@@ -158,7 +155,6 @@ func componentData(entry itemModel.Item) any {
 type itemSpellMeta struct {
 	hasUseSpell     bool
 	grimoireID      string
-	spellFragment   string
 	customFragments []string
 }
 
@@ -178,7 +174,6 @@ func resolveItemSpellMeta(
 		}
 		meta.hasUseSpell = true
 		meta.grimoireID = grimoire.ID
-		meta.spellFragment = grimoireSpellFragment(grimoire)
 	}
 
 	bowID := strings.TrimSpace(entry.Maf.BowID)

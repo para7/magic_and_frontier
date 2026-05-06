@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	ec "maf_command_editor/app/domain/export/convert"
+	passiveModel "maf_command_editor/app/domain/model/passive"
 )
 
 type PassiveEffectFunction struct {
@@ -22,6 +23,7 @@ type PassiveGrimoireFunction struct {
 	GiveBody   string
 	ApplyBody  string
 	Book       string
+	SpellBody  string
 }
 
 func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveGrimoireFunction, error) {
@@ -60,6 +62,7 @@ func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveG
 					GiveBody:   fmt.Sprintf("give @p %s 1", book),
 					ApplyBody:  applyBody,
 					Book:       book,
+					SpellBody:  passiveSpellLoaderBody(entry, slot),
 				})
 			}
 		}
@@ -94,6 +97,19 @@ func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []Passiv
 	return nil
 }
 
+func WritePassiveSpellArtifacts(spellDir string, grimoires []PassiveGrimoireFunction) error {
+	if err := removePassiveSlotFunctionFiles(spellDir); err != nil {
+		return err
+	}
+	for _, entry := range grimoires {
+		path := filepath.Join(spellDir, entry.FunctionID+".mcfunction")
+		if err := writeFunctionFile(path, entry.SpellBody); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func removePassiveSlotFunctionFiles(dir string) error {
 	files, err := filepath.Glob(filepath.Join(dir, "*_slot*.mcfunction"))
 	if err != nil {
@@ -115,4 +131,11 @@ func passiveApplyBody(slot int, passiveID string, condition string, displayName 
 		fmt.Sprintf("data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.passive.slot%d.condition set value %s", slot, ec.JsonString(condition)),
 		fmt.Sprintf(`tellraw @s [{"text":%s}]`, ec.JsonString(setMessage)),
 	}, "\n")
+}
+
+func passiveSpellLoaderBody(entry passiveModel.Passive, slot int) string {
+	return fmt.Sprintf(
+		"data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value %s",
+		ec.PassiveCastingDataSNBT(entry, slot),
+	)
 }

@@ -36,6 +36,9 @@ func TestGrimoireBookAndLootShareModel(t *testing.T) {
 	if !strings.Contains(book, "minecraft:custom_data="+wantCustomData) {
 		t.Fatalf("book should contain spell custom_data; got: %s", book)
 	}
+	if strings.Contains(book, `spell:{`) {
+		t.Fatalf("book should not embed runtime spell metadata; got: %s", book)
+	}
 
 	lootEntry := toSpellLootEntry(entry, nil, nil)
 	components := lootComponentsByFunction(t, lootEntry)
@@ -57,6 +60,9 @@ func TestGrimoireBookAndLootShareModel(t *testing.T) {
 	customData := customDataTagByFunction(t, lootEntry)
 	if customData != wantCustomData {
 		t.Fatalf("loot custom_data mismatch: got %q want %q", customData, wantCustomData)
+	}
+	if strings.Contains(customData, `spell:{`) {
+		t.Fatalf("loot custom_data should not embed runtime spell metadata: %q", customData)
 	}
 }
 
@@ -102,6 +108,9 @@ func TestPassiveBookAndLootShareModel(t *testing.T) {
 	if customData != wantCustomData {
 		t.Fatalf("loot custom_data mismatch: got %q want %q", customData, wantCustomData)
 	}
+	if strings.Contains(customData, `spell:{`) {
+		t.Fatalf("loot custom_data should not embed runtime spell metadata: %q", customData)
+	}
 }
 
 func TestGrimoireToBookEscapesSpecialCharacters(t *testing.T) {
@@ -118,11 +127,12 @@ func TestGrimoireToBookEscapesSpecialCharacters(t *testing.T) {
 	if !strings.Contains(book, fmt.Sprintf("id:%s", SNBTString(entry.ID))) {
 		t.Fatalf("id should be embedded in custom_data: %s", book)
 	}
-	if !strings.Contains(book, fmt.Sprintf("title:%s", SNBTString(entry.Title))) {
-		t.Fatalf("title should be SNBT-escaped in custom_data: %s", book)
+	castingData := GrimoireCastingDataSNBT(entry)
+	if !strings.Contains(castingData, fmt.Sprintf("title:%s", SNBTString(entry.Title))) {
+		t.Fatalf("title should be SNBT-escaped in casting data: %s", castingData)
 	}
-	if !strings.Contains(book, fmt.Sprintf("description:%s", SNBTString(entry.Description))) {
-		t.Fatalf("description should be SNBT-escaped in custom_data: %s", book)
+	if !strings.Contains(castingData, fmt.Sprintf("description:%s", SNBTString(entry.Description))) {
+		t.Fatalf("description should be SNBT-escaped in casting data: %s", castingData)
 	}
 }
 

@@ -23,17 +23,17 @@ func grimoireSpellBookModel(entry grimoireModel.Grimoire) spellBookModel {
 }
 
 func spellCustomData(entry grimoireModel.Grimoire) string {
-	return fmt.Sprintf("{maf:{grimoire_id:%s,%s}}", SNBTString(entry.ID), grimoireSpellFragment(entry))
+	return fmt.Sprintf("{maf:{grimoire_id:%s}}", SNBTString(entry.ID))
 }
 
-func grimoireSpellFragment(entry grimoireModel.Grimoire) string {
-	return spellFragment("grimoire", entry.ID, nil, entry.MPCost, entry.CastTime, entry.CoolTime, entry.Title, entry.Description)
+func GrimoireCastingDataSNBT(entry grimoireModel.Grimoire) string {
+	return spellCastingDataSNBT("grimoire", entry.ID, nil, entry.MPCost, entry.CastTime, entry.CoolTime, entry.Title, entry.Description)
 }
 
-func spellFragment(kind string, id string, slot *int, mpCost, castTime, coolTime int, title, description string) string {
+func spellCastingDataSNBT(kind string, id string, slot *int, mpCost, castTime, coolTime int, title, description string) string {
 	if slot != nil {
 		return fmt.Sprintf(
-			"spell:{kind:%s,id:%s,slot:%d,cost:%d,cast:%d,cooltime:%d,title:%s,description:%s}",
+			"{kind:%s,id:%s,slot:%d,cost:%d,cast:%d,cooltime:%d,title:%s,description:%s}",
 			SNBTString(kind),
 			SNBTString(id),
 			*slot,
@@ -45,7 +45,7 @@ func spellFragment(kind string, id string, slot *int, mpCost, castTime, coolTime
 		)
 	}
 	return fmt.Sprintf(
-		"spell:{kind:%s,id:%s,cost:%d,cast:%d,cooltime:%d,title:%s,description:%s}",
+		"{kind:%s,id:%s,cost:%d,cast:%d,cooltime:%d,title:%s,description:%s}",
 		SNBTString(kind),
 		SNBTString(id),
 		mpCost,

@@ -22,7 +22,7 @@ description: 魔法詠唱パイプラインの設計リファレンス。キャ�
     ↓
 advancement/use_grimoire.json (using_item トリガー)
     ↓
-maf:magic/use_grimoire (状態チェック → spell データを oh_my_dat にコピー)
+maf:magic/use_grimoire (状態チェック → アイテムIDから generated/*/spell を呼び casting を作成)
     ↓
 maf:magic/exec/set_magic (ストレージ → スコアボードにロード、MP検証)
     ↓
@@ -133,11 +133,15 @@ storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting
 └── slot: 1  (passive のみ)
 ```
 
-このデータは `spell` フラグメントとしてアイテムの `custom_data.maf.spell` に埋め込まれ、使用時にそのままコピーされる。
+このデータはアイテムには埋め込まれない。使用時にアイテム内の識別子から生成済み loader 関数を呼び、実行時に作成される。
 
-### spell フラグメントの統一性
+### 実行時 loader の統一性
 
-グリモアもパッシブも同じ `spell` フラグメント形式を使う。違いは:
+グリモアもパッシブも `maf.magic.casting` へ同じ内部形式を書き込む。違いは loader の呼び出し元:
+- グリモア: アイテムの `maf.grimoire_id` → `maf:generated/grimoire/spell/{id}`
+- パッシブ設定書: アイテムの `maf.passive.{id,slot}` → `maf:generated/passive/spell/{id}_slot{slot}`
+
+casting 内部データの違いは:
 - グリモア: `kind:"grimoire"`, `slot` なし
 - パッシブ: `kind:"passive"`, `slot` あり（1〜3）
 

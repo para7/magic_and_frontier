@@ -60,7 +60,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{grimoire_id:\"fire\",spell:{kind:\"grimoire\",id:\"fire\",cost:7,cast:40,cooltime:20,title:\"Fire\",description:\"Basic fire spell.\"}}}"
+              "tag": "{maf:{grimoire_id:\"fire\"}}"
             }
           ],
           "name": "minecraft:book",
