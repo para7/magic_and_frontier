@@ -26,6 +26,9 @@ func TestPassiveExportFixtures(t *testing.T) {
 			); err != nil {
 				t.Fatal(err)
 			}
+			if err := WritePassiveSpellArtifacts(filepath.Join(actualDir, "spell"), grimoires); err != nil {
+				t.Fatal(err)
+			}
 
 			assertGoldenDir(t, filepath.Join(tc.dir, "output"), actualDir)
 		})

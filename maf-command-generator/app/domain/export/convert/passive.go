@@ -46,16 +46,15 @@ func passiveRoleLine(entry passiveModel.Passive) string {
 
 func passiveSpellCustomData(entry passiveModel.Passive, slot int) string {
 	return fmt.Sprintf(
-		`{maf:{passive:{id:%s,slot:%d,condition:%s},%s}}`,
+		`{maf:{passive:{id:%s,slot:%d,condition:%s}}}`,
 		SNBTString(entry.ID),
 		slot,
 		SNBTString(strings.TrimSpace(entry.Condition)),
-		passiveSpellFragment(entry, slot),
 	)
 }
 
-func passiveSpellFragment(entry passiveModel.Passive, slot int) string {
-	return spellFragment("passive", entry.ID, &slot, PassiveMPCost, PassiveCastTime, 0, passiveSpellTitle(entry, slot), passiveBookDescription(entry))
+func PassiveCastingDataSNBT(entry passiveModel.Passive, slot int) string {
+	return spellCastingDataSNBT("passive", entry.ID, &slot, PassiveMPCost, PassiveCastTime, 0, passiveSpellTitle(entry, slot), passiveBookDescription(entry))
 }
 
 func passiveSpellBookModel(entry passiveModel.Passive, slot int) spellBookModel {

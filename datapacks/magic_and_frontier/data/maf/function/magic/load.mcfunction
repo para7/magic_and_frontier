@@ -15,9 +15,6 @@ scoreboard objectives add mafMPTick dummy
 
 # scoreboard objectives add p7_
 
-# tellraw @a [{"text":"データベースを設定"}]
-function maf:magic/setdb
-
 function maf:magic/mp/mpbar_init {id:1}
 function maf:magic/mp/mpbar_init {id:2}
 function maf:magic/mp/mpbar_init {id:3}

@@ -32,7 +32,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{passive:{id:\"passive_1\",slot:1,condition:\"always\"},spell:{kind:\"passive\",id:\"passive_1\",slot:1,cost:10,cast:200,cooltime:0,title:\"Quickstep [スロット1]\",description:\"Always-on passive.\"}}}"
+              "tag": "{maf:{passive:{id:\"passive_1\",slot:1,condition:\"always\"}}}"
             }
           ],
           "name": "minecraft:book",

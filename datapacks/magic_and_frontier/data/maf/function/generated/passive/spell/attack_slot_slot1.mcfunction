@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"passive",id:"attack_slot",slot:1,cost:10,cast:200,cooltime:0,title:"攻撃テストスロット [スロット1]",description:"condition=attack"}

@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"grimoire",id:"old_sacrifice01",cost:23,cast:40,cooltime:20,title:"サクリファイス",description:"自分の体力を犠牲に周囲に特大回復"}

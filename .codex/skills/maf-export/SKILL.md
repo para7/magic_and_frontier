@@ -112,16 +112,18 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 | `loottable.go` | `BuildDropLootPool`, `MergeLootTablePools` | loot pool 構築・バニラマージ |
 | `enemy.go` | `ToEnemyFunctionLines` | エネミー summon コマンド生成 |
 
-### spell フラグメント生成
+### casting データ生成
 
-`grimoire.go` と `passive.go` は共通の `spellFragment()` を使う:
+アイテムの `custom_data` には識別子だけを埋め込み、詠唱時間・MP消費などは runtime loader 関数に生成する。
 
 ```go
-func spellFragment(kind, id string, slot *int, mpCost, castTime, coolTime int, title, description string) string
+func GrimoireCastingDataSNBT(entry grimoire.Grimoire) string
+func PassiveCastingDataSNBT(entry passive.Passive, slot int) string
 ```
 
-- グリモア: `slot = nil` → slot フィールドなし
-- パッシブ: `slot = &N` → `slot:N` フィールドあり
+- グリモアアイテム: `custom_data={maf:{grimoire_id:"..."}}`
+- パッシブ設定書: `custom_data={maf:{passive:{id:"...",slot:N,condition:"..."}}}`
+- loader 出力: `generated/grimoire/spell/{id}.mcfunction` / `generated/passive/spell/{id}_slot{N}.mcfunction`
 
 ### spellBookModel（共通本モデル）
 
@@ -148,18 +150,20 @@ GrimoireEffectFunction { ID, Body, Book }
 ```
 - **effect/{id}.mcfunction**: `Body`（Script[] の結合）
 - **give/{id}.mcfunction**: `give @p {Book} 1`
+- **spell/{id}.mcfunction**: `oh_my_dat:...maf.magic.casting` へ最新の詠唱データを書き込む loader
 
 ### パッシブ
 
 ```
 PassiveEffectFunction { ID, Body }
 PassiveBowFunction    { ID, Body }
-PassiveGrimoireFunction { PassiveID, Slot, FunctionID, GiveBody, ApplyBody, Book }
+PassiveGrimoireFunction { PassiveID, Slot, FunctionID, GiveBody, ApplyBody, Book, SpellBody }
 ```
 - **effect/{id}.mcfunction**: 効果本体（bow の場合は自動生成の弓検知コード）
 - **bow/{id}.mcfunction**: bow パッシブの矢着弾時スクリプト
 - **give/{id}_slot{N}.mcfunction**: 設定書 give コマンド
 - **apply/{id}_slot{N}.mcfunction**: スロット書き込み処理
+- **spell/{id}_slot{N}.mcfunction**: 設定書使用時に `maf.magic.casting` へ最新の固定詠唱データを書き込む loader
 
 ### 弓パッシブ
 

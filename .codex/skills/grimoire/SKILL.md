@@ -57,15 +57,16 @@ savedata/grimoire.json
     ↓ GrimoireEntity.Load()
 model/grimoire/Grimoire[]
     ↓ export.BuildGrimoireArtifacts()
-[]GrimoireEffectFunction { ID, Body, Book }
-    ↓ WriteGrimoireArtifacts()        ↓ WriteGrimoireDebugArtifacts()
-generated/grimoire/effect/{id}.mcfunction    generated/grimoire/give/{id}.mcfunction
+[]GrimoireEffectFunction { ID, Body, Book, SpellBody }
+    ↓ WriteGrimoireArtifacts()        ↓ WriteGrimoireDebugArtifacts()    ↓ WriteGrimoireSpellArtifacts()
+generated/grimoire/effect/{id}.mcfunction    generated/grimoire/give/{id}.mcfunction    generated/grimoire/spell/{id}.mcfunction
 ```
 
-### 生成される成果物（各グリモアにつき2ファイル）
+### 生成される成果物（各グリモアにつき3ファイル）
 
 1. **effect/{id}.mcfunction** — スペル効果スクリプト。`Script[]` をそのまま結合したもの
 2. **give/{id}.mcfunction** — デバッグ用。`give @p {本のNBT} 1` コマンド
+3. **spell/{id}.mcfunction** — 実行時ロード用。最新の `cost/cast/cooltime/title/description` を `oh_my_dat:...maf.magic.casting` に書き込む
 
 ### NBT変換の流れ
 
@@ -74,9 +75,11 @@ generated/grimoire/effect/{id}.mcfunction    generated/grimoire/give/{id}.mcfunc
 ```
 GrimoireToBook(entry)
   → grimoireSpellBookModel(entry)  // spellBookModel構築
-    → spellCustomData(entry)        // {maf:{grimoire_id:...,spell:{...}}}
-      → grimoireSpellFragment(entry) // spell:{kind:"grimoire",...}
+    → spellCustomData(entry)        // {maf:{grimoire_id:"..."}}
   → .ToGiveItem()                   // minecraft:book[...] 形式に組み立て
+
+GrimoireCastingDataSNBT(entry)
+  → generated/grimoire/spell/{id}.mcfunction の casting データ
 ```
 
 ---
@@ -92,16 +95,7 @@ minecraft:book[
   minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},
   minecraft:custom_data={
     maf:{
-      grimoire_id:"healing01",
-      spell:{
-        kind:"grimoire",
-        id:"healing01",
-        cost:13,
-        cast:40,
-        cooltime:20,
-        title:"ヒーリング",
-        description:"周囲に即時回復+リジェネ"
-      }
+      grimoire_id:"healing01"
     }
   }
 ]
@@ -109,11 +103,8 @@ minecraft:book[
 
 ### custom_data の設計意図
 
-- **grimoire_id**: グリモアの一意識別子。アイテム検索用
-- **spell**: 詠唱パイプラインが読み取る統一フォーマット。`kind` フィールドで grimoire/passive を区別する
-  - **cost/cast/cooltime**: ランタイムでスコアボードにロードされる数値
-  - **title**: MPバー表示に使用
-  - **description**: 現在ランタイムでは未使用（将来の詠唱UI用）
+- **grimoire_id**: グリモアの一意識別子。実行時に `generated/grimoire/spell/{id}` を呼び出すために使う
+- **cost/cast/cooltime/title/description はアイテムに埋め込まない**。再エクスポート後、既存IDの詠唱時間やMP消費を実行時ロード関数から読むため
 
 ### consumable の設計意図
 
@@ -139,9 +130,9 @@ minecraft:book[
 2. `mafCastTime <= -1` チェック（詠唱中でないか）
 3. `mafCoolTime <= 0` チェック（クールダウン中でないか）
 4. `oh_my_dat` ストレージを準備し、古い casting データを削除
-5. 手持ちアイテムに `maf.spell` があるか確認
-6. `maf.spell` を `oh_my_dat: ...maf.magic.casting` にコピー
-7. `maf:magic/exec/set_magic` を呼び出し（→ magic-casting スキル参照）
+5. 手持ちアイテムの `maf.grimoire_id` を `maf:magic/exec/load_grimoire_spell` に渡す
+6. `$function maf:generated/grimoire/spell/$(id)` が `oh_my_dat:...maf.magic.casting` に最新データを書き込む
+7. casting データが作成されたら `maf:magic/exec/set_magic` を呼び出し（→ magic-casting スキル参照）
 
 ### エフェクトディスパッチ
 
@@ -213,7 +204,7 @@ type ItemMaf struct {
 }
 ```
 
-バインドされたアイテムは、エクスポート時に `spell` フラグメントが `custom_data` に埋め込まれ、グリモア本と同じように使用できる。
+バインドされたアイテムは、エクスポート時に `maf.grimoire_id` と `minecraft:consumable` が付与され、グリモア本と同じ実行時ロード経路で使用できる。
 
 ---
 
@@ -234,5 +225,5 @@ DropRef{Kind: "grimoire", RefID: "healing01", Weight: 10, CountMin: 1, CountMax:
 
 1. `savedata/grimoire.json` にエントリ追加
 2. `Script` にmcfunctionコマンドを記述
-3. `make run/export` で `generated/grimoire/effect/{id}.mcfunction` と `give/{id}.mcfunction` を生成
+3. `make run/export` で `generated/grimoire/effect/{id}.mcfunction`、`give/{id}.mcfunction`、`spell/{id}.mcfunction` を生成
 4. ゲーム内で `/function maf:generated/grimoire/give/{id}` でテスト

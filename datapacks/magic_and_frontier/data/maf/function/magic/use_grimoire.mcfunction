@@ -8,7 +8,13 @@ execute unless entity @s[scores={mafCoolTime=..0}] run return 0
 
 function #oh_my_dat:please
 data remove storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting
-execute unless data entity @s SelectedItem.components."minecraft:custom_data".maf.spell run return 0
+data remove storage maf:tmp magic_spell_loader
 
-data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set from entity @s SelectedItem.components."minecraft:custom_data".maf.spell
+execute if data entity @s SelectedItem.components."minecraft:custom_data".maf.grimoire_id run data modify storage maf:tmp magic_spell_loader.grimoire.id set from entity @s SelectedItem.components."minecraft:custom_data".maf.grimoire_id
+execute if data storage maf:tmp magic_spell_loader.grimoire.id run function maf:magic/exec/load_grimoire_spell with storage maf:tmp magic_spell_loader.grimoire
+
+execute unless data storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting if data entity @s SelectedItem.components."minecraft:custom_data".maf.passive run data modify storage maf:tmp magic_spell_loader.passive set from entity @s SelectedItem.components."minecraft:custom_data".maf.passive
+execute unless data storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting if data storage maf:tmp magic_spell_loader.passive.id if data storage maf:tmp magic_spell_loader.passive.slot run function maf:magic/exec/load_passive_spell with storage maf:tmp magic_spell_loader.passive
+
+execute unless data storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting run return 0
 function maf:magic/exec/set_magic

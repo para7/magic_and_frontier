@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"grimoire",id:"ground_shake01",cost:14,cast:40,cooltime:20,title:"グランドシェイク",description:"地面にいる敵を揺れで攻撃する"}

@@ -22,6 +22,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	effectLogicalDir := settings.ExportPaths.GrimoireEffect
 	effectDir := filepath.Join(settings.OutputRoot, funcRoot, effectLogicalDir)
 	debugDir := filepath.Join(settings.OutputRoot, funcRoot, settings.ExportPaths.GrimoireDebug)
+	grimoireSpellDir := filepath.Join(settings.OutputRoot, funcRoot, "generated/grimoire/spell")
 	itemGiveLogicalDir := normalizePathOrDefault(settings.ExportPaths.ItemGive, "generated/item/give")
 	itemGiveDir := filepath.Join(settings.OutputRoot, funcRoot, itemGiveLogicalDir)
 	passiveEffectLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveEffect, "generated/passive/effect")
@@ -31,6 +32,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	passiveGiveDir := filepath.Join(settings.OutputRoot, funcRoot, passiveGiveLogicalDir)
 	passiveApplyLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveApply, "generated/passive/apply")
 	passiveApplyDir := filepath.Join(settings.OutputRoot, funcRoot, passiveApplyLogicalDir)
+	passiveSpellDir := filepath.Join(settings.OutputRoot, funcRoot, "generated/passive/spell")
 	bowFlyingLogicalDir := normalizePathOrDefault(settings.ExportPaths.BowFlying, "generated/bow/flying")
 	bowFlyingDir := filepath.Join(settings.OutputRoot, funcRoot, bowFlyingLogicalDir)
 	bowGroundLogicalDir := normalizePathOrDefault(settings.ExportPaths.BowGround, "generated/bow/ground")
@@ -56,6 +58,9 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	if err := WriteGrimoireArtifacts(effectDir, effects); err != nil {
 		return err
 	}
+	if err := WriteGrimoireSpellArtifacts(grimoireSpellDir, effects); err != nil {
+		return err
+	}
 	if err := WriteGrimoireDebugArtifacts(debugDir, effects); err != nil {
 		return err
 	}
@@ -74,6 +79,9 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 		return err
 	}
 	if err := WritePassiveArtifacts(passiveEffectDir, passiveGiveDir, passiveApplyDir, passiveEffects, passiveGrimoires); err != nil {
+		return err
+	}
+	if err := WritePassiveSpellArtifacts(passiveSpellDir, passiveGrimoires); err != nil {
 		return err
 	}
 	if err := WriteBowArtifacts(passiveEffectDir, passiveBowDir, bowFlyingDir, bowGroundDir, dmas.ListBows(), bowEffects, bowHits, bowFlyings, bowGrounds); err != nil {

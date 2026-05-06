@@ -16,6 +16,9 @@ func TestGrimoireExportFixtures(t *testing.T) {
 			if err := WriteGrimoireArtifacts(filepath.Join(actualDir, "effect"), effects); err != nil {
 				t.Fatal(err)
 			}
+			if err := WriteGrimoireSpellArtifacts(filepath.Join(actualDir, "spell"), effects); err != nil {
+				t.Fatal(err)
+			}
 			if err := WriteGrimoireDebugArtifacts(filepath.Join(actualDir, "give"), effects); err != nil {
 				t.Fatal(err)
 			}

@@ -70,8 +70,8 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 	if !strings.Contains(customData, `passiveSlot:1`) {
 		t.Fatalf("passiveSlot missing from custom data: %s", customData)
 	}
-	if !strings.Contains(customData, `spell:{kind:"grimoire",id:"tempest01",cost:13,cast:40,cooltime:20`) {
-		t.Fatalf("spell metadata should be derived from grimoire: %s", customData)
+	if strings.Contains(customData, `spell:{`) {
+		t.Fatalf("item custom data should not embed runtime spell metadata: %s", customData)
 	}
 	if !strings.Contains(customData, `nbt_snapshot:{`) {
 		t.Fatalf("nbt snapshot should be derived from components: %s", customData)
