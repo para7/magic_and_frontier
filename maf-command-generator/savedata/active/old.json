@@ -19,7 +19,8 @@
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は プロミネンス を唱えた！\"}]"
       ],
       "title": "プロミネンス",
-      "description": "周囲炎上+ダメージ+移動低下"
+      "description": "周囲炎上+ダメージ+移動低下",
+      "generate_grimoire": true
     },
     {
       "id": "old_absolutezero01",
@@ -56,7 +57,8 @@
         "playsound minecraft:block.glass.break master @a ~ ~ ~ 3 0.6"
       ],
       "title": "アブソリュート・ゼロ",
-      "description": "水を凍らせ氷上の存在に大ダメージ"
+      "description": "水を凍らせ氷上の存在に大ダメージ",
+      "generate_grimoire": true
     },
     {
       "id": "old_tempest01",
@@ -85,7 +87,8 @@
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は テンペスト を唱えた！\"}]"
       ],
       "title": "テンペスト",
-      "description": "敵1体に雷を落とし周辺に特大ダメージ"
+      "description": "敵1体に雷を落とし周辺に特大ダメージ",
+      "generate_grimoire": true
     },
     {
       "id": "old_poison01",
@@ -109,7 +112,8 @@
         "tellraw @a[distance=..18] [{\"selector\":\"@s\"},{\"text\":\" は ポイズン を唱えた！\"}]"
       ],
       "title": "ポイズン",
-      "description": "最寄りの敵の周囲に毒を与え、弱体化"
+      "description": "最寄りの敵の周囲に毒を与え、弱体化",
+      "generate_grimoire": true
     },
     {
       "id": "old_earthshake01",
@@ -130,7 +134,8 @@
         "tellraw @a[distance=..20] [{\"selector\":\"@s\"},{\"text\":\" は アースシェイク を唱えた！\"}]"
       ],
       "title": "アースシェイク",
-      "description": "地上の敵にダメージ"
+      "description": "地上の敵にダメージ",
+      "generate_grimoire": true
     },
     {
       "id": "old_healing01",
@@ -150,7 +155,8 @@
         "tellraw @a[distance=..6] [{\"selector\":\"@s\"},{\"text\":\" は ヒーリング を唱えた！\"}]"
       ],
       "title": "ヒーリング",
-      "description": "周囲に即時回復+リジェネ"
+      "description": "周囲に即時回復+リジェネ",
+      "generate_grimoire": true
     },
     {
       "id": "old_barrier01",
@@ -168,7 +174,8 @@
         "tellraw @a[distance=..10] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
       ],
       "title": "バリア",
-      "description": "周囲のダメージを緩和"
+      "description": "周囲のダメージを緩和",
+      "generate_grimoire": true
     },
     {
       "id": "old_refresh01",
@@ -194,7 +201,8 @@
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リフレッシュ を唱えた！\"}]"
       ],
       "title": "リフレッシュ",
-      "description": "周囲の状態異常回復"
+      "description": "周囲の状態異常回復",
+      "generate_grimoire": true
     },
     {
       "id": "old_holy01",
@@ -214,7 +222,8 @@
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ホーリー を唱えた！\"}]"
       ],
       "title": "ホーリー",
-      "description": "近くのアンデッドに特大ダメージ"
+      "description": "近くのアンデッドに特大ダメージ",
+      "generate_grimoire": true
     },
     {
       "id": "old_sacrifice01",
@@ -236,7 +245,8 @@
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は サクリファイス を唱えた！\"}]"
       ],
       "title": "サクリファイス",
-      "description": "自分の体力を犠牲に周囲に特大回復"
+      "description": "自分の体力を犠牲に周囲に特大回復",
+      "generate_grimoire": true
     },
     {
       "id": "old_tornado01",
@@ -255,7 +265,8 @@
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は トルネード を唱えた！\"}]"
       ],
       "title": "トルネード",
-      "description": "周囲のモブを打ち上げる"
+      "description": "周囲のモブを打ち上げる",
+      "generate_grimoire": true
     },
     {
       "id": "old_sweep01",
@@ -271,7 +282,8 @@
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は スウィープ を唱えた！\"}]"
       ],
       "title": "スウィープ",
-      "description": "近くのアイテムをかき集める"
+      "description": "近くのアイテムをかき集める",
+      "generate_grimoire": true
     },
     {
       "id": "old_airrider01",
@@ -290,7 +302,8 @@
         "tellraw @a[distance=..7] [{\"selector\":\"@s\"},{\"text\":\" は エアライダー を唱えた！\"}]"
       ],
       "title": "エアライダー",
-      "description": "機動力を大幅に高める"
+      "description": "機動力を大幅に高める",
+      "generate_grimoire": true
     },
     {
       "id": "old_gravity01",
@@ -310,7 +323,8 @@
         "tellraw @a[distance=..2] [{\"selector\":\"@s\"},{\"text\":\" は グラビデ を唱えた！\"}]"
       ],
       "title": "グラビデ",
-      "description": "空中の敵を地面に落とす"
+      "description": "空中の敵を地面に落とす",
+      "generate_grimoire": true
     },
     {
       "id": "old_hover01",
@@ -327,7 +341,8 @@
         "tellraw @a[distance=..7] [{\"selector\":\"@s\"},{\"text\":\" は ホバリング を唱えた！\"}]"
       ],
       "title": "ホバリング",
-      "description": "空中に停滞する"
+      "description": "空中に停滞する",
+      "generate_grimoire": true
     },
     {
       "id": "old_floor01",
@@ -343,7 +358,8 @@
         "tellraw @a[distance=..20] [{\"selector\":\"@s\"},{\"text\":\" は フロアー を唱えた！\"}]"
       ],
       "title": "フロアー",
-      "description": "床を展開"
+      "description": "床を展開",
+      "generate_grimoire": true
     },
     {
       "id": "old_wall01",
@@ -362,7 +378,8 @@
         "tellraw @a[distance=..20] [{\"selector\":\"@s\"},{\"text\":\" は ウォール を唱えた！\"}]"
       ],
       "title": "ウォール",
-      "description": "自分を壁で囲い緊急回避"
+      "description": "自分を壁で囲い緊急回避",
+      "generate_grimoire": true
     },
     {
       "id": "old_roof01",
@@ -382,7 +399,8 @@
         "tellraw @a[distance=..20] [{\"selector\":\"@s\"},{\"text\":\" は ルーフ を唱えた！\"}]"
       ],
       "title": "ルーフ",
-      "description": "屋根を作り出す"
+      "description": "屋根を作り出す",
+      "generate_grimoire": true
     },
     {
       "id": "old_earthextend01",
@@ -399,7 +417,8 @@
         "tellraw @a[distance=..20] [{\"selector\":\"@s\"},{\"text\":\" は アースエクステンド を唱えた！\"}]"
       ],
       "title": "アースエクステンド",
-      "description": "足元の水や溶岩を固める"
+      "description": "足元の水や溶岩を固める",
+      "generate_grimoire": true
     },
     {
       "id": "old_cushion01",
@@ -416,7 +435,8 @@
         "tellraw @a[distance=..10] [{\"selector\":\"@s\"},{\"text\":\" は クッション を唱えた！\"}]"
       ],
       "title": "クッション",
-      "description": "手持ちのスライムブロックを足元に設置する"
+      "description": "手持ちのスライムブロックを足元に設置する",
+      "generate_grimoire": true
     },
     {
       "id": "old_disaster01",
@@ -431,7 +451,8 @@
         "playsound minecraft:entity.evoker.cast_spell player @a ~ ~ ~ 2 0.5",
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ディザスター を唱えた！\"}]"
       ],
-      "title": "ディザスター"
+      "title": "ディザスター",
+      "generate_grimoire": true
     },
     {
       "id": "old_phoenix01",
@@ -451,7 +472,8 @@
         "playsound minecraft:entity.evoker.cast_spell player @a ~ ~ ~ 2 0.5",
         "tellraw @a[distance=..90] [{\"selector\":\"@s\"},{\"text\":\" は フェニックス を唱えた！\"}]"
       ],
-      "title": "フェニックス"
+      "title": "フェニックス",
+      "generate_grimoire": true
     },
     {
       "id": "old_teleport01",
@@ -470,7 +492,8 @@
         "# tellraw @a[distance=1..30] [{\"selector\":\"@s\"},{\"text\":\" は テレポート を唱えた！\"}]",
         "# xp add @s -1 levels"
       ],
-      "title": "テレポート"
+      "title": "テレポート",
+      "generate_grimoire": true
     },
     {
       "id": "old_reinforce01",
@@ -511,7 +534,8 @@
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リインフォース を唱えた！\"}]",
         "# xp add @s -1 levels"
       ],
-      "title": "リインフォース"
+      "title": "リインフォース",
+      "generate_grimoire": true
     }
   ]
 }

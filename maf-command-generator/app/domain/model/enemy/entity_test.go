@@ -30,7 +30,7 @@ type testDBMaster struct{}
 func (testDBMaster) HasItem(string) bool   { return true }
 func (testDBMaster) HasActive(string) bool { return true }
 func (testDBMaster) GetActive(string) (model.ActiveSnapshot, bool) {
-	return model.ActiveSnapshot{ID: "active_1", LootEnable: true}, true
+	return model.ActiveSnapshot{ID: "active_1", GenerateGrimoire: true}, true
 }
 func (testDBMaster) HasPassive(string) bool { return true }
 func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
@@ -141,13 +141,13 @@ func TestEnemyValidateRelationRejectsPassiveWithGenerateGrimoireFalse(t *testing
 	}
 }
 
-type activeLootDisabledDBMaster struct{ testDBMaster }
+type activeGrimoireDisabledDBMaster struct{ testDBMaster }
 
-func (activeLootDisabledDBMaster) GetActive(string) (model.ActiveSnapshot, bool) {
-	return model.ActiveSnapshot{ID: "active_1", LootEnable: false}, true
+func (activeGrimoireDisabledDBMaster) GetActive(string) (model.ActiveSnapshot, bool) {
+	return model.ActiveSnapshot{ID: "active_1", GenerateGrimoire: false}, true
 }
 
-func TestEnemyValidateRelationRejectsActiveWithLootEnableFalse(t *testing.T) {
+func TestEnemyValidateRelationRejectsActiveWithGenerateGrimoireFalse(t *testing.T) {
 	entity := &EnemyEntity{}
 	enemy := validEnemy()
 	enemy.Maf.Drops = []any{
@@ -161,8 +161,8 @@ func TestEnemyValidateRelationRejectsActiveWithLootEnableFalse(t *testing.T) {
 			},
 		},
 	}
-	errs := entity.ValidateRelation(enemy, activeLootDisabledDBMaster{})
+	errs := entity.ValidateRelation(enemy, activeGrimoireDisabledDBMaster{})
 	if !hasFieldError(errs, "maf.drops[0].entries[0].name") {
-		t.Fatalf("expected active loot_enable relation error, got %#v", errs)
+		t.Fatalf("expected active generate_grimoire relation error, got %#v", errs)
 	}
 }

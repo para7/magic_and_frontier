@@ -14,7 +14,8 @@
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は サイト・リフト を唱えた！\"}]"
       ],
       "title": "サイト・リフト",
-      "description": "視線方向の狭い範囲に浮遊を付与する"
+      "description": "視線方向の狭い範囲に浮遊を付与する",
+      "generate_grimoire": true
     }
   ]
 }

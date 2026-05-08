@@ -1,7 +1,6 @@
 package active
 
 import (
-	"encoding/json"
 	"testing"
 
 	model "maf_command_editor/app/domain/model"
@@ -11,12 +10,13 @@ func boolPtr(b bool) *bool { return &b }
 
 func validActive() Active {
 	return Active{
-		ID:          "active_1",
-		CastTime:    20,
-		MPCost:      5,
-		Script:      []string{"function maf:test"},
-		Title:       "Firebolt",
-		Description: "desc",
+		ID:               "active_1",
+		CastTime:         20,
+		MPCost:           5,
+		Script:           []string{"function maf:test"},
+		Title:            "Firebolt",
+		Description:      "desc",
+		GenerateGrimoire: boolPtr(true),
 	}
 }
 
@@ -34,7 +34,7 @@ type testDBMaster struct{}
 func (testDBMaster) HasItem(string) bool   { return true }
 func (testDBMaster) HasActive(string) bool { return true }
 func (testDBMaster) GetActive(string) (model.ActiveSnapshot, bool) {
-	return model.ActiveSnapshot{ID: "active_1", LootEnable: true}, true
+	return model.ActiveSnapshot{ID: "active_1", GenerateGrimoire: true}, true
 }
 func (testDBMaster) HasPassive(string) bool { return true }
 func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
@@ -209,21 +209,22 @@ func TestActiveValidateStructPerFieldOKNG(t *testing.T) {
 			},
 		},
 		{
-			name: "loot_enable ok true",
+			name: "generate_grimoire ok true",
 			patch: func(g *Active) {
-				g.LootEnable = boolPtr(true)
+				g.GenerateGrimoire = boolPtr(true)
 			},
 		},
 		{
-			name: "loot_enable ok false",
+			name: "generate_grimoire ok false",
 			patch: func(g *Active) {
-				g.LootEnable = boolPtr(false)
+				g.GenerateGrimoire = boolPtr(false)
 			},
 		},
 		{
-			name: "loot_enable ok nil defaults true",
+			name:         "generate_grimoire ng nil",
+			wantErrField: "generate_grimoire",
 			patch: func(g *Active) {
-				g.LootEnable = nil
+				g.GenerateGrimoire = nil
 			},
 		},
 	}
@@ -268,26 +269,4 @@ func TestActiveValidateAllDetectsDuplicateID(t *testing.T) {
 		}
 	}
 	t.Fatalf("expected duplicate id error, got %#v", allErrs)
-}
-
-func TestActiveUnmarshalJSONDefaultsLootEnableToTrue(t *testing.T) {
-	var g Active
-	if err := json.Unmarshal([]byte(`{"id":"g1"}`), &g); err != nil {
-		t.Fatalf("unexpected unmarshal error: %v", err)
-	}
-
-	if g.LootEnable == nil || !*g.LootEnable {
-		t.Fatalf("expected loot_enable to default true, got %#v", g.LootEnable)
-	}
-}
-
-func TestActiveUnmarshalJSONKeepsExplicitLootEnableFalse(t *testing.T) {
-	var g Active
-	if err := json.Unmarshal([]byte(`{"id":"g1","loot_enable":false}`), &g); err != nil {
-		t.Fatalf("unexpected unmarshal error: %v", err)
-	}
-
-	if g.LootEnable == nil || *g.LootEnable {
-		t.Fatalf("expected loot_enable to stay false, got %#v", g.LootEnable)
-	}
 }

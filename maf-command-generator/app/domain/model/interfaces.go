@@ -1,8 +1,8 @@
 package model
 
 type ActiveSnapshot struct {
-	ID         string
-	LootEnable bool
+	ID               string
+	GenerateGrimoire bool
 }
 
 type PassiveSnapshot struct {

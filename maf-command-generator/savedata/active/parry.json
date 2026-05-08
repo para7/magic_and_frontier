@@ -1,15 +1,16 @@
 {
-    "entries": [
-        {
-            "id": "parry01",
-            "castTime": 0,
-            "coolTime": 8,
-            "mpCost": 10,
-            "script": [
-                "function maf:buff/data/parry/parry01/init"
-            ],
-            "title": "弾刃",
-            "description": "攻撃を弾く"
-        }
-    ]
+  "entries": [
+    {
+      "id": "parry01",
+      "castTime": 0,
+      "coolTime": 8,
+      "mpCost": 10,
+      "script": [
+        "function maf:buff/data/parry/parry01/init"
+      ],
+      "title": "弾刃",
+      "description": "攻撃を弾く",
+      "generate_grimoire": true
+    }
+  ]
 }

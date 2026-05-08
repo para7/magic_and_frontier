@@ -233,11 +233,11 @@ func ValidateMafLootPools(entity, id, prefix string, pools []any, mas DBMaster) 
 						Field: entryField + ".name",
 						Tag:   "relation", Param: "active not found",
 					})
-				} else if !active.LootEnable {
+				} else if !active.GenerateGrimoire {
 					errs = append(errs, ValidationError{
 						Entity: entity, ID: id,
 						Field: entryField + ".name",
-						Tag:   "relation", Param: "active loot_enable must be true when type=maf:active",
+						Tag:   "relation", Param: "active generate_grimoire must be true when type=maf:active",
 					})
 				}
 			case "maf:passive":

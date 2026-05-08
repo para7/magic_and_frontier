@@ -11,6 +11,7 @@ description: アクティブ（アクティブスキル）システムの設計�
 
 - **magic-casting**: 詠唱パイプライン（キャスト・クールダウン・MP消費の共通基盤）。アクティブとパッシブの両方が使う
 - **passive**: パッシブスキルシステム。詠唱パイプラインを共有するがトリガー方式が異なる
+- **sight**: 視線判定ユーティリティ。`Script[]` で視線方向の敵を対象にするアクティブで使う
 - **ohmydat**: プレイヤー個別ストレージ。詠唱データの一時保存先
 - **maf-export**: Go ジェネレータのエクスポートパイプライン全体
 
@@ -24,15 +25,27 @@ description: アクティブ（アクティブスキル）システムの設計�
 
 ```go
 type Active struct {
-    ID          string   // スラッグID（小文字・ハイフン・アンダースコアのみ）
-    CastTime    int      // 詠唱時間（tick単位, 0〜12000）
-    CoolTime    int      // クールダウン（tick単位, 0〜12000）
-    MPCost      int      // MP消費量（0〜1,000,000）
-    Script      []string // 発動時に実行するmcfunctionコマンド群（1行以上必須）
-    Title       string   // 表示名（必須）
-    Description string   // 説明文（任意）
+    ID               string   // スラッグID（小文字・ハイフン・アンダースコアのみ）
+    CastTime         int      // 詠唱時間（tick単位, 0〜12000）
+    CoolTime         int      // クールダウン（tick単位, 0〜12000）
+    MPCost           int      // MP消費量（0〜1,000,000）
+    Script           []string // 発動時に実行するmcfunctionコマンド群（1行以上必須）
+    Title            string   // 表示名（必須）
+    Description      string   // 説明文（任意）
+    GenerateGrimoire *bool    // true: ルートテーブルから参照可能 / false: 参照不可（必須）
 }
 ```
+
+### generate_grimoire フィールド
+
+| 値 | ルートテーブル参照 | アイテムへの直接付与 |
+|---|---|---|
+| `true` | できる | できる |
+| `false` | エラーになる | できる |
+
+- 必須フィールド。省略するとバリデーションエラー
+- `false` にすることで「ドロップ・宝箱から入手できないが、特定アイテムに付与できるアクティブ」を定義できる
+- `give/{id}.mcfunction`（デバッグ用）はこのフィールドに関わらず常に生成される
 
 ### 数値の意味
 
@@ -201,6 +214,8 @@ type ItemMaf struct {
     ActiveID  string `json:"activeId,omitempty"`
     PassiveID   string `json:"passiveId,omitempty"`
     PassiveSlot int    `json:"passiveSlot,omitempty"`
+    BowID       string `json:"bowId,omitempty"`
+    MaxMP       *int   `json:"maxmp,omitempty"`
 }
 ```
 
@@ -225,5 +240,6 @@ DropRef{Kind: "active", RefID: "healing01", Weight: 10, CountMin: 1, CountMax: 1
 
 1. `savedata/active/ai_workspace.json` など、`savedata/active/` 配下の `*.json` にエントリ追加
 2. `Script` にmcfunctionコマンドを記述
-3. `make run/export` で `generated/active/effect/{id}.mcfunction`、`give/{id}.mcfunction`、`spell/{id}.mcfunction` を生成
-4. ゲーム内で `/function maf:generated/active/give/{id}` でテスト
+3. `generate_grimoire` を設定（`true`: ルートテーブルから参照可能 / `false`: 参照不可）
+4. `make run/export` で `generated/active/effect/{id}.mcfunction`、`give/{id}.mcfunction`、`spell/{id}.mcfunction` を生成
+5. ゲーム内で `/function maf:generated/active/give/{id}` でテスト

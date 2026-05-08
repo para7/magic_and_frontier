@@ -34,7 +34,7 @@ type testDBMaster struct{}
 func (testDBMaster) HasItem(string) bool   { return true }
 func (testDBMaster) HasActive(string) bool { return true }
 func (testDBMaster) GetActive(string) (model.ActiveSnapshot, bool) {
-	return model.ActiveSnapshot{ID: "active_1", LootEnable: true}, true
+	return model.ActiveSnapshot{ID: "active_1", GenerateGrimoire: true}, true
 }
 func (testDBMaster) HasPassive(string) bool { return true }
 func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {

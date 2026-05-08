@@ -75,8 +75,8 @@ func (d *DBMaster) GetActive(id string) (model.ActiveSnapshot, bool) {
 		return model.ActiveSnapshot{}, false
 	}
 	return model.ActiveSnapshot{
-		ID:         entry.ID,
-		LootEnable: entry.IsLootEnabled(),
+		ID:               entry.ID,
+		GenerateGrimoire: entry.IsGenerateGrimoire(),
 	}, true
 }
 

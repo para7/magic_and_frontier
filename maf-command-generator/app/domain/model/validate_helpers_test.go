@@ -12,7 +12,7 @@ type validateHelpersMasterStub struct {
 func (s validateHelpersMasterStub) HasItem(string) bool   { return true }
 func (s validateHelpersMasterStub) HasActive(string) bool { return true }
 func (s validateHelpersMasterStub) GetActive(string) (ActiveSnapshot, bool) {
-	return ActiveSnapshot{ID: "active_1", LootEnable: true}, true
+	return ActiveSnapshot{ID: "active_1", GenerateGrimoire: true}, true
 }
 func (s validateHelpersMasterStub) HasPassive(string) bool { return s.passive }
 func (s validateHelpersMasterStub) GetPassive(string) (PassiveSnapshot, bool) {
@@ -112,15 +112,15 @@ func TestValidateMafLootPoolsRejectsUnsupportedMafType(t *testing.T) {
 	}
 }
 
-type activeLootDisabledValidateHelpersMasterStub struct {
+type activeGrimoireDisabledValidateHelpersMasterStub struct {
 	validateHelpersMasterStub
 }
 
-func (s activeLootDisabledValidateHelpersMasterStub) GetActive(string) (ActiveSnapshot, bool) {
-	return ActiveSnapshot{ID: "active_1", LootEnable: false}, true
+func (s activeGrimoireDisabledValidateHelpersMasterStub) GetActive(string) (ActiveSnapshot, bool) {
+	return ActiveSnapshot{ID: "active_1", GenerateGrimoire: false}, true
 }
 
-func TestValidateMafLootPoolsRejectsActiveWithLootEnableFalse(t *testing.T) {
+func TestValidateMafLootPoolsRejectsActiveWithGenerateGrimoireFalse(t *testing.T) {
 	errs := ValidateMafLootPools("enemy", "enemy_1", "drops", []any{
 		map[string]any{
 			"entries": []any{
@@ -130,8 +130,8 @@ func TestValidateMafLootPoolsRejectsActiveWithLootEnableFalse(t *testing.T) {
 				},
 			},
 		},
-	}, activeLootDisabledValidateHelpersMasterStub{validateHelpersMasterStub{passive: true}})
+	}, activeGrimoireDisabledValidateHelpersMasterStub{validateHelpersMasterStub{passive: true}})
 	if len(errs) != 1 || errs[0].Field != "drops[0].entries[0].name" {
-		t.Fatalf("expected active loot_enable relation error, got %#v", errs)
+		t.Fatalf("expected active generate_grimoire relation error, got %#v", errs)
 	}
 }

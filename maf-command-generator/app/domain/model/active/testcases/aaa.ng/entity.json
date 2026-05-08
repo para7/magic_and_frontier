@@ -9,7 +9,8 @@
         "function maf:test_ng"
       ],
       "title": "Test NG",
-      "description": "invalid id testcase"
+      "description": "invalid id testcase",
+      "generate_grimoire": true
     }
   ]
 }

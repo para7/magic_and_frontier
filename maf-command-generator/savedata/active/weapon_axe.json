@@ -15,7 +15,8 @@
         "tellraw @s [{\"text\":\"トマホーク！\"}]"
       ],
       "title": "トマホーク",
-      "description": "視線方向の最も近い敵にトマホークを投擲してダメージを与える"
+      "description": "視線方向の最も近い敵にトマホークを投擲してダメージを与える",
+      "generate_grimoire": true
     }
   ]
 }

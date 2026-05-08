@@ -9,7 +9,8 @@
         "function maf:test_ok"
       ],
       "title": "Test OK",
-      "description": "valid active testcase"
+      "description": "valid active testcase",
+      "generate_grimoire": true
     }
   ]
 }

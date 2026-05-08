@@ -11,7 +11,7 @@ paths:
 
 | エンティティ | パッケージ | 主要フィールド |
 |-------------|-----------|--------------|
-| Active | `model/active` | ID, CastTime, CoolTime, MPCost, Script, Title, Description |
+| Active | `model/active` | ID, CastTime, CoolTime, MPCost, Script, Title, Description, GenerateGrimoire |
 | Item | `model/item` | ID, Maf(ActiveID/PassiveID/PassiveSlot/BowID/MaxMP), Minecraft(ItemID/Components) |
 | Passive | `model/passive` | ID, Name, Role, Condition(always/attack/none), Slots, Description, Script, GenerateGrimoire |
 | BowPassive | `model/bow` | ID, Name, Role, Slots, LifeSub, ScriptHit/Fired/Flying/Ground |

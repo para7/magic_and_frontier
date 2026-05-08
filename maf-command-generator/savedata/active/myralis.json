@@ -1,65 +1,69 @@
 {
-    "entries": [
-        {
-            "id": "thorn_bind01",
-            "castTime": 20,
-            "coolTime": 20,
-            "mpCost": 6,
-            "script": [
-                "execute as @e[type=#maf:enemymob,distance=..8,nbt={OnGround:1b}] run damage @s 6 minecraft:magic",
-                "effect give @e[type=#maf:enemymob,distance=..8,nbt={OnGround:1b}] minecraft:slowness 3 0",
-                "execute at @s run particle minecraft:witch ~ ~0.2 ~ 4.0 0.2 4.0 0.01 200 force",
-                "execute as @e[type=#maf:enemymob,distance=..8,nbt={OnGround:1b}] at @s run particle minecraft:cloud ~ ~0.5 ~ 0.75 0.25 0.75 0.01 12 force",
-                "playsound minecraft:block.vine.place master @a ~ ~ ~ 1.5 0.8",
-                "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ソーンバインド を唱えた！\"}]"
-            ],
-            "title": "ソーンバインド",
-            "description": "周囲8ブロックの地上にいる敵にダメージを与え、移動を遅くする"
-        },
-        {
-            "id": "poison_circle01",
-            "castTime": 20,
-            "coolTime": 20,
-            "mpCost": 10,
-            "script": [
-                "effect give @e[type=#maf:enemymob,distance=..8] minecraft:poison 10 2",
-                "execute at @s run particle minecraft:witch ~ ~0.2 ~ 4.0 0.2 4.0 0.01 200 force",
-                "execute at @s run particle minecraft:spore_blossom_air ~ ~0.2 ~ 4.0 0.3 4.0 0.01 200 force",
-                "playsound minecraft:entity.witch.throw master @a ~ ~ ~ 1.5 0.8",
-                "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ポイズン を唱えた！\"}]"
-            ],
-            "title": "ポイズン",
-            "description": "周囲8ブロックの敵に強力な毒(Poison III)を10秒間与える"
-        },
-        {
-            "id": "poison_sight01",
-            "castTime": 20,
-            "coolTime": 20,
-            "mpCost": 10,
-            "script": [
-                "function maf:common/sight/eyes_circle_tagged {forward:4.0,radius:3.5,particleCount:80}",
-                "effect give @e[type=#maf:enemymob,tag=maf_target] minecraft:poison 10 10",
-                "execute as @e[type=#maf:enemymob,tag=maf_target] at @s run particle minecraft:spore_blossom_air ~ ~0.2 ~ 0.75 0.2 0.75 0.01 8 force",
-                "playsound minecraft:entity.witch.throw master @a ~ ~ ~ 1.5 1.1",
-                "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ポイズンサイト を唱えた！\"}]"
-            ],
-            "title": "ポイズンサイト",
-            "description": "視線の4ブロック先を中心に半径3.5ブロックの円範囲へ毒(Poison II)を10秒間与える"
-        },
-        {
-            "id": "requiem01",
-            "castTime": 20,
-            "coolTime": 20,
-            "mpCost": 10,
-            "script": [
-                "execute as @e[type=#maf:undead,distance=..8] run damage @s 20 minecraft:magic",
-                "execute at @s run particle minecraft:soul_fire_flame ~ ~0.2 ~ 4.0 0.2 4.0 0.01 200 force",
-                "execute as @e[type=#maf:undead,distance=..8] at @s run particle minecraft:soul ~ ~0.5 ~ 0.5 0.5 0.5 0.01 5 force",
-                "playsound minecraft:block.bell.resonate master @a ~ ~ ~ 2.0 0.5",
-                "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レクイエム を唱えた！\"}]"
-            ],
-            "title": "レクイエム",
-            "description": "周囲8ブロックのアンデッドに大ダメージを与える"
-        }
-    ]
+  "entries": [
+    {
+      "id": "thorn_bind01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 6,
+      "script": [
+        "execute as @e[type=#maf:enemymob,distance=..8,nbt={OnGround:1b}] run damage @s 6 minecraft:magic",
+        "effect give @e[type=#maf:enemymob,distance=..8,nbt={OnGround:1b}] minecraft:slowness 3 0",
+        "execute at @s run particle minecraft:witch ~ ~0.2 ~ 4.0 0.2 4.0 0.01 200 force",
+        "execute as @e[type=#maf:enemymob,distance=..8,nbt={OnGround:1b}] at @s run particle minecraft:cloud ~ ~0.5 ~ 0.75 0.25 0.75 0.01 12 force",
+        "playsound minecraft:block.vine.place master @a ~ ~ ~ 1.5 0.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ソーンバインド を唱えた！\"}]"
+      ],
+      "title": "ソーンバインド",
+      "description": "周囲8ブロックの地上にいる敵にダメージを与え、移動を遅くする",
+      "generate_grimoire": true
+    },
+    {
+      "id": "poison_circle01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect give @e[type=#maf:enemymob,distance=..8] minecraft:poison 10 2",
+        "execute at @s run particle minecraft:witch ~ ~0.2 ~ 4.0 0.2 4.0 0.01 200 force",
+        "execute at @s run particle minecraft:spore_blossom_air ~ ~0.2 ~ 4.0 0.3 4.0 0.01 200 force",
+        "playsound minecraft:entity.witch.throw master @a ~ ~ ~ 1.5 0.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ポイズン を唱えた！\"}]"
+      ],
+      "title": "ポイズン",
+      "description": "周囲8ブロックの敵に強力な毒(Poison III)を10秒間与える",
+      "generate_grimoire": true
+    },
+    {
+      "id": "poison_sight01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/sight/eyes_circle_tagged {forward:4.0,radius:3.5,particleCount:80}",
+        "effect give @e[type=#maf:enemymob,tag=maf_target] minecraft:poison 10 10",
+        "execute as @e[type=#maf:enemymob,tag=maf_target] at @s run particle minecraft:spore_blossom_air ~ ~0.2 ~ 0.75 0.2 0.75 0.01 8 force",
+        "playsound minecraft:entity.witch.throw master @a ~ ~ ~ 1.5 1.1",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ポイズンサイト を唱えた！\"}]"
+      ],
+      "title": "ポイズンサイト",
+      "description": "視線の4ブロック先を中心に半径3.5ブロックの円範囲へ毒(Poison II)を10秒間与える",
+      "generate_grimoire": true
+    },
+    {
+      "id": "requiem01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:undead,distance=..8] run damage @s 20 minecraft:magic",
+        "execute at @s run particle minecraft:soul_fire_flame ~ ~0.2 ~ 4.0 0.2 4.0 0.01 200 force",
+        "execute as @e[type=#maf:undead,distance=..8] at @s run particle minecraft:soul ~ ~0.5 ~ 0.5 0.5 0.5 0.01 5 force",
+        "playsound minecraft:block.bell.resonate master @a ~ ~ ~ 2.0 0.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レクイエム を唱えた！\"}]"
+      ],
+      "title": "レクイエム",
+      "description": "周囲8ブロックのアンデッドに大ダメージを与える",
+      "generate_grimoire": true
+    }
+  ]
 }
