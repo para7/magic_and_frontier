@@ -224,16 +224,16 @@ func TestExportDatapackWritesBowArtifacts(t *testing.T) {
 	settings := map[string]any{
 		"outputRoot": filepath.Join(root, "out"),
 		"exportPaths": map[string]any{
-			"grimoireEffect": "generated/grimoire/effect",
-			"grimoireDebug":  "generated/grimoire/give",
-			"passiveEffect":  "generated/passive/effect",
-			"passiveGive":    "generated/passive/give",
-			"passiveApply":   "generated/passive/apply",
-			"bowFlying":      "generated/bow/flying",
-			"bowGround":      "generated/bow/ground",
-			"enemy":          "generated/enemy/spawn",
-			"enemySkill":     "generated/enemy/skill",
-			"enemyLoot":      "generated/enemy/loot",
+			"activeEffect":  "generated/active/effect",
+			"activeDebug":   "generated/active/give",
+			"passiveEffect": "generated/passive/effect",
+			"passiveGive":   "generated/passive/give",
+			"passiveApply":  "generated/passive/apply",
+			"bowFlying":     "generated/bow/flying",
+			"bowGround":     "generated/bow/ground",
+			"enemy":         "generated/enemy/spawn",
+			"enemySkill":    "generated/enemy/skill",
+			"enemyLoot":     "generated/enemy/loot",
 		},
 	}
 	data, err := json.Marshal(settings)

@@ -1,6 +1,6 @@
 package model
 
-type GrimoireSnapshot struct {
+type ActiveSnapshot struct {
 	ID         string
 	LootEnable bool
 }
@@ -12,8 +12,8 @@ type PassiveSnapshot struct {
 
 type DBMaster interface {
 	HasItem(id string) bool
-	HasGrimoire(id string) bool
-	GetGrimoire(id string) (GrimoireSnapshot, bool)
+	HasActive(id string) bool
+	GetActive(id string) (ActiveSnapshot, bool)
 	HasPassive(id string) bool
 	GetPassive(id string) (PassiveSnapshot, bool)
 	HasBow(id string) bool

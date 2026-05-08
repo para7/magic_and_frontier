@@ -1,7 +1,7 @@
 {
   "exportPaths": {
-    "grimoireEffect": "generated/grimoire/effect",
-    "grimoireDebug": "generated/grimoire/give",
+    "activeEffect": "generated/active/effect",
+    "activeDebug": "generated/active/give",
     "passiveEffect": "generated/passive/effect",
     "passiveGive": "generated/passive/give",
     "passiveApply": "generated/passive/apply",

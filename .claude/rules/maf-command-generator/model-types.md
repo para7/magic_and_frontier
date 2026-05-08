@@ -11,8 +11,8 @@ paths:
 
 | エンティティ | パッケージ | 主要フィールド |
 |-------------|-----------|--------------|
-| Grimoire | `model/grimoire` | ID, CastTime, CoolTime, MPCost, Script, Title, Description |
-| Item | `model/item` | ID, Maf(GrimoireID/PassiveID/PassiveSlot/BowID/MaxMP), Minecraft(ItemID/Components) |
+| Active | `model/active` | ID, CastTime, CoolTime, MPCost, Script, Title, Description |
+| Item | `model/item` | ID, Maf(ActiveID/PassiveID/PassiveSlot/BowID/MaxMP), Minecraft(ItemID/Components) |
 | Passive | `model/passive` | ID, Name, Role, Condition(always/attack/none), Slots, Description, Script, GenerateGrimoire |
 | BowPassive | `model/bow` | ID, Name, Role, Slots, LifeSub, ScriptHit/Fired/Flying/Ground |
 | EnemySkill | `model/enemyskill` | ID, Name, Description, Script |
@@ -22,7 +22,7 @@ paths:
 
 ## 共有型（`model/types.go`）
 
-- `DropRef`: アイテム・グリモア・パッシブ・バニラアイテムへの参照 + ドロップ設定（Kind(minecraft_item/item/grimoire/passive), RefID, Slot, Weight, CountMin, CountMax）
+- `DropRef`: アイテム・アクティブ・パッシブ・バニラアイテムへの参照 + ドロップ設定（Kind(minecraft_item/item/active/passive), RefID, Slot, Weight, CountMin, CountMax）
 - `EquipmentSlot`: エネミー装備スロット（Kind(minecraft_item/item), RefID, Count, DropChance）
 - `Equipment`: 6スロット（Mainhand, Offhand, Head, Chest, Legs, Feet）
 - `ReplacementEntry`: スポーンテーブルのモブ差替エントリ（EnemyID, Weight）

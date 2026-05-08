@@ -27,10 +27,10 @@ func hasFieldError(errs []model.ValidationError, field string) bool {
 
 type testDBMaster struct{}
 
-func (testDBMaster) HasItem(string) bool     { return true }
-func (testDBMaster) HasGrimoire(string) bool { return true }
-func (testDBMaster) GetGrimoire(string) (model.GrimoireSnapshot, bool) {
-	return model.GrimoireSnapshot{ID: "grimoire_1", LootEnable: true}, true
+func (testDBMaster) HasItem(string) bool   { return true }
+func (testDBMaster) HasActive(string) bool { return true }
+func (testDBMaster) GetActive(string) (model.ActiveSnapshot, bool) {
+	return model.ActiveSnapshot{ID: "active_1", LootEnable: true}, true
 }
 func (testDBMaster) HasPassive(string) bool { return true }
 func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
@@ -141,13 +141,13 @@ func TestEnemyValidateRelationRejectsPassiveWithGenerateGrimoireFalse(t *testing
 	}
 }
 
-type grimoireLootDisabledDBMaster struct{ testDBMaster }
+type activeLootDisabledDBMaster struct{ testDBMaster }
 
-func (grimoireLootDisabledDBMaster) GetGrimoire(string) (model.GrimoireSnapshot, bool) {
-	return model.GrimoireSnapshot{ID: "grimoire_1", LootEnable: false}, true
+func (activeLootDisabledDBMaster) GetActive(string) (model.ActiveSnapshot, bool) {
+	return model.ActiveSnapshot{ID: "active_1", LootEnable: false}, true
 }
 
-func TestEnemyValidateRelationRejectsGrimoireWithLootEnableFalse(t *testing.T) {
+func TestEnemyValidateRelationRejectsActiveWithLootEnableFalse(t *testing.T) {
 	entity := &EnemyEntity{}
 	enemy := validEnemy()
 	enemy.Maf.Drops = []any{
@@ -155,14 +155,14 @@ func TestEnemyValidateRelationRejectsGrimoireWithLootEnableFalse(t *testing.T) {
 			"rolls": 1.0,
 			"entries": []any{
 				map[string]any{
-					"type": "maf:grimoire",
-					"name": "grimoire_1",
+					"type": "maf:active",
+					"name": "active_1",
 				},
 			},
 		},
 	}
-	errs := entity.ValidateRelation(enemy, grimoireLootDisabledDBMaster{})
+	errs := entity.ValidateRelation(enemy, activeLootDisabledDBMaster{})
 	if !hasFieldError(errs, "maf.drops[0].entries[0].name") {
-		t.Fatalf("expected grimoire loot_enable relation error, got %#v", errs)
+		t.Fatalf("expected active loot_enable relation error, got %#v", errs)
 	}
 }

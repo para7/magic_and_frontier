@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"トマホーク"},minecraft:lore=[{text:"視線方向の最も近い敵にトマホークを投擲してダメージを与える"},{text:"消費MP:10 詠唱時間:0"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"tomahawk01"}}] 1

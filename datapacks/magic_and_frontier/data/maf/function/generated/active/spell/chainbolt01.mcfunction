@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"chainbolt01",cost:5,cast:20,cooltime:20,title:"チェインボルト",description:"連鎖する雷撃で敵を攻撃する。敵が多いほど威力が上がる"}

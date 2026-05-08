@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"old_prominence01",cost:7,cast:40,cooltime:20,title:"プロミネンス",description:"周囲炎上+ダメージ+移動低下"}

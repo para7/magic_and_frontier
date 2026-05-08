@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"グランドシェイク"},minecraft:lore=[{text:"地面にいる敵を揺れで攻撃する"},{text:"消費MP:14 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"ground_shake01"}}] 1

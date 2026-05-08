@@ -17,7 +17,7 @@ disable-model-invocation: true
 - アイテムID（例: iron_sword_01 ／ 小文字・アンダースコア・ハイフンのみ）
 - 表示名・説明文（lore）
 - ベースアイテム（minecraft:diamond_sword 等）
-- バインドするスキル（grimoireId / passiveId / bowId ／ 任意）
+- バインドするスキル（activeId / passiveId / bowId ／ 任意）
 - MP増減値（maxmp ／ 任意）
 - エンチャント（任意）
 
@@ -38,7 +38,7 @@ disable-model-invocation: true
     {
       "id": "item_id",            // 必須: 小文字・アンダースコア・ハイフンのみ、ユニーク
       "maf": {                    // 必須(空オブジェクト可): maf固有データ
-        "grimoireId": "spell01",  // 任意: バインドするグリモアID
+        "activeId": "spell01",  // 任意: バインドするアクティブID
         "passiveId": "regen",     // 任意: バインドするパッシブID
         "bowId": "bow_skill01",   // 任意: バインドする弓パッシブID
         "maxmp": 20               // 任意: MaxMP増減値(負数可)
@@ -61,7 +61,7 @@ disable-model-invocation: true
 | 用途 | 設定するフィールド |
 |------|-----------------|
 | 通常アイテム | `maf: {}` |
-| 魔法武器 | `grimoireId` |
+| 魔法武器 | `activeId` |
 | パッシブ武器 | `passiveId` |
 | 弓スキル武器 | `bowId` |
 | MP装備(増) | `maxmp: 20` |
@@ -87,7 +87,7 @@ disable-model-invocation: true
 | スキル | 用途 |
 |--------|------|
 | `maf-export` | アイテムのエクスポートパイプライン・生成される成果物の種類 |
-| `grimoire` | grimoireId指定時のNBT構造 |
+| `active` | activeId指定時のNBT構造 |
 | `passive` | passiveId指定時のスロットシステム |
 | `bow-passive` | bowId指定時の動作フロー |
 | `rcon` | RCONコマンド発行方法（make mc-cmd の使い方） |

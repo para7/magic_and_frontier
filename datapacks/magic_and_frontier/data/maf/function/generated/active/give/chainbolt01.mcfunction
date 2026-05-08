@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"チェインボルト"},minecraft:lore=[{text:"連鎖する雷撃で敵を攻撃する。敵が多いほど威力が上がる"},{text:"消費MP:5 詠唱時間:20"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"chainbolt01"}}] 1

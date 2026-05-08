@@ -1,32 +1,32 @@
 package export
 
 import (
+	activeModel "maf_command_editor/app/domain/model/active"
 	bowModel "maf_command_editor/app/domain/model/bow"
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
 )
 
 type masterEntityLookups struct {
-	items         []itemModel.Item
-	itemsByID     map[string]itemModel.Item
-	grimoiresByID map[string]grimoireModel.Grimoire
-	passivesByID  map[string]passiveModel.Passive
-	bowsByID      map[string]bowModel.BowPassive
+	items        []itemModel.Item
+	itemsByID    map[string]itemModel.Item
+	activesByID  map[string]activeModel.Active
+	passivesByID map[string]passiveModel.Passive
+	bowsByID     map[string]bowModel.BowPassive
 }
 
 func buildMasterEntityLookups(master DBMaster) masterEntityLookups {
 	items := master.ListItems()
-	grimoires := master.ListGrimoires()
+	actives := master.ListActives()
 	passives := master.ListPassives()
 	bows := master.ListBows()
 
 	return masterEntityLookups{
-		items:         items,
-		itemsByID:     indexByID(items, func(entry itemModel.Item) string { return entry.ID }),
-		grimoiresByID: indexByID(grimoires, func(entry grimoireModel.Grimoire) string { return entry.ID }),
-		passivesByID:  indexByID(passives, func(entry passiveModel.Passive) string { return entry.ID }),
-		bowsByID:      indexByID(bows, func(entry bowModel.BowPassive) string { return entry.ID }),
+		items:        items,
+		itemsByID:    indexByID(items, func(entry itemModel.Item) string { return entry.ID }),
+		activesByID:  indexByID(actives, func(entry activeModel.Active) string { return entry.ID }),
+		passivesByID: indexByID(passives, func(entry passiveModel.Passive) string { return entry.ID }),
+		bowsByID:     indexByID(bows, func(entry bowModel.BowPassive) string { return entry.ID }),
 	}
 }
 

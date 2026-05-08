@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"ソーンバインド"},minecraft:lore=[{text:"周囲8ブロックの地上にいる敵にダメージを与え、移動を遅くする"},{text:"消費MP:6 詠唱時間:20"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"thorn_bind01"}}] 1

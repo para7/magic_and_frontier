@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"ヒーリング"},minecraft:lore=[{text:"周囲に即時回復+リジェネ"},{text:"消費MP:13 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"old_healing01"}}] 1

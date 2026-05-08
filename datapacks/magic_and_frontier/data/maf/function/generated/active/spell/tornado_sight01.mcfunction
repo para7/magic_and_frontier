@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"tornado_sight01",cost:10,cast:20,cooltime:20,title:"トルネードサイト",description:"視線の4ブロック先を中心に半径3.5ブロックの範囲の敵を竜巻で打ち上げる"}

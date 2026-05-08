@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"MPソウル全回復"},minecraft:lore=[{text:"もし本アイテムを正規手段で入手した場合は開発者へ報告をお願いいたします。"},{text:"消費MP:0 詠唱時間:0"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"devtool_mpmax"}}] 1

@@ -5,15 +5,15 @@ import (
 	"sort"
 	"strings"
 
+	activeModel "maf_command_editor/app/domain/model/active"
 	bowModel "maf_command_editor/app/domain/model/bow"
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
 )
 
 func ItemToGiveCommand(
 	entry itemModel.Item,
-	grimoiresByID map[string]grimoireModel.Grimoire,
+	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
 ) (string, error) {
@@ -22,7 +22,7 @@ func ItemToGiveCommand(
 		return "", err
 	}
 
-	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID, bowsByID)
+	spellMeta, err := resolveItemSpellMeta(entry, activesByID, passivesByID, bowsByID)
 	if err != nil {
 		return "", err
 	}
@@ -30,7 +30,7 @@ func ItemToGiveCommand(
 		componentValues["minecraft:consumable"] = bookConsumableSNBT
 	}
 
-	customData, err := itemCustomData(entry, grimoiresByID, passivesByID, bowsByID)
+	customData, err := itemCustomData(entry, activesByID, passivesByID, bowsByID)
 	if err != nil {
 		return "", err
 	}
@@ -80,7 +80,7 @@ func sortedItemGiveComponents(values map[string]string) []string {
 
 func itemCustomData(
 	entry itemModel.Item,
-	grimoiresByID map[string]grimoireModel.Grimoire,
+	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
 ) (string, error) {
@@ -91,12 +91,12 @@ func itemCustomData(
 		fmt.Sprintf("nbt_snapshot:%s", itemSNBT),
 	}
 
-	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID, bowsByID)
+	spellMeta, err := resolveItemSpellMeta(entry, activesByID, passivesByID, bowsByID)
 	if err != nil {
 		return "", err
 	}
-	if spellMeta.grimoireID != "" {
-		parts = append(parts, fmt.Sprintf("grimoire_id:%s", SNBTString(spellMeta.grimoireID)))
+	if spellMeta.activeID != "" {
+		parts = append(parts, fmt.Sprintf("active_id:%s", SNBTString(spellMeta.activeID)))
 	}
 	if len(spellMeta.customFragments) > 0 {
 		parts = append(parts, spellMeta.customFragments...)
@@ -109,7 +109,7 @@ func itemCustomData(
 
 func itemComponentsForLoot(
 	entry itemModel.Item,
-	grimoiresByID map[string]grimoireModel.Grimoire,
+	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
 ) (map[string]any, error) {
@@ -117,7 +117,7 @@ func itemComponentsForLoot(
 	delete(components, "minecraft:enchantments")
 	delete(components, "minecraft:custom_data")
 
-	spellMeta, err := resolveItemSpellMeta(entry, grimoiresByID, passivesByID, bowsByID)
+	spellMeta, err := resolveItemSpellMeta(entry, activesByID, passivesByID, bowsByID)
 	if err != nil {
 		return nil, err
 	}
@@ -154,32 +154,32 @@ func componentData(entry itemModel.Item) any {
 
 type itemSpellMeta struct {
 	hasUseSpell     bool
-	grimoireID      string
+	activeID        string
 	customFragments []string
 }
 
 func resolveItemSpellMeta(
 	entry itemModel.Item,
-	grimoiresByID map[string]grimoireModel.Grimoire,
+	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
 ) (itemSpellMeta, error) {
 	meta := itemSpellMeta{}
 
-	grimoireID := strings.TrimSpace(entry.Maf.GrimoireID)
-	if grimoireID != "" {
-		grimoire, ok := grimoiresByID[grimoireID]
+	activeID := strings.TrimSpace(entry.Maf.ActiveID)
+	if activeID != "" {
+		active, ok := activesByID[activeID]
 		if !ok {
-			return itemSpellMeta{}, fmt.Errorf("item(%s): referenced grimoire not found (%s)", entry.ID, grimoireID)
+			return itemSpellMeta{}, fmt.Errorf("item(%s): referenced active not found (%s)", entry.ID, activeID)
 		}
 		meta.hasUseSpell = true
-		meta.grimoireID = grimoire.ID
+		meta.activeID = active.ID
 	}
 
 	bowID := strings.TrimSpace(entry.Maf.BowID)
 	if bowID != "" {
-		if grimoireID != "" {
-			return itemSpellMeta{}, fmt.Errorf("item(%s): bowId cannot be combined with grimoireId", entry.ID)
+		if activeID != "" {
+			return itemSpellMeta{}, fmt.Errorf("item(%s): bowId cannot be combined with activeId", entry.ID)
 		}
 		if _, ok := bowsByID[bowID]; !ok {
 			return itemSpellMeta{}, fmt.Errorf("item(%s): referenced bow not found (%s)", entry.ID, bowID)

@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"テレポート"},minecraft:lore=[{text:""},{text:"消費MP:40 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"old_teleport01"}}] 1

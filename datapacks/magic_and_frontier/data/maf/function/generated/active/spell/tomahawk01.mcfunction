@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"tomahawk01",cost:10,cast:0,cooltime:40,title:"トマホーク",description:"視線方向の最も近い敵にトマホークを投擲してダメージを与える"}

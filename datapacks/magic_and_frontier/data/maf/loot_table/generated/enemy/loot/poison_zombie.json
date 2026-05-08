@@ -73,7 +73,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{grimoire_id:\"old_prominence01\"}}"
+              "tag": "{maf:{active_id:\"old_prominence01\"}}"
             }
           ],
           "name": "minecraft:book",

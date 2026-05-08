@@ -11,10 +11,10 @@ import (
 	"slices"
 	"testing"
 
+	activeModel "maf_command_editor/app/domain/model/active"
 	bowModel "maf_command_editor/app/domain/model/bow"
 	enemyModel "maf_command_editor/app/domain/model/enemy"
 	enemyskillModel "maf_command_editor/app/domain/model/enemyskill"
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
 	spawntableModel "maf_command_editor/app/domain/model/spawntable"
@@ -62,7 +62,7 @@ func loadFixtureMaster(t *testing.T, caseDir string) exportMasterStub {
 
 	inputDir := filepath.Join(caseDir, "input")
 	return exportMasterStub{
-		grimoires:   loadEntries[grimoireModel.Grimoire](t, inputDir, "grimoires.json"),
+		actives:     loadEntries[activeModel.Active](t, inputDir, "actives.json"),
 		passives:    loadEntries[passiveModel.Passive](t, inputDir, "passives.json"),
 		bows:        loadEntries[bowModel.BowPassive](t, inputDir, "bows.json"),
 		items:       loadEntries[itemModel.Item](t, inputDir, "items.json"),
@@ -173,18 +173,18 @@ func defaultFixtureExportSettings(outputRoot string) config.ExportSettings {
 	return config.ExportSettings{
 		OutputRoot: outputRoot,
 		ExportPaths: config.ExportPaths{
-			GrimoireEffect: "generated/grimoire/effect",
-			GrimoireDebug:  "generated/grimoire/give",
-			ItemGive:       "generated/item/give",
-			PassiveEffect:  "generated/passive/effect",
-			PassiveGive:    "generated/passive/give",
-			PassiveApply:   "generated/passive/apply",
-			BowFlying:      "generated/bow/flying",
-			BowGround:      "generated/bow/ground",
-			Enemy:          "generated/enemy/spawn",
-			EnemySkill:     "generated/enemy/skill",
-			EnemyLoot:      "generated/enemy/loot",
-			SpawnTable:     "generated/enemy/replace",
+			ActiveEffect:  "generated/active/effect",
+			ActiveDebug:   "generated/active/give",
+			ItemGive:      "generated/item/give",
+			PassiveEffect: "generated/passive/effect",
+			PassiveGive:   "generated/passive/give",
+			PassiveApply:  "generated/passive/apply",
+			BowFlying:     "generated/bow/flying",
+			BowGround:     "generated/bow/ground",
+			Enemy:         "generated/enemy/spawn",
+			EnemySkill:    "generated/enemy/skill",
+			EnemyLoot:     "generated/enemy/loot",
+			SpawnTable:    "generated/enemy/replace",
 		},
 	}
 }

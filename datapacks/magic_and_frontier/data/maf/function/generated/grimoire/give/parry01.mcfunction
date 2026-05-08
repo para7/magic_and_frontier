@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"弾刃"},minecraft:lore=[{text:"攻撃を弾く"},{text:"消費MP:10 詠唱時間:0"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"parry01"}}] 1

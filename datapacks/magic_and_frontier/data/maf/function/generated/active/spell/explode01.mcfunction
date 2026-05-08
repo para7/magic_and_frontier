@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"explode01",cost:10,cast:20,cooltime:20,title:"エクスプロウド",description:"最も近い敵モブの位置にクリーパーを召喚して即爆破する"}

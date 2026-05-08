@@ -18,7 +18,7 @@ func BuildItemArtifacts(master DBMaster) ([]ItemGiveFunction, error) {
 	lookups := buildMasterEntityLookups(master)
 	results := make([]ItemGiveFunction, 0, len(lookups.items))
 	for _, entry := range lookups.items {
-		body, err := ec.ItemToGiveCommand(entry, lookups.grimoiresByID, lookups.passivesByID, lookups.bowsByID)
+		body, err := ec.ItemToGiveCommand(entry, lookups.activesByID, lookups.passivesByID, lookups.bowsByID)
 		if err != nil {
 			return nil, err
 		}

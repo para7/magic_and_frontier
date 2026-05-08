@@ -140,7 +140,7 @@ savedata 出力:
 | `maf_slug_id` | enemy id の形式違反 | 小文字化・記号除去 |
 | `trimmed_required: itemId` | itemId 未設定 or 空 | tmp から再抽出して埋める |
 | `dropMode oneof=append replace` | 値が別物 | `replace` に固定 |
-| 参照先エンティティが存在しない (grimoireId/passiveId/bowId 等) | tmp に `data:{maf:{...}}` が入っていた | 当該 maf フィールドを空に戻す |
+| 参照先エンティティが存在しない (activeId/passiveId/bowId 等) | tmp に `data:{maf:{...}}` が入っていた | 当該 maf フィールドを空に戻す |
 
 修正するたびに「何を」「どのキーを見てそう推測したか」「どの値にしたか」を記録し、最終報告で必ず提示する。推測ができない/自信が無い修正は自動で行わずユーザーに判断を仰ぐ。
 

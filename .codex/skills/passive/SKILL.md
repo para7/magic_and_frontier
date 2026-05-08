@@ -10,7 +10,7 @@ description: パッシブスキルシステムの設計リファレンス。パ�
 ## 関連スキル
 
 - **magic-casting**: 詠唱パイプライン。パッシブ「設定書」使用時の装備処理もこれを通る
-- **grimoire**: グリモアシステム。詠唱パイプラインを共有
+- **active**: アクティブシステム。詠唱パイプラインを共有
 - **ohmydat**: プレイヤー個別ストレージ。パッシブ装備状態の保存先
 - **maf-export**: Go ジェネレータのエクスポートパイプライン全体
 
@@ -71,7 +71,7 @@ model/passive/Passive[]
     ↓ export.BuildPassiveArtifacts()
     ├── []PassiveEffectFunction   { ID, Body }
     ├── []PassiveBowFunction      { ID, Body }
-    └── []PassiveGrimoireFunction { PassiveID, Slot, FunctionID, GiveBody, ApplyBody, Book }
+    └── []PassiveActiveFunction { PassiveID, Slot, FunctionID, GiveBody, ApplyBody, Book }
     ↓ WritePassiveArtifacts()
 generated/passive/
     ├── effect/{id}.mcfunction        — 効果スクリプト
@@ -146,7 +146,7 @@ advancement/arrow_hit.json → maf:passive/on_arrow_hit
 ### 4c. パッシブ設定書の使用（装備処理）
 
 パッシブ設定書も `minecraft:book` アイテムで、`maf.passive.{id,slot,condition}` を持つ。  
-使用すると `magic/use_grimoire` が `generated/passive/spell/{id}_slot{slot}` を呼んで casting を作り、通常の詠唱パイプラインを通る:
+使用すると `magic/use_active` が `generated/passive/spell/{id}_slot{slot}` を呼んで casting を作り、通常の詠唱パイプラインを通る:
 
 ```
 cast/exec → run_passive_apply with {id, slot}

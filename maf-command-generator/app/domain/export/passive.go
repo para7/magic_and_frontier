@@ -16,7 +16,7 @@ type PassiveEffectFunction struct {
 	Body string
 }
 
-type PassiveGrimoireFunction struct {
+type PassiveActiveFunction struct {
 	PassiveID  string
 	Slot       int
 	FunctionID string
@@ -26,14 +26,14 @@ type PassiveGrimoireFunction struct {
 	SpellBody  string
 }
 
-func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveGrimoireFunction, error) {
+func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveActiveFunction, error) {
 	if master == nil {
-		return []PassiveEffectFunction{}, []PassiveGrimoireFunction{}, nil
+		return []PassiveEffectFunction{}, []PassiveActiveFunction{}, nil
 	}
 
 	passives := master.ListPassives()
 	effects := make([]PassiveEffectFunction, 0, len(passives))
-	grimoires := make([]PassiveGrimoireFunction, 0, len(passives))
+	actives := make([]PassiveActiveFunction, 0, len(passives))
 
 	for _, entry := range passives {
 		effectBody := strings.Join(entry.Script, "\n")
@@ -55,7 +55,7 @@ func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveG
 					displayName = trimmed
 				}
 				applyBody := passiveApplyBody(slot, entry.ID, entry.Condition, displayName)
-				grimoires = append(grimoires, PassiveGrimoireFunction{
+				actives = append(actives, PassiveActiveFunction{
 					PassiveID:  entry.ID,
 					Slot:       slot,
 					FunctionID: functionID,
@@ -68,10 +68,10 @@ func BuildPassiveArtifacts(master DBMaster) ([]PassiveEffectFunction, []PassiveG
 		}
 	}
 
-	return effects, grimoires, nil
+	return effects, actives, nil
 }
 
-func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []PassiveEffectFunction, grimoires []PassiveGrimoireFunction) error {
+func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []PassiveEffectFunction, actives []PassiveActiveFunction) error {
 	for _, entry := range effects {
 		path := filepath.Join(effectDir, entry.ID+".mcfunction")
 		if err := writeFunctionFile(path, entry.Body); err != nil {
@@ -84,7 +84,7 @@ func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []Passiv
 	if err := removePassiveSlotFunctionFiles(applyDir); err != nil {
 		return err
 	}
-	for _, entry := range grimoires {
+	for _, entry := range actives {
 		givePath := filepath.Join(giveDir, entry.FunctionID+".mcfunction")
 		if err := writeFunctionFile(givePath, entry.GiveBody); err != nil {
 			return err
@@ -97,11 +97,11 @@ func WritePassiveArtifacts(effectDir, giveDir, applyDir string, effects []Passiv
 	return nil
 }
 
-func WritePassiveSpellArtifacts(spellDir string, grimoires []PassiveGrimoireFunction) error {
+func WritePassiveSpellArtifacts(spellDir string, actives []PassiveActiveFunction) error {
 	if err := removePassiveSlotFunctionFiles(spellDir); err != nil {
 		return err
 	}
-	for _, entry := range grimoires {
+	for _, entry := range actives {
 		path := filepath.Join(spellDir, entry.FunctionID+".mcfunction")
 		if err := writeFunctionFile(path, entry.SpellBody); err != nil {
 			return err

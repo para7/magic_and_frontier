@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"サイト・アロー"},minecraft:lore=[{text:"視線方向へ矢を射出する実装例"},{text:"消費MP:1 詠唱時間:10"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"sight_arrow01"}}] 1

@@ -15,8 +15,8 @@ export 層は `export.DBMaster` 経由でデータを読み取り、Minecraft �
 | `export.go` | `ExportDatapack`: オーケストレーション + パス解決 |
 | `convert/` | 純粋変換関数群（`export_convert` パッケージ） |
 | `io.go` | `writeFunctionFile`, `writeJSON`: ファイル書き込みユーティリティ |
-| `master_lookup.go` | `buildMasterEntityLookups`: master から items/grimoires/passives/bows をまとめてロードし ID マップ化（内部） |
-| `grimoire_effect.go` | `BuildGrimoireArtifacts` / `WriteGrimoireArtifacts` / `WriteGrimoireDebugArtifacts` |
+| `master_lookup.go` | `buildMasterEntityLookups`: master から items/actives/passives/bows をまとめてロードし ID マップ化（内部） |
+| `active_effect.go` | `BuildActiveArtifacts` / `WriteActiveArtifacts` / `WriteActiveDebugArtifacts` |
 | `item.go` | `BuildItemArtifacts` / `WriteItemArtifacts` |
 | `passive.go` | `BuildPassiveArtifacts` / `WritePassiveArtifacts` |
 | `bow.go` | `BuildBowArtifacts` / `WriteBowArtifacts` |
@@ -29,7 +29,7 @@ export 層は `export.DBMaster` 経由でデータを読み取り、Minecraft �
 
 エンティティデータを `.mcfunction` コマンド文字列や loot table JSON に変換する純粋関数群。主な変換:
 
-- グリモア/パッシブ → 本アイテム SNBT（`spellBookModel` 共通基盤、パッシブは詠唱 200tick / MP 10 固定）
+- アクティブ/パッシブ → 本アイテム SNBT（`spellBookModel` 共通基盤、パッシブは詠唱 200tick / MP 10 固定）
 - アイテム → give コマンド SNBT（custom_data・コンポーネント・エンチャント組み立て）
 - `maf:*` loot エントリ → バニラ互換 loot entry 解決・マージ
 - エネミー → summon NBT + function 行
@@ -63,4 +63,4 @@ export 層は `export.DBMaster` 経由でデータを読み取り、Minecraft �
 
 ## Treasure エクスポート
 
-`BuildTreasureArtifacts` は `savedata/loot_table/{namespace}/...` を走査し、`maf:item` / `maf:grimoire` / `maf:passive` エントリを vanilla 互換の loot entry に解決する。`minecraft` 名前空間のファイルは `minecraft/1.21.11/loot_table/` 配下のバニラ loot table を読み込み、カスタムプールを追記する（`append` 相当）。出力先は `{outputRoot}/data/{namespace}/loot_table/{relPath}.json`。
+`BuildTreasureArtifacts` は `savedata/loot_table/{namespace}/...` を走査し、`maf:item` / `maf:active` / `maf:passive` エントリを vanilla 互換の loot entry に解決する。`minecraft` 名前空間のファイルは `minecraft/1.21.11/loot_table/` 配下のバニラ loot table を読み込み、カスタムプールを追記する（`append` 相当）。出力先は `{outputRoot}/data/{namespace}/loot_table/{relPath}.json`。

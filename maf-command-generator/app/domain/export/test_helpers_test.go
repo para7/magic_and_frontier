@@ -1,17 +1,17 @@
 package export
 
 import (
+	activeModel "maf_command_editor/app/domain/model/active"
 	bowModel "maf_command_editor/app/domain/model/bow"
 	enemyModel "maf_command_editor/app/domain/model/enemy"
 	enemyskillModel "maf_command_editor/app/domain/model/enemyskill"
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
 	spawntableModel "maf_command_editor/app/domain/model/spawntable"
 )
 
 type exportMasterStub struct {
-	grimoires   []grimoireModel.Grimoire
+	actives     []activeModel.Active
 	passives    []passiveModel.Passive
 	bows        []bowModel.BowPassive
 	items       []itemModel.Item
@@ -20,9 +20,9 @@ type exportMasterStub struct {
 	spawnTables []spawntableModel.SpawnTable
 }
 
-func (s exportMasterStub) ListGrimoires() []grimoireModel.Grimoire {
-	out := make([]grimoireModel.Grimoire, len(s.grimoires))
-	copy(out, s.grimoires)
+func (s exportMasterStub) ListActives() []activeModel.Active {
+	out := make([]activeModel.Active, len(s.actives))
+	copy(out, s.actives)
 	return out
 }
 

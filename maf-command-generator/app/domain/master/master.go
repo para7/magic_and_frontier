@@ -5,10 +5,10 @@ import (
 	"log"
 
 	model "maf_command_editor/app/domain/model"
+	"maf_command_editor/app/domain/model/active"
 	"maf_command_editor/app/domain/model/bow"
 	"maf_command_editor/app/domain/model/enemy"
 	"maf_command_editor/app/domain/model/enemyskill"
-	"maf_command_editor/app/domain/model/grimoire"
 	"maf_command_editor/app/domain/model/item"
 	"maf_command_editor/app/domain/model/passive"
 	"maf_command_editor/app/domain/model/spawntable"
@@ -17,7 +17,7 @@ import (
 )
 
 type DBMaster struct {
-	grimoire   model.MafEntity[grimoire.Grimoire]
+	active     model.MafEntity[active.Active]
 	item       model.MafEntity[item.Item]
 	passive    model.MafEntity[passive.Passive]
 	bow        model.MafEntity[bow.BowPassive]
@@ -38,8 +38,8 @@ func NewDBMaster(cfg config.MafConfig) *DBMaster {
 			log.Fatalf("failed to load %s: %v", name, err)
 		}
 	}
-	d.grimoire = grimoire.NewGrimoireEntity(cfg.GrimoireStatePath)
-	load("grimoire", d.grimoire.Load)
+	d.active = active.NewActiveEntity(cfg.ActiveStatePath)
+	load("active", d.active.Load)
 
 	d.item = item.NewItemEntity(cfg.ItemStatePath)
 	load("item", d.item.Load)
@@ -64,17 +64,17 @@ func NewDBMaster(cfg config.MafConfig) *DBMaster {
 
 // ------ MafEntity 向けインターフェースの実装 ------
 
-func (d *DBMaster) HasGrimoire(id string) bool {
-	_, found := d.grimoire.Find(id)
+func (d *DBMaster) HasActive(id string) bool {
+	_, found := d.active.Find(id)
 	return found
 }
 
-func (d *DBMaster) GetGrimoire(id string) (model.GrimoireSnapshot, bool) {
-	entry, found := d.grimoire.Find(id)
+func (d *DBMaster) GetActive(id string) (model.ActiveSnapshot, bool) {
+	entry, found := d.active.Find(id)
 	if !found {
-		return model.GrimoireSnapshot{}, false
+		return model.ActiveSnapshot{}, false
 	}
-	return model.GrimoireSnapshot{
+	return model.ActiveSnapshot{
 		ID:         entry.ID,
 		LootEnable: entry.IsLootEnabled(),
 	}, true
@@ -133,7 +133,7 @@ func (d *DBMaster) HasMinecraftLootTable(tablePath string) bool {
 
 func (d *DBMaster) ValidateAll() [][]model.ValidationError {
 	var result [][]model.ValidationError
-	result = append(result, d.grimoire.ValidateAll(d)...)
+	result = append(result, d.active.ValidateAll(d)...)
 	result = append(result, d.item.ValidateAll(d)...)
 	result = append(result, d.passive.ValidateAll(d)...)
 	result = append(result, d.bow.ValidateAll(d)...)
@@ -158,13 +158,13 @@ func (d *DBMaster) ValidateAll() [][]model.ValidationError {
 
 // ------ Export 向けインターフェースの実装 ------
 
-func (d *DBMaster) GetGrimoireByID(id string) (grimoire.Grimoire, bool) {
-	return d.grimoire.Find(id)
+func (d *DBMaster) GetActiveByID(id string) (active.Active, bool) {
+	return d.active.Find(id)
 }
 
-func (d *DBMaster) ListGrimoires() []grimoire.Grimoire {
-	entries := d.grimoire.GetAll()
-	result := make([]grimoire.Grimoire, len(entries))
+func (d *DBMaster) ListActives() []active.Active {
+	entries := d.active.GetAll()
+	result := make([]active.Active, len(entries))
 	copy(result, entries)
 	return result
 }

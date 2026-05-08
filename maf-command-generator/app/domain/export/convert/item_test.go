@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
+	activeModel "maf_command_editor/app/domain/model/active"
 	bowModel "maf_command_editor/app/domain/model/bow"
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
 )
@@ -15,8 +15,8 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 		ID:     "items_1",
 		ItemID: "minecraft:stone",
 		Maf: itemModel.ItemMaf{
-			GrimoireID: "tempest01",
-			PassiveID:  "regeneration",
+			ActiveID:  "tempest01",
+			PassiveID: "regeneration",
 		},
 		Minecraft: map[string]any{
 			"components": map[string]any{
@@ -31,7 +31,7 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 		},
 	}
 
-	grimoiresByID := map[string]grimoireModel.Grimoire{
+	activesByID := map[string]activeModel.Active{
 		"tempest01": {
 			ID:          "tempest01",
 			MPCost:      13,
@@ -51,15 +51,15 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 		},
 	}
 
-	customData, err := itemCustomData(entry, grimoiresByID, passivesByID, nil)
+	customData, err := itemCustomData(entry, activesByID, passivesByID, nil)
 	if err != nil {
 		t.Fatalf("itemCustomData returned error: %v", err)
 	}
 	if !strings.Contains(customData, `item_id:"minecraft:stone"`) {
 		t.Fatalf("item_id missing from custom data: %s", customData)
 	}
-	if !strings.Contains(customData, `grimoire_id:"tempest01"`) {
-		t.Fatalf("grimoire_id missing from custom data: %s", customData)
+	if !strings.Contains(customData, `active_id:"tempest01"`) {
+		t.Fatalf("active_id missing from custom data: %s", customData)
 	}
 	if !strings.Contains(customData, `hasPassive:1b`) {
 		t.Fatalf("hasPassive tag missing from custom data: %s", customData)
@@ -77,7 +77,7 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 		t.Fatalf("nbt snapshot should be derived from components: %s", customData)
 	}
 
-	components, err := itemComponentsForLoot(entry, grimoiresByID, passivesByID, nil)
+	components, err := itemComponentsForLoot(entry, activesByID, passivesByID, nil)
 	if err != nil {
 		t.Fatalf("itemComponentsForLoot returned error: %v", err)
 	}
@@ -171,7 +171,7 @@ func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 		ID:     "items_1",
 		ItemID: "minecraft:stone",
 		Maf: itemModel.ItemMaf{
-			GrimoireID: "tempest01",
+			ActiveID: "tempest01",
 		},
 		Minecraft: map[string]any{
 			"components": map[string]any{
@@ -182,7 +182,7 @@ func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 			},
 		},
 	}
-	grimoiresByID := map[string]grimoireModel.Grimoire{
+	activesByID := map[string]activeModel.Active{
 		"tempest01": {
 			ID:          "tempest01",
 			MPCost:      13,
@@ -193,7 +193,7 @@ func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 		},
 	}
 
-	command, err := ItemToGiveCommand(entry, grimoiresByID, nil, nil)
+	command, err := ItemToGiveCommand(entry, activesByID, nil, nil)
 	if err != nil {
 		t.Fatalf("ItemToGiveCommand returned error: %v", err)
 	}
@@ -224,7 +224,7 @@ func TestItemToGiveCommandOverridesMinecraftConsumableForSpellItems(t *testing.T
 		ID:     "items_1",
 		ItemID: "minecraft:stone",
 		Maf: itemModel.ItemMaf{
-			GrimoireID: "tempest01",
+			ActiveID: "tempest01",
 		},
 		Minecraft: map[string]any{
 			"components": map[string]any{
@@ -232,11 +232,11 @@ func TestItemToGiveCommandOverridesMinecraftConsumableForSpellItems(t *testing.T
 			},
 		},
 	}
-	grimoiresByID := map[string]grimoireModel.Grimoire{
+	activesByID := map[string]activeModel.Active{
 		"tempest01": {ID: "tempest01", MPCost: 1, CastTime: 1, CoolTime: 1, Title: "Spell"},
 	}
 
-	command, err := ItemToGiveCommand(entry, grimoiresByID, nil, nil)
+	command, err := ItemToGiveCommand(entry, activesByID, nil, nil)
 	if err != nil {
 		t.Fatalf("ItemToGiveCommand returned error: %v", err)
 	}
@@ -253,7 +253,7 @@ func TestItemComponentsForLootOverridesMinecraftConsumableForSpellItems(t *testi
 		ID:     "items_1",
 		ItemID: "minecraft:stone",
 		Maf: itemModel.ItemMaf{
-			GrimoireID: "tempest01",
+			ActiveID: "tempest01",
 		},
 		Minecraft: map[string]any{
 			"components": map[string]any{
@@ -262,11 +262,11 @@ func TestItemComponentsForLootOverridesMinecraftConsumableForSpellItems(t *testi
 			},
 		},
 	}
-	grimoiresByID := map[string]grimoireModel.Grimoire{
+	activesByID := map[string]activeModel.Active{
 		"tempest01": {ID: "tempest01", MPCost: 1, CastTime: 1, CoolTime: 1, Title: "Spell"},
 	}
 
-	components, err := itemComponentsForLoot(entry, grimoiresByID, nil, nil)
+	components, err := itemComponentsForLoot(entry, activesByID, nil, nil)
 	if err != nil {
 		t.Fatalf("itemComponentsForLoot returned error: %v", err)
 	}
@@ -383,23 +383,23 @@ func TestCrossbowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
 	}
 }
 
-func TestBowItemRejectsHybridGrimoireMetadata(t *testing.T) {
+func TestBowItemRejectsHybridActiveMetadata(t *testing.T) {
 	entry := itemModel.Item{
 		ID:     "bow_hybrid",
 		ItemID: "minecraft:bow",
 		Maf: itemModel.ItemMaf{
-			BowID:      "test_full",
-			GrimoireID: "tempest01",
+			BowID:    "test_full",
+			ActiveID: "tempest01",
 		},
 	}
-	grimoiresByID := map[string]grimoireModel.Grimoire{
+	activesByID := map[string]activeModel.Active{
 		"tempest01": {ID: "tempest01", MPCost: 1, CastTime: 1, CoolTime: 1, Title: "Spell"},
 	}
 	bowsByID := map[string]bowModel.BowPassive{
 		"test_full": {ID: "test_full"},
 	}
 
-	if _, err := ItemToGiveCommand(entry, grimoiresByID, nil, bowsByID); err == nil {
-		t.Fatal("expected hybrid bow/grimoire item to be rejected")
+	if _, err := ItemToGiveCommand(entry, activesByID, nil, bowsByID); err == nil {
+		t.Fatal("expected hybrid bow/active item to be rejected")
 	}
 }

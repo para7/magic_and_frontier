@@ -38,14 +38,14 @@ func TestMafSlugIDValidation(t *testing.T) {
 
 func TestFormatValidationErrorForSlugID(t *testing.T) {
 	err := model.ValidationError{
-		Entity: "grimoire",
+		Entity: "active",
 		ID:     "Fire Bolt",
 		Field:  "id",
 		Tag:    "maf_slug_id",
 	}
 
 	got := FormatValidationError(err)
-	want := "grimoire【Fire Bolt】id: 半角小文字英数字、_、- のみ使用できます"
+	want := "active【Fire Bolt】id: 半角小文字英数字、_、- のみ使用できます"
 	if got != want {
 		t.Fatalf("FormatValidationError() = %q, want %q", got, want)
 	}

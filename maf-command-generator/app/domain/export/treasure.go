@@ -66,7 +66,7 @@ func BuildTreasureArtifacts(master DBMaster, lootTableSourceRoot, minecraftLootR
 			return fmt.Errorf("%s: pools must be an array", context)
 		}
 
-		resolvedPools, err := ec.ResolveMafLootPools(pools, lookups.itemsByID, lookups.grimoiresByID, lookups.passivesByID, lookups.bowsByID, context)
+		resolvedPools, err := ec.ResolveMafLootPools(pools, lookups.itemsByID, lookups.activesByID, lookups.passivesByID, lookups.bowsByID, context)
 		if err != nil {
 			return err
 		}

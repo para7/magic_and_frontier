@@ -73,7 +73,7 @@ func ValidateDropRefs(entity, id, prefix string, drops []DropRef, mas DBMaster) 
 						Tag:   "relation", Param: "item not found",
 					})
 				}
-			case "grimoire":
+			case "active":
 				if d.Slot != nil {
 					errs = append(errs, ValidationError{
 						Entity: entity, ID: id,
@@ -81,11 +81,11 @@ func ValidateDropRefs(entity, id, prefix string, drops []DropRef, mas DBMaster) 
 						Tag:   "relation", Param: "slot is only supported when kind=passive",
 					})
 				}
-				if !mas.HasGrimoire(refID) {
+				if !mas.HasActive(refID) {
 					errs = append(errs, ValidationError{
 						Entity: entity, ID: id,
 						Field: fmt.Sprintf("%s[%d].refId", prefix, i),
-						Tag:   "relation", Param: "grimoire not found",
+						Tag:   "relation", Param: "active not found",
 					})
 				}
 			case "passive":
@@ -218,7 +218,7 @@ func ValidateMafLootPools(entity, id, prefix string, pools []any, mas DBMaster) 
 						Tag:   "relation", Param: "item not found",
 					})
 				}
-			case "maf:grimoire":
+			case "maf:active":
 				if hasEntrySlot(entry) {
 					errs = append(errs, ValidationError{
 						Entity: entity, ID: id,
@@ -226,18 +226,18 @@ func ValidateMafLootPools(entity, id, prefix string, pools []any, mas DBMaster) 
 						Tag:   "relation", Param: "slot is only supported when type=maf:passive",
 					})
 				}
-				grimoire, found := mas.GetGrimoire(refID)
+				active, found := mas.GetActive(refID)
 				if !found {
 					errs = append(errs, ValidationError{
 						Entity: entity, ID: id,
 						Field: entryField + ".name",
-						Tag:   "relation", Param: "grimoire not found",
+						Tag:   "relation", Param: "active not found",
 					})
-				} else if !grimoire.LootEnable {
+				} else if !active.LootEnable {
 					errs = append(errs, ValidationError{
 						Entity: entity, ID: id,
 						Field: entryField + ".name",
-						Tag:   "relation", Param: "grimoire loot_enable must be true when type=maf:grimoire",
+						Tag:   "relation", Param: "active loot_enable must be true when type=maf:active",
 					})
 				}
 			case "maf:passive":

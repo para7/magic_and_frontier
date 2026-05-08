@@ -1,1 +1,0 @@
-data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"grimoire",id:"tornado_circle01",cost:10,cast:20,cooltime:20,title:"トルネード",description:"周囲8ブロックの敵を竜巻で打ち上げる"}

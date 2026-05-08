@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"フリーズ"},minecraft:lore=[{text:"水を凍らせ、氷上の存在に大ダメージ"},{text:"消費MP:11 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"freeze01"}}] 1

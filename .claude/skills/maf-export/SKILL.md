@@ -9,7 +9,7 @@ Go ジェネレータ（maf-command-generator）が JSON マスターデータ�
 
 ## 関連スキル
 
-- **grimoire**: グリモア固有の変換ロジック
+- **active**: アクティブ固有の変換ロジック
 - **passive**: パッシブ固有の変換ロジック
 - **ohmydat**: 生成されるコマンドが使う oh_my_dat ストレージ
 
@@ -55,7 +55,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 処理順序:
 
 1. `config/export_settings.json` から出力パスを読み込み
-2. **グリモア**: `BuildGrimoireArtifacts` → `WriteGrimoireArtifacts` + `WriteGrimoireDebugArtifacts`
+2. **アクティブ**: `BuildActiveArtifacts` → `WriteActiveArtifacts` + `WriteActiveDebugArtifacts`
 3. **アイテム**: `BuildItemArtifacts` → `WriteItemArtifacts`
 4. レガシーファイル削除（`selectexec.mcfunction`, `setup_effect_ref_map.mcfunction`）
 5. **パッシブ**: `BuildPassiveArtifacts` → `WritePassiveArtifacts`
@@ -80,8 +80,8 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 
 | 設定キー | デフォルト値 | 出力先 |
 |---------|------------|-------|
-| grimoireEffect | `generated/grimoire/effect` | `function/generated/grimoire/effect/` |
-| grimoireDebug | `generated/grimoire/give` | `function/generated/grimoire/give/` |
+| activeEffect | `generated/active/effect` | `function/generated/active/effect/` |
+| activeDebug | `generated/active/give` | `function/generated/active/give/` |
 | itemGive | `generated/item/give` | `function/generated/item/give/` |
 | passiveEffect | `generated/passive/effect` | `function/generated/passive/effect/` |
 | passiveGive | `generated/passive/give` | `function/generated/passive/give/` |
@@ -112,7 +112,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 | ファイル | 主要関数 | 用途 |
 |---------|---------|------|
 | `json.go` | `JsonString`, `ToCountValue`, `ToWeight` | SNBT文字列化、lootテーブル数値変換 |
-| `grimoire.go` | `GrimoireToBook` | グリモア → 本アイテム SNBT |
+| `active.go` | `ActiveToBook` | アクティブ → 本アイテム SNBT |
 | `passive.go` | `PassiveToBook` | パッシブ → 設定書アイテム SNBT |
 | `book.go` | `spellBookModel.ToGiveItem` | spell本の共通組み立て |
 | `item.go` | (内部) | アイテム custom_data・コンポーネント・エンチャント |
@@ -121,13 +121,13 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 
 ### spell フラグメント生成
 
-`grimoire.go` と `passive.go` は共通の `spellFragment()` を使う:
+`active.go` と `passive.go` は共通の `spellFragment()` を使う:
 
 ```go
 func spellFragment(kind, id string, slot *int, mpCost, castTime, coolTime int, title, description string) string
 ```
 
-- グリモア: `slot = nil` → slot フィールドなし
+- アクティブ: `slot = nil` → slot フィールドなし
 - パッシブ: `slot = &N` → `slot:N` フィールドあり
 
 ### spellBookModel（共通本モデル）
@@ -148,10 +148,10 @@ type spellBookModel struct {
 
 ## 5. エンティティ別の成果物
 
-### グリモア
+### アクティブ
 
 ```
-GrimoireEffectFunction { ID, Body, Book }
+ActiveEffectFunction { ID, Body, Book }
 ```
 - **effect/{id}.mcfunction**: `Body`（Script[] の結合）
 - **give/{id}.mcfunction**: `give @p {Book} 1`
@@ -161,7 +161,7 @@ GrimoireEffectFunction { ID, Body, Book }
 ```
 // BuildPassiveArtifacts returns:
 []PassiveEffectFunction    { ID, Body }
-[]PassiveGrimoireFunction  { PassiveID, Slot, FunctionID, GiveBody, ApplyBody, Book }
+[]PassiveActiveFunction  { PassiveID, Slot, FunctionID, GiveBody, ApplyBody, Book }
 ```
 - **effect/{id}.mcfunction**: `Script[]` を結合した効果本体
 - **give/{id}_slot{N}.mcfunction**: 設定書 give コマンド（`GenerateGrimoire=true` のパッシブのみ、Slots ごとに1ファイル）
@@ -188,7 +188,7 @@ GrimoireEffectFunction { ID, Body, Book }
 []TreasureArtifact { Namespace, RelPath, LootTable }
 ```
 - `savedata/loot_table/{namespace}/{relPath}.json` の各ファイルを走査
-- `maf:item` / `maf:grimoire` / `maf:passive` エントリは `ResolveMafLootPools` でバニラ互換の loot entry に解決
+- `maf:item` / `maf:active` / `maf:passive` エントリは `ResolveMafLootPools` でバニラ互換の loot entry に解決
 - `namespace == "minecraft"` の場合は `minecraft/1.21.11/loot_table/` のバニラ loot table をベースに `MergeLootTablePools` でプール追記
 - 出力: `{outputRoot}/data/{namespace}/loot_table/{relPath}.json`
 
@@ -228,7 +228,7 @@ SpawnTableArtifact { ID, Table, MainEntry }
 
 1. **構造バリデーション**: validate タグによる型・範囲チェック
 2. **リレーションバリデーション**: `model.DBMaster.Has*()` で参照先の存在確認
-   - 例: `DropRef.Kind="grimoire"` → `HasGrimoire(RefID)` で存在チェック
+   - 例: `DropRef.Kind="active"` → `HasActive(RefID)` で存在チェック
 3. **一括バリデーション**: 全レコードの重複IDチェック
 
 ### カスタムバリデータ

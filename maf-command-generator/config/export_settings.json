@@ -5,8 +5,8 @@
     "../datapacks/magic_and_frontier/data/maf/loot_table/generated"
   ],
   "exportPaths": {
-    "grimoireEffect": "generated/grimoire/effect",
-    "grimoireDebug": "generated/grimoire/give",
+    "activeEffect": "generated/active/effect",
+    "activeDebug": "generated/active/give",
     "itemGive": "generated/item/give",
     "passiveEffect": "generated/passive/effect",
     "passiveGive": "generated/passive/give",

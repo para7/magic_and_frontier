@@ -24,10 +24,10 @@ func hasFieldError(errs []model.ValidationError, field string) bool {
 
 type testDBMaster struct{}
 
-func (testDBMaster) HasItem(string) bool     { return true }
-func (testDBMaster) HasGrimoire(string) bool { return true }
-func (testDBMaster) GetGrimoire(string) (model.GrimoireSnapshot, bool) {
-	return model.GrimoireSnapshot{ID: "grimoire_1", LootEnable: true}, true
+func (testDBMaster) HasItem(string) bool   { return true }
+func (testDBMaster) HasActive(string) bool { return true }
+func (testDBMaster) GetActive(string) (model.ActiveSnapshot, bool) {
+	return model.ActiveSnapshot{ID: "active_1", LootEnable: true}, true
 }
 func (testDBMaster) HasPassive(string) bool { return true }
 func (testDBMaster) GetPassive(string) (model.PassiveSnapshot, bool) {
@@ -82,13 +82,13 @@ func TestItemValidateStructPerField(t *testing.T) {
 
 func TestItemValidateRelationUsesMafRefs(t *testing.T) {
 	entity := &ItemEntity{}
-	t.Run("missing grimoire", func(t *testing.T) {
+	t.Run("missing active", func(t *testing.T) {
 		it := validItem()
-		it.Maf.GrimoireID = "grimoire_missing"
+		it.Maf.ActiveID = "active_missing"
 
-		errs := entity.ValidateRelation(it, relationMissingRefsDBMaster{missingGrimoire: true})
-		if !hasFieldError(errs, "maf.grimoireId") {
-			t.Fatalf("expected maf.grimoireId relation error, got %#v", errs)
+		errs := entity.ValidateRelation(it, relationMissingRefsDBMaster{missingActive: true})
+		if !hasFieldError(errs, "maf.activeId") {
+			t.Fatalf("expected maf.activeId relation error, got %#v", errs)
 		}
 	})
 
@@ -146,15 +146,15 @@ func TestItemValidateRelationUsesMafRefs(t *testing.T) {
 		}
 	})
 
-	t.Run("bow rejects grimoire combination", func(t *testing.T) {
+	t.Run("bow rejects active combination", func(t *testing.T) {
 		it := validItem()
 		it.ItemID = "minecraft:bow"
 		it.Maf.BowID = "bow_1"
-		it.Maf.GrimoireID = "grimoire_1"
+		it.Maf.ActiveID = "active_1"
 
 		errs := entity.ValidateRelation(it, testDBMaster{})
-		if !hasFieldError(errs, "maf.grimoireId") {
-			t.Fatalf("expected maf.grimoireId relation error, got %#v", errs)
+		if !hasFieldError(errs, "maf.activeId") {
+			t.Fatalf("expected maf.activeId relation error, got %#v", errs)
 		}
 	})
 }
@@ -180,11 +180,11 @@ func TestItemValidateAllDetectsDuplicateID(t *testing.T) {
 
 type relationMissingRefsDBMaster struct {
 	testDBMaster
-	missingGrimoire bool
-	missingPassive  bool
-	missingBow      bool
+	missingActive  bool
+	missingPassive bool
+	missingBow     bool
 }
 
-func (s relationMissingRefsDBMaster) HasGrimoire(string) bool { return !s.missingGrimoire }
-func (s relationMissingRefsDBMaster) HasPassive(string) bool  { return !s.missingPassive }
-func (s relationMissingRefsDBMaster) HasBow(string) bool      { return !s.missingBow }
+func (s relationMissingRefsDBMaster) HasActive(string) bool  { return !s.missingActive }
+func (s relationMissingRefsDBMaster) HasPassive(string) bool { return !s.missingPassive }
+func (s relationMissingRefsDBMaster) HasBow(string) bool     { return !s.missingBow }

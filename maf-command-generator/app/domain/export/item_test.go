@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	activeModel "maf_command_editor/app/domain/model/active"
 	bowModel "maf_command_editor/app/domain/model/bow"
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
 	config "maf_command_editor/app/files"
@@ -36,7 +36,7 @@ func TestItemExportFixtures(t *testing.T) {
 
 func TestBuildItemArtifactsBuildsGiveCommands(t *testing.T) {
 	master := exportMasterStub{
-		grimoires: []grimoireModel.Grimoire{
+		actives: []activeModel.Active{
 			{ID: "tempest01", MPCost: 13, CastTime: 40, CoolTime: 20, Title: "テンペスト", Description: "敵1体に雷を落とし周辺に特大ダメージ"},
 		},
 		passives: []passiveModel.Passive{
@@ -47,8 +47,8 @@ func TestBuildItemArtifactsBuildsGiveCommands(t *testing.T) {
 				ID:     "items_1",
 				ItemID: "minecraft:stone",
 				Maf: itemModel.ItemMaf{
-					GrimoireID: "tempest01",
-					PassiveID:  "regeneration",
+					ActiveID:  "tempest01",
+					PassiveID: "regeneration",
 				},
 				Minecraft: map[string]any{
 					"components": map[string]any{
@@ -173,12 +173,12 @@ func TestExportDatapackWritesItemArtifacts(t *testing.T) {
 	settings := map[string]any{
 		"outputRoot": filepath.Join(root, "out"),
 		"exportPaths": map[string]any{
-			"grimoireEffect": "generated/grimoire/effect",
-			"grimoireDebug":  "generated/grimoire/give",
-			"itemGive":       "generated/item/give",
-			"enemy":          "generated/enemy/spawn",
-			"enemySkill":     "generated/enemy/skill",
-			"enemyLoot":      "generated/enemy/loot",
+			"activeEffect": "generated/active/effect",
+			"activeDebug":  "generated/active/give",
+			"itemGive":     "generated/item/give",
+			"enemy":        "generated/enemy/spawn",
+			"enemySkill":   "generated/enemy/skill",
+			"enemyLoot":    "generated/enemy/loot",
 		},
 	}
 	data, err := json.Marshal(settings)
@@ -230,11 +230,11 @@ func TestExportDatapackUsesDefaultItemGivePathWhenUnset(t *testing.T) {
 	settings := map[string]any{
 		"outputRoot": filepath.Join(root, "out"),
 		"exportPaths": map[string]any{
-			"grimoireEffect": "generated/grimoire/effect",
-			"grimoireDebug":  "generated/grimoire/give",
-			"enemy":          "generated/enemy/spawn",
-			"enemySkill":     "generated/enemy/skill",
-			"enemyLoot":      "generated/enemy/loot",
+			"activeEffect": "generated/active/effect",
+			"activeDebug":  "generated/active/give",
+			"enemy":        "generated/enemy/spawn",
+			"enemySkill":   "generated/enemy/skill",
+			"enemyLoot":    "generated/enemy/loot",
 		},
 	}
 	data, err := json.Marshal(settings)

@@ -19,10 +19,10 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 		return err
 	}
 
-	effectLogicalDir := settings.ExportPaths.GrimoireEffect
+	effectLogicalDir := settings.ExportPaths.ActiveEffect
 	effectDir := filepath.Join(settings.OutputRoot, funcRoot, effectLogicalDir)
-	debugDir := filepath.Join(settings.OutputRoot, funcRoot, settings.ExportPaths.GrimoireDebug)
-	grimoireSpellDir := filepath.Join(settings.OutputRoot, funcRoot, "generated/grimoire/spell")
+	debugDir := filepath.Join(settings.OutputRoot, funcRoot, settings.ExportPaths.ActiveDebug)
+	activeSpellDir := filepath.Join(settings.OutputRoot, funcRoot, "generated/active/spell")
 	itemGiveLogicalDir := normalizePathOrDefault(settings.ExportPaths.ItemGive, "generated/item/give")
 	itemGiveDir := filepath.Join(settings.OutputRoot, funcRoot, itemGiveLogicalDir)
 	passiveEffectLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveEffect, "generated/passive/effect")
@@ -46,8 +46,8 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	spawnTableLogicalDir := normalizePathOrDefault(settings.ExportPaths.SpawnTable, "generated/enemy/replace")
 	spawnTableDir := filepath.Join(settings.OutputRoot, funcRoot, spawnTableLogicalDir)
 
-	effects := BuildGrimoireArtifacts(dmas)
-	passiveEffects, passiveGrimoires, err := BuildPassiveArtifacts(dmas)
+	effects := BuildActiveArtifacts(dmas)
+	passiveEffects, passiveActives, err := BuildPassiveArtifacts(dmas)
 	if err != nil {
 		return err
 	}
@@ -55,13 +55,13 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	if err != nil {
 		return err
 	}
-	if err := WriteGrimoireArtifacts(effectDir, effects); err != nil {
+	if err := WriteActiveArtifacts(effectDir, effects); err != nil {
 		return err
 	}
-	if err := WriteGrimoireSpellArtifacts(grimoireSpellDir, effects); err != nil {
+	if err := WriteActiveSpellArtifacts(activeSpellDir, effects); err != nil {
 		return err
 	}
-	if err := WriteGrimoireDebugArtifacts(debugDir, effects); err != nil {
+	if err := WriteActiveDebugArtifacts(debugDir, effects); err != nil {
 		return err
 	}
 	itemGives, err := BuildItemArtifacts(dmas)
@@ -71,17 +71,17 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	if err := WriteItemArtifacts(itemGiveDir, itemGives); err != nil {
 		return err
 	}
-	grimoireDir := filepath.Dir(effectDir)
-	if err := removeFileIfExists(filepath.Join(grimoireDir, "selectexec.mcfunction")); err != nil {
+	activeDir := filepath.Dir(effectDir)
+	if err := removeFileIfExists(filepath.Join(activeDir, "selectexec.mcfunction")); err != nil {
 		return err
 	}
-	if err := removeFileIfExists(filepath.Join(grimoireDir, "setup_effect_ref_map.mcfunction")); err != nil {
+	if err := removeFileIfExists(filepath.Join(activeDir, "setup_effect_ref_map.mcfunction")); err != nil {
 		return err
 	}
-	if err := WritePassiveArtifacts(passiveEffectDir, passiveGiveDir, passiveApplyDir, passiveEffects, passiveGrimoires); err != nil {
+	if err := WritePassiveArtifacts(passiveEffectDir, passiveGiveDir, passiveApplyDir, passiveEffects, passiveActives); err != nil {
 		return err
 	}
-	if err := WritePassiveSpellArtifacts(passiveSpellDir, passiveGrimoires); err != nil {
+	if err := WritePassiveSpellArtifacts(passiveSpellDir, passiveActives); err != nil {
 		return err
 	}
 	if err := WriteBowArtifacts(passiveEffectDir, passiveBowDir, bowFlyingDir, bowGroundDir, dmas.ListBows(), bowEffects, bowHits, bowFlyings, bowGrounds); err != nil {

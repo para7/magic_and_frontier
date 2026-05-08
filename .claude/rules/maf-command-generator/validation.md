@@ -35,8 +35,8 @@ CRLF/CR → LF 統一 + 前後空白除去。全入力テキストに適用。
 
 ## validate_helpers.go
 
-- `ValidateDropRefs()`: DropRef スライスの参照先存在確認（item/grimoire/passive/minecraft_item）+ CountMin <= CountMax チェック。passive の場合は Slot 必須チェックも行う
-- `ValidateMafLootPools()`: `maf:item` / `maf:grimoire` / `maf:passive` を含む loot pool（任意の JSON マップ）を走査して参照先・slot・count を検証する
+- `ValidateDropRefs()`: DropRef スライスの参照先存在確認（item/active/passive/minecraft_item）+ CountMin <= CountMax チェック。passive の場合は Slot 必須チェックも行う
+- `ValidateMafLootPools()`: `maf:item` / `maf:active` / `maf:passive` を含む loot pool（任意の JSON マップ）を走査して参照先・slot・count を検証する
 - `ValidateEquipmentSlots()`: Equipment 6 スロットの参照先存在確認
 - `IsNamespacedResourceID()`, `IsSafeNamespacedResourcePath()`, `NormalizeResourcePath()`: リソースID/パスの検証・正規化
 - `ParseLootEntryCount()`, `ParseLootEntrySlot()`: loot entry JSON から count/slot を取り出すヘルパー（バリデーション + convert で共有）

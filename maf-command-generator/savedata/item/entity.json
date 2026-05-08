@@ -24,7 +24,7 @@
     {
       "id": "test_sword_magic",
       "maf": {
-        "grimoireId": "old_tempest01"
+        "activeId": "old_tempest01"
       },
       "minecraft": {
         "components": {
@@ -81,7 +81,7 @@
     {
       "id": "test_sword_both",
       "maf": {
-        "grimoireId": "old_tempest01",
+        "activeId": "old_tempest01",
         "passiveId": "regeneration"
       },
       "minecraft": {

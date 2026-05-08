@@ -1,6 +1,6 @@
 ---
 name: sight
-description: 視線判定（ライン・オブ・サイト）システムの設計リファレンス。プレイヤーの視線方向にいるモブを検出してタグ付けする共通ユーティリティ。グリモアのエフェクト Script[] にこの仕組みを使いたい場合、パッシブで視線方向の敵を対象にしたい場合、または「視線上の敵」「見ている方向」「ターゲット指定」系の処理を書くときは必ずこのスキルを参照すること。
+description: 視線判定（ライン・オブ・サイト）システムの設計リファレンス。プレイヤーの視線方向にいるモブを検出してタグ付けする共通ユーティリティ。アクティブのエフェクト Script[] にこの仕組みを使いたい場合、パッシブで視線方向の敵を対象にしたい場合、または「視線上の敵」「見ている方向」「ターゲット指定」系の処理を書くときは必ずこのスキルを参照すること。
 ---
 
 # 視線判定システム（Line of Sight）
@@ -41,7 +41,7 @@ execute as @e[type=#maf:enemymob,tag=maf_target,distance=..20,sort=nearest,limit
 effect give @e[type=#maf:enemymob,tag=maf_sight_candidate,distance=..20] minecraft:glowing 1 0 true
 ```
 
-### グリモアの Script[] に組み込む場合
+### アクティブの Script[] に組み込む場合
 
 ```json
 {

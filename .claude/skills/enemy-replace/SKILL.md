@@ -10,7 +10,7 @@ description: バニラモブをカスタムエネミーに重み付き確率で�
 ## 関連スキル
 
 - **maf-export**: 全エクスポートパイプラインの位置付け。`BuildSpawnTableArtifacts` はそのひとつ
-- **passive** / **bow-passive** / **grimoire**: 他のエクスポート対象。共通のビルド/ライト分離パターン
+- **passive** / **bow-passive** / **active**: 他のエクスポート対象。共通のビルド/ライト分離パターン
 
 ---
 

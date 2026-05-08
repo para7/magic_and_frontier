@@ -1,0 +1,1 @@
+give @p minecraft:book[minecraft:item_name={text:"ポイズンサイト"},minecraft:lore=[{text:"視線の4ブロック先を中心に半径3.5ブロックの円範囲へ毒(Poison II)を10秒間与える"},{text:"消費MP:10 詠唱時間:20"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"poison_sight01"}}] 1

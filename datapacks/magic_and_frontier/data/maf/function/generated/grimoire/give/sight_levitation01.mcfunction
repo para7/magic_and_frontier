@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"サイト・リフト"},minecraft:lore=[{text:"視線方向の狭い範囲に浮遊を付与する"},{text:"消費MP:1 詠唱時間:10"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"sight_levitation01"}}] 1

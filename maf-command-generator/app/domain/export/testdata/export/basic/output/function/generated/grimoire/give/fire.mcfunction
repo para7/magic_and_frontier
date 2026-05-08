@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"Fire"},minecraft:lore=[{text:"Basic fire spell."},{text:"消費MP:7 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"fire"}}] 1

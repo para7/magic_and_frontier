@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"sight_arrow01",cost:1,cast:10,cooltime:10,title:"サイト・アロー",description:"視線方向へ矢を射出する実装例"}

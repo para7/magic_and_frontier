@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
+	activeModel "maf_command_editor/app/domain/model/active"
 	config "maf_command_editor/app/files"
 )
 
@@ -29,7 +29,7 @@ func TestExportDatapackCleansConfiguredPaths(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	staleFunctionPath := filepath.Join(outputRoot, "data", "maf", "function", "generated", "grimoire", "effect", "fulminant_true_01.mcfunction")
+	staleFunctionPath := filepath.Join(outputRoot, "data", "maf", "function", "generated", "active", "effect", "fulminant_true_01.mcfunction")
 	staleLootPath := filepath.Join(outputRoot, "data", "maf", "loot_table", "generated", "enemy", "loot", "stale_enemy.json")
 	if err := writeFunctionFile(staleFunctionPath, "say stale"); err != nil {
 		t.Fatal(err)
@@ -44,7 +44,7 @@ func TestExportDatapackCleansConfiguredPaths(t *testing.T) {
 	cfg.MinecraftLootTableRoot = filepath.Join(root, "minecraft", "loot_table")
 
 	master := exportMasterStub{
-		grimoires: []grimoireModel.Grimoire{
+		actives: []activeModel.Active{
 			{
 				ID:          "fulminant01",
 				Description: "雷鳴で敵を攻撃する",
@@ -67,9 +67,9 @@ func TestExportDatapackCleansConfiguredPaths(t *testing.T) {
 		t.Fatalf("stale loot should be removed, err=%v", err)
 	}
 
-	currentPath := filepath.Join(outputRoot, "data", "maf", "function", "generated", "grimoire", "effect", "fulminant01.mcfunction")
+	currentPath := filepath.Join(outputRoot, "data", "maf", "function", "generated", "active", "effect", "fulminant01.mcfunction")
 	if _, err := os.Stat(currentPath); err != nil {
-		t.Fatalf("current grimoire should be generated: %v", err)
+		t.Fatalf("current active should be generated: %v", err)
 	}
 }
 
@@ -155,7 +155,7 @@ func TestExportDatapackSkipsCleanupWhenCleanPathsEmpty(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	staleFunctionPath := filepath.Join(outputRoot, "data", "maf", "function", "generated", "grimoire", "effect", "fulminant_true_01.mcfunction")
+	staleFunctionPath := filepath.Join(outputRoot, "data", "maf", "function", "generated", "active", "effect", "fulminant_true_01.mcfunction")
 	if err := writeFunctionFile(staleFunctionPath, "say stale"); err != nil {
 		t.Fatal(err)
 	}
@@ -166,7 +166,7 @@ func TestExportDatapackSkipsCleanupWhenCleanPathsEmpty(t *testing.T) {
 	cfg.MinecraftLootTableRoot = filepath.Join(root, "minecraft", "loot_table")
 
 	master := exportMasterStub{
-		grimoires: []grimoireModel.Grimoire{
+		actives: []activeModel.Active{
 			{
 				ID:          "fulminant01",
 				Description: "雷鳴で敵を攻撃する",

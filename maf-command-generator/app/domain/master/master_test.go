@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	activeModel "maf_command_editor/app/domain/model/active"
 	bowModel "maf_command_editor/app/domain/model/bow"
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	passiveModel "maf_command_editor/app/domain/model/passive"
 	"maf_command_editor/app/files"
 )
@@ -32,13 +32,13 @@ func writeState[T any](t *testing.T, dirPath string, entries []T) {
 }
 
 // 全エンティティのパスを一時ディレクトリに向けた設定を返す。
-// grimoires には任意のグリモアデータを渡せる。
-func newTestConfig(t *testing.T, grimoires []grimoireModel.Grimoire) files.MafConfig {
+// actives には任意のアクティブデータを渡せる。
+func newTestConfig(t *testing.T, actives []activeModel.Active) files.MafConfig {
 	t.Helper()
 	dir := t.TempDir()
 	p := func(name string) string { return filepath.Join(dir, name) }
 
-	writeState(t, p("grimoire"), grimoires)
+	writeState(t, p("active"), actives)
 	writeState[struct{}](t, p("item"), nil)
 	writeState[struct{}](t, p("passive"), nil)
 	writeState[struct{}](t, p("bow"), nil)
@@ -47,7 +47,7 @@ func newTestConfig(t *testing.T, grimoires []grimoireModel.Grimoire) files.MafCo
 	writeState[struct{}](t, p("spawn_table"), nil)
 
 	cfg := files.LoadConfig()
-	cfg.GrimoireStatePath = p("grimoire")
+	cfg.ActiveStatePath = p("active")
 	cfg.ItemStatePath = p("item")
 	cfg.PassiveStatePath = p("passive")
 	cfg.BowStatePath = p("bow")
@@ -58,40 +58,40 @@ func newTestConfig(t *testing.T, grimoires []grimoireModel.Grimoire) files.MafCo
 }
 
 func TestDBMasterImplExportMethods(t *testing.T) {
-	grimoires := []grimoireModel.Grimoire{
+	actives := []activeModel.Active{
 		{ID: "g1", Script: []string{"say 1"}, Title: "one"},
 		{ID: "g2", Script: []string{"say 2"}, Title: "two"},
 	}
-	db := NewDBMaster(newTestConfig(t, grimoires))
+	db := NewDBMaster(newTestConfig(t, actives))
 
-	list := db.ListGrimoires()
+	list := db.ListActives()
 	if len(list) != 2 {
-		t.Fatalf("ListGrimoires length = %d, want 2", len(list))
+		t.Fatalf("ListActives length = %d, want 2", len(list))
 	}
 	if list[0].ID != "g1" || list[1].ID != "g2" {
 		t.Fatalf("unexpected list order/content: %#v", list)
 	}
 
-	found, ok := db.GetGrimoireByID("g2")
+	found, ok := db.GetActiveByID("g2")
 	if !ok || found.ID != "g2" {
-		t.Fatalf("GetGrimoireByID(g2) = (%#v, %v), want found", found, ok)
+		t.Fatalf("GetActiveByID(g2) = (%#v, %v), want found", found, ok)
 	}
-	_, ok = db.GetGrimoireByID("missing")
+	_, ok = db.GetActiveByID("missing")
 	if ok {
-		t.Fatalf("GetGrimoireByID(missing) should be not found")
+		t.Fatalf("GetActiveByID(missing) should be not found")
 	}
 }
 
-func TestDBMasterImplListGrimoiresReturnsCopy(t *testing.T) {
-	grimoires := []grimoireModel.Grimoire{
+func TestDBMasterImplListActivesReturnsCopy(t *testing.T) {
+	actives := []activeModel.Active{
 		{ID: "g1", Script: []string{"say 1"}, Title: "one"},
 	}
-	db := NewDBMaster(newTestConfig(t, grimoires))
+	db := NewDBMaster(newTestConfig(t, actives))
 
-	list := db.ListGrimoires()
+	list := db.ListActives()
 	list[0].Title = "mutated"
 
-	again := db.ListGrimoires()
+	again := db.ListActives()
 	if again[0].Title != "one" {
 		t.Fatalf("internal state must not be affected by caller mutation, got %q", again[0].Title)
 	}

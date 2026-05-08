@@ -13,18 +13,18 @@ type ExportSettings struct {
 }
 
 type ExportPaths struct {
-	GrimoireEffect string `json:"grimoireEffect"`
-	GrimoireDebug  string `json:"grimoireDebug"`
-	ItemGive       string `json:"itemGive"`
-	PassiveEffect  string `json:"passiveEffect"`
-	PassiveGive    string `json:"passiveGive"`
-	PassiveApply   string `json:"passiveApply"`
-	BowFlying      string `json:"bowFlying"`
-	BowGround      string `json:"bowGround"`
-	Enemy          string `json:"enemy"`
-	EnemySkill     string `json:"enemySkill"`
-	EnemyLoot      string `json:"enemyLoot"`
-	SpawnTable     string `json:"spawnTable"`
+	ActiveEffect  string `json:"activeEffect"`
+	ActiveDebug   string `json:"activeDebug"`
+	ItemGive      string `json:"itemGive"`
+	PassiveEffect string `json:"passiveEffect"`
+	PassiveGive   string `json:"passiveGive"`
+	PassiveApply  string `json:"passiveApply"`
+	BowFlying     string `json:"bowFlying"`
+	BowGround     string `json:"bowGround"`
+	Enemy         string `json:"enemy"`
+	EnemySkill    string `json:"enemySkill"`
+	EnemyLoot     string `json:"enemyLoot"`
+	SpawnTable    string `json:"spawnTable"`
 }
 
 func LoadExportSettings(path string) (ExportSettings, error) {
@@ -39,7 +39,7 @@ func LoadExportSettings(path string) (ExportSettings, error) {
 type MafConfig struct {
 	Port                   int
 	ItemStatePath          string
-	GrimoireStatePath      string
+	ActiveStatePath        string
 	PassiveStatePath       string
 	BowStatePath           string
 	EnemySkillStatePath    string
@@ -54,7 +54,7 @@ func LoadConfig() MafConfig {
 	return MafConfig{
 		Port:                   3000,
 		ItemStatePath:          filepath.Clean(filepath.Join("savedata", "item")),
-		GrimoireStatePath:      filepath.Clean(filepath.Join("savedata", "grimoire")),
+		ActiveStatePath:        filepath.Clean(filepath.Join("savedata", "active")),
 		PassiveStatePath:       filepath.Clean(filepath.Join("savedata", "passive")),
 		BowStatePath:           filepath.Clean(filepath.Join("savedata", "bow")),
 		EnemySkillStatePath:    filepath.Clean(filepath.Join("savedata", "enemy_skill")),

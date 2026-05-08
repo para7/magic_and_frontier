@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"ディザスター"},minecraft:lore=[{text:""},{text:"消費MP:30 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"old_disaster01"}}] 1

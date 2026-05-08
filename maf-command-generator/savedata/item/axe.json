@@ -3,7 +3,7 @@
         {
             "id": "tomahawk_axe01",
             "maf": {
-                "grimoireId": "tomahawk01"
+                "activeId": "tomahawk01"
             },
             "minecraft": {
                 "components": {

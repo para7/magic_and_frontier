@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
+	activeModel "maf_command_editor/app/domain/model/active"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
 )
@@ -22,8 +22,8 @@ func TestResolveMafLootPoolsExpandsMafEntries(t *testing.T) {
 					"count":  2.0,
 				},
 				map[string]any{
-					"type":   "maf:grimoire",
-					"name":   "grimoire_1",
+					"type":   "maf:active",
+					"name":   "active_1",
 					"weight": 3.0,
 					"count": map[string]any{
 						"min": 1.0,
@@ -53,9 +53,9 @@ func TestResolveMafLootPoolsExpandsMafEntries(t *testing.T) {
 				ItemID: "minecraft:stone",
 			},
 		},
-		map[string]grimoireModel.Grimoire{
-			"grimoire_1": {
-				ID:          "grimoire_1",
+		map[string]activeModel.Active{
+			"active_1": {
+				ID:          "active_1",
 				CastTime:    20,
 				CoolTime:    40,
 				MPCost:      10,
@@ -107,14 +107,14 @@ func TestResolveMafLootPoolsExpandsMafEntries(t *testing.T) {
 		t.Fatalf("expected count 2.0, got %v", itemCount)
 	}
 
-	grimoireEntry := expectLootEntryObject(t, entries[1])
-	if grimoireEntry["type"] != "minecraft:item" || grimoireEntry["name"] != "minecraft:book" {
-		t.Fatalf("unexpected grimoire entry: %#v", grimoireEntry)
+	activeEntry := expectLootEntryObject(t, entries[1])
+	if activeEntry["type"] != "minecraft:item" || activeEntry["name"] != "minecraft:book" {
+		t.Fatalf("unexpected active entry: %#v", activeEntry)
 	}
-	grimoireCount := firstSetCountValue(t, grimoireEntry)
-	countRange, ok := grimoireCount.(map[string]any)
+	activeCount := firstSetCountValue(t, activeEntry)
+	countRange, ok := activeCount.(map[string]any)
 	if !ok {
-		t.Fatalf("expected range count object, got %T", grimoireCount)
+		t.Fatalf("expected range count object, got %T", activeCount)
 	}
 	if countRange["min"] != 1.0 || countRange["max"] != 2.0 {
 		t.Fatalf("unexpected count range: %#v", countRange)

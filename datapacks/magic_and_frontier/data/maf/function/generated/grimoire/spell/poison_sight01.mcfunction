@@ -1,1 +1,0 @@
-data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"grimoire",id:"poison_sight01",cost:10,cast:20,cooltime:20,title:"ポイズンサイト",description:"視線の4ブロック先を中心に半径3.5ブロックの円範囲へ毒(Poison II)を10秒間与える"}

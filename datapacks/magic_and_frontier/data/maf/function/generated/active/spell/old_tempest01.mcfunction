@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"old_tempest01",cost:13,cast:40,cooltime:20,title:"テンペスト",description:"敵1体に雷を落とし周辺に特大ダメージ"}

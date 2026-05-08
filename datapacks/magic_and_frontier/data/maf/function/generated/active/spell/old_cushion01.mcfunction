@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"old_cushion01",cost:14,cast:40,cooltime:20,title:"クッション",description:"手持ちのスライムブロックを足元に設置する"}

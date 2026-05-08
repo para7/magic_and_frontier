@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	model "maf_command_editor/app/domain/model"
+	activeModel "maf_command_editor/app/domain/model/active"
 	bowModel "maf_command_editor/app/domain/model/bow"
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
 	itemModel "maf_command_editor/app/domain/model/item"
 	passiveModel "maf_command_editor/app/domain/model/passive"
 )
@@ -14,7 +14,7 @@ import (
 func ResolveMafLootPools(
 	pools []any,
 	itemsByID map[string]itemModel.Item,
-	grimoiresByID map[string]grimoireModel.Grimoire,
+	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
 	context string,
@@ -40,7 +40,7 @@ func ResolveMafLootPools(
 		resolvedEntries := make([]any, 0, len(entries))
 		for j, rawEntry := range entries {
 			entryContext := fmt.Sprintf("%s: pools[%d].entries[%d]", context, i, j)
-			nextEntry, err := resolveMafLootEntry(rawEntry, itemsByID, grimoiresByID, passivesByID, bowsByID, entryContext)
+			nextEntry, err := resolveMafLootEntry(rawEntry, itemsByID, activesByID, passivesByID, bowsByID, entryContext)
 			if err != nil {
 				return nil, err
 			}
@@ -60,7 +60,7 @@ func ResolveMafLootPools(
 func resolveMafLootEntry(
 	rawEntry any,
 	itemsByID map[string]itemModel.Item,
-	grimoiresByID map[string]grimoireModel.Grimoire,
+	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
 	context string,
@@ -94,7 +94,7 @@ func resolveMafLootEntry(
 		if !found {
 			return nil, fmt.Errorf("%s: referenced item not found (%s)", context, refID)
 		}
-		out, err := toItemLootEntry(item, grimoiresByID, passivesByID, bowsByID, min, max)
+		out, err := toItemLootEntry(item, activesByID, passivesByID, bowsByID, min, max)
 		if err != nil {
 			return nil, err
 		}
@@ -102,12 +102,12 @@ func resolveMafLootEntry(
 			out["weight"] = weight
 		}
 		return out, nil
-	case "maf:grimoire":
-		grimoire, found := grimoiresByID[refID]
+	case "maf:active":
+		active, found := activesByID[refID]
 		if !found {
-			return nil, fmt.Errorf("%s: referenced grimoire not found (%s)", context, refID)
+			return nil, fmt.Errorf("%s: referenced active not found (%s)", context, refID)
 		}
-		out := toSpellLootEntry(grimoire, min, max)
+		out := toSpellLootEntry(active, min, max)
 		if hasWeight {
 			out["weight"] = weight
 		}
@@ -152,12 +152,12 @@ func MergeLootTablePools(base map[string]any, pool map[string]any, tablePath str
 
 func toItemLootEntry(
 	entry itemModel.Item,
-	grimoiresByID map[string]grimoireModel.Grimoire,
+	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
 	min, max *float64,
 ) (map[string]any, error) {
-	customData, err := itemCustomData(entry, grimoiresByID, passivesByID, bowsByID)
+	customData, err := itemCustomData(entry, activesByID, passivesByID, bowsByID)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +165,7 @@ func toItemLootEntry(
 		map[string]any{"function": "minecraft:set_count", "add": false, "count": ToCountValue(min, max)},
 		map[string]any{"function": "minecraft:set_custom_data", "tag": customData},
 	}
-	components, err := itemComponentsForLoot(entry, grimoiresByID, passivesByID, bowsByID)
+	components, err := itemComponentsForLoot(entry, activesByID, passivesByID, bowsByID)
 	if err != nil {
 		return nil, err
 	}
@@ -189,8 +189,8 @@ func toItemLootEntry(
 	}, nil
 }
 
-func toSpellLootEntry(entry grimoireModel.Grimoire, min, max *float64) map[string]any {
-	book := grimoireSpellBookModel(entry)
+func toSpellLootEntry(entry activeModel.Active, min, max *float64) map[string]any {
+	book := activeSpellBookModel(entry)
 	functions := []any{
 		map[string]any{"function": "minecraft:set_count", "add": false, "count": ToCountValue(min, max)},
 		map[string]any{

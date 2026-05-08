@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
+	activeModel "maf_command_editor/app/domain/model/active"
 	itemModel "maf_command_editor/app/domain/model/item"
 )
 
@@ -32,7 +32,7 @@ func TestBuildTreasureArtifacts(t *testing.T) {
 			map[string]any{
 				"rolls": 1.0,
 				"entries": []any{
-					map[string]any{"type": "maf:grimoire", "name": "grimoire_1", "weight": 2.0},
+					map[string]any{"type": "maf:active", "name": "active_1", "weight": 2.0},
 				},
 			},
 		},
@@ -55,8 +55,8 @@ func TestBuildTreasureArtifacts(t *testing.T) {
 		items: []itemModel.Item{
 			{ID: "item_1", ItemID: "minecraft:stone"},
 		},
-		grimoires: []grimoireModel.Grimoire{
-			{ID: "grimoire_1", CastTime: 20, CoolTime: 40, MPCost: 10, Script: []string{"say test"}, Title: "Test"},
+		actives: []activeModel.Active{
+			{ID: "active_1", CastTime: 20, CoolTime: 40, MPCost: 10, Script: []string{"say test"}, Title: "Test"},
 		},
 	}
 

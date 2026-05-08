@@ -35,7 +35,7 @@ data/maf/function/
 ├── enemy/          # 敵AI・敵スキル処理
 ├── generated/      # maf-command-generator が自動生成するファイルの出力先
 │   ├── enemy/
-│   ├── grimoire/
+│   ├── active/
 │   └── passive/
 ├── devtools/       # 開発用コマンド（reinstall、サンプル本等）
 └── test/           # テスト用関数
@@ -75,7 +75,7 @@ maf-command-generator/
 │   │   ├── model/      # ドメインモデル定義
 │   │   │   ├── enemy/          # 敵モデル
 │   │   │   ├── enemyskill/     # 敵スキルモデル
-│   │   │   ├── grimoire/       # 魔導書（魔法アイテム）モデル
+│   │   │   ├── active/       # アクティブスキル（魔法アイテム）モデル
 │   │   │   ├── item/           # アイテムモデル
 │   │   │   ├── loottable/      # ルートテーブルモデル
 │   │   │   ├── passive/        # パッシブスキルモデル
@@ -90,7 +90,7 @@ maf-command-generator/
 ├── savedata/           # ゲームデータ定義ファイル（JSON）
 │   ├── enemy.json          # 敵定義
 │   ├── enemy_skill.json    # 敵スキル定義
-│   ├── grimoire.json       # 魔導書定義
+│   ├── active/            # アクティブスキル定義（配下の *.json をマージ）
 │   ├── item.json           # アイテム定義
 │   ├── passive.json        # パッシブスキル定義
 │   ├── spawn_table.json    # スポーンテーブル定義

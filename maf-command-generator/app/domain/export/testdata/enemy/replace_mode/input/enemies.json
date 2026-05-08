@@ -52,7 +52,7 @@
                 }
               },
               {
-                "type": "maf:grimoire",
+                "type": "maf:active",
                 "name": "fire",
                 "weight": 30,
                 "count": 1

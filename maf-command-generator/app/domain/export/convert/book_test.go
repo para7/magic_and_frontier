@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	grimoireModel "maf_command_editor/app/domain/model/grimoire"
+	activeModel "maf_command_editor/app/domain/model/active"
 	passiveModel "maf_command_editor/app/domain/model/passive"
 )
 
-func TestGrimoireBookAndLootShareModel(t *testing.T) {
-	entry := grimoireModel.Grimoire{
+func TestActiveBookAndLootShareModel(t *testing.T) {
+	entry := activeModel.Active{
 		ID:          "fire_1",
 		CastTime:    40,
 		CoolTime:    20,
@@ -19,7 +19,7 @@ func TestGrimoireBookAndLootShareModel(t *testing.T) {
 		Description: `Deal "big" damage`,
 	}
 
-	book := GrimoireToBook(entry)
+	book := ActiveToBook(entry)
 	wantItemName := fmt.Sprintf("minecraft:item_name={text:%s}", SNBTString(entry.Title))
 	if !strings.Contains(book, wantItemName) {
 		t.Fatalf("book should contain escaped item_name; got: %s", book)
@@ -30,7 +30,7 @@ func TestGrimoireBookAndLootShareModel(t *testing.T) {
 		textComponentSNBT(fmt.Sprintf("消費MP:%d 詠唱時間:%d", entry.MPCost, entry.CastTime)),
 	)
 	if !strings.Contains(book, wantLore) {
-		t.Fatalf("book should contain updated grimoire lore; got: %s", book)
+		t.Fatalf("book should contain updated active lore; got: %s", book)
 	}
 	wantCustomData := spellCustomData(entry)
 	if !strings.Contains(book, "minecraft:custom_data="+wantCustomData) {
@@ -113,8 +113,8 @@ func TestPassiveBookAndLootShareModel(t *testing.T) {
 	}
 }
 
-func TestGrimoireToBookEscapesSpecialCharacters(t *testing.T) {
-	entry := grimoireModel.Grimoire{
+func TestActiveToBookEscapesSpecialCharacters(t *testing.T) {
+	entry := activeModel.Active{
 		ID:          "g1",
 		CastTime:    10,
 		CoolTime:    0,
@@ -123,11 +123,11 @@ func TestGrimoireToBookEscapesSpecialCharacters(t *testing.T) {
 		Description: `desc "line" \ path`,
 	}
 
-	book := GrimoireToBook(entry)
+	book := ActiveToBook(entry)
 	if !strings.Contains(book, fmt.Sprintf("id:%s", SNBTString(entry.ID))) {
 		t.Fatalf("id should be embedded in custom_data: %s", book)
 	}
-	castingData := GrimoireCastingDataSNBT(entry)
+	castingData := ActiveCastingDataSNBT(entry)
 	if !strings.Contains(castingData, fmt.Sprintf("title:%s", SNBTString(entry.Title))) {
 		t.Fatalf("title should be SNBT-escaped in casting data: %s", castingData)
 	}

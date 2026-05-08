@@ -43,12 +43,12 @@ func (s *ItemEntity) ValidateStruct(newEntity Item) []model.ValidationError {
 
 func (s *ItemEntity) ValidateRelation(newEntity Item, mas model.DBMaster) []model.ValidationError {
 	var errs []model.ValidationError
-	grimoireID := strings.TrimSpace(newEntity.Maf.GrimoireID)
-	if grimoireID != "" && !mas.HasGrimoire(grimoireID) {
+	activeID := strings.TrimSpace(newEntity.Maf.ActiveID)
+	if activeID != "" && !mas.HasActive(activeID) {
 		errs = append(errs, model.ValidationError{
 			Entity: "item", ID: newEntity.ID,
-			Field: "maf.grimoireId",
-			Tag:   "relation", Param: "grimoire not found",
+			Field: "maf.activeId",
+			Tag:   "relation", Param: "active not found",
 		})
 	}
 
@@ -81,11 +81,11 @@ func (s *ItemEntity) ValidateRelation(newEntity Item, mas model.DBMaster) []mode
 			Tag:   "relation", Param: "bowId cannot be combined with passiveId",
 		})
 	}
-	if grimoireID != "" {
+	if activeID != "" {
 		errs = append(errs, model.ValidationError{
 			Entity: "item", ID: newEntity.ID,
-			Field: "maf.grimoireId",
-			Tag:   "relation", Param: "bowId cannot be combined with grimoireId",
+			Field: "maf.activeId",
+			Tag:   "relation", Param: "bowId cannot be combined with activeId",
 		})
 	}
 	if !mas.HasBow(bowID) {

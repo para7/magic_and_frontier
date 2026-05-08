@@ -1,1 +1,0 @@
-data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"grimoire",id:"thorn_bind01",cost:6,cast:20,cooltime:20,title:"ソーンバインド",description:"周囲8ブロックの地上にいる敵にダメージを与え、移動を遅くする"}

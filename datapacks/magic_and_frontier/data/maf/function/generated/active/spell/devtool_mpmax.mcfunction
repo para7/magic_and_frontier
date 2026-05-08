@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"devtool_mpmax",cost:0,cast:0,cooltime:0,title:"MPソウル全回復",description:"もし本アイテムを正規手段で入手した場合は開発者へ報告をお願いいたします。"}

@@ -3,7 +3,7 @@
         {
             "id": "parry_sword01",
             "maf": {
-                "grimoireId": "parry01"
+                "activeId": "parry01"
             },
             "minecraft": {
                 "components": {

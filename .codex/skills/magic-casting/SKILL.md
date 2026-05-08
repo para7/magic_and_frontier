@@ -1,15 +1,15 @@
 ---
 name: magic-casting
-description: 魔法詠唱パイプラインの設計リファレンス。キャスト・クールダウン・MP消費・MPバー表示の共通基盤で、グリモアとパッシブの両方が通る。スコアボード、oh_my_dat ストレージ、ソウルシステムを含む。詠唱関連のバグ修正、MP/ソウルの挙動変更、スコアボード調査、MPバー表示の修正などで参照すること。cast, 詠唱, MP, マナ, クールダウン, cooldown, ソウル, soul, スコアボード, scoreboard, MPバー などのキーワードで使う。
+description: 魔法詠唱パイプラインの設計リファレンス。キャスト・クールダウン・MP消費・MPバー表示の共通基盤で、アクティブとパッシブの両方が通る。スコアボード、oh_my_dat ストレージ、ソウルシステムを含む。詠唱関連のバグ修正、MP/ソウルの挙動変更、スコアボード調査、MPバー表示の修正などで参照すること。cast, 詠唱, MP, マナ, クールダウン, cooldown, ソウル, soul, スコアボード, scoreboard, MPバー などのキーワードで使う。
 ---
 
 # 魔法詠唱パイプライン
 
-グリモアとパッシブ（設定書使用時）が共有する詠唱→発動→クールダウンの仕組み。
+アクティブとパッシブ（設定書使用時）が共有する詠唱→発動→クールダウンの仕組み。
 
 ## 関連スキル
 
-- **grimoire**: グリモア固有のデータモデル・生成・NBT構造
+- **active**: アクティブ固有のデータモデル・生成・NBT構造
 - **passive**: パッシブ固有のデータモデル・発動条件
 - **ohmydat**: `oh_my_dat` ストレージのアクセス方法
 
@@ -20,16 +20,16 @@ description: 魔法詠唱パイプラインの設計リファレンス。キャ�
 ```
 プレイヤーが本を右クリック
     ↓
-advancement/use_grimoire.json (using_item トリガー)
+advancement/use_active.json (using_item トリガー)
     ↓
-maf:magic/use_grimoire (状態チェック → アイテムIDから generated/*/spell を呼び casting を作成)
+maf:magic/use_active (状態チェック → アイテムIDから generated/*/spell を呼び casting を作成)
     ↓
 maf:magic/exec/set_magic (ストレージ → スコアボードにロード、MP検証)
     ↓
 毎tick: maf:magic/cast/tick (カウントダウン、移動キャンセル判定)
     ↓ mafCastTime が 0 になったら
 maf:magic/cast/exec (MP消費 → kind で分岐ディスパッチ)
-    ├─ kind:"grimoire" → run_grimoire_effect → generated/grimoire/effect/{id}
+    ├─ kind:"active" → run_active_effect → generated/active/effect/{id}
     └─ kind:"passive"  → run_passive_apply   → generated/passive/apply/{id}_slot{N}
     ↓
 casting データ削除、クールダウン開始
@@ -53,7 +53,7 @@ casting データ削除、クールダウン開始
 
 ### mafCastTime の値が特に重要
 
-- **-1**: 初期状態・非詠唱。`use_grimoire` は `-1以下` のとき受付
+- **-1**: 初期状態・非詠唱。`use_active` は `-1以下` のとき受付
 - **0**: このtickで `cast/exec` が呼ばれて発動する
 - **1以上**: 詠唱中。毎tickデクリメント
 - set_magic の冒頭で一度 `-1` にセットしてからロードする（ロード失敗時のバグ対策）
@@ -102,7 +102,7 @@ casting データ削除、クールダウン開始
 ```
 1. mafMP -= mafCastCost（MP消費）
 2. oh_my_dat から kind を読み取り:
-   - "grimoire" → run_grimoire_effect with storage（マクロディスパッチ）
+   - "active" → run_active_effect with storage（マクロディスパッチ）
    - "passive"  → run_passive_apply with storage（マクロディスパッチ）
 3. casting データ削除
 ```
@@ -123,7 +123,7 @@ casting データ削除、クールダウン開始
 
 ```
 storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting
-├── kind: "grimoire" | "passive"
+├── kind: "active" | "passive"
 ├── id: "healing01"
 ├── cost: 13
 ├── cast: 40
@@ -137,12 +137,12 @@ storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting
 
 ### 実行時 loader の統一性
 
-グリモアもパッシブも `maf.magic.casting` へ同じ内部形式を書き込む。違いは loader の呼び出し元:
-- グリモア: アイテムの `maf.grimoire_id` → `maf:generated/grimoire/spell/{id}`
+アクティブもパッシブも `maf.magic.casting` へ同じ内部形式を書き込む。違いは loader の呼び出し元:
+- アクティブ: アイテムの `maf.active_id` → `maf:generated/active/spell/{id}`
 - パッシブ設定書: アイテムの `maf.passive.{id,slot}` → `maf:generated/passive/spell/{id}_slot{slot}`
 
 casting 内部データの違いは:
-- グリモア: `kind:"grimoire"`, `slot` なし
+- アクティブ: `kind:"active"`, `slot` なし
 - パッシブ: `kind:"passive"`, `slot` あり（1〜3）
 
 この統一により、`set_magic` 以降のパイプラインは kind を見るだけで両方に対応できる。

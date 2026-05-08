@@ -3,7 +3,7 @@
     {
       "id": "test_sword_magic",
       "maf": {
-        "grimoireId": "fire",
+        "activeId": "fire",
         "passiveId": "passive_1"
       },
       "minecraft": {

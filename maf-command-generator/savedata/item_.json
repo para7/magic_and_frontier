@@ -5782,7 +5782,7 @@
       "id": "c5449271-3996-4622-a942-1636b82e31c7",
       "itemId": "minecraft:enchanted_book",
       "count": 1,
-      "customName": "魔導書",
+      "customName": "アクティブスキル",
       "lore": "魔を払うまじないがかけられた本",
       "enchantments": "minecraft:smite 25\nminecraft:knockback 1\nminecraft:fire_aspect 3",
       "unbreakable": false,
@@ -5794,7 +5794,7 @@
       "customPotionEffects": "",
       "attributeModifiers": "",
       "customNbt": "StoredEnchantments:[{id:\"minecraft:smite\",lvl:1s}]",
-      "nbt": "{id:\"minecraft:enchanted_book\",Count:1b,tag:{display:{Name:'{\"text\":\"魔導書\"}',Lore:['{\"text\":\"魔を払うまじないがかけられた本\"}']},Enchantments:[{id:\"minecraft:smite\",lvl:25s},{id:\"minecraft:knockback\",lvl:1s},{id:\"minecraft:fire_aspect\",lvl:3s}],HideFlags:1,StoredEnchantments:[{id:\"minecraft:smite\",lvl:1s}]}}"
+      "nbt": "{id:\"minecraft:enchanted_book\",Count:1b,tag:{display:{Name:'{\"text\":\"アクティブスキル\"}',Lore:['{\"text\":\"魔を払うまじないがかけられた本\"}']},Enchantments:[{id:\"minecraft:smite\",lvl:25s},{id:\"minecraft:knockback\",lvl:1s},{id:\"minecraft:fire_aspect\",lvl:3s}],HideFlags:1,StoredEnchantments:[{id:\"minecraft:smite\",lvl:1s}]}}"
     },
     {
       "id": "abaa41f1-c52a-4910-bf87-90659c4638aa",

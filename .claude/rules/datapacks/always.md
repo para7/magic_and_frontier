@@ -8,7 +8,7 @@ Minecraft データパック群。Minecraft Version 26.1
 
 ## magic_and_frontier/ — メインデータパック
 
-名前空間 `maf`。RPG 風の魔法システム（グリモア・パッシブ・弓パッシブ・エネミー・ソウル）を実装。
+名前空間 `maf`。RPG 風の魔法システム（アクティブ・パッシブ・弓パッシブ・エネミー・ソウル）を実装。
 
 ### ディレクトリ構造
 
@@ -20,7 +20,7 @@ data/maf/
 │   ├── magic/                  ← 魔法コアシステム
 │   │   ├── cast/               ← 詠唱パイプライン（exec/cancel/tick/run_*）
 │   │   ├── mp/                 ← MP 管理・MP バー表示
-│   │   ├── use_grimoire.mcfunction
+│   │   ├── use_active.mcfunction
 │   │   ├── player_init.mcfunction
 │   │   └── setdb.mcfunction    ← oh_my_dat ストレージ操作
 │   ├── passive/                ← パッシブランタイム
@@ -41,14 +41,14 @@ data/maf/
 │   ├── devtools/               ← reinstall, passive_clear
 │   ├── warp / generate_rand / sword / killme  ← ユーティリティ
 │   └── generated/              ← maf-command-generator 生成（直接編集禁止）
-│       ├── grimoire/{effect,give}/
+│       ├── active/{effect,give}/
 │       ├── item/give/
 │       ├── passive/{effect,give,apply,bow}/
 │       ├── bow/{flying,ground}/
 │       ├── enemy/{spawn,skill,replace}/
 │       └── （内容は export_settings.json で定義）
 ├── advancement/                ← イベントトリガー
-│   ├── use_grimoire / entered_world
+│   ├── use_active / entered_world
 │   ├── arrow_hit → passive/on_arrow_hit
 │   └── melee_hit → passive/on_melee_hit
 ├── loot_table/generated/       ← 自動生成ルートテーブル

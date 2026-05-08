@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"ホバリング"},minecraft:lore=[{text:"空中に停滞する"},{text:"消費MP:18 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{grimoire_id:"old_hover01"}}] 1

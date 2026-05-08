@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"old_poison01",cost:10,cast:40,cooltime:20,title:"ポイズン",description:"最寄りの敵の周囲に毒を与え、弱体化"}

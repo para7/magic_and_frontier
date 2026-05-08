@@ -26,7 +26,7 @@ func BuildEnemyArtifacts(master DBMaster, enemyLootLogicalDir, minecraftLootRoot
 	enemies := master.ListEnemies()
 	artifacts := make([]EnemyArtifact, 0, len(enemies))
 	for _, entry := range enemies {
-		resolvedPools, err := ec.ResolveMafLootPools(entry.Maf.Drops, lookups.itemsByID, lookups.grimoiresByID, lookups.passivesByID, lookups.bowsByID, "enemy("+entry.ID+")")
+		resolvedPools, err := ec.ResolveMafLootPools(entry.Maf.Drops, lookups.itemsByID, lookups.activesByID, lookups.passivesByID, lookups.bowsByID, "enemy("+entry.ID+")")
 		if err != nil {
 			return nil, err
 		}

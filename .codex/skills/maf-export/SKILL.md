@@ -9,7 +9,7 @@ Go ジェネレータ（maf-command-generator）が JSON マスターデータ�
 
 ## 関連スキル
 
-- **grimoire**: グリモア固有の変換ロジック
+- **active**: アクティブ固有の変換ロジック
 - **passive**: パッシブ固有の変換ロジック
 - **ohmydat**: 生成されるコマンドが使う oh_my_dat ストレージ
 
@@ -55,12 +55,12 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 処理順序:
 
 1. `config/export_settings.json` から出力パスを読み込み
-2. **グリモ���**: `BuildGrimoireArtifacts` → `WriteGrimoireArtifacts` + `WriteGrimoireDebugArtifacts`
-3. レガシーファイル���除（`selectexec.mcfunction`, `setup_effect_ref_map.mcfunction`）
+2. **アクティブ**: `BuildActiveArtifacts` → `WriteActiveArtifacts` + `WriteActiveDebugArtifacts`
+3. レガシーファイル削除（`selectexec.mcfunction`, `setup_effect_ref_map.mcfunction`）
 4. **アイテム**: `BuildItemArtifacts` → `WriteItemArtifacts`
 5. **パッシブ**: `BuildPassiveArtifacts` → `WritePassiveArtifacts`
 6. **弓パッシブ**: `BuildBowArtifacts` → `WriteBowArtifacts`
-7. **エネミ��スキル**: `BuildEnemySkillArtifacts` → `WriteEnemySkillArtifacts`
+7. **エネミースキル**: `BuildEnemySkillArtifacts` → `WriteEnemySkillArtifacts`
 8. **エネミー**: `BuildEnemyArtifacts` → `WriteEnemyArtifacts`
 
 ### Build と Write の分離
@@ -78,8 +78,8 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 
 | 設定キー | デフォルト値 | 出力先 |
 |---------|------------|-------|
-| grimoireEffect | `generated/grimoire/effect` | `function/generated/grimoire/effect/` |
-| grimoireDebug | `generated/grimoire/give` | `function/generated/grimoire/give/` |
+| activeEffect | `generated/active/effect` | `function/generated/active/effect/` |
+| activeDebug | `generated/active/give` | `function/generated/active/give/` |
 | passiveEffect | `generated/passive/effect` | `function/generated/passive/effect/` |
 | passiveBow | `generated/passive/bow` | `function/generated/passive/bow/` |
 | passiveGive | `generated/passive/give` | `function/generated/passive/give/` |
@@ -105,7 +105,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 | ファイル | 主要関数 | 用途 |
 |---------|---------|------|
 | `json.go` | `JsonString`, `ToCountValue`, `ToWeight` | SNBT文字列化、lootテーブル数値変換 |
-| `grimoire.go` | `GrimoireToBook` | グリモア → 本アイテム SNBT |
+| `active.go` | `ActiveToBook` | アクティブ → 本アイテム SNBT |
 | `passive.go` | `PassiveToBook` | パッシブ → 設定書アイテム SNBT |
 | `book.go` | `spellBookModel.ToGiveItem` | spell本の共通組み立て |
 | `item.go` | (内部) | アイテム custom_data・コンポーネント・エンチャント |
@@ -117,13 +117,13 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error
 アイテムの `custom_data` には識別子だけを埋め込み、詠唱時間・MP消費などは runtime loader 関数に生成する。
 
 ```go
-func GrimoireCastingDataSNBT(entry grimoire.Grimoire) string
+func ActiveCastingDataSNBT(entry active.Active) string
 func PassiveCastingDataSNBT(entry passive.Passive, slot int) string
 ```
 
-- グリモアアイテム: `custom_data={maf:{grimoire_id:"..."}}`
+- アクティブアイテム: `custom_data={maf:{active_id:"..."}}`
 - パッシブ設定書: `custom_data={maf:{passive:{id:"...",slot:N,condition:"..."}}}`
-- loader 出力: `generated/grimoire/spell/{id}.mcfunction` / `generated/passive/spell/{id}_slot{N}.mcfunction`
+- loader 出力: `generated/active/spell/{id}.mcfunction` / `generated/passive/spell/{id}_slot{N}.mcfunction`
 
 ### spellBookModel（共通本モデル）
 
@@ -143,10 +143,10 @@ type spellBookModel struct {
 
 ## 5. エンティティ別の成果物
 
-### グリモア
+### アクティブ
 
 ```
-GrimoireEffectFunction { ID, Body, Book }
+ActiveEffectFunction { ID, Body, Book }
 ```
 - **effect/{id}.mcfunction**: `Body`（Script[] の結合）
 - **give/{id}.mcfunction**: `give @p {Book} 1`
@@ -157,7 +157,7 @@ GrimoireEffectFunction { ID, Body, Book }
 ```
 PassiveEffectFunction { ID, Body }
 PassiveBowFunction    { ID, Body }
-PassiveGrimoireFunction { PassiveID, Slot, FunctionID, GiveBody, ApplyBody, Book, SpellBody }
+PassiveActiveFunction { PassiveID, Slot, FunctionID, GiveBody, ApplyBody, Book, SpellBody }
 ```
 - **effect/{id}.mcfunction**: 効果本体（bow の場合は自動生成の弓検知コード）
 - **bow/{id}.mcfunction**: bow パッシブの矢着弾時スクリプト
@@ -203,7 +203,7 @@ EnemyArtifact { ID, SpawnBody, LootTable }
 
 1. **構造バリデーション**: validate タグによる型・範囲チェック
 2. **リレーションバリデーション**: `model.DBMaster.Has*()` で参照先の存在確認
-   - 例: `DropRef.Kind="grimoire"` → `HasGrimoire(RefID)` で存在チェック
+   - 例: `DropRef.Kind="active"` → `HasActive(RefID)` で存在チェック
 3. **一括バリデーション**: 全レコードの重複IDチェック
 
 ### カスタムバリデータ

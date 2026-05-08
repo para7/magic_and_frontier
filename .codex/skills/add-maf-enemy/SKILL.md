@@ -18,7 +18,7 @@ disable-model-invocation: true
 - 名前・ベースモブ
 - HP倍率・攻撃力・防御力・移動速度
 - 使用するエネミースキルID（任意）
-- ドロップ内容（アイテムID・グリモアID・重み・個数）
+- ドロップ内容（アイテムID・アクティブID・重み・個数）
 - dropMode（replace / append）
 
 ## 手順
@@ -52,8 +52,8 @@ disable-model-invocation: true
           "rolls": 1,
           "entries": [
             {
-              "type": "maf:item",      // "maf:item" | "maf:grimoire"
-              "name": "item_id",       // アイテムID or グリモアID
+              "type": "maf:item",      // "maf:item" | "maf:active"
+              "name": "item_id",       // アイテムID or アクティブID
               "weight": 70,            // 抽選重み
               "count": 1               // 個数(整数 or {"min":1,"max":3})
             }
@@ -81,8 +81,8 @@ disable-model-invocation: true
 // ランダム個数
 {"type": "maf:item", "name": "herb_01", "weight": 50, "count": {"min": 1, "max": 3}}
 
-// グリモアドロップ
-{"type": "maf:grimoire", "name": "healing01", "weight": 20, "count": 1}
+// アクティブドロップ
+{"type": "maf:active", "name": "healing01", "weight": 20, "count": 1}
 ```
 
 ## よく使うmobType
