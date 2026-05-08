@@ -61,11 +61,6 @@ disable-model-invocation: true
 
 ## generate_grimoireの意味
 
-| 値 | 設定書(give/apply)生成 | ルートテーブルから入手 |
-|---|---|---|
-| `true` | される | できる |
-| `false` | されない | できない |
-
 - ドロップやトレジャーから入手可能にしたいなら `true`
 - 特定アイテムにのみ付与する場合は `false`
 
