@@ -1,6 +1,6 @@
 {
   "coordinates": {
-    "dimension": "minecraft:overworld",
+    "dimension": "minecraft:the_nether",
     "minDistance": 0,
     "maxDistance": 1000,
     "minX": -99999999,
@@ -10,5 +10,56 @@
     "minY": -64,
     "maxY": 320
   },
-  "entries": []
+  "entries": [
+    {
+      "sourceMobType": "minecraft:blaze",
+      "baseMob": { "weight": 30, "attributes": { "hp": 20, "attack": 9 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:enderman",
+      "baseMob": { "weight": 30, "attributes": { "hp": 40, "attack": 10.5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:ghast",
+      "baseMob": { "weight": 30, "attributes": { "hp": 10, "attack": 25.5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:hoglin",
+      "baseMob": { "weight": 30, "attributes": { "hp": 40, "attack": 12 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:magma_cube",
+      "baseMob": { "weight": 30, "attributes": { "hp": 16, "attack": 9 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:piglin",
+      "baseMob": { "weight": 30, "attributes": { "hp": 16, "attack": 12 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:piglin_brute",
+      "baseMob": { "weight": 30, "attributes": { "hp": 50, "attack": 19.5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:wither_skeleton",
+      "baseMob": { "weight": 30, "attributes": { "hp": 20, "attack": 12 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:zoglin",
+      "baseMob": { "weight": 30, "attributes": { "hp": 40, "attack": 12 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:zombified_piglin",
+      "baseMob": { "weight": 30, "attributes": { "hp": 20, "attack": 12 } },
+      "replacements": []
+    }
+  ]
 }

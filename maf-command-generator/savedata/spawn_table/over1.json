@@ -12,10 +12,133 @@
   },
   "entries": [
     {
+      "sourceMobType": "minecraft:bogged",
+      "baseMob": { "weight": 30, "attributes": { "hp": 16, "attack": 5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:breeze",
+      "baseMob": { "weight": 30, "attributes": { "hp": 30, "attack": 1.5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:cave_spider",
+      "baseMob": { "weight": 30, "attributes": { "hp": 12, "attack": 3 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:creaking",
+      "baseMob": { "weight": 30, "attributes": { "hp": 1, "attack": 2.25 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:creeper",
+      "baseMob": { "weight": 30, "attributes": { "hp": 20, "attack": 64.5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:drowned",
+      "baseMob": { "weight": 30, "attributes": { "hp": 20, "attack": 6 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:elder_guardian",
+      "baseMob": { "weight": 30, "attributes": { "hp": 80, "attack": 12 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:enderman",
+      "baseMob": { "weight": 30, "attributes": { "hp": 40, "attack": 10.5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:endermite",
+      "baseMob": { "weight": 30, "attributes": { "hp": 8, "attack": 3 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:evoker",
+      "baseMob": { "weight": 30, "attributes": { "hp": 24, "attack": 9 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:guardian",
+      "baseMob": { "weight": 30, "attributes": { "hp": 30, "attack": 9 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:husk",
+      "baseMob": { "weight": 30, "attributes": { "hp": 20, "attack": 4.5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:phantom",
+      "baseMob": { "weight": 30, "attributes": { "hp": 20, "attack": 9 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:pillager",
+      "baseMob": { "weight": 30, "attributes": { "hp": 24, "attack": 5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:ravager",
+      "baseMob": { "weight": 30, "attributes": { "hp": 100, "attack": 18 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:silverfish",
+      "baseMob": { "weight": 30, "attributes": { "hp": 8, "attack": 1.5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:skeleton",
+      "baseMob": { "weight": 30, "attributes": { "hp": 20, "attack": 5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:slime",
+      "baseMob": { "weight": 30, "attributes": { "hp": 16, "attack": 6 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:spider",
+      "baseMob": { "weight": 30, "attributes": { "hp": 16, "attack": 3 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:stray",
+      "baseMob": { "weight": 30, "attributes": { "hp": 20, "attack": 5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:vex",
+      "baseMob": { "weight": 30, "attributes": { "hp": 14, "attack": 13.5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:vindicator",
+      "baseMob": { "weight": 30, "attributes": { "hp": 24, "attack": 19.5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:warden",
+      "baseMob": { "weight": 30, "attributes": { "hp": 500, "attack": 45 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:witch",
+      "baseMob": { "weight": 30, "attributes": { "hp": 26, "attack": 6 } },
+      "replacements": []
+    },
+    {
       "sourceMobType": "minecraft:zombie",
-      "baseMob": {
-        "weight": 30
-      },
+      "baseMob": { "weight": 30, "attributes": { "hp": 20, "attack": 4.5 } },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:zombie_villager",
+      "baseMob": { "weight": 30, "attributes": { "hp": 20, "attack": 4.5 } },
       "replacements": []
     }
   ]

@@ -1,6 +1,6 @@
 {
   "coordinates": {
-    "dimension": "minecraft:overworld",
+    "dimension": "minecraft:the_end",
     "minDistance": 0,
     "maxDistance": 1000,
     "minX": -99999999,
@@ -10,5 +10,39 @@
     "minY": -64,
     "maxY": 320
   },
-  "entries": []
+  "entries": [
+    {
+      "sourceMobType": "minecraft:enderman",
+      "baseMob": {
+        "weight": 30,
+        "attributes": {
+          "hp": 40,
+          "attack": 10.5
+        }
+      },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:endermite",
+      "baseMob": {
+        "weight": 30,
+        "attributes": {
+          "hp": 8,
+          "attack": 3
+        }
+      },
+      "replacements": []
+    },
+    {
+      "sourceMobType": "minecraft:shulker",
+      "baseMob": {
+        "weight": 30,
+        "attributes": {
+          "hp": 30,
+          "attack": 6
+        }
+      },
+      "replacements": []
+    }
+  ]
 }
