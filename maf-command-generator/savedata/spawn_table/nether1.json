@@ -10,13 +10,5 @@
     "minY": -64,
     "maxY": 320
   },
-  "entries": [
-    {
-      "sourceMobType": "minecraft:zombie",
-      "baseMob": {
-        "weight": 30
-      },
-      "replacements": []
-    }
-  ]
+  "entries": []
 }
