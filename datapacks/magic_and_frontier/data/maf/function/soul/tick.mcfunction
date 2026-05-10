@@ -7,9 +7,12 @@ execute as @a[scores={mafSoulTick=1200..}] run scoreboard players set @s mafSoul
 
 # ソウル最大値
 # キャップ処理
-execute as @a[scores={mafSoul=501..}] run scoreboard players set @s mafSoul 500
+execute as @a[scores={mafSoul=1001..}] run scoreboard players set @s mafSoul 1000
 
-execute as @a[scores={mafSoulReset=1..}] run scoreboard players set @s mafSoul 0
+execute as @a[scores={mafSoulReset=1..}] run scoreboard players set @s tmp 10
+execute as @a[scores={mafSoulReset=1..}] run scoreboard players operation @s mafSoul *= @s tmp
+execute as @a[scores={mafSoulReset=1..}] run scoreboard players set @s tmp 100
+execute as @a[scores={mafSoulReset=1..}] run scoreboard players operation @s mafSoul /= @s tmp
 # MP回復も一定時間ストップ
 execute as @a[scores={mafSoulReset=1..}] run scoreboard players set @s mafMPTick 0
 execute as @a[scores={mafSoulReset=1..}] run scoreboard players set @s mafSoulReset 0
