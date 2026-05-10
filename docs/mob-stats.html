@@ -1,231 +1,367 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mob Stats</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: #e0e0e0; padding: 24px; }
-    h1 { margin-bottom: 16px; font-size: 1.4rem; color: #fff; }
-    .controls { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      padding: 24px;
+    }
+
+    h1 {
+      margin-bottom: 4px;
+      font-size: 1.4rem;
+      color: #fff;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
     input[type="text"] {
-      padding: 6px 12px; background: #2a2a2a; border: 1px solid #444;
-      color: #e0e0e0; border-radius: 4px; font-size: 0.9rem; width: 220px;
+      padding: 6px 12px;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      color: #e0e0e0;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      width: 220px;
     }
-    input[type="text"]:focus { outline: none; border-color: #66aaff; }
-    .filter-group { display: flex; gap: 8px; align-items: center; font-size: 0.85rem; }
-    label { cursor: pointer; color: #aaa; }
-    label input { margin-right: 4px; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #66aaff;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+
+    label {
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    label input {
+      margin-right: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
     thead th {
-      background: #2c2c2c; padding: 8px 12px; text-align: left;
-      border-bottom: 2px solid #444; cursor: pointer; user-select: none;
-      white-space: nowrap; color: #ccc;
+      background: #2c2c2c;
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 2px solid #444;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      color: #ccc;
     }
-    thead th:hover { background: #383838; }
-    thead th.sort-asc::after { content: ' ▲'; font-size: 0.75em; }
-    thead th.sort-desc::after { content: ' ▼'; font-size: 0.75em; }
-    tbody tr { border-bottom: 1px solid #2a2a2a; }
-    tbody tr:hover { background: #222; }
-    td { padding: 6px 12px; }
-    td.num { text-align: right; font-variant-numeric: tabular-nums; color: #88ccff; }
-    .category-passive { color: #88ee88; }
-    .category-neutral { color: #eecc44; }
-    .category-hostile { color: #ee6666; }
-    .category-boss    { color: #cc88ff; }
-    .category-other   { color: #aaaaaa; }
-    .count { font-size: 0.8rem; color: #666; margin-top: 4px; }
+
+    thead th:hover {
+      background: #383838;
+    }
+
+    thead th.sort-asc::after {
+      content: ' ▲';
+      font-size: 0.75em;
+    }
+
+    thead th.sort-desc::after {
+      content: ' ▼';
+      font-size: 0.75em;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    tbody tr:hover {
+      background: #222;
+    }
+
+    td {
+      padding: 6px 12px;
+    }
+
+    td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      color: #88ccff;
+    }
+
+    td.atk {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      color: #ff9966;
+    }
+
+    td.dash {
+      text-align: right;
+      color: #444;
+    }
+
+    .category-passive {
+      color: #88ee88;
+    }
+
+    .category-neutral {
+      color: #eecc44;
+    }
+
+    .category-hostile {
+      color: #ee6666;
+    }
+
+    .category-boss {
+      color: #cc88ff;
+    }
+
+    .category-other {
+      color: #aaaaaa;
+    }
+
+    .count {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 4px;
+    }
   </style>
 </head>
+
 <body>
-<h1>Mob Stats</h1>
-<div class="controls">
-  <input type="text" id="search" placeholder="名前で絞り込み..." oninput="applyFilter()">
-  <div class="filter-group">
-    <label><input type="checkbox" checked value="passive"  onchange="applyFilter()"> <span class="category-passive">友好</span></label>
-    <label><input type="checkbox" checked value="neutral"  onchange="applyFilter()"> <span class="category-neutral">中立</span></label>
-    <label><input type="checkbox" checked value="hostile"  onchange="applyFilter()"> <span class="category-hostile">敵対</span></label>
-    <label><input type="checkbox" checked value="boss"     onchange="applyFilter()"> <span class="category-boss">ボス</span></label>
-    <label><input type="checkbox" checked value="other"    onchange="applyFilter()"> <span class="category-other">その他</span></label>
+  <h1>Mob Stats</h1>
+  <p class="subtitle">攻撃力はハード難易度・主要攻撃手段（HP）</p>
+  <div class="controls">
+    <input type="text" id="search" placeholder="名前で絞り込み..." oninput="applyFilter()">
+    <div class="filter-group">
+      <label><input type="checkbox" checked value="passive" onchange="applyFilter()"> <span
+          class="category-passive">友好</span></label>
+      <label><input type="checkbox" checked value="neutral" onchange="applyFilter()"> <span
+          class="category-neutral">中立</span></label>
+      <label><input type="checkbox" checked value="hostile" onchange="applyFilter()"> <span
+          class="category-hostile">敵対</span></label>
+      <label><input type="checkbox" checked value="boss" onchange="applyFilter()"> <span
+          class="category-boss">ボス</span></label>
+      <label><input type="checkbox" checked value="other" onchange="applyFilter()"> <span
+          class="category-other">その他</span></label>
+    </div>
   </div>
-</div>
-<p class="count" id="count"></p>
-<br>
-<table id="mob-table">
-  <thead>
-    <tr>
-      <th onclick="sortTable(0)">名前</th>
-      <th onclick="sortTable(1)">カテゴリ</th>
-      <th onclick="sortTable(2)">体力 (HP)</th>
-    </tr>
-  </thead>
-  <tbody id="mob-body"></tbody>
-</table>
+  <p class="count" id="count"></p>
+  <br>
+  <table id="mob-table">
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)">名前</th>
+        <th onclick="sortTable(1)">カテゴリ</th>
+        <th onclick="sortTable(2)">体力 </th>
+        <th onclick="sortTable(3)">攻撃力 </th>
+      </tr>
+    </thead>
+    <tbody id="mob-body"></tbody>
+  </table>
 
-<script>
-const MOBS = [
-  // 友好
-  { name: "アレイ",              cat: "passive",  hpMin: 20,  hpMax: 20  },
-  { name: "アルマジロ",          cat: "passive",  hpMin: 12,  hpMax: 12  },
-  { name: "イカ",                cat: "passive",  hpMin: 10,  hpMax: 10  },
-  { name: "ウーパールーパー",    cat: "passive",  hpMin: 14,  hpMax: 14  },
-  { name: "ウサギ",              cat: "passive",  hpMin: 3,   hpMax: 3   },
-  { name: "ウシ",                cat: "passive",  hpMin: 10,  hpMax: 10  },
-  { name: "ウマ",                cat: "passive",  hpMin: 15,  hpMax: 30  },
-  { name: "オウム",              cat: "passive",  hpMin: 6,   hpMax: 6   },
-  { name: "オタマジャクシ",      cat: "passive",  hpMin: 6,   hpMax: 6   },
-  { name: "カエル",              cat: "passive",  hpMin: 10,  hpMax: 10  },
-  { name: "カッパーゴーレム",    cat: "passive",  hpMin: 12,  hpMax: 12  },
-  { name: "カメ",                cat: "passive",  hpMin: 30,  hpMax: 30  },
-  { name: "行商人",              cat: "passive",  hpMin: 20,  hpMax: 20  },
-  { name: "コウモリ",            cat: "passive",  hpMin: 6,   hpMax: 6   },
-  { name: "サケ",                cat: "passive",  hpMin: 3,   hpMax: 3   },
-  { name: "スケルトンホース",    cat: "passive",  hpMin: 15,  hpMax: 15  },
-  { name: "ストライダー",        cat: "passive",  hpMin: 20,  hpMax: 20  },
-  { name: "スニッファー",        cat: "passive",  hpMin: 14,  hpMax: 14  },
-  { name: "スノウゴーレム",      cat: "passive",  hpMin: 4,   hpMax: 4   },
-  { name: "タラ",                cat: "passive",  hpMin: 3,   hpMax: 3   },
-  { name: "ニワトリ",            cat: "passive",  hpMin: 4,   hpMax: 4   },
-  { name: "ネコ",                cat: "passive",  hpMin: 10,  hpMax: 10  },
-  { name: "熱帯魚",              cat: "passive",  hpMin: 3,   hpMax: 6   },
-  { name: "ハッピーガスト",      cat: "passive",  hpMin: 20,  hpMax: 20  },
-  { name: "ヒツジ",              cat: "passive",  hpMin: 8,   hpMax: 8   },
-  { name: "ヒカリイカ",          cat: "passive",  hpMin: 10,  hpMax: 10  },
-  { name: "フグ",                cat: "passive",  hpMin: 3,   hpMax: 3   },
-  { name: "ブタ",                cat: "passive",  hpMin: 10,  hpMax: 10  },
-  { name: "ムーシュルーム",      cat: "passive",  hpMin: 10,  hpMax: 10  },
-  { name: "村人",                cat: "passive",  hpMin: 20,  hpMax: 20  },
-  { name: "ヤマネコ",            cat: "passive",  hpMin: 10,  hpMax: 10  },
-  { name: "ラクダ",              cat: "passive",  hpMin: 32,  hpMax: 32  },
-  { name: "ラバ",                cat: "passive",  hpMin: 15,  hpMax: 30  },
-  { name: "ロバ",                cat: "passive",  hpMin: 15,  hpMax: 30  },
-  // 中立
-  { name: "アイアンゴーレム",    cat: "neutral",  hpMin: 100, hpMax: 100 },
-  { name: "イルカ",              cat: "neutral",  hpMin: 10,  hpMax: 10  },
-  { name: "エンダーマン",        cat: "neutral",  hpMin: 40,  hpMax: 40  },
-  { name: "オオカミ（野生）",    cat: "neutral",  hpMin: 8,   hpMax: 8   },
-  { name: "オオカミ（ペット）",  cat: "neutral",  hpMin: 40,  hpMax: 40  },
-  { name: "キツネ",              cat: "neutral",  hpMin: 10,  hpMax: 20  },
-  { name: "クモ",                cat: "neutral",  hpMin: 16,  hpMax: 16  },
-  { name: "商人のラマ",          cat: "neutral",  hpMin: 15,  hpMax: 30  },
-  { name: "シロクマ",            cat: "neutral",  hpMin: 30,  hpMax: 30  },
-  { name: "ゾンビピグリン",      cat: "neutral",  hpMin: 20,  hpMax: 20  },
-  { name: "洞窟グモ",            cat: "neutral",  hpMin: 12,  hpMax: 12  },
-  { name: "ドラウンド",          cat: "neutral",  hpMin: 20,  hpMax: 20  },
-  { name: "パンダ",              cat: "neutral",  hpMin: 10,  hpMax: 20  },
-  { name: "ピグリン",            cat: "neutral",  hpMin: 16,  hpMax: 16  },
-  { name: "ミツバチ",            cat: "neutral",  hpMin: 10,  hpMax: 10  },
-  { name: "ヤギ",                cat: "neutral",  hpMin: 10,  hpMax: 10  },
-  { name: "ラマ",                cat: "neutral",  hpMin: 15,  hpMax: 30  },
-  // 敵対
-  { name: "ウィザースケルトン",  cat: "hostile",  hpMin: 20,  hpMax: 20  },
-  { name: "ウィッチ",            cat: "hostile",  hpMin: 26,  hpMax: 26  },
-  { name: "ヴィンディケーター",  cat: "hostile",  hpMin: 24,  hpMax: 24  },
-  { name: "ヴェックス",          cat: "hostile",  hpMin: 14,  hpMax: 14  },
-  { name: "エヴォーカー",        cat: "hostile",  hpMin: 24,  hpMax: 24  },
-  { name: "エルダーガーディアン",cat: "hostile",  hpMin: 80,  hpMax: 80  },
-  { name: "エンダーマイト",      cat: "hostile",  hpMin: 8,   hpMax: 8   },
-  { name: "ガーディアン",        cat: "hostile",  hpMin: 30,  hpMax: 30  },
-  { name: "ガスト",              cat: "hostile",  hpMin: 10,  hpMax: 10  },
-  { name: "クリーキング",        cat: "hostile",  hpMin: 1,   hpMax: 1   },
-  { name: "クリーパー",          cat: "hostile",  hpMin: 20,  hpMax: 20  },
-  { name: "シュルカー",          cat: "hostile",  hpMin: 30,  hpMax: 30  },
-  { name: "シルバーフィッシュ",  cat: "hostile",  hpMin: 8,   hpMax: 8   },
-  { name: "スケルトン",          cat: "hostile",  hpMin: 20,  hpMax: 20  },
-  { name: "ストレイ",            cat: "hostile",  hpMin: 20,  hpMax: 20  },
-  { name: "スライム（大）",      cat: "hostile",  hpMin: 16,  hpMax: 16  },
-  { name: "スライム（中）",      cat: "hostile",  hpMin: 4,   hpMax: 4   },
-  { name: "スライム（小）",      cat: "hostile",  hpMin: 1,   hpMax: 1   },
-  { name: "ゾグリン",            cat: "hostile",  hpMin: 40,  hpMax: 40  },
-  { name: "ゾンビ",              cat: "hostile",  hpMin: 20,  hpMax: 20  },
-  { name: "ハスク",              cat: "hostile",  hpMin: 20,  hpMax: 20  },
-  { name: "ピグリンブルート",    cat: "hostile",  hpMin: 50,  hpMax: 50  },
-  { name: "ピリジャー",          cat: "hostile",  hpMin: 24,  hpMax: 24  },
-  { name: "ファントム",          cat: "hostile",  hpMin: 20,  hpMax: 20  },
-  { name: "ブリーズ",            cat: "hostile",  hpMin: 30,  hpMax: 30  },
-  { name: "ブレイズ",            cat: "hostile",  hpMin: 20,  hpMax: 20  },
-  { name: "ボグド",              cat: "hostile",  hpMin: 16,  hpMax: 16  },
-  { name: "ホグリン",            cat: "hostile",  hpMin: 40,  hpMax: 40  },
-  { name: "マグマキューブ（大）",cat: "hostile",  hpMin: 16,  hpMax: 16  },
-  { name: "マグマキューブ（中）",cat: "hostile",  hpMin: 4,   hpMax: 4   },
-  { name: "マグマキューブ（小）",cat: "hostile",  hpMin: 1,   hpMax: 1   },
-  { name: "村人ゾンビ",          cat: "hostile",  hpMin: 20,  hpMax: 20  },
-  { name: "ラヴェジャー",        cat: "hostile",  hpMin: 100, hpMax: 100 },
-  { name: "ウォーデン",          cat: "hostile",  hpMin: 500, hpMax: 500 },
-  { name: "イリュージョナー",    cat: "hostile",  hpMin: 32,  hpMax: 32  },
-  { name: "殺人ウサギ",          cat: "hostile",  hpMin: 3,   hpMax: 3   },
-  { name: "ジャイアント",        cat: "hostile",  hpMin: 100, hpMax: 100 },
-  { name: "ゾンビホース",        cat: "hostile",  hpMin: 15,  hpMax: 15  },
-  // ボス
-  { name: "ウィザー",            cat: "boss",     hpMin: 300, hpMax: 600 },
-  { name: "エンダードラゴン",    cat: "boss",     hpMin: 200, hpMax: 200 },
-  // その他
-  { name: "プレイヤー",          cat: "other",    hpMin: 20,  hpMax: 20  },
-  { name: "防具立て",            cat: "other",    hpMin: 20,  hpMax: 20  },
-  { name: "エンドクリスタル",    cat: "other",    hpMin: 5,   hpMax: 5   },
-  { name: "トロッコ",            cat: "other",    hpMin: 6,   hpMax: 6   },
-  { name: "ボート",              cat: "other",    hpMin: 6,   hpMax: 6   },
-];
+  <script>
+    // atk: null = 攻撃なし, [min, max] = 攻撃力HP（ハード難易度）
+    // atk が範囲の場合は min～max 表示、同値なら単一値
+    const MOBS = [
+      // 友好
+      { name: "アレイ", cat: "passive", hp: [20, 20], atk: null },
+      { name: "アルマジロ", cat: "passive", hp: [12, 12], atk: null },
+      { name: "イカ", cat: "passive", hp: [10, 10], atk: null },
+      { name: "ウーパールーパー", cat: "passive", hp: [14, 14], atk: [2, 2] },
+      { name: "ウサギ", cat: "passive", hp: [3, 3], atk: null },
+      { name: "ウシ", cat: "passive", hp: [10, 10], atk: null },
+      { name: "ウマ", cat: "passive", hp: [15, 30], atk: null },
+      { name: "オウム", cat: "passive", hp: [6, 6], atk: null },
+      { name: "オタマジャクシ", cat: "passive", hp: [6, 6], atk: null },
+      { name: "カエル", cat: "passive", hp: [10, 10], atk: null },
+      { name: "カッパーゴーレム", cat: "passive", hp: [12, 12], atk: null },
+      { name: "カメ", cat: "passive", hp: [30, 30], atk: null },
+      { name: "行商人", cat: "passive", hp: [20, 20], atk: null },
+      { name: "コウモリ", cat: "passive", hp: [6, 6], atk: null },
+      { name: "サケ", cat: "passive", hp: [3, 3], atk: null },
+      { name: "スケルトンホース", cat: "passive", hp: [15, 15], atk: null },
+      { name: "ストライダー", cat: "passive", hp: [20, 20], atk: null },
+      { name: "スニッファー", cat: "passive", hp: [14, 14], atk: null },
+      { name: "スノウゴーレム", cat: "passive", hp: [4, 4], atk: null },
+      { name: "タラ", cat: "passive", hp: [3, 3], atk: null },
+      { name: "ニワトリ", cat: "passive", hp: [4, 4], atk: null },
+      { name: "ネコ", cat: "passive", hp: [10, 10], atk: null },
+      { name: "熱帯魚", cat: "passive", hp: [3, 6], atk: null },
+      { name: "ハッピーガスト", cat: "passive", hp: [20, 20], atk: null },
+      { name: "ヒツジ", cat: "passive", hp: [8, 8], atk: null },
+      { name: "ヒカリイカ", cat: "passive", hp: [10, 10], atk: null },
+      { name: "フグ", cat: "passive", hp: [3, 3], atk: null },
+      { name: "ブタ", cat: "passive", hp: [10, 10], atk: null },
+      { name: "ムーシュルーム", cat: "passive", hp: [10, 10], atk: null },
+      { name: "村人", cat: "passive", hp: [20, 20], atk: null },
+      { name: "ヤマネコ", cat: "passive", hp: [10, 10], atk: null },
+      { name: "ラクダ", cat: "passive", hp: [32, 32], atk: null },
+      { name: "ラバ", cat: "passive", hp: [15, 30], atk: null },
+      { name: "ロバ", cat: "passive", hp: [15, 30], atk: null },
+      // 中立
+      { name: "アイアンゴーレム", cat: "neutral", hp: [100, 100], atk: [16.175, 16.175] },
+      { name: "イルカ", cat: "neutral", hp: [10, 10], atk: [2.25, 2.25] },
+      { name: "エンダーマン", cat: "neutral", hp: [40, 40], atk: null },
+      { name: "オオカミ（野生）", cat: "neutral", hp: [8, 8], atk: null },
+      { name: "オオカミ（ペット）", cat: "neutral", hp: [40, 40], atk: null },
+      { name: "キツネ", cat: "neutral", hp: [10, 20], atk: null },
+      { name: "クモ", cat: "neutral", hp: [16, 16], atk: null },
+      { name: "商人のラマ", cat: "neutral", hp: [15, 30], atk: null },
+      { name: "シロクマ", cat: "neutral", hp: [30, 30], atk: [9, 9] },
+      { name: "ゾンビピグリン", cat: "neutral", hp: [20, 20], atk: [6, 6] },
+      { name: "洞窟グモ", cat: "neutral", hp: [12, 12], atk: [3, 3] },
+      { name: "ドラウンド", cat: "neutral", hp: [20, 20], atk: [2.25, 6] },
+      { name: "パンダ", cat: "neutral", hp: [10, 20], atk: null },
+      { name: "ピグリン", cat: "neutral", hp: [16, 16], atk: [5, 5] },
+      { name: "ミツバチ", cat: "neutral", hp: [10, 10], atk: [3, 3] },
+      { name: "ヤギ", cat: "neutral", hp: [10, 10], atk: null },
+      { name: "ラマ", cat: "neutral", hp: [15, 30], atk: null },
+      // 敵対
+      { name: "ウィザースケルトン", cat: "hostile", hp: [20, 20], atk: [6, 6] },
+      { name: "ウィッチ", cat: "hostile", hp: [26, 26], atk: null },
+      { name: "ヴィンディケーター", cat: "hostile", hp: [24, 24], atk: [9.75, 9.75] },
+      { name: "ヴェックス", cat: "hostile", hp: [14, 14], atk: [6.75, 6.75] },
+      { name: "エヴォーカー", cat: "hostile", hp: [24, 24], atk: [9, 9] },
+      { name: "エルダーガーディアン", cat: "hostile", hp: [80, 80], atk: [6, 6] },
+      { name: "エンダーマイト", cat: "hostile", hp: [8, 8], atk: null },
+      { name: "ガーディアン", cat: "hostile", hp: [30, 30], atk: null },
+      { name: "ガスト", cat: "hostile", hp: [10, 10], atk: [12.75, 12.75] },
+      { name: "クリーキング", cat: "hostile", hp: [1, 1], atk: [2.25, 2.25] },
+      { name: "クリーパー", cat: "hostile", hp: [20, 20], atk: [32.25, 32.25] },
+      { name: "シュルカー", cat: "hostile", hp: [30, 30], atk: [3, 3] },
+      { name: "シルバーフィッシュ", cat: "hostile", hp: [8, 8], atk: null },
+      { name: "スケルトン", cat: "hostile", hp: [20, 20], atk: [4, 5] },
+      { name: "ストレイ", cat: "hostile", hp: [20, 20], atk: null },
+      { name: "スライム（大）", cat: "hostile", hp: [16, 16], atk: [6, 6] },
+      { name: "スライム（中）", cat: "hostile", hp: [4, 4], atk: [3, 3] },
+      { name: "スライム（小）", cat: "hostile", hp: [1, 1], atk: null },
+      { name: "ゾグリン", cat: "hostile", hp: [40, 40], atk: [6, 6] },
+      { name: "ゾンビ", cat: "hostile", hp: [20, 20], atk: [2.25, 2.25] },
+      { name: "ハスク", cat: "hostile", hp: [20, 20], atk: [2.25, 2.25] },
+      { name: "ピグリンブルート", cat: "hostile", hp: [50, 50], atk: [9.75, 9.75] },
+      { name: "ピリジャー", cat: "hostile", hp: [24, 24], atk: [5, 5] },
+      { name: "ファントム", cat: "hostile", hp: [20, 20], atk: null },
+      { name: "ブリーズ", cat: "hostile", hp: [30, 30], atk: null },
+      { name: "ブレイズ", cat: "hostile", hp: [20, 20], atk: [9, 9] },
+      { name: "ボグド", cat: "hostile", hp: [16, 16], atk: null },
+      { name: "ホグリン", cat: "hostile", hp: [40, 40], atk: [6, 6] },
+      { name: "マグマキューブ（大）", cat: "hostile", hp: [16, 16], atk: [9, 9] },
+      { name: "マグマキューブ（中）", cat: "hostile", hp: [4, 4], atk: [3, 3] },
+      { name: "マグマキューブ（小）", cat: "hostile", hp: [1, 1], atk: [2.25, 2.25] },
+      { name: "村人ゾンビ", cat: "hostile", hp: [20, 20], atk: [2.25, 2.25] },
+      { name: "ラヴェジャー", cat: "hostile", hp: [100, 100], atk: [9, 9] },
+      { name: "ウォーデン", cat: "hostile", hp: [500, 500], atk: [22.5, 22.5] },
+      { name: "イリュージョナー", cat: "hostile", hp: [32, 32], atk: [5, 5] },
+      { name: "殺人ウサギ", cat: "hostile", hp: [3, 3], atk: [6, 6] },
+      { name: "ジャイアント", cat: "hostile", hp: [100, 100], atk: [37.5, 37.5] },
+      { name: "ゾンビホース", cat: "hostile", hp: [15, 15], atk: null },
+      // ボス
+      { name: "ウィザー", cat: "boss", hp: [300, 600], atk: [6, 6] },
+      { name: "エンダードラゴン", cat: "boss", hp: [200, 200], atk: [7.5, 7.5] },
+      // その他
+      { name: "プレイヤー", cat: "other", hp: [20, 20], atk: null },
+      { name: "防具立て", cat: "other", hp: [20, 20], atk: null },
+      { name: "エンドクリスタル", cat: "other", hp: [5, 5], atk: null },
+      { name: "トロッコ", cat: "other", hp: [6, 6], atk: null },
+      { name: "ボート", cat: "other", hp: [6, 6], atk: null },
+    ];
 
-const CAT_LABEL = { passive: "友好", neutral: "中立", hostile: "敵対", boss: "ボス", other: "その他" };
+    const CAT_LABEL = { passive: "友好", neutral: "中立", hostile: "敵対", boss: "ボス", other: "その他" };
 
-function hpStr(min, max) {
-  return min === max ? String(min) : `${min}～${max}`;
-}
+    function rangeStr(min, max) {
+      if (min == null) return null;
+      return min === max ? String(min) : `${min}～${max}`;
+    }
 
-let sortCol = 2, sortDir = 1;
+    let sortCol = 2, sortDir = 1;
 
-function renderTable(data) {
-  const tbody = document.getElementById("mob-body");
-  tbody.innerHTML = data.map(m => `
-    <tr data-cat="${m.cat}">
+    function renderTable(data) {
+      const tbody = document.getElementById("mob-body");
+      tbody.innerHTML = data.map(m => {
+        const hpStr = rangeStr(m.hp[0], m.hp[1]);
+        const atkStr = m.atk ? rangeStr(m.atk[0], m.atk[1]) : null;
+        return `<tr data-cat="${m.cat}">
       <td>${m.name}</td>
       <td class="category-${m.cat}">${CAT_LABEL[m.cat]}</td>
-      <td class="num">${hpStr(m.hpMin, m.hpMax)}</td>
-    </tr>`).join("");
-  document.getElementById("count").textContent = `${data.length} 件`;
-  updateSortHeaders();
-}
+      <td class="num">${hpStr}</td>
+      ${atkStr ? `<td class="atk">${atkStr}</td>` : `<td class="dash">—</td>`}
+    </tr>`;
+      }).join("");
+      document.getElementById("count").textContent = `${data.length} 件`;
+      updateSortHeaders();
+    }
 
-function getActiveCategories() {
-  return Array.from(document.querySelectorAll('.filter-group input[type=checkbox]'))
-    .filter(cb => cb.checked).map(cb => cb.value);
-}
+    function getActiveCategories() {
+      return Array.from(document.querySelectorAll('.filter-group input[type=checkbox]'))
+        .filter(cb => cb.checked).map(cb => cb.value);
+    }
 
-function applyFilter() {
-  const q = document.getElementById("search").value.trim();
-  const cats = getActiveCategories();
-  let data = MOBS.filter(m => cats.includes(m.cat));
-  if (q) data = data.filter(m => m.name.includes(q));
-  data = sortData(data);
-  renderTable(data);
-}
+    function applyFilter() {
+      const q = document.getElementById("search").value.trim();
+      const cats = getActiveCategories();
+      let data = MOBS.filter(m => cats.includes(m.cat));
+      if (q) data = data.filter(m => m.name.includes(q));
+      data = sortData(data);
+      renderTable(data);
+    }
 
-function sortData(data) {
-  return [...data].sort((a, b) => {
-    let va, vb;
-    if (sortCol === 0) { va = a.name; vb = b.name; return sortDir * va.localeCompare(vb, "ja"); }
-    if (sortCol === 1) { va = a.cat; vb = b.cat; return sortDir * va.localeCompare(vb); }
-    if (sortCol === 2) { va = a.hpMin; vb = b.hpMin; }
-    return sortDir * (va - vb);
-  });
-}
+    function sortData(data) {
+      return [...data].sort((a, b) => {
+        let va, vb;
+        if (sortCol === 0) { va = a.name; vb = b.name; return sortDir * va.localeCompare(vb, "ja"); }
+        if (sortCol === 1) { va = a.cat; vb = b.cat; return sortDir * va.localeCompare(vb); }
+        if (sortCol === 2) { va = a.hp[0]; vb = b.hp[0]; }
+        if (sortCol === 3) { va = a.atk ? a.atk[0] : -1; vb = b.atk ? b.atk[0] : -1; }
+        return sortDir * (va - vb);
+      });
+    }
 
-function sortTable(col) {
-  if (sortCol === col) sortDir *= -1;
-  else { sortCol = col; sortDir = 1; }
-  applyFilter();
-}
+    function sortTable(col) {
+      if (sortCol === col) sortDir *= -1;
+      else { sortCol = col; sortDir = 1; }
+      applyFilter();
+    }
 
-function updateSortHeaders() {
-  document.querySelectorAll("thead th").forEach((th, i) => {
-    th.classList.remove("sort-asc", "sort-desc");
-    if (i === sortCol) th.classList.add(sortDir === 1 ? "sort-asc" : "sort-desc");
-  });
-}
+    function updateSortHeaders() {
+      document.querySelectorAll("thead th").forEach((th, i) => {
+        th.classList.remove("sort-asc", "sort-desc");
+        if (i === sortCol) th.classList.add(sortDir === 1 ? "sort-asc" : "sort-desc");
+      });
+    }
 
-applyFilter();
-</script>
+    applyFilter();
+  </script>
 </body>
+
 </html>
