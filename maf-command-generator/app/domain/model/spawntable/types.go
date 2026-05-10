@@ -19,7 +19,7 @@ type SpawnTable struct {
 	MinZ          int                      `json:"minZ"          validate:"gte=-99999999,lte=99999999"`
 	MaxZ          int                      `json:"maxZ"          validate:"gte=-99999999,lte=99999999"`
 	BaseMob       *BaseMob                 `json:"baseMob,omitempty"`
-	Replacements  []model.ReplacementEntry `json:"replacements" validate:"min=1"`
+	Replacements  []model.ReplacementEntry `json:"replacements"`
 }
 
 type BaseMob struct {

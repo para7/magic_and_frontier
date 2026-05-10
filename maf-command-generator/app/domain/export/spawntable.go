@@ -67,10 +67,12 @@ func buildSpawnTableArtifact(table spawntableModel.SpawnTable, replaceLogicalDir
 		))
 	}
 
-	bodyLines = append(bodyLines, fmt.Sprintf(
-		"execute if score @s maf_vh_rand matches 1..%d run function maf:killme",
-		replaceWeight,
-	))
+	if replaceWeight > 0 {
+		bodyLines = append(bodyLines, fmt.Sprintf(
+			"execute if score @s maf_vh_rand matches 1..%d run function maf:killme",
+			replaceWeight,
+		))
+	}
 	baseStart := replaceWeight + 1
 	if baseMergeNBT, ok := baseMobMergeNBT(table.GetBaseMobAttributes()); ok && baseStart <= totalWeight {
 		bodyLines = append(bodyLines, fmt.Sprintf(

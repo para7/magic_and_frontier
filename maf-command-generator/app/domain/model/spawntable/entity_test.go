@@ -84,7 +84,7 @@ func TestSpawnTableValidateStructPerField(t *testing.T) {
 		{name: "maxDistance ng out of range", patch: func(st *SpawnTable) { st.MaxDistance = 100000000 }, wantErrField: "maxDistance"},
 		{name: "minX ok boundary", patch: func(st *SpawnTable) { st.MinX = -99999999 }},
 		{name: "minX ng out of range", patch: func(st *SpawnTable) { st.MinX = -100000000 }, wantErrField: "minX"},
-		{name: "replacements ng empty", patch: func(st *SpawnTable) { st.Replacements = nil }, wantErrField: "replacements"},
+		{name: "replacements ok empty", patch: func(st *SpawnTable) { st.Replacements = nil }},
 	}
 
 	for _, tt := range tests {

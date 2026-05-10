@@ -19,16 +19,7 @@
           "hp": 100
         }
       },
-      "replacements": [
-        {
-          "enemyId": "drop_test",
-          "weight": 30
-        },
-        {
-          "enemyId": "poison_zombie",
-          "weight": 40
-        }
-      ]
+      "replacements": []
     }
   ]
 }
