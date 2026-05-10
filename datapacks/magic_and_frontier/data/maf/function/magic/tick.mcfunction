@@ -11,6 +11,6 @@ execute as @a at @s run function maf:passive/tick
 function maf:bow/tick_flying
 function maf:bow/tick_ground
 
-execute as @a at @s run function maf:magic/mp/mp_manage
+execute as @a at @s unless score @s mafSoulReset matches 1.. run function maf:magic/mp/mp_manage
 
 function maf:magic/mp/mpbar

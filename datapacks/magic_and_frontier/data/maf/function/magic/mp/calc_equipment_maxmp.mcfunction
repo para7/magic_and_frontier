@@ -66,5 +66,6 @@ execute if score @s tmp matches 0 if items entity @s armor.feet #maf:copper_armo
 execute if score @s tmp matches 0 if items entity @s armor.feet #maf:diamond_armor run scoreboard players remove @s mafEquipMP 20
 execute if score @s tmp matches 0 if items entity @s armor.feet #maf:netherite_armor run scoreboard players remove @s mafEquipMP 30
 
-# 最低値を0にクランプ
+# 装備由来MPを0..999にクランプしてからソウル割合を掛ける
 execute if score @s mafEquipMP matches ..-1 run scoreboard players set @s mafEquipMP 0
+execute if score @s mafEquipMP matches 1000.. run scoreboard players set @s mafEquipMP 999

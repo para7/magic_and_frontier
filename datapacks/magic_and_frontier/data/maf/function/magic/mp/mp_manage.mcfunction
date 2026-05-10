@@ -15,7 +15,7 @@ function maf:magic/mp/calc_equipment_maxmp
 # 最大MP = 装備MP * ソウル割合
 scoreboard players operation @s mafMaxMP = @s mafEquipMP
 scoreboard players operation @s mafMaxMP *= @s mafSoul
-scoreboard players set @s tmp 1000
+scoreboard players set @s tmp 100
 scoreboard players operation @s mafMaxMP /= @s tmp
 execute if score @s mafMaxMP matches 1000.. run scoreboard players set @s mafMaxMP 999
 
