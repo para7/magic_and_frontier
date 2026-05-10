@@ -1,0 +1,238 @@
+{
+    "entries": [
+        {
+            "id": "drop_test",
+            "mobType": "minecraft:zombie",
+            "memo": "",
+            "minecraft": {
+                "Health": 1,
+                "CustomName": [
+                    {
+                        "text": "drop_test"
+                    }
+                ],
+                "attributes": [
+                    {
+                        "id": "minecraft:max_health",
+                        "base": 1
+                    },
+                    {
+                        "id": "minecraft:attack_damage",
+                        "base": 6
+                    },
+                    {
+                        "id": "minecraft:armor",
+                        "base": 2
+                    },
+                    {
+                        "id": "minecraft:movement_speed",
+                        "base": 0.22
+                    }
+                ]
+            },
+            "maf": {
+                "equipment": {},
+                "enemySkillIds": [
+                    "near_poison"
+                ],
+                "dropMode": "replace",
+                "drops": [
+                    {
+                        "rolls": 1,
+                        "entries": [
+                            {
+                                "type": "maf:item",
+                                "name": "test_sword_magic",
+                                "weight": 1,
+                                "count": 1
+                            },
+                            {
+                                "type": "maf:item",
+                                "name": "test_sword_passive",
+                                "weight": 1,
+                                "count": 1
+                            },
+                            {
+                                "type": "maf:item",
+                                "name": "test_sword_both",
+                                "weight": 1,
+                                "count": 1
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "poison_zombie",
+            "mobType": "minecraft:zombie",
+            "memo": "",
+            "minecraft": {
+                "Health": 2,
+                "CustomName": [
+                    {
+                        "text": "Poison Zombie"
+                    }
+                ],
+                "attributes": [
+                    {
+                        "id": "minecraft:max_health",
+                        "base": 2
+                    },
+                    {
+                        "id": "minecraft:attack_damage",
+                        "base": 6
+                    },
+                    {
+                        "id": "minecraft:armor",
+                        "base": 2
+                    },
+                    {
+                        "id": "minecraft:movement_speed",
+                        "base": 0.22
+                    }
+                ]
+            },
+            "maf": {
+                "equipment": {},
+                "enemySkillIds": [
+                    "near_poison"
+                ],
+                "dropMode": "replace",
+                "drops": [
+                    {
+                        "rolls": 1,
+                        "entries": [
+                            {
+                                "type": "maf:item",
+                                "name": "items_1",
+                                "weight": 70,
+                                "count": {
+                                    "min": 1,
+                                    "max": 3
+                                }
+                            },
+                            {
+                                "type": "maf:active",
+                                "name": "old_prominence01",
+                                "weight": 30,
+                                "count": 1
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "poison_zombie2",
+            "mobType": "minecraft:zombie",
+            "memo": "",
+            "minecraft": {
+                "Health": 2,
+                "CustomName": [
+                    {
+                        "text": "Poison Zombie DropAppend"
+                    }
+                ],
+                "attributes": [
+                    {
+                        "id": "minecraft:max_health",
+                        "base": 2
+                    },
+                    {
+                        "id": "minecraft:attack_damage",
+                        "base": 6
+                    },
+                    {
+                        "id": "minecraft:armor",
+                        "base": 2
+                    },
+                    {
+                        "id": "minecraft:movement_speed",
+                        "base": 0.22
+                    }
+                ]
+            },
+            "maf": {
+                "equipment": {},
+                "enemySkillIds": [
+                    "near_poison"
+                ],
+                "dropMode": "append",
+                "drops": [
+                    {
+                        "rolls": 1,
+                        "entries": [
+                            {
+                                "type": "maf:item",
+                                "name": "items_1",
+                                "weight": 70,
+                                "count": {
+                                    "min": 1,
+                                    "max": 3
+                                }
+                            },
+                            {
+                                "type": "maf:active",
+                                "name": "old_prominence01",
+                                "weight": 30,
+                                "count": 1
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": "drop_test_bow",
+            "mobType": "minecraft:zombie",
+            "memo": "",
+            "minecraft": {
+                "Health": 1,
+                "CustomName": [
+                    {
+                        "text": "Bow Passive Zombie"
+                    }
+                ],
+                "attributes": [
+                    {
+                        "id": "minecraft:max_health",
+                        "base": 1
+                    },
+                    {
+                        "id": "minecraft:attack_damage",
+                        "base": 6
+                    },
+                    {
+                        "id": "minecraft:armor",
+                        "base": 2
+                    },
+                    {
+                        "id": "minecraft:movement_speed",
+                        "base": 0.22
+                    }
+                ]
+            },
+            "maf": {
+                "equipment": {},
+                "enemySkillIds": [
+                    "near_poison"
+                ],
+                "dropMode": "replace",
+                "drops": [
+                    {
+                        "rolls": 1,
+                        "entries": [
+                            {
+                                "type": "maf:item",
+                                "name": "test_bow_full",
+                                "weight": 1,
+                                "count": 1
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

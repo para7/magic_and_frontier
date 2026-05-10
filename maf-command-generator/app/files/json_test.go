@@ -38,6 +38,32 @@ func TestJsonStore_Load_MultipleFiles(t *testing.T) {
 	}
 }
 
+func TestJsonStore_Load_NestedFiles(t *testing.T) {
+	dir := t.TempDir()
+	nestedDir := filepath.Join(dir, "level", "one")
+	if err := os.MkdirAll(nestedDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	writeJSON(t, filepath.Join(dir, "root.json"), []testEntry{{ID: "root", Name: "Root"}})
+	writeJSON(t, filepath.Join(nestedDir, "nested.json"), []testEntry{{ID: "nested", Name: "Nested"}})
+
+	s := NewJsonStore[testEntry](dir)
+	entries, err := s.Load()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(entries) != 2 {
+		t.Fatalf("want 2 entries, got %d", len(entries))
+	}
+	seen := map[string]bool{}
+	for _, entry := range entries {
+		seen[entry.ID] = true
+	}
+	if !seen["root"] || !seen["nested"] {
+		t.Fatalf("expected root and nested entries, got %#v", entries)
+	}
+}
+
 func TestJsonStore_Load_EmptyDir(t *testing.T) {
 	dir := t.TempDir()
 

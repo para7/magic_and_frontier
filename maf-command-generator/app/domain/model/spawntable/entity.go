@@ -163,7 +163,7 @@ func validateBaseMobAttributes(id string, attrs *BaseMobAttributes) []model.Vali
 }
 
 func (s *SpawnTableEntity) Load() error {
-	paths, err := filepath.Glob(filepath.Join(s.store.Path, "*.json"))
+	paths, err := files.JSONFilePaths(s.store.Path)
 	if err != nil {
 		return err
 	}

@@ -31,7 +31,7 @@ paths:
 
 ### 例外: SpawnTable
 
-`model/spawntable/entity.go` は `JsonStore` の汎用 `entries` 配列ではなく、独自の `{coordinates, entries}` 形式を読む。`Load()` は `savedata/spawn_table/*.json` を glob で走査し、ファイル単位の `coordinates`（`dimension`, `minDistance/maxDistance`, `minX~maxZ`）を各 `entries[i]` に複製してから `SpawnTable` に展開する。`id` が空のエントリはファイル名 + `sourceMobType` + index から `buildSpawnTableID` で自動付与される（小文字化・namespace 除去・非英数の `_` 置換）。新規エンティティでこの形式を真似る場合は `store` を使わず `*.json` 走査 + 独自パーサで実装する。
+`model/spawntable/entity.go` は `JsonStore` の汎用 `entries` 配列ではなく、独自の `{coordinates, entries}` 形式を読む。`Load()` は `savedata/spawn_table/` 配下の全 `*.json` を再帰走査し、ファイル単位の `coordinates`（`dimension`, `minDistance/maxDistance`, `minX~maxZ`）を各 `entries[i]` に複製してから `SpawnTable` に展開する。`id` が空のエントリはファイル名 + `sourceMobType` + index から `buildSpawnTableID` で自動付与される（小文字化・namespace 除去・非英数の `_` 置換）。新規エンティティでこの形式を真似る場合は `store` を使わず `files.JSONFilePaths()` + 独自パーサで実装する。
 
 `ValidateRelation` では `BaseMob` 配下の属性範囲チェック（`validateBaseMobAttributes`: hp 1..100000, attack/defense/moveSpeed 0..100000）と `minDistance <= maxDistance` もここで実施する。
 

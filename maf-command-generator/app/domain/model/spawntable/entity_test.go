@@ -267,6 +267,57 @@ func TestSpawnTableLoadCoordinatesFormat(t *testing.T) {
 	}
 }
 
+func TestSpawnTableLoadNestedCoordinatesFormat(t *testing.T) {
+	dir := t.TempDir()
+	nestedDir := filepath.Join(dir, "overworld", "level1")
+	if err := os.MkdirAll(nestedDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	jsonPath := filepath.Join(nestedDir, "over1.json")
+	raw := `{
+  "coordinates": {
+    "dimension": "minecraft:overworld",
+    "minDistance": 0,
+    "maxDistance": 1000,
+    "minX": -99999999,
+    "maxX": 99999999,
+    "minZ": -99999999,
+    "maxZ": 99999999,
+    "minY": -64,
+    "maxY": 320
+  },
+  "entries": [
+    {
+      "sourceMobType": "minecraft:zombie",
+      "baseMob": {
+        "weight": 30
+      },
+      "replacements": [
+        {"enemyId": "enemy_1", "weight": 70}
+      ]
+    }
+  ]
+}`
+	if err := os.WriteFile(jsonPath, []byte(raw), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	entity := NewSpawnTableEntity(dir)
+	if err := entity.Load(); err != nil {
+		t.Fatal(err)
+	}
+	got := entity.GetAll()
+	if len(got) != 1 {
+		t.Fatalf("expected 1 entry, got %d", len(got))
+	}
+	if got[0].ID != "over1_zombie_1" {
+		t.Fatalf("unexpected generated id: %q", got[0].ID)
+	}
+	if got[0].Dimension != "minecraft:overworld" {
+		t.Fatalf("unexpected dimension: %q", got[0].Dimension)
+	}
+}
+
 func TestSpawnTableLoadLegacyBaseMobWeight(t *testing.T) {
 	dir := t.TempDir()
 	jsonPath := filepath.Join(dir, "legacy.json")
