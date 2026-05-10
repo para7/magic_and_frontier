@@ -1,5 +1,6 @@
 {
   "enabledPlugins": {
     "example-skills@anthropic-agent-skills": true
-  }
+  },
+  "plansDirectory": "./claude/plans"
 }
