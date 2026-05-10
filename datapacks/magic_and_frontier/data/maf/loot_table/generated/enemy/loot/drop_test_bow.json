@@ -21,6 +21,49 @@
                 "minecraft:lore": [
                   {
                     "text": "Bow full test"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": ""
+                  },
+                  {
+                    "color": "gold",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "パッシブスキル"
+                  },
+                  {
+                    "bold": true,
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "Test Bow Passive"
+                  },
+                  {
+                    "color": "aqua",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "弓スキルフルテスト"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "MP     : 0"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "target : "
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "range  : 0"
                   }
                 ]
               },

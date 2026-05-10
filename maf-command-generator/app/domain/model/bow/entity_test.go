@@ -10,7 +10,7 @@ func validBow() BowPassive {
 	return BowPassive{
 		ID:        "bow_1",
 		Name:      "Bow 1",
-		Role:      "test",
+		Lore:      "test",
 		ScriptHit: []string{"say hit"},
 	}
 }

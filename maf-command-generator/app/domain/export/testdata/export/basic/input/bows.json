@@ -1,1 +1,25 @@
-{"entries":[{"id":"test_full","name":"Test Bow","life_sub":100,"script_hit":["say hit"],"script_fired":["say fired"],"script_flying":["say flying"],"script_ground":["say ground"]}]}
+{
+  "entries": [
+    {
+      "id": "test_full",
+      "name": "Test Bow",
+      "life_sub": 100,
+      "script_hit": [
+        "say hit"
+      ],
+      "script_fired": [
+        "say fired"
+      ],
+      "script_flying": [
+        "say flying"
+      ],
+      "script_ground": [
+        "say ground"
+      ],
+      "lore": "",
+      "mpCost": 0,
+      "target": "",
+      "range": 0
+    }
+  ]
+}

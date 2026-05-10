@@ -21,7 +21,9 @@
         "playsound minecraft:entity.generic.explode player @a ~ ~ ~ 1 1.4",
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は フルミナント を唱えた！\"}]"
       ],
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "chainbolt01",
@@ -53,7 +55,9 @@
         "#execute if score @s tmp matches 9.. run playsound minecraft:entity.generic.explode player @a ~ ~ ~ 1.8 0.8",
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は チェインボルト を唱えた！\"}]"
       ],
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "ground_shake01",
@@ -68,7 +72,9 @@
         "playsound minecraft:entity.generic.explode master @a ~ ~ ~ 1 0.5",
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は グランドシェイク を唱えた！\"}]"
       ],
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "freeze01",
@@ -89,7 +95,9 @@
         "playsound minecraft:entity.evoker.cast_spell master @a ~ ~ ~ 2 0.5",
         "playsound minecraft:block.glass.break master @a ~ ~ ~ 3 0.6"
       ],
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "explode01",
@@ -102,7 +110,9 @@
       ],
       "title": "エクスプロウド",
       "description": "最も近い敵モブの位置にクリーパーを召喚して即爆破する",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     }
   ]
 }

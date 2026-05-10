@@ -8,6 +8,8 @@ type Active struct {
 	Script           []string `json:"script"            validate:"min=1"`
 	Title            string   `json:"title"             validate:"trimmed_required"`
 	Description      string   `json:"description"`
+	Target           string   `json:"target"`
+	Range            int      `json:"range"             validate:"gte=0"`
 	GenerateGrimoire *bool    `json:"generate_grimoire" validate:"required"`
 }
 

@@ -3,7 +3,6 @@
     {
       "id": "passive_1",
       "name": "   ",
-      "role": "Move faster",
       "condition": "always",
       "slots": [
         1
@@ -12,7 +11,10 @@
       "script": [
         "say passive"
       ],
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "lore": "Move faster",
+      "target": "",
+      "range": 0
     }
   ]
 }

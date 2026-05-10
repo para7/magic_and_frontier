@@ -213,6 +213,104 @@
                 "minecraft:lore": [
                   {
                     "text": "Sample item"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": ""
+                  },
+                  {
+                    "color": "light_purple",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "アクティブスキル"
+                  },
+                  {
+                    "bold": true,
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "テンペスト"
+                  },
+                  {
+                    "color": "aqua",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "敵1体に雷を落とし周辺に特大ダメージ"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "cast   : 40"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "MP     : 13"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "recast : 20"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "target : "
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "range  : 0"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": ""
+                  },
+                  {
+                    "color": "gold",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "パッシブスキル"
+                  },
+                  {
+                    "bold": true,
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "いつでもリジェネ"
+                  },
+                  {
+                    "color": "aqua",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "HPが常時回復する"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "MP     : 10"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "target : "
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "range  : 0"
                   }
                 ]
               },
@@ -242,6 +340,49 @@
                 "minecraft:lore": [
                   {
                     "text": "Bow full test"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": ""
+                  },
+                  {
+                    "color": "gold",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "パッシブスキル"
+                  },
+                  {
+                    "bold": true,
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "Test Bow Passive"
+                  },
+                  {
+                    "color": "aqua",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "弓スキルフルテスト"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "MP     : 0"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "target : "
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "range  : 0"
                   }
                 ]
               },

@@ -11,7 +11,9 @@
         "scoreboard players add @s mafMP 9999",
         "scoreboard players add @s mafSoul 9999"
       ],
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "devtool_gamemode_toggle",
@@ -29,7 +31,9 @@
       ],
       "title": "ゲームモード切替",
       "description": "もし本アイテムを正規手段で入手した場合は開発者へ報告をお願いいたします。",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     }
   ]
 }

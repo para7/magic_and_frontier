@@ -37,9 +37,9 @@ func passiveBookDescription(entry passiveModel.Passive) string {
 	return fmt.Sprintf("condition=%s", strings.TrimSpace(entry.Condition))
 }
 
-func passiveRoleLine(entry passiveModel.Passive) string {
-	if role := strings.TrimSpace(entry.Role); role != "" {
-		return role
+func passiveLoreLine(entry passiveModel.Passive) string {
+	if lore := strings.TrimSpace(entry.Lore); lore != "" {
+		return lore
 	}
 	return passiveBookDescription(entry)
 }
@@ -61,7 +61,7 @@ func passiveSpellBookModel(entry passiveModel.Passive, slot int) spellBookModel 
 	return spellBookModel{
 		itemName: passiveItemName(entry),
 		lore: []string{
-			passiveRoleLine(entry),
+			passiveLoreLine(entry),
 			fmt.Sprintf("パッシブスキル / スロット%d", slot),
 		},
 		customData: passiveSpellCustomData(entry, slot),

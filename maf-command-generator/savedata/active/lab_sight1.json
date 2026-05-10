@@ -15,7 +15,9 @@
       ],
       "title": "サイト・リフト",
       "description": "視線方向の狭い範囲に浮遊を付与する",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     }
   ]
 }

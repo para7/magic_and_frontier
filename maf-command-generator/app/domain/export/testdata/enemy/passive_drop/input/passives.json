@@ -1,1 +1,20 @@
-{"entries":[{"id":"passive_1","name":"Quickstep","role":"Move faster","condition":"always","slots":[1],"description":"Always-on passive.","script":["say passive"],"generate_grimoire":true}]}
+{
+  "entries": [
+    {
+      "id": "passive_1",
+      "name": "Quickstep",
+      "condition": "always",
+      "slots": [
+        1
+      ],
+      "description": "Always-on passive.",
+      "script": [
+        "say passive"
+      ],
+      "generate_grimoire": true,
+      "lore": "Move faster",
+      "target": "",
+      "range": 0
+    }
+  ]
+}

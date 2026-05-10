@@ -15,7 +15,9 @@
       ],
       "title": "ソーンバインド",
       "description": "周囲8ブロックの地上にいる敵にダメージを与え、移動を遅くする",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "poison_circle01",
@@ -31,7 +33,9 @@
       ],
       "title": "ポイズン",
       "description": "周囲8ブロックの敵に強力な毒(Poison III)を10秒間与える",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "poison_sight01",
@@ -47,7 +51,9 @@
       ],
       "title": "ポイズンサイト",
       "description": "視線の4ブロック先を中心に半径3.5ブロックの円範囲へ毒(Poison II)を10秒間与える",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "requiem01",
@@ -63,7 +69,9 @@
       ],
       "title": "レクイエム",
       "description": "周囲8ブロックのアンデッドに大ダメージを与える",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     }
   ]
 }

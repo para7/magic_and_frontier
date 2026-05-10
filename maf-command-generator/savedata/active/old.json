@@ -20,7 +20,9 @@
       ],
       "title": "プロミネンス",
       "description": "周囲炎上+ダメージ+移動低下",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_absolutezero01",
@@ -58,7 +60,9 @@
       ],
       "title": "アブソリュート・ゼロ",
       "description": "水を凍らせ氷上の存在に大ダメージ",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_tempest01",
@@ -88,7 +92,9 @@
       ],
       "title": "テンペスト",
       "description": "敵1体に雷を落とし周辺に特大ダメージ",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_poison01",
@@ -113,7 +119,9 @@
       ],
       "title": "ポイズン",
       "description": "最寄りの敵の周囲に毒を与え、弱体化",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_earthshake01",
@@ -135,7 +143,9 @@
       ],
       "title": "アースシェイク",
       "description": "地上の敵にダメージ",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_healing01",
@@ -156,7 +166,9 @@
       ],
       "title": "ヒーリング",
       "description": "周囲に即時回復+リジェネ",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_barrier01",
@@ -175,7 +187,9 @@
       ],
       "title": "バリア",
       "description": "周囲のダメージを緩和",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_refresh01",
@@ -202,7 +216,9 @@
       ],
       "title": "リフレッシュ",
       "description": "周囲の状態異常回復",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_holy01",
@@ -223,7 +239,9 @@
       ],
       "title": "ホーリー",
       "description": "近くのアンデッドに特大ダメージ",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_sacrifice01",
@@ -246,7 +264,9 @@
       ],
       "title": "サクリファイス",
       "description": "自分の体力を犠牲に周囲に特大回復",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_tornado01",
@@ -266,7 +286,9 @@
       ],
       "title": "トルネード",
       "description": "周囲のモブを打ち上げる",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_sweep01",
@@ -283,7 +305,9 @@
       ],
       "title": "スウィープ",
       "description": "近くのアイテムをかき集める",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_airrider01",
@@ -303,7 +327,9 @@
       ],
       "title": "エアライダー",
       "description": "機動力を大幅に高める",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_gravity01",
@@ -324,7 +350,9 @@
       ],
       "title": "グラビデ",
       "description": "空中の敵を地面に落とす",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_hover01",
@@ -342,7 +370,9 @@
       ],
       "title": "ホバリング",
       "description": "空中に停滞する",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_floor01",
@@ -359,7 +389,9 @@
       ],
       "title": "フロアー",
       "description": "床を展開",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_wall01",
@@ -379,7 +411,9 @@
       ],
       "title": "ウォール",
       "description": "自分を壁で囲い緊急回避",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_roof01",
@@ -400,7 +434,9 @@
       ],
       "title": "ルーフ",
       "description": "屋根を作り出す",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_earthextend01",
@@ -418,7 +454,9 @@
       ],
       "title": "アースエクステンド",
       "description": "足元の水や溶岩を固める",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_cushion01",
@@ -436,7 +474,9 @@
       ],
       "title": "クッション",
       "description": "手持ちのスライムブロックを足元に設置する",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_disaster01",
@@ -452,7 +492,9 @@
         "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ディザスター を唱えた！\"}]"
       ],
       "title": "ディザスター",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_phoenix01",
@@ -473,7 +515,9 @@
         "tellraw @a[distance=..90] [{\"selector\":\"@s\"},{\"text\":\" は フェニックス を唱えた！\"}]"
       ],
       "title": "フェニックス",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_teleport01",
@@ -493,7 +537,9 @@
         "# xp add @s -1 levels"
       ],
       "title": "テレポート",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "old_reinforce01",
@@ -535,7 +581,9 @@
         "# xp add @s -1 levels"
       ],
       "title": "リインフォース",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     }
   ]
 }

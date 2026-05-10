@@ -3,7 +3,6 @@
     {
       "id": "passive_1",
       "name": "Sword Slash",
-      "role": "テスト用",
       "condition": "attack",
       "slots": [
         1
@@ -12,12 +11,14 @@
         "tell @a \"攻撃しました passive_1\"",
         "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 1 1.3 1"
       ],
-      "generate_grimoire": false
+      "generate_grimoire": false,
+      "lore": "テスト用",
+      "target": "",
+      "range": 0
     },
     {
       "id": "attack_slot",
       "name": "攻撃テストスロット",
-      "role": "テスト用",
       "condition": "attack",
       "slots": [
         1
@@ -26,12 +27,14 @@
         "tell @a \"攻撃しました attack_slot\"",
         "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 1 1.5 1"
       ],
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "lore": "テスト用",
+      "target": "",
+      "range": 0
     },
     {
       "id": "regeneration",
       "name": "いつでもリジェネ",
-      "role": "HPが常時回復する",
       "condition": "always",
       "slots": [
         1
@@ -39,7 +42,10 @@
       "script": [
         "execute unless entity @s[nbt={active_effects:[{id:\"minecraft:regeneration\"}]}] run effect give @s regeneration 10 0"
       ],
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "lore": "HPが常時回復する",
+      "target": "",
+      "range": 0
     }
   ]
 }

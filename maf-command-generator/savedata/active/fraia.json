@@ -14,7 +14,9 @@
       ],
       "title": "トルネード",
       "description": "周囲8ブロックの敵を竜巻で打ち上げる",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     },
     {
       "id": "tornado_sight01",
@@ -31,7 +33,9 @@
       ],
       "title": "トルネードサイト",
       "description": "視線の4ブロック先を中心に半径3.5ブロックの範囲の敵を竜巻で打ち上げる",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     }
   ]
 }

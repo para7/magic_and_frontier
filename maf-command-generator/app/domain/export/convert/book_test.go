@@ -70,7 +70,7 @@ func TestPassiveBookAndLootShareModel(t *testing.T) {
 	entry := passiveModel.Passive{
 		ID:          "passive_1",
 		Name:        "Quickstep",
-		Role:        "素早く動ける",
+		Lore:        "素早く動ける",
 		Condition:   "always",
 		Slots:       []int{1, 2},
 		Description: "",
@@ -97,8 +97,8 @@ func TestPassiveBookAndLootShareModel(t *testing.T) {
 	if len(lore) != 2 {
 		t.Fatalf("loot lore line count = %d, want 2", len(lore))
 	}
-	if lore[0] != entry.Role {
-		t.Fatalf("loot lore[0] mismatch: got %q want %q", lore[0], entry.Role)
+	if lore[0] != entry.Lore {
+		t.Fatalf("loot lore[0] mismatch: got %q want %q", lore[0], entry.Lore)
 	}
 	wantSlotLine := fmt.Sprintf("パッシブスキル / スロット%d", slot)
 	if lore[1] != wantSlotLine {

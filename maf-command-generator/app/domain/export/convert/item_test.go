@@ -39,15 +39,20 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 			CoolTime:    20,
 			Title:       "テンペスト",
 			Description: "敵1体に雷を落とし周辺に特大ダメージ",
+			Target:      "視線",
+			Range:       10,
 		},
 	}
 	passivesByID := map[string]passiveModel.Passive{
 		"regeneration": {
 			ID:          "regeneration",
 			Name:        "いつでもリジェネ",
+			Lore:        "HPが常時回復する",
 			Condition:   "always",
 			Slots:       []int{1},
 			Description: "",
+			Target:      "自分",
+			Range:       0,
 		},
 	}
 
@@ -87,6 +92,15 @@ func TestItemLootHelpersReadMinecraftComponents(t *testing.T) {
 	if _, ok := components["minecraft:lore"]; !ok {
 		t.Fatalf("lore should be exported: %#v", components)
 	}
+	lore := loreLinesByKey(t, components, "minecraft:lore")
+	if len(lore) != 17 {
+		t.Fatalf("lore line count = %d, want 17: %#v", len(lore), lore)
+	}
+	for _, want := range []string{"Sample item", "アクティブスキル", "テンペスト", "target : 視線", "range  : 10", "パッシブスキル", "いつでもリジェネ", "HPが常時回復する", "MP     : 10"} {
+		if !containsString(lore, want) {
+			t.Fatalf("lore should contain %q: %#v", want, lore)
+		}
+	}
 	if _, ok := components["minecraft:unbreakable"]; !ok {
 		t.Fatalf("unbreakable should be exported: %#v", components)
 	}
@@ -122,6 +136,8 @@ func TestPassiveOnlyItemDoesNotBecomeRightClickSpell(t *testing.T) {
 	passivesByID := map[string]passiveModel.Passive{
 		"regeneration": {
 			ID:        "regeneration",
+			Name:      "いつでもリジェネ",
+			Lore:      "HPが常時回復する",
 			Condition: "always",
 			Slots:     []int{1},
 		},
@@ -144,6 +160,10 @@ func TestPassiveOnlyItemDoesNotBecomeRightClickSpell(t *testing.T) {
 	}
 	if _, ok := components["minecraft:consumable"]; ok {
 		t.Fatalf("passive-only item should not be consumable: %#v", components)
+	}
+	lore := loreLinesByKey(t, components, "minecraft:lore")
+	if !containsString(lore, "パッシブスキル") || !containsString(lore, "いつでもリジェネ") || !containsString(lore, "HPが常時回復する") {
+		t.Fatalf("passive-only item should include generated lore: %#v", lore)
 	}
 }
 
@@ -190,6 +210,8 @@ func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 			CoolTime:    20,
 			Title:       "テンペスト",
 			Description: "敵1体に雷を落とし周辺に特大ダメージ",
+			Target:      "視線",
+			Range:       10,
 		},
 	}
 
@@ -214,8 +236,14 @@ func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 	if !strings.Contains(command, `minecraft:custom_name={text:"Starter Stone"}`) {
 		t.Fatalf("custom_name should be rendered from JSON object: %s", command)
 	}
-	if !strings.Contains(command, `minecraft:lore=[{text:"Sample item"}]`) {
-		t.Fatalf("lore should be rendered from JSON array: %s", command)
+	if !strings.Contains(command, `minecraft:lore=[{text:"Sample item"},{color:"white",font:"minecraft:uniform",italic:0b,text:""},{color:"light_purple",font:"minecraft:uniform",italic:0b,text:"アクティブスキル"}`) {
+		t.Fatalf("generated active lore should be appended after JSON lore: %s", command)
+	}
+	if !strings.Contains(command, `{bold:1b,color:"white",font:"minecraft:uniform",italic:0b,text:"テンペスト"}`) {
+		t.Fatalf("generated active title should be rendered as bold lore: %s", command)
+	}
+	if !strings.Contains(command, `{color:"white",font:"minecraft:uniform",italic:0b,text:"target : 視線"}`) {
+		t.Fatalf("generated target lore should be rendered: %s", command)
 	}
 }
 
@@ -316,7 +344,7 @@ func TestBowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
 		},
 	}
 	bowsByID := map[string]bowModel.BowPassive{
-		"test_full": {ID: "test_full"},
+		"test_full": {ID: "test_full", Name: "Test Bow", Lore: "弓スキル", MPCost: 0},
 	}
 
 	customData, err := itemCustomData(entry, nil, nil, bowsByID)
@@ -345,6 +373,10 @@ func TestBowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
 	}
 	if _, ok := components["minecraft:consumable"]; ok {
 		t.Fatalf("bow item should not become consumable: %#v", components)
+	}
+	lore := loreLinesByKey(t, components, "minecraft:lore")
+	if !containsString(lore, "パッシブスキル") || !containsString(lore, "Test Bow") || !containsString(lore, "弓スキル") || !containsString(lore, "MP     : 0") {
+		t.Fatalf("bow item should include generated passive lore: %#v", lore)
 	}
 }
 
@@ -381,6 +413,15 @@ func TestCrossbowItemEmbedsBowAndPassiveIdsWithoutConsumable(t *testing.T) {
 	if _, ok := components["minecraft:consumable"]; ok {
 		t.Fatalf("crossbow item should not become consumable: %#v", components)
 	}
+}
+
+func containsString(values []string, want string) bool {
+	for _, value := range values {
+		if value == want {
+			return true
+		}
+	}
+	return false
 }
 
 func TestBowItemRejectsHybridActiveMetadata(t *testing.T) {

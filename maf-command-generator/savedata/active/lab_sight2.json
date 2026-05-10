@@ -38,7 +38,9 @@
       ],
       "title": "サイト・アロー",
       "description": "視線方向へ矢を射出する実装例",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     }
   ]
 }

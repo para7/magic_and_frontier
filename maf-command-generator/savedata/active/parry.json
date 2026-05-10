@@ -10,7 +10,9 @@
       ],
       "title": "弾刃",
       "description": "攻撃を弾く",
-      "generate_grimoire": true
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
     }
   ]
 }
