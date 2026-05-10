@@ -130,6 +130,12 @@
       color: #444;
     }
 
+    td.eid {
+      font-family: 'Consolas', 'Menlo', monospace;
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+
     .category-passive {
       color: #88ee88;
     }
@@ -162,7 +168,7 @@
   <h1>Mob Stats</h1>
   <p class="subtitle">攻撃力はハード難易度・主要攻撃手段（HP）</p>
   <div class="controls">
-    <input type="text" id="search" placeholder="名前で絞り込み..." oninput="applyFilter()">
+    <input type="text" id="search" placeholder="名前 / IDで絞り込み..." oninput="applyFilter()">
     <div class="filter-group">
       <label><input type="checkbox" checked value="passive" onchange="applyFilter()"> <span
           class="category-passive">友好</span></label>
@@ -181,10 +187,11 @@
   <table id="mob-table">
     <thead>
       <tr>
-        <th onclick="sortTable(0)">名前</th>
-        <th onclick="sortTable(1)">カテゴリ</th>
-        <th onclick="sortTable(2)">体力 </th>
-        <th onclick="sortTable(3)">攻撃力 </th>
+        <th onclick="sortTable(0)">Entity ID</th>
+        <th onclick="sortTable(1)">名前</th>
+        <th onclick="sortTable(2)">カテゴリ</th>
+        <th onclick="sortTable(3)">体力</th>
+        <th onclick="sortTable(4)">攻撃力</th>
       </tr>
     </thead>
     <tbody id="mob-body"></tbody>
@@ -192,109 +199,108 @@
 
   <script>
     // atk: null = 攻撃なし, [min, max] = 攻撃力HP（ハード難易度）
-    // atk が範囲の場合は min～max 表示、同値なら単一値
     const MOBS = [
       // 友好
-      { name: "アレイ", cat: "passive", hp: [20, 20], atk: null },
-      { name: "アルマジロ", cat: "passive", hp: [12, 12], atk: null },
-      { name: "イカ", cat: "passive", hp: [10, 10], atk: null },
-      { name: "ウーパールーパー", cat: "passive", hp: [14, 14], atk: [2, 2] },
-      { name: "ウサギ", cat: "passive", hp: [3, 3], atk: null },
-      { name: "ウシ", cat: "passive", hp: [10, 10], atk: null },
-      { name: "ウマ", cat: "passive", hp: [15, 30], atk: null },
-      { name: "オウム", cat: "passive", hp: [6, 6], atk: null },
-      { name: "オタマジャクシ", cat: "passive", hp: [6, 6], atk: null },
-      { name: "カエル", cat: "passive", hp: [10, 10], atk: null },
-      { name: "カッパーゴーレム", cat: "passive", hp: [12, 12], atk: null },
-      { name: "カメ", cat: "passive", hp: [30, 30], atk: null },
-      { name: "行商人", cat: "passive", hp: [20, 20], atk: null },
-      { name: "コウモリ", cat: "passive", hp: [6, 6], atk: null },
-      { name: "サケ", cat: "passive", hp: [3, 3], atk: null },
-      { name: "スケルトンホース", cat: "passive", hp: [15, 15], atk: null },
-      { name: "ストライダー", cat: "passive", hp: [20, 20], atk: null },
-      { name: "スニッファー", cat: "passive", hp: [14, 14], atk: null },
-      { name: "スノウゴーレム", cat: "passive", hp: [4, 4], atk: null },
-      { name: "タラ", cat: "passive", hp: [3, 3], atk: null },
-      { name: "ニワトリ", cat: "passive", hp: [4, 4], atk: null },
-      { name: "ネコ", cat: "passive", hp: [10, 10], atk: null },
-      { name: "熱帯魚", cat: "passive", hp: [3, 6], atk: null },
-      { name: "ハッピーガスト", cat: "passive", hp: [20, 20], atk: null },
-      { name: "ヒツジ", cat: "passive", hp: [8, 8], atk: null },
-      { name: "ヒカリイカ", cat: "passive", hp: [10, 10], atk: null },
-      { name: "フグ", cat: "passive", hp: [3, 3], atk: null },
-      { name: "ブタ", cat: "passive", hp: [10, 10], atk: null },
-      { name: "ムーシュルーム", cat: "passive", hp: [10, 10], atk: null },
-      { name: "村人", cat: "passive", hp: [20, 20], atk: null },
-      { name: "ヤマネコ", cat: "passive", hp: [10, 10], atk: null },
-      { name: "ラクダ", cat: "passive", hp: [32, 32], atk: null },
-      { name: "ラバ", cat: "passive", hp: [15, 30], atk: null },
-      { name: "ロバ", cat: "passive", hp: [15, 30], atk: null },
+      { name: "アレイ",              cat: "passive",  hp: [20,  20],  atk: null,         id: "minecraft:allay" },
+      { name: "アルマジロ",          cat: "passive",  hp: [12,  12],  atk: null,         id: "minecraft:armadillo" },
+      { name: "イカ",                cat: "passive",  hp: [10,  10],  atk: null,         id: "minecraft:squid" },
+      { name: "ウーパールーパー",    cat: "passive",  hp: [14,  14],  atk: [2,    2],    id: "minecraft:axolotl" },
+      { name: "ウサギ",              cat: "passive",  hp: [3,   3],   atk: null,         id: "minecraft:rabbit" },
+      { name: "ウシ",                cat: "passive",  hp: [10,  10],  atk: null,         id: "minecraft:cow" },
+      { name: "ウマ",                cat: "passive",  hp: [15,  30],  atk: null,         id: "minecraft:horse" },
+      { name: "オウム",              cat: "passive",  hp: [6,   6],   atk: null,         id: "minecraft:parrot" },
+      { name: "オタマジャクシ",      cat: "passive",  hp: [6,   6],   atk: null,         id: "minecraft:tadpole" },
+      { name: "カエル",              cat: "passive",  hp: [10,  10],  atk: null,         id: "minecraft:frog" },
+      { name: "カッパーゴーレム",    cat: "passive",  hp: [12,  12],  atk: null,         id: "minecraft:copper_golem" },
+      { name: "カメ",                cat: "passive",  hp: [30,  30],  atk: null,         id: "minecraft:turtle" },
+      { name: "行商人",              cat: "passive",  hp: [20,  20],  atk: null,         id: "minecraft:wandering_trader" },
+      { name: "コウモリ",            cat: "passive",  hp: [6,   6],   atk: null,         id: "minecraft:bat" },
+      { name: "サケ",                cat: "passive",  hp: [3,   3],   atk: null,         id: "minecraft:salmon" },
+      { name: "スケルトンホース",    cat: "passive",  hp: [15,  15],  atk: null,         id: "minecraft:skeleton_horse" },
+      { name: "ストライダー",        cat: "passive",  hp: [20,  20],  atk: null,         id: "minecraft:strider" },
+      { name: "スニッファー",        cat: "passive",  hp: [14,  14],  atk: null,         id: "minecraft:sniffer" },
+      { name: "スノウゴーレム",      cat: "passive",  hp: [4,   4],   atk: null,         id: "minecraft:snow_golem" },
+      { name: "タラ",                cat: "passive",  hp: [3,   3],   atk: null,         id: "minecraft:cod" },
+      { name: "ニワトリ",            cat: "passive",  hp: [4,   4],   atk: null,         id: "minecraft:chicken" },
+      { name: "ネコ",                cat: "passive",  hp: [10,  10],  atk: null,         id: "minecraft:cat" },
+      { name: "熱帯魚",              cat: "passive",  hp: [3,   6],   atk: null,         id: "minecraft:tropical_fish" },
+      { name: "ハッピーガスト",      cat: "passive",  hp: [20,  20],  atk: null,         id: "minecraft:happy_ghast" },
+      { name: "ヒツジ",              cat: "passive",  hp: [8,   8],   atk: null,         id: "minecraft:sheep" },
+      { name: "ヒカリイカ",          cat: "passive",  hp: [10,  10],  atk: null,         id: "minecraft:glow_squid" },
+      { name: "フグ",                cat: "passive",  hp: [3,   3],   atk: null,         id: "minecraft:pufferfish" },
+      { name: "ブタ",                cat: "passive",  hp: [10,  10],  atk: null,         id: "minecraft:pig" },
+      { name: "ムーシュルーム",      cat: "passive",  hp: [10,  10],  atk: null,         id: "minecraft:mooshroom" },
+      { name: "村人",                cat: "passive",  hp: [20,  20],  atk: null,         id: "minecraft:villager" },
+      { name: "ヤマネコ",            cat: "passive",  hp: [10,  10],  atk: null,         id: "minecraft:ocelot" },
+      { name: "ラクダ",              cat: "passive",  hp: [32,  32],  atk: null,         id: "minecraft:camel" },
+      { name: "ラバ",                cat: "passive",  hp: [15,  30],  atk: null,         id: "minecraft:mule" },
+      { name: "ロバ",                cat: "passive",  hp: [15,  30],  atk: null,         id: "minecraft:donkey" },
       // 中立
-      { name: "アイアンゴーレム", cat: "neutral", hp: [100, 100], atk: [16.175, 16.175] },
-      { name: "イルカ", cat: "neutral", hp: [10, 10], atk: [2.25, 2.25] },
-      { name: "エンダーマン", cat: "neutral", hp: [40, 40], atk: null },
-      { name: "オオカミ（野生）", cat: "neutral", hp: [8, 8], atk: null },
-      { name: "オオカミ（ペット）", cat: "neutral", hp: [40, 40], atk: null },
-      { name: "キツネ", cat: "neutral", hp: [10, 20], atk: null },
-      { name: "クモ", cat: "neutral", hp: [16, 16], atk: null },
-      { name: "商人のラマ", cat: "neutral", hp: [15, 30], atk: null },
-      { name: "シロクマ", cat: "neutral", hp: [30, 30], atk: [9, 9] },
-      { name: "ゾンビピグリン", cat: "neutral", hp: [20, 20], atk: [6, 6] },
-      { name: "洞窟グモ", cat: "neutral", hp: [12, 12], atk: [3, 3] },
-      { name: "ドラウンド", cat: "neutral", hp: [20, 20], atk: [2.25, 6] },
-      { name: "パンダ", cat: "neutral", hp: [10, 20], atk: null },
-      { name: "ピグリン", cat: "neutral", hp: [16, 16], atk: [5, 5] },
-      { name: "ミツバチ", cat: "neutral", hp: [10, 10], atk: [3, 3] },
-      { name: "ヤギ", cat: "neutral", hp: [10, 10], atk: null },
-      { name: "ラマ", cat: "neutral", hp: [15, 30], atk: null },
+      { name: "アイアンゴーレム",    cat: "neutral",  hp: [100, 100], atk: [16.175, 16.175], id: "minecraft:iron_golem" },
+      { name: "イルカ",              cat: "neutral",  hp: [10,  10],  atk: [2.25, 2.25], id: "minecraft:dolphin" },
+      { name: "エンダーマン",        cat: "neutral",  hp: [40,  40],  atk: null,         id: "minecraft:enderman" },
+      { name: "オオカミ（野生）",    cat: "neutral",  hp: [8,   8],   atk: null,         id: "minecraft:wolf" },
+      { name: "オオカミ（ペット）",  cat: "neutral",  hp: [40,  40],  atk: null,         id: "minecraft:wolf" },
+      { name: "キツネ",              cat: "neutral",  hp: [10,  20],  atk: null,         id: "minecraft:fox" },
+      { name: "クモ",                cat: "neutral",  hp: [16,  16],  atk: null,         id: "minecraft:spider" },
+      { name: "商人のラマ",          cat: "neutral",  hp: [15,  30],  atk: null,         id: "minecraft:trader_llama" },
+      { name: "シロクマ",            cat: "neutral",  hp: [30,  30],  atk: [9,    9],    id: "minecraft:polar_bear" },
+      { name: "ゾンビピグリン",      cat: "neutral",  hp: [20,  20],  atk: [6,    6],    id: "minecraft:zombified_piglin" },
+      { name: "洞窟グモ",            cat: "neutral",  hp: [12,  12],  atk: [3,    3],    id: "minecraft:cave_spider" },
+      { name: "ドラウンド",          cat: "neutral",  hp: [20,  20],  atk: [2.25, 6],    id: "minecraft:drowned" },
+      { name: "パンダ",              cat: "neutral",  hp: [10,  20],  atk: null,         id: "minecraft:panda" },
+      { name: "ピグリン",            cat: "neutral",  hp: [16,  16],  atk: [5,    5],    id: "minecraft:piglin" },
+      { name: "ミツバチ",            cat: "neutral",  hp: [10,  10],  atk: [3,    3],    id: "minecraft:bee" },
+      { name: "ヤギ",                cat: "neutral",  hp: [10,  10],  atk: null,         id: "minecraft:goat" },
+      { name: "ラマ",                cat: "neutral",  hp: [15,  30],  atk: null,         id: "minecraft:llama" },
       // 敵対
-      { name: "ウィザースケルトン", cat: "hostile", hp: [20, 20], atk: [6, 6] },
-      { name: "ウィッチ", cat: "hostile", hp: [26, 26], atk: null },
-      { name: "ヴィンディケーター", cat: "hostile", hp: [24, 24], atk: [9.75, 9.75] },
-      { name: "ヴェックス", cat: "hostile", hp: [14, 14], atk: [6.75, 6.75] },
-      { name: "エヴォーカー", cat: "hostile", hp: [24, 24], atk: [9, 9] },
-      { name: "エルダーガーディアン", cat: "hostile", hp: [80, 80], atk: [6, 6] },
-      { name: "エンダーマイト", cat: "hostile", hp: [8, 8], atk: null },
-      { name: "ガーディアン", cat: "hostile", hp: [30, 30], atk: null },
-      { name: "ガスト", cat: "hostile", hp: [10, 10], atk: [12.75, 12.75] },
-      { name: "クリーキング", cat: "hostile", hp: [1, 1], atk: [2.25, 2.25] },
-      { name: "クリーパー", cat: "hostile", hp: [20, 20], atk: [32.25, 32.25] },
-      { name: "シュルカー", cat: "hostile", hp: [30, 30], atk: [3, 3] },
-      { name: "シルバーフィッシュ", cat: "hostile", hp: [8, 8], atk: null },
-      { name: "スケルトン", cat: "hostile", hp: [20, 20], atk: [4, 5] },
-      { name: "ストレイ", cat: "hostile", hp: [20, 20], atk: null },
-      { name: "スライム（大）", cat: "hostile", hp: [16, 16], atk: [6, 6] },
-      { name: "スライム（中）", cat: "hostile", hp: [4, 4], atk: [3, 3] },
-      { name: "スライム（小）", cat: "hostile", hp: [1, 1], atk: null },
-      { name: "ゾグリン", cat: "hostile", hp: [40, 40], atk: [6, 6] },
-      { name: "ゾンビ", cat: "hostile", hp: [20, 20], atk: [2.25, 2.25] },
-      { name: "ハスク", cat: "hostile", hp: [20, 20], atk: [2.25, 2.25] },
-      { name: "ピグリンブルート", cat: "hostile", hp: [50, 50], atk: [9.75, 9.75] },
-      { name: "ピリジャー", cat: "hostile", hp: [24, 24], atk: [5, 5] },
-      { name: "ファントム", cat: "hostile", hp: [20, 20], atk: null },
-      { name: "ブリーズ", cat: "hostile", hp: [30, 30], atk: null },
-      { name: "ブレイズ", cat: "hostile", hp: [20, 20], atk: [9, 9] },
-      { name: "ボグド", cat: "hostile", hp: [16, 16], atk: null },
-      { name: "ホグリン", cat: "hostile", hp: [40, 40], atk: [6, 6] },
-      { name: "マグマキューブ（大）", cat: "hostile", hp: [16, 16], atk: [9, 9] },
-      { name: "マグマキューブ（中）", cat: "hostile", hp: [4, 4], atk: [3, 3] },
-      { name: "マグマキューブ（小）", cat: "hostile", hp: [1, 1], atk: [2.25, 2.25] },
-      { name: "村人ゾンビ", cat: "hostile", hp: [20, 20], atk: [2.25, 2.25] },
-      { name: "ラヴェジャー", cat: "hostile", hp: [100, 100], atk: [9, 9] },
-      { name: "ウォーデン", cat: "hostile", hp: [500, 500], atk: [22.5, 22.5] },
-      { name: "イリュージョナー", cat: "hostile", hp: [32, 32], atk: [5, 5] },
-      { name: "殺人ウサギ", cat: "hostile", hp: [3, 3], atk: [6, 6] },
-      { name: "ジャイアント", cat: "hostile", hp: [100, 100], atk: [37.5, 37.5] },
-      { name: "ゾンビホース", cat: "hostile", hp: [15, 15], atk: null },
+      { name: "ウィザースケルトン",  cat: "hostile",  hp: [20,  20],  atk: [6,    6],    id: "minecraft:wither_skeleton" },
+      { name: "ウィッチ",            cat: "hostile",  hp: [26,  26],  atk: null,         id: "minecraft:witch" },
+      { name: "ヴィンディケーター",  cat: "hostile",  hp: [24,  24],  atk: [9.75, 9.75], id: "minecraft:vindicator" },
+      { name: "ヴェックス",          cat: "hostile",  hp: [14,  14],  atk: [6.75, 6.75], id: "minecraft:vex" },
+      { name: "エヴォーカー",        cat: "hostile",  hp: [24,  24],  atk: [9,    9],    id: "minecraft:evoker" },
+      { name: "エルダーガーディアン",cat: "hostile",  hp: [80,  80],  atk: [6,    6],    id: "minecraft:elder_guardian" },
+      { name: "エンダーマイト",      cat: "hostile",  hp: [8,   8],   atk: null,         id: "minecraft:endermite" },
+      { name: "ガーディアン",        cat: "hostile",  hp: [30,  30],  atk: null,         id: "minecraft:guardian" },
+      { name: "ガスト",              cat: "hostile",  hp: [10,  10],  atk: [12.75,12.75],id: "minecraft:ghast" },
+      { name: "クリーキング",        cat: "hostile",  hp: [1,   1],   atk: [2.25, 2.25], id: "minecraft:creaking" },
+      { name: "クリーパー",          cat: "hostile",  hp: [20,  20],  atk: [32.25,32.25],id: "minecraft:creeper" },
+      { name: "シュルカー",          cat: "hostile",  hp: [30,  30],  atk: [3,    3],    id: "minecraft:shulker" },
+      { name: "シルバーフィッシュ",  cat: "hostile",  hp: [8,   8],   atk: null,         id: "minecraft:silverfish" },
+      { name: "スケルトン",          cat: "hostile",  hp: [20,  20],  atk: [4,    5],    id: "minecraft:skeleton" },
+      { name: "ストレイ",            cat: "hostile",  hp: [20,  20],  atk: null,         id: "minecraft:stray" },
+      { name: "スライム（大）",      cat: "hostile",  hp: [16,  16],  atk: [6,    6],    id: "minecraft:slime" },
+      { name: "スライム（中）",      cat: "hostile",  hp: [4,   4],   atk: [3,    3],    id: "minecraft:slime" },
+      { name: "スライム（小）",      cat: "hostile",  hp: [1,   1],   atk: null,         id: "minecraft:slime" },
+      { name: "ゾグリン",            cat: "hostile",  hp: [40,  40],  atk: [6,    6],    id: "minecraft:zoglin" },
+      { name: "ゾンビ",              cat: "hostile",  hp: [20,  20],  atk: [2.25, 2.25], id: "minecraft:zombie" },
+      { name: "ハスク",              cat: "hostile",  hp: [20,  20],  atk: [2.25, 2.25], id: "minecraft:husk" },
+      { name: "ピグリンブルート",    cat: "hostile",  hp: [50,  50],  atk: [9.75, 9.75], id: "minecraft:piglin_brute" },
+      { name: "ピリジャー",          cat: "hostile",  hp: [24,  24],  atk: [5,    5],    id: "minecraft:pillager" },
+      { name: "ファントム",          cat: "hostile",  hp: [20,  20],  atk: null,         id: "minecraft:phantom" },
+      { name: "ブリーズ",            cat: "hostile",  hp: [30,  30],  atk: null,         id: "minecraft:breeze" },
+      { name: "ブレイズ",            cat: "hostile",  hp: [20,  20],  atk: [9,    9],    id: "minecraft:blaze" },
+      { name: "ボグド",              cat: "hostile",  hp: [16,  16],  atk: null,         id: "minecraft:bogged" },
+      { name: "ホグリン",            cat: "hostile",  hp: [40,  40],  atk: [6,    6],    id: "minecraft:hoglin" },
+      { name: "マグマキューブ（大）",cat: "hostile",  hp: [16,  16],  atk: [9,    9],    id: "minecraft:magma_cube" },
+      { name: "マグマキューブ（中）",cat: "hostile",  hp: [4,   4],   atk: [3,    3],    id: "minecraft:magma_cube" },
+      { name: "マグマキューブ（小）",cat: "hostile",  hp: [1,   1],   atk: [2.25, 2.25], id: "minecraft:magma_cube" },
+      { name: "村人ゾンビ",          cat: "hostile",  hp: [20,  20],  atk: [2.25, 2.25], id: "minecraft:zombie_villager" },
+      { name: "ラヴェジャー",        cat: "hostile",  hp: [100, 100], atk: [9,    9],    id: "minecraft:ravager" },
+      { name: "ウォーデン",          cat: "hostile",  hp: [500, 500], atk: [22.5, 22.5], id: "minecraft:warden" },
+      { name: "イリュージョナー",    cat: "hostile",  hp: [32,  32],  atk: [5,    5],    id: "minecraft:illusioner" },
+      { name: "殺人ウサギ",          cat: "hostile",  hp: [3,   3],   atk: [6,    6],    id: "minecraft:rabbit" },
+      { name: "ジャイアント",        cat: "hostile",  hp: [100, 100], atk: [37.5, 37.5], id: "minecraft:giant" },
+      { name: "ゾンビホース",        cat: "hostile",  hp: [15,  15],  atk: null,         id: "minecraft:zombie_horse" },
       // ボス
-      { name: "ウィザー", cat: "boss", hp: [300, 600], atk: [6, 6] },
-      { name: "エンダードラゴン", cat: "boss", hp: [200, 200], atk: [7.5, 7.5] },
+      { name: "ウィザー",            cat: "boss",     hp: [300, 600], atk: [6,    6],    id: "minecraft:wither" },
+      { name: "エンダードラゴン",    cat: "boss",     hp: [200, 200], atk: [7.5,  7.5],  id: "minecraft:ender_dragon" },
       // その他
-      { name: "プレイヤー", cat: "other", hp: [20, 20], atk: null },
-      { name: "防具立て", cat: "other", hp: [20, 20], atk: null },
-      { name: "エンドクリスタル", cat: "other", hp: [5, 5], atk: null },
-      { name: "トロッコ", cat: "other", hp: [6, 6], atk: null },
-      { name: "ボート", cat: "other", hp: [6, 6], atk: null },
+      { name: "プレイヤー",          cat: "other",    hp: [20,  20],  atk: null,         id: "minecraft:player" },
+      { name: "防具立て",            cat: "other",    hp: [20,  20],  atk: null,         id: "minecraft:armor_stand" },
+      { name: "エンドクリスタル",    cat: "other",    hp: [5,   5],   atk: null,         id: "minecraft:end_crystal" },
+      { name: "トロッコ",            cat: "other",    hp: [6,   6],   atk: null,         id: "minecraft:minecart" },
+      { name: "ボート",              cat: "other",    hp: [6,   6],   atk: null,         id: "minecraft:boat" },
     ];
 
     const CAT_LABEL = { passive: "友好", neutral: "中立", hostile: "敵対", boss: "ボス", other: "その他" };
@@ -304,19 +310,20 @@
       return min === max ? String(min) : `${min}～${max}`;
     }
 
-    let sortCol = 2, sortDir = 1;
+    let sortCol = 3, sortDir = 1;
 
     function renderTable(data) {
       const tbody = document.getElementById("mob-body");
       tbody.innerHTML = data.map(m => {
-        const hpStr = rangeStr(m.hp[0], m.hp[1]);
+        const hpStr  = rangeStr(m.hp[0],  m.hp[1]);
         const atkStr = m.atk ? rangeStr(m.atk[0], m.atk[1]) : null;
         return `<tr data-cat="${m.cat}">
-      <td>${m.name}</td>
-      <td class="category-${m.cat}">${CAT_LABEL[m.cat]}</td>
-      <td class="num">${hpStr}</td>
-      ${atkStr ? `<td class="atk">${atkStr}</td>` : `<td class="dash">—</td>`}
-    </tr>`;
+          <td class="eid">${m.id}</td>
+          <td>${m.name}</td>
+          <td class="category-${m.cat}">${CAT_LABEL[m.cat]}</td>
+          <td class="num">${hpStr}</td>
+          ${atkStr ? `<td class="atk">${atkStr}</td>` : `<td class="dash">—</td>`}
+        </tr>`;
       }).join("");
       document.getElementById("count").textContent = `${data.length} 件`;
       updateSortHeaders();
@@ -331,7 +338,7 @@
       const q = document.getElementById("search").value.trim();
       const cats = getActiveCategories();
       let data = MOBS.filter(m => cats.includes(m.cat));
-      if (q) data = data.filter(m => m.name.includes(q));
+      if (q) data = data.filter(m => m.name.includes(q) || m.id.includes(q));
       data = sortData(data);
       renderTable(data);
     }
@@ -339,10 +346,11 @@
     function sortData(data) {
       return [...data].sort((a, b) => {
         let va, vb;
-        if (sortCol === 0) { va = a.name; vb = b.name; return sortDir * va.localeCompare(vb, "ja"); }
-        if (sortCol === 1) { va = a.cat; vb = b.cat; return sortDir * va.localeCompare(vb); }
-        if (sortCol === 2) { va = a.hp[0]; vb = b.hp[0]; }
-        if (sortCol === 3) { va = a.atk ? a.atk[0] : -1; vb = b.atk ? b.atk[0] : -1; }
+        if (sortCol === 0) { va = a.id;   vb = b.id;   return sortDir * va.localeCompare(vb); }
+        if (sortCol === 1) { va = a.name; vb = b.name; return sortDir * va.localeCompare(vb, "ja"); }
+        if (sortCol === 2) { va = a.cat;  vb = b.cat;  return sortDir * va.localeCompare(vb); }
+        if (sortCol === 3) { va = a.hp[0];  vb = b.hp[0]; }
+        if (sortCol === 4) { va = a.atk ? a.atk[0] : -1; vb = b.atk ? b.atk[0] : -1; }
         return sortDir * (va - vb);
       });
     }
