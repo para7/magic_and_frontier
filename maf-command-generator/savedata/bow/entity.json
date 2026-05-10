@@ -82,7 +82,7 @@
         "kill @s"
       ],
       "lore": "弓スキルフルテスト",
-      "mpCost": 0,
+      "mpCost": 100,
       "target": "",
       "range": 0
     }

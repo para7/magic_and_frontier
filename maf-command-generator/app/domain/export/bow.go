@@ -127,6 +127,15 @@ func buildBowPassiveEffectBody(entry bowModel.BowPassive) string {
 	lines = append(lines, buildBowTagArrowLines(
 		fmt.Sprintf(`function maf:bow/tag_bow_arrow {bow_id:%s,life:%d}`, ec.JsonString(entry.ID), lifeValue),
 	)...)
+	if entry.MPCost > 0 {
+		lines = append(lines,
+			fmt.Sprintf(`execute unless score @s mafMP matches %d.. run kill @e[type=arrow,distance=..2,tag=maf_bow_arrow_new]`, entry.MPCost),
+			fmt.Sprintf(`execute unless score @s mafMP matches %d.. run tellraw @s [{"text":"MPが足りません！ 消費MP: %d"}]`, entry.MPCost, entry.MPCost),
+			fmt.Sprintf(`execute unless score @s mafMP matches %d.. run playsound minecraft:block.dispenser.fail master @s ~ ~ ~ 1.0 1.1`, entry.MPCost),
+			fmt.Sprintf(`execute unless score @s mafMP matches %d.. run return 0`, entry.MPCost),
+			fmt.Sprintf(`scoreboard players remove @s mafMP %d`, entry.MPCost),
+		)
+	}
 	if len(entry.ScriptHit) > 0 {
 		lines = append(lines, `execute as @e[type=arrow,distance=..2,tag=maf_bow_arrow_new] run function maf:bow/prepare_hit_arrow`)
 	}
