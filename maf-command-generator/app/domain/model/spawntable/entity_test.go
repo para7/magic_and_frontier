@@ -187,6 +187,13 @@ func TestAllOverlaps(t *testing.T) {
 	if len(AllOverlaps([]SpawnTable{base, nonDistance})) != 0 {
 		t.Fatal("expected non-overlapping distance ranges to not be detected")
 	}
+
+	touchingDistance := base
+	touchingDistance.MinDistance = base.MaxDistance
+	touchingDistance.MaxDistance = 200
+	if len(AllOverlaps([]SpawnTable{base, touchingDistance})) != 0 {
+		t.Fatal("expected touching distance ranges to not be detected")
+	}
 }
 
 func TestSpawnTableValidateAllDetectsDuplicateID(t *testing.T) {

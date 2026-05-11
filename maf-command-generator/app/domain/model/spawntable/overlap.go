@@ -27,5 +27,5 @@ func AllOverlaps(entries []SpawnTable) [][2]string {
 }
 
 func intervalOverlap(leftMin, leftMax, rightMin, rightMax int) bool {
-	return leftMin <= rightMax && rightMin <= leftMax
+	return leftMin < rightMax && rightMin < leftMax
 }

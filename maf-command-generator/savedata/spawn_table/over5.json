@@ -1,8 +1,8 @@
 {
   "coordinates": {
     "dimension": "minecraft:overworld",
-    "minDistance": 1024,
-    "maxDistance": 2048,
+    "minDistance": 8192,
+    "maxDistance": 10240,
     "minX": -99999999,
     "maxX": 99999999,
     "minZ": -99999999,
