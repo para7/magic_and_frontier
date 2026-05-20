@@ -21,6 +21,29 @@
         }
       },
       "itemId": "minecraft:diamond_chestplate"
+    },
+    {
+      "id": "debug_knockback_stick",
+      "itemId": "minecraft:stick",
+      "maf": {},
+      "minecraft": {
+        "components": {
+          "minecraft:custom_name": {
+            "text": "[DEBUG] Knockback Stick"
+          },
+          "minecraft:lore": [
+            {
+              "text": "Knockback 9999"
+            },
+            {
+              "text": "デバッグ用"
+            }
+          ],
+          "minecraft:enchantments": {
+            "minecraft:knockback": 255
+          }
+        }
+      }
     }
   ]
 }

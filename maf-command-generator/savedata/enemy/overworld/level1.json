@@ -1,24 +1,23 @@
 {
   "entries": [
     {
-      "id": "overworld_level1",
+      "id": "level0",
       "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=over, level=1",
       "minecraft": {
-        "Health": 24.0,
+        "Health": 20.0,
         "CustomName": [
           {
-            "text": "overworld_level1"
+            "text": "level0"
           }
         ],
         "attributes": [
           {
             "id": "minecraft:max_health",
-            "base": 24.0
+            "base": 20.0
           },
           {
             "id": "minecraft:attack_damage",
-            "base": 7.8
+            "base": 6.0
           }
         ]
       },
@@ -30,24 +29,23 @@
       }
     },
     {
-      "id": "overworld_level2",
+      "id": "level1",
       "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=over, level=2",
       "minecraft": {
-        "Health": 36.0,
+        "Health": 28.0,
         "CustomName": [
           {
-            "text": "overworld_level2"
+            "text": "level1"
           }
         ],
         "attributes": [
           {
             "id": "minecraft:max_health",
-            "base": 36.0
+            "base": 28.0
           },
           {
             "id": "minecraft:attack_damage",
-            "base": 10.1
+            "base": 7.2
           }
         ]
       },
@@ -59,20 +57,19 @@
       }
     },
     {
-      "id": "nether_level1",
+      "id": "level2",
       "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=nether, level=1",
       "minecraft": {
-        "Health": 54.0,
+        "Health": 50.4,
         "CustomName": [
           {
-            "text": "nether_level1"
+            "text": "level2"
           }
         ],
         "attributes": [
           {
             "id": "minecraft:max_health",
-            "base": 54.0
+            "base": 50.4
           },
           {
             "id": "minecraft:attack_damage",
@@ -88,24 +85,23 @@
       }
     },
     {
-      "id": "overworld_level3",
+      "id": "level3",
       "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=over, level=3",
       "minecraft": {
-        "Health": 54.0,
+        "Health": 75.6,
         "CustomName": [
           {
-            "text": "overworld_level3"
+            "text": "level3"
           }
         ],
         "attributes": [
           {
             "id": "minecraft:max_health",
-            "base": 54.0
+            "base": 75.6
           },
           {
             "id": "minecraft:attack_damage",
-            "base": 12.2
+            "base": 17.1
           }
         ]
       },
@@ -117,24 +113,23 @@
       }
     },
     {
-      "id": "nether_level2",
+      "id": "level4",
       "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=nether, level=2",
       "minecraft": {
-        "Health": 81.0,
+        "Health": 113.4,
         "CustomName": [
           {
-            "text": "nether_level2"
+            "text": "level4"
           }
         ],
         "attributes": [
           {
             "id": "minecraft:max_health",
-            "base": 81.0
+            "base": 113.4
           },
           {
             "id": "minecraft:attack_damage",
-            "base": 14.6
+            "base": 22.3
           }
         ]
       },
@@ -146,24 +141,23 @@
       }
     },
     {
-      "id": "nether_level3",
+      "id": "level5",
       "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=nether, level=3",
       "minecraft": {
-        "Health": 105.3,
+        "Health": 204.1,
         "CustomName": [
           {
-            "text": "nether_level3"
+            "text": "level5"
           }
         ],
         "attributes": [
           {
             "id": "minecraft:max_health",
-            "base": 105.3
+            "base": 204.1
           },
           {
             "id": "minecraft:attack_damage",
-            "base": 17.5
+            "base": 26.7
           }
         ]
       },
@@ -175,24 +169,23 @@
       }
     },
     {
-      "id": "overworld_level4",
+      "id": "level6",
       "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=over, level=4",
       "minecraft": {
-        "Health": 136.9,
+        "Health": 255.2,
         "CustomName": [
           {
-            "text": "overworld_level4"
+            "text": "level6"
           }
         ],
         "attributes": [
           {
             "id": "minecraft:max_health",
-            "base": 136.9
+            "base": 255.2
           },
           {
             "id": "minecraft:attack_damage",
-            "base": 21.0
+            "base": 29.4
           }
         ]
       },
@@ -204,24 +197,23 @@
       }
     },
     {
-      "id": "nether_level4",
+      "id": "level7",
       "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=nether, level=4",
       "minecraft": {
-        "Health": 178.0,
+        "Health": 382.7,
         "CustomName": [
           {
-            "text": "nether_level4"
+            "text": "level7"
           }
         ],
         "attributes": [
           {
             "id": "minecraft:max_health",
-            "base": 178.0
+            "base": 382.7
           },
           {
             "id": "minecraft:attack_damage",
-            "base": 25.2
+            "base": 38.2
           }
         ]
       },
@@ -233,24 +225,23 @@
       }
     },
     {
-      "id": "end_level0",
+      "id": "level8",
       "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=end, level=0",
       "minecraft": {
-        "Health": 213.5,
+        "Health": 459.3,
         "CustomName": [
           {
-            "text": "end_level0"
+            "text": "level8"
           }
         ],
         "attributes": [
           {
             "id": "minecraft:max_health",
-            "base": 213.5
+            "base": 459.3
           },
           {
             "id": "minecraft:attack_damage",
-            "base": 30.3
+            "base": 45.9
           }
         ]
       },
@@ -262,24 +253,23 @@
       }
     },
     {
-      "id": "overworld_level5",
+      "id": "level9",
       "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=over, level=5",
       "minecraft": {
-        "Health": 256.3,
+        "Health": 688.9,
         "CustomName": [
           {
-            "text": "overworld_level5"
+            "text": "level9"
           }
         ],
         "attributes": [
           {
             "id": "minecraft:max_health",
-            "base": 256.3
+            "base": 688.9
           },
           {
             "id": "minecraft:attack_damage",
-            "base": 36.3
+            "base": 59.6
           }
         ]
       },
@@ -291,169 +281,23 @@
       }
     },
     {
-      "id": "end_level1",
+      "id": "level10",
       "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=end, level=1",
       "minecraft": {
-        "Health": 333.1,
+        "Health": 1377.8,
         "CustomName": [
           {
-            "text": "end_level1"
+            "text": "level10"
           }
         ],
         "attributes": [
           {
             "id": "minecraft:max_health",
-            "base": 333.1
+            "base": 1377.8
           },
           {
             "id": "minecraft:attack_damage",
-            "base": 43.6
-          }
-        ]
-      },
-      "maf": {
-        "equipment": {},
-        "enemySkillIds": [],
-        "dropMode": "append",
-        "drops": []
-      }
-    },
-    {
-      "id": "end_level2",
-      "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=end, level=2",
-      "minecraft": {
-        "Health": 499.7,
-        "CustomName": [
-          {
-            "text": "end_level2"
-          }
-        ],
-        "attributes": [
-          {
-            "id": "minecraft:max_health",
-            "base": 499.7
-          },
-          {
-            "id": "minecraft:attack_damage",
-            "base": 52.3
-          }
-        ]
-      },
-      "maf": {
-        "equipment": {},
-        "enemySkillIds": [],
-        "dropMode": "append",
-        "drops": []
-      }
-    },
-    {
-      "id": "end_level3",
-      "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=end, level=3",
-      "minecraft": {
-        "Health": 749.6,
-        "CustomName": [
-          {
-            "text": "end_level3"
-          }
-        ],
-        "attributes": [
-          {
-            "id": "minecraft:max_health",
-            "base": 749.6
-          },
-          {
-            "id": "minecraft:attack_damage",
-            "base": 62.8
-          }
-        ]
-      },
-      "maf": {
-        "equipment": {},
-        "enemySkillIds": [],
-        "dropMode": "append",
-        "drops": []
-      }
-    },
-    {
-      "id": "nether_level5",
-      "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=nether, level=5",
-      "minecraft": {
-        "Health": 749.6,
-        "CustomName": [
-          {
-            "text": "nether_level5"
-          }
-        ],
-        "attributes": [
-          {
-            "id": "minecraft:max_health",
-            "base": 749.6
-          },
-          {
-            "id": "minecraft:attack_damage",
-            "base": 62.8
-          }
-        ]
-      },
-      "maf": {
-        "equipment": {},
-        "enemySkillIds": [],
-        "dropMode": "append",
-        "drops": []
-      }
-    },
-    {
-      "id": "end_level4",
-      "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=end, level=4",
-      "minecraft": {
-        "Health": 1499.1,
-        "CustomName": [
-          {
-            "text": "end_level4"
-          }
-        ],
-        "attributes": [
-          {
-            "id": "minecraft:max_health",
-            "base": 1499.1
-          },
-          {
-            "id": "minecraft:attack_damage",
-            "base": 75.3
-          }
-        ]
-      },
-      "maf": {
-        "equipment": {},
-        "enemySkillIds": [],
-        "dropMode": "append",
-        "drops": []
-      }
-    },
-    {
-      "id": "end_level5",
-      "mobType": "minecraft:zombie",
-      "memo": "Generated from overworld/matrix.tsv: dimension=end, level=5",
-      "minecraft": {
-        "Health": 2998.2,
-        "CustomName": [
-          {
-            "text": "end_level5"
-          }
-        ],
-        "attributes": [
-          {
-            "id": "minecraft:max_health",
-            "base": 2998.2
-          },
-          {
-            "id": "minecraft:attack_damage",
-            "base": 90.4
+            "base": 77.5
           }
         ]
       },

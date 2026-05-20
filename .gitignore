@@ -8,3 +8,9 @@ tools/node_modules/
 tools/**/node_modules/
 tools/**/dist/
 /data/
+
+datapacks/magic_and_frontier/data/maf/function/generated/item/give/
+datapacks/magic_and_frontier/data/maf/function/generated/active/give/
+datapacks/magic_and_frontier/data/maf/function/generated/passive/give/
+datapacks/magic_and_frontier/data/maf/function/generated/enemy/spawn/
+datapacks/magic_and_frontier/data/maf/function/generated/passive/give/
