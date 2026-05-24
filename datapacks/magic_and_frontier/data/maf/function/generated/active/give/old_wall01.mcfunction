@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"ウォール"},minecraft:lore=[{text:"自分を壁で囲い緊急回避"},{text:"消費MP:9 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"old_wall01"}}] 1

@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"ポイズン"},minecraft:lore=[{text:"周囲8ブロックの敵に強力な毒(Poison III)を10秒間与える"},{text:"消費MP:10 詠唱時間:20"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"poison_circle01"}}] 1

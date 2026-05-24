@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"[パッシブ設定書] 攻撃テストスロット"},minecraft:lore=[{text:"テスト用"},{text:"パッシブスキル / スロット1"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{passive:{id:"attack_slot",slot:1,condition:"attack"}}}] 1

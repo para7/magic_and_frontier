@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"トルネードサイト"},minecraft:lore=[{text:"視線の4ブロック先を中心に半径3.5ブロックの範囲の敵を竜巻で打ち上げる"},{text:"消費MP:10 詠唱時間:20"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"tornado_sight01"}}] 1

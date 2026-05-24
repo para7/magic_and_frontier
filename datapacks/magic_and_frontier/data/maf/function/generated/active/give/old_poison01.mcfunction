@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"ポイズン"},minecraft:lore=[{text:"最寄りの敵の周囲に毒を与え、弱体化"},{text:"消費MP:10 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"old_poison01"}}] 1

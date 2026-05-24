@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"エクスプロウド"},minecraft:lore=[{text:"最も近い敵モブの位置にクリーパーを召喚して即爆破する"},{text:"消費MP:10 詠唱時間:20"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"explode01"}}] 1

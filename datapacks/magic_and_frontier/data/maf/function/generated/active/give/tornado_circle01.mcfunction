@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"トルネード"},minecraft:lore=[{text:"周囲8ブロックの敵を竜巻で打ち上げる"},{text:"消費MP:10 詠唱時間:20"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"tornado_circle01"}}] 1

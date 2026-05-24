@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"[パッシブ設定書] いつでもリジェネ"},minecraft:lore=[{text:"HPが常時回復する"},{text:"パッシブスキル / スロット1"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{passive:{id:"regeneration",slot:1,condition:"always"}}}] 1

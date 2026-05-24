@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"フロアー"},minecraft:lore=[{text:"床を展開"},{text:"消費MP:11 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"old_floor01"}}] 1

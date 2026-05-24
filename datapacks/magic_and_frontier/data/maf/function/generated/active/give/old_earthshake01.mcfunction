@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"アースシェイク"},minecraft:lore=[{text:"地上の敵にダメージ"},{text:"消費MP:4 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"old_earthshake01"}}] 1

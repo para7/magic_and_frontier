@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"フェニックス"},minecraft:lore=[{text:""},{text:"消費MP:60 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"old_phoenix01"}}] 1

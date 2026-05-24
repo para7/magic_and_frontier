@@ -1,1 +1,0 @@
-give @p minecraft:book[minecraft:item_name={text:"クッション"},minecraft:lore=[{text:"手持ちのスライムブロックを足元に設置する"},{text:"消費MP:14 詠唱時間:40"}],minecraft:consumable={consume_seconds:99999,animation:"bow",has_consume_particles:false},minecraft:custom_data={maf:{active_id:"old_cushion01"}}] 1
