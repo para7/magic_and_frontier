@@ -1,0 +1,822 @@
+{
+    "entries": [
+        {
+            "id": "level3_leather_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-leather-helmet-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:leather_helmet",
+            "maf": {
+                "maxmp": 10
+            }
+        },
+        {
+            "id": "level3_leather_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-leather-chestplate-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level3-leather-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:leather_chestplate",
+            "maf": {
+                "maxmp": 30
+            }
+        },
+        {
+            "id": "level3_leather_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-leather-leggings-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level3-leather-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:leather_leggings",
+            "maf": {
+                "maxmp": 30
+            }
+        },
+        {
+            "id": "level3_leather_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-leather-boots-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:leather_boots",
+            "maf": {
+                "maxmp": 10
+            }
+        },
+        {
+            "id": "level3_chainmail_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-chainmail-helmet-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level3-chainmail-helmet-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:chainmail_helmet",
+            "maf": {
+                "maxmp": 4
+            }
+        },
+        {
+            "id": "level3_chainmail_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-chainmail-chestplate-armor",
+                            "type": "armor",
+                            "amount": 5,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level3-chainmail-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 6
+                    }
+                }
+            },
+            "itemId": "minecraft:chainmail_chestplate",
+            "maf": {
+                "maxmp": 10
+            }
+        },
+        {
+            "id": "level3_chainmail_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-chainmail-leggings-armor",
+                            "type": "armor",
+                            "amount": 4,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level3-chainmail-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 6
+                    }
+                }
+            },
+            "itemId": "minecraft:chainmail_leggings",
+            "maf": {
+                "maxmp": 10
+            }
+        },
+        {
+            "id": "level3_chainmail_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-chainmail-boots-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level3-chainmail-boots-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:chainmail_boots",
+            "maf": {
+                "maxmp": 4
+            }
+        },
+        {
+            "id": "level3_iron_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-iron-helmet-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level3-iron-helmet-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level3-iron-helmet-attack-damage",
+                            "type": "attack_damage",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:iron_helmet",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level3_iron_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-iron-chestplate-armor",
+                            "type": "armor",
+                            "amount": 6,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level3-iron-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 4,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level3-iron-chestplate-attack-damage",
+                            "type": "attack_damage",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 6
+                    }
+                }
+            },
+            "itemId": "minecraft:iron_chestplate",
+            "maf": {
+                "maxmp": 8
+            }
+        },
+        {
+            "id": "level3_iron_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-iron-leggings-armor",
+                            "type": "armor",
+                            "amount": 5,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level3-iron-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 4,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level3-iron-leggings-attack-damage",
+                            "type": "attack_damage",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 6
+                    }
+                }
+            },
+            "itemId": "minecraft:iron_leggings",
+            "maf": {
+                "maxmp": 8
+            }
+        },
+        {
+            "id": "level3_iron_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-iron-boots-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level3-iron-boots-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level3-iron-boots-attack-damage",
+                            "type": "attack_damage",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:iron_boots",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level3_copper_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-copper-helmet-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:copper_helmet",
+            "maf": {
+                "maxmp": 4
+            }
+        },
+        {
+            "id": "level3_copper_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-copper-chestplate-armor",
+                            "type": "armor",
+                            "amount": 5,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level3-copper-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:copper_chestplate",
+            "maf": {
+                "maxmp": 8
+            }
+        },
+        {
+            "id": "level3_copper_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-copper-leggings-armor",
+                            "type": "armor",
+                            "amount": 4,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level3-copper-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:copper_leggings",
+            "maf": {
+                "maxmp": 8
+            }
+        },
+        {
+            "id": "level3_copper_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-copper-boots-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:copper_boots",
+            "maf": {
+                "maxmp": 4
+            }
+        },
+        {
+            "id": "level3_gold_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-gold-helmet-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:gold_helmet",
+            "maf": {
+                "maxmp": 7
+            }
+        },
+        {
+            "id": "level3_gold_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-gold-chestplate-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level3-gold-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 6
+                    }
+                }
+            },
+            "itemId": "minecraft:gold_chestplate",
+            "maf": {
+                "maxmp": 20
+            }
+        },
+        {
+            "id": "level3_gold_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-gold-leggings-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level3-gold-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 6
+                    }
+                }
+            },
+            "itemId": "minecraft:gold_leggings",
+            "maf": {
+                "maxmp": 20
+            }
+        },
+        {
+            "id": "level3_gold_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-gold-boots-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:gold_boots",
+            "maf": {
+                "maxmp": 7
+            }
+        },
+        {
+            "id": "level3_diamond_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-diamond-helmet-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level3-diamond-helmet-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:diamond_helmet",
+            "maf": {
+                "maxmp": 4
+            }
+        },
+        {
+            "id": "level3_diamond_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-diamond-chestplate-armor",
+                            "type": "armor",
+                            "amount": 8,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level3-diamond-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 5,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 6
+                    }
+                }
+            },
+            "itemId": "minecraft:diamond_chestplate",
+            "maf": {
+                "maxmp": 13
+            }
+        },
+        {
+            "id": "level3_diamond_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-diamond-leggings-armor",
+                            "type": "armor",
+                            "amount": 6,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level3-diamond-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 5,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 6
+                    }
+                }
+            },
+            "itemId": "minecraft:diamond_leggings",
+            "maf": {
+                "maxmp": 13
+            }
+        },
+        {
+            "id": "level3_diamond_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-diamond-boots-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level3-diamond-boots-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:diamond_boots",
+            "maf": {
+                "maxmp": 4
+            }
+        },
+        {
+            "id": "level3_netherite_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-netherite-helmet-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level3-netherite-helmet-max-health",
+                            "type": "max_health",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level3-netherite-helmet-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:netherite_helmet",
+            "maf": {
+                "maxmp": 1
+            }
+        },
+        {
+            "id": "level3_netherite_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-netherite-chestplate-armor",
+                            "type": "armor",
+                            "amount": 8,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level3-netherite-chestplate-max-health",
+                            "type": "max_health",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level3-netherite-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 5,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 8
+                    }
+                }
+            },
+            "itemId": "minecraft:netherite_chestplate",
+            "maf": {
+                "maxmp": 5
+            }
+        },
+        {
+            "id": "level3_netherite_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-netherite-leggings-armor",
+                            "type": "armor",
+                            "amount": 6,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level3-netherite-leggings-max-health",
+                            "type": "max_health",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level3-netherite-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 5,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 8
+                    }
+                }
+            },
+            "itemId": "minecraft:netherite_leggings",
+            "maf": {
+                "maxmp": 5
+            }
+        },
+        {
+            "id": "level3_netherite_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level3-netherite-boots-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level3-netherite-boots-max-health",
+                            "type": "max_health",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level3-netherite-boots-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:netherite_boots",
+            "maf": {
+                "maxmp": 1
+            }
+        }
+    ]
+}

@@ -3,12 +3,17 @@ package export
 import (
 	"path/filepath"
 	"strings"
+	"time"
 
 	config "maf_command_editor/app/files"
 )
 
 const funcRoot = "data/maf/function"
 const lootRoot = "data/maf/loot_table"
+
+var exportUnixNow = func() int64 {
+	return time.Now().Unix()
+}
 
 func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	settings, err := config.LoadExportSettings(mafconfig.ExportSettingsPath)
@@ -25,6 +30,8 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	activeSpellDir := filepath.Join(settings.OutputRoot, funcRoot, "generated/active/spell")
 	itemGiveLogicalDir := normalizePathOrDefault(settings.ExportPaths.ItemGive, "generated/item/give")
 	itemGiveDir := filepath.Join(settings.OutputRoot, funcRoot, itemGiveLogicalDir)
+	itemUpdateLogicalDir := normalizePathOrDefault(settings.ExportPaths.ItemUpdate, "generated/item/update")
+	itemUpdateDir := filepath.Join(settings.OutputRoot, funcRoot, itemUpdateLogicalDir)
 	passiveEffectLogicalDir := normalizePathOrDefault(settings.ExportPaths.PassiveEffect, "generated/passive/effect")
 	passiveEffectDir := filepath.Join(settings.OutputRoot, funcRoot, passiveEffectLogicalDir)
 	passiveBowDir := filepath.Join(settings.OutputRoot, funcRoot, "generated/passive/bow")
@@ -64,11 +71,19 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 	if err := WriteActiveDebugArtifacts(debugDir, effects); err != nil {
 		return err
 	}
-	itemGives, err := BuildItemArtifacts(dmas)
+	itemVersion := exportUnixNow()
+	itemGives, err := BuildItemArtifacts(dmas, itemVersion)
 	if err != nil {
 		return err
 	}
 	if err := WriteItemArtifacts(itemGiveDir, itemGives); err != nil {
+		return err
+	}
+	itemUpdates, err := BuildItemUpdateArtifacts(dmas, itemVersion)
+	if err != nil {
+		return err
+	}
+	if err := WriteItemUpdateArtifacts(itemUpdateDir, itemVersion, itemUpdates); err != nil {
 		return err
 	}
 	activeDir := filepath.Dir(effectDir)
@@ -92,7 +107,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 		return err
 	}
 
-	enemies, err := BuildEnemyArtifacts(dmas, enemyLootLogicalDir, mafconfig.MinecraftLootTableRoot)
+	enemies, err := BuildEnemyArtifacts(dmas, enemyLootLogicalDir, mafconfig.MinecraftLootTableRoot, itemVersion)
 	if err != nil {
 		return err
 	}
@@ -104,7 +119,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 		return err
 	}
 
-	treasures, err := BuildTreasureArtifacts(dmas, mafconfig.LootTableSourceRoot, mafconfig.MinecraftLootTableRoot)
+	treasures, err := BuildTreasureArtifacts(dmas, mafconfig.LootTableSourceRoot, mafconfig.MinecraftLootTableRoot, itemVersion)
 	if err != nil {
 		return err
 	}

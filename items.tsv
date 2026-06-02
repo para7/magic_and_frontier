@@ -1,0 +1,54 @@
+level1							level2							level3							level4							level5					
+netherite	HP	MP	強度	Enchant	attribute		netherite	HP	MP	強度	Enchant	attribute		netherite	HP	MP	強度	Enchant	attribute		netherite	HP	MP	強度	Enchant	attribute		netherite	HP	MP	強度	Enchant	attribute
+-	none						helmet	1	1	2	5			helmet	2	1	3	5			helmet	4	2	4	5			helmet	6	5	7	5	
+-							chestplate	2	2	3	5			chestplate	2	5	5	8			chestplate	5	7	7	9			chestplate	12	10	16	10	
+-							leggings	2	2	3	5			leggings	2	5	5	8			leggings	5	7	7	9			leggings	12	10	16	10	
+-							boots	1	1	2	5			boots	2	1	3	5			boots	4	2	4	5			boots	6	5	7	5	
+	0	0	0	0	0			6	6	10	20	0			8	12	16	26	0			18	18	22	28	0			36	30	46	30	0
+																																	
+diamond	HP	MP	強度	Enchant	attribute		diamond	HP	MP	強度	Enchant	attribute		diamond	HP	MP	強度	Enchant	attribute		diamond	HP	MP	強度	Enchant	attribute		diamond	HP	MP	強度	Enchant	attribute
+-	none						helmet	0	2	2				helmet	0	4	3				helmet	2	7	4				helmet	4	15	6		
+-							chestplate	0	7	3				chestplate	0	13	5	6			chestplate	3	20	6	6			chestplate	6	30	14	6	
+-							leggings	0	7	3				leggings	0	13	5	6			leggings	3	20	6	6			leggings	6	30	14	6	
+-							boots	0	2	2				boots	0	4	3				boots	2	7	4				boots	4	15	6		
+	0	0	0	0	0			0	18	10	0	0			0	34	16	12	0			10	54	20	12	0			20	90	40	12	0
+																																	
+iron	HP	MP	強度	Enchant	attribute		iron	HP	MP	強度	Enchant	attribute		iron	HP	MP	強度	Enchant	attribute		iron	HP	MP	強度	Enchant	attribute		iron	HP	MP	強度	Enchant	attribute
+helmet	0	2	0	-	"attack_damage+1
+"		helmet	0	2	2	-	attack_damage+1		helmet	0	2	3	-	attack_damage+1		helmet	2	3	4	-	"attack_damage+1
+"		helmet	4	10	6	-	attack_damage+2
+chestplate	0	3	1	-	attack_damage+1		chestplate	0	4	3	-	attack_damage+2		chestplate	0	8	4	6	attack_damage+3		chestplate	3	12	5	6	attack_damage+3		chestplate	6	15	14	6	attack_damage+5
+leggings	0	3	1	-	"attack_damage+1
+"		leggings	0	4	3	-	attack_damage+2		leggings	0	8	4	6	attack_damage+3		leggings	3	12	5	6	attack_damage+3		leggings	6	15	14	6	attack_damage+5
+boots	0	2	0	-	"attack_damage+1
+"		boots	0	2	2	-	attack_damage+1		boots	0	2	3	-	attack_damage+1		boots	2	3	4	-	"attack_damage+1
+"		boots	4	10	6	-	attack_damage+2
+	0	10	2	0	0			0	12	10	0	0			0	20	14	12	0			10	30	18	12	0			20	50	40	12	0
+																																	
+chainmail	HP	MP	強度	Enchant	attribute		chainmail	HP	MP	強度	Enchant	attribute		chainmail	HP	MP	強度	Enchant	attribute		chainmail	HP	MP	強度	Enchant	attribute		chainmail	HP	MP	強度	Enchant	attribute
+helmet	0	2	0	-			helmet	0	2	1	-	-		helmet	0	4	2	-	-		helmet	2	5	2	5	-		helmet	3	10	5	-	-
+chestplate	0	4	1	-			chestplate	0	7	2	-	-		chestplate	0	10	2	6	-		chestplate	2	18	6	5	-		chestplate	4	30	11	6	-
+leggings	0	4	1	-			leggings	0	7	2	-	-		leggings	0	10	2	6	-		leggings	2	18	6	5	-		leggings	4	30	11	6	-
+boots	0	2	0	-			boots	0	2	1	-	-		boots	0	4	2	-	-		boots	2	5	2	5	-		boots	3	10	5	-	-
+	0	12	2	0	0			0	18	6	0	0			0	28	8	12	0			8	46	16	20	0			14	80	32	12	0
+																																	
+copper	HP	MP	強度	Enchant	attribute		copper	HP	MP	強度	Enchant	attribute		copper	HP	MP	強度	Enchant	attribute		copper	HP	MP	強度	Enchant	attribute		copper	HP	MP	強度	Enchant	attribute
+helmet		2					helmet	0	2	0	0	-		helmet	0	4	0		-		helmet	1	6	1	5	-		helmet	3	10	4	5	-
+chestplate		2					chestplate	0	3	1	5	-		chestplate	0	8	2	5	-		chestplate	1	10	5	5	-		chestplate	5	20	7	5	-
+leggings		2					leggings	0	3	1	5	-		leggings	0	8	2	5	-		leggings	1	10	5	5	-		leggings	5	20	7	5	-
+boots		2					boots	0	2	0	0	-		boots	0	4	0		-		boots	1	6	1	5	-		boots	3	10	4	5	-
+	0	8	0	0	0			0	10	2	10	0			0	24	4	10	0			4	32	12	20	0			16	60	22	20	0
+																																	
+gold	HP	MP	強度	Enchant	attribute		gold	HP	MP	強度	Enchant	attribute		gold	HP	MP	強度	Enchant	attribute		gold	HP	MP	強度	Enchant	attribute		gold	HP	MP	強度	Enchant	attribute
+helmet		4					helmet	0	7	0	0	-		helmet	0	7	0		-		helmet	1	10	1	5	-		helmet	3	20	4	5	-
+chestplate		7					chestplate	0	10	1	6	-		chestplate	0	20	2	6	-		chestplate	1	32	5	5	-		chestplate	5	50	7	5	-
+leggings		7					leggings	0	10	1	6	-		leggings	0	20	2	6	-		leggings	1	32	5	5	-		leggings	5	50	7	5	-
+boots		4					boots	0	7	0	0	-		boots	0	7	0		-		boots	1	10	1	5	-		boots	3	20	4	5	-
+	0	22	0	0	0			0	34	2	12	0			0	54	4	12	0			4	84	12	20	0			16	140	22	20	0
+																																	
+leather	HP	MP	強度	Enchant	attribute		leather	HP	MP	強度	Enchant	attribute		leather	HP	MP	強度	Enchant	attribute		leather	HP	MP	強度	Enchant	attribute		leather	HP	MP	強度	Enchant	attribute
+helmet		5					helmet		8	0	0	-		helmet	0	10	0	0	-		helmet	0	20	1	5	-		helmet	2	30	3	5	-
+chestplate		10					chestplate		15	1	0	-		chestplate	0	30	2	5	-		chestplate	0	40	3	5	-		chestplate	3	70	5	5	-
+leggings		10					leggings		15	1	0	-		leggings	0	30	2	5	-		leggings	0	40	3	5	-		leggings	3	70	5	5	-
+boots		5					boots		8	0	0	-		boots	0	10	0	0	-		boots	0	20	1	5	-		boots	2	30	3	5	-
+	0	30	0	0	0			0	46	2	0	0			0	80	4	10	0			0	120	8	20	0			10	200	16	20	0

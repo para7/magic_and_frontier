@@ -11,7 +11,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_magic\",nbt_snapshot:{id:\"minecraft:diamond_sword\",count:1,components:{\"minecraft:custom_name\":{text:\"test_sword_magic\"},\"minecraft:lore\":[{text:\"Sample item\"}]}},active_id:\"old_tempest01\"}}"
+              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_magic\",ver:1780402931,nbt_snapshot:{id:\"minecraft:diamond_sword\",count:1,components:{\"minecraft:custom_name\":{text:\"test_sword_magic\"},\"minecraft:lore\":[{text:\"Sample item\"}]}},active_id:\"old_tempest01\"}}"
             },
             {
               "components": {
@@ -100,7 +100,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_passive\",nbt_snapshot:{id:\"minecraft:diamond_sword\",count:1,components:{\"minecraft:custom_name\":{text:\"test_sword_passive\"},\"minecraft:lore\":[{text:\"Sample item\"}]}},hasPassive:1b,passiveId:\"regeneration\",passiveSlot:1,passiveCondition:\"always\"}}"
+              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_passive\",ver:1780402931,nbt_snapshot:{id:\"minecraft:diamond_sword\",count:1,components:{\"minecraft:custom_name\":{text:\"test_sword_passive\"},\"minecraft:lore\":[{text:\"Sample item\"}]}},hasPassive:1b,passiveId:\"regeneration\",passiveSlot:1,passiveCondition:\"always\"}}"
             },
             {
               "components": {
@@ -172,7 +172,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_both\",nbt_snapshot:{id:\"minecraft:diamond_sword\",count:1,components:{\"minecraft:custom_name\":{text:\"test_sword_both\"},\"minecraft:lore\":[{text:\"Sample item\"}]}},active_id:\"old_tempest01\",hasPassive:1b,passiveId:\"regeneration\",passiveSlot:1,passiveCondition:\"always\"}}"
+              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_both\",ver:1780402931,nbt_snapshot:{id:\"minecraft:diamond_sword\",count:1,components:{\"minecraft:custom_name\":{text:\"アクティブ\u0026パッシブ剣\"},\"minecraft:lore\":[{text:\"Sample item\"}]}},active_id:\"old_tempest01\",hasPassive:1b,passiveId:\"regeneration\",passiveSlot:1,passiveCondition:\"always\"}}"
             },
             {
               "components": {
@@ -182,7 +182,7 @@
                   "has_consume_particles": false
                 },
                 "minecraft:custom_name": {
-                  "text": "test_sword_both"
+                  "text": "アクティブ\u0026パッシブ剣"
                 },
                 "minecraft:lore": [
                   {

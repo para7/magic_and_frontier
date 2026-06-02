@@ -16,12 +16,45 @@ func ItemToGiveCommand(
 	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
+	ver ...int64,
+) (string, error) {
+	itemStack, err := buildItemStack(entry, activesByID, passivesByID, bowsByID, itemVersion(ver...))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("give @p %s 1", itemStack), nil
+}
+
+func ItemToUpdateCommand(
+	entry itemModel.Item,
+	activesByID map[string]activeModel.Active,
+	passivesByID map[string]passiveModel.Passive,
+	bowsByID map[string]bowModel.BowPassive,
+	ver ...int64,
+) (string, error) {
+	itemStack, err := buildItemStack(entry, activesByID, passivesByID, bowsByID, itemVersion(ver...))
+	if err != nil {
+		return "", err
+	}
+	return strings.Join([]string{
+		"scoreboard players set #maf_update_damage tmp 0",
+		`$execute store result score #maf_update_damage tmp run data get entity @s $(equip).components."minecraft:damage"`,
+		fmt.Sprintf("$item replace entity @s $(slot) with %s 1", itemStack),
+		`$execute store result entity @s $(equip).components."minecraft:damage" int 1 run scoreboard players get #maf_update_damage tmp`,
+	}, "\n"), nil
+}
+
+func buildItemStack(
+	entry itemModel.Item,
+	activesByID map[string]activeModel.Active,
+	passivesByID map[string]passiveModel.Passive,
+	bowsByID map[string]bowModel.BowPassive,
+	ver int64,
 ) (string, error) {
 	spellMeta, err := resolveItemSpellMeta(entry, activesByID, passivesByID, bowsByID)
 	if err != nil {
 		return "", err
 	}
-
 	componentValues, err := itemComponentsForGive(entry, spellMeta)
 	if err != nil {
 		return "", err
@@ -29,8 +62,7 @@ func ItemToGiveCommand(
 	if spellMeta.hasUseSpell {
 		componentValues["minecraft:consumable"] = bookConsumableSNBT
 	}
-
-	customData, err := itemCustomData(entry, activesByID, passivesByID, bowsByID)
+	customData, err := itemCustomData(entry, activesByID, passivesByID, bowsByID, ver)
 	if err != nil {
 		return "", err
 	}
@@ -39,9 +71,9 @@ func ItemToGiveCommand(
 	components := sortedItemGiveComponents(componentValues)
 	itemID := strings.TrimSpace(entry.ItemID)
 	if len(components) == 0 {
-		return fmt.Sprintf("give @p %s 1", itemID), nil
+		return itemID, nil
 	}
-	return fmt.Sprintf("give @p %s[%s] 1", itemID, strings.Join(components, ",")), nil
+	return fmt.Sprintf("%s[%s]", itemID, strings.Join(components, ",")), nil
 }
 
 func itemComponentsForGive(entry itemModel.Item, spellMeta itemSpellMeta) (map[string]string, error) {
@@ -90,11 +122,13 @@ func itemCustomData(
 	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
+	ver ...int64,
 ) (string, error) {
 	itemSNBT, _ := itemModel.BuildItemComponents(entry)
 	parts := []string{
 		fmt.Sprintf("item_id:%s", SNBTString(entry.ItemID)),
 		fmt.Sprintf("source_id:%s", SNBTString(entry.ID)),
+		fmt.Sprintf("ver:%d", itemVersion(ver...)),
 		fmt.Sprintf("nbt_snapshot:%s", itemSNBT),
 	}
 
@@ -112,6 +146,13 @@ func itemCustomData(
 		parts = append(parts, fmt.Sprintf("maxmp:%d", *entry.Maf.MaxMP))
 	}
 	return "{maf:{" + strings.Join(parts, ",") + "}}", nil
+}
+
+func itemVersion(ver ...int64) int64 {
+	if len(ver) == 0 {
+		return 0
+	}
+	return ver[0]
 }
 
 func itemComponentsForLoot(

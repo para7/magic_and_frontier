@@ -19,6 +19,7 @@ func TestExportDatapackFixtures(t *testing.T) {
 			cfg.MinecraftLootTableRoot = fixtureMinecraftLootRoot(tc.dir)
 			cfg.LootTableSourceRoot = filepath.Join(tc.dir, "input", "loot_table")
 
+			restoreExportUnixNow(t, 1234567890)
 			if err := ExportDatapack(master, cfg); err != nil {
 				t.Fatal(err)
 			}

@@ -1,6 +1,8 @@
 package export
 
 import (
+	"testing"
+
 	activeModel "maf_command_editor/app/domain/model/active"
 	bowModel "maf_command_editor/app/domain/model/bow"
 	enemyModel "maf_command_editor/app/domain/model/enemy"
@@ -18,6 +20,18 @@ type exportMasterStub struct {
 	enemySkills []enemyskillModel.EnemySkill
 	enemies     []enemyModel.Enemy
 	spawnTables []spawntableModel.SpawnTable
+}
+
+func restoreExportUnixNow(t *testing.T, value int64) {
+	t.Helper()
+
+	original := exportUnixNow
+	exportUnixNow = func() int64 {
+		return value
+	}
+	t.Cleanup(func() {
+		exportUnixNow = original
+	})
 }
 
 func (s exportMasterStub) ListActives() []activeModel.Active {

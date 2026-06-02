@@ -8,6 +8,7 @@
     "activeEffect": "generated/active/effect",
     "activeDebug": "generated/active/give",
     "itemGive": "generated/item/give",
+    "itemUpdate": "generated/item/update",
     "passiveEffect": "generated/passive/effect",
     "passiveGive": "generated/passive/give",
     "passiveApply": "generated/passive/apply",

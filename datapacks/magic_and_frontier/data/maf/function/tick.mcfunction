@@ -10,6 +10,7 @@ execute as @a run function maf:system/score/prescore
 
 # 処理開始
 execute as @a at @s run function maf:buff/tick
+execute as @a at @s run function maf:item/update/tick
 function maf:magic/tick
 function maf:soul/tick
 function maf:enemy/tick

@@ -1,6 +1,6 @@
 # 基礎値
-# scoreboard players set @s mafEquipMP 20
-scoreboard players set @s mafEquipMP 500
+scoreboard players set @s mafEquipMP 20
+# scoreboard players set @s mafEquipMP 500
 
 # === メインハンド ===
 scoreboard players set @s tmp 0

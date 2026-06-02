@@ -16,6 +16,7 @@ type ExportPaths struct {
 	ActiveEffect  string `json:"activeEffect"`
 	ActiveDebug   string `json:"activeDebug"`
 	ItemGive      string `json:"itemGive"`
+	ItemUpdate    string `json:"itemUpdate"`
 	PassiveEffect string `json:"passiveEffect"`
 	PassiveGive   string `json:"passiveGive"`
 	PassiveApply  string `json:"passiveApply"`

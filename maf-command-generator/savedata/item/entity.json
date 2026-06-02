@@ -87,7 +87,7 @@
       "minecraft": {
         "components": {
           "minecraft:custom_name": {
-            "text": "test_sword_both"
+            "text": "アクティブ&パッシブ剣"
           },
           "minecraft:lore": [
             {

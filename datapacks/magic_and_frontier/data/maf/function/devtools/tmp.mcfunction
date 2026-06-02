@@ -1,1 +1,3 @@
-give @p iron_sword[lore=[{"font":"minecraft:uniform","text": "パッシブスキル", "color": "gold", "italic": false},{"font":"minecraft:uniform","text":"弾刃","color":"white", "italic":false, "bold":true},{"font":"minecraft:uniform","text":"攻撃を弾く","color":"aqua", "italic":false},{"font":"minecraft:uniform","text":"MP     : 10  ","color":"white", "italic":false},{"font":"minecraft:uniform","text":"range  : 10","color":"white", "italic":false}]] 1
+# enemyId=level5 mobType=minecraft:zombie
+# dropMode=append
+summon minecraft:zombie ~ ~ ~ {CustomName:[{text:"level5"}],Tags:["maf_vh_checked"],attributes:[{base:26.7,id:"minecraft:attack_damage"}]}

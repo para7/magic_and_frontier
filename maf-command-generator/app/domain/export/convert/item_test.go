@@ -247,6 +247,49 @@ func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 	}
 }
 
+func TestItemToGiveCommandEmbedsVersion(t *testing.T) {
+	entry := itemModel.Item{
+		ID:     "items_1",
+		ItemID: "minecraft:stone",
+	}
+
+	command, err := ItemToGiveCommand(entry, nil, nil, nil, 12345)
+	if err != nil {
+		t.Fatalf("ItemToGiveCommand returned error: %v", err)
+	}
+	if !strings.Contains(command, `ver:12345`) {
+		t.Fatalf("item version should be embedded: %s", command)
+	}
+}
+
+func TestItemToUpdateCommandWrapsItemReplaceWithDamagePreservation(t *testing.T) {
+	entry := itemModel.Item{
+		ID:     "items_1",
+		ItemID: "minecraft:stone",
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"minecraft:custom_name": map[string]any{"text": "Starter Stone"},
+			},
+		},
+	}
+
+	command, err := ItemToUpdateCommand(entry, nil, nil, nil, 12345)
+	if err != nil {
+		t.Fatalf("ItemToUpdateCommand returned error: %v", err)
+	}
+	for _, want := range []string{
+		`scoreboard players set #maf_update_damage tmp 0`,
+		`$execute store result score #maf_update_damage tmp run data get entity @s $(equip).components."minecraft:damage"`,
+		`$item replace entity @s $(slot) with minecraft:stone[`,
+		`ver:12345`,
+		`$execute store result entity @s $(equip).components."minecraft:damage" int 1 run scoreboard players get #maf_update_damage tmp`,
+	} {
+		if !strings.Contains(command, want) {
+			t.Fatalf("update command should contain %q:\n%s", want, command)
+		}
+	}
+}
+
 func TestItemToGiveCommandOverridesMinecraftConsumableForSpellItems(t *testing.T) {
 	entry := itemModel.Item{
 		ID:     "items_1",

@@ -167,6 +167,61 @@ func TestWriteItemArtifactsWritesFiles(t *testing.T) {
 	}
 }
 
+func TestBuildItemUpdateArtifactsBuildsUpdateCommands(t *testing.T) {
+	master := exportMasterStub{
+		items: []itemModel.Item{
+			{
+				ID:     "items_1",
+				ItemID: "minecraft:stone",
+			},
+		},
+	}
+
+	artifacts, err := BuildItemUpdateArtifacts(master, 12345)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(artifacts) != 1 {
+		t.Fatalf("artifacts length = %d, want 1", len(artifacts))
+	}
+	if artifacts[0].ID != "items_1" {
+		t.Fatalf("unexpected artifact id: %#v", artifacts[0])
+	}
+	if !strings.Contains(artifacts[0].Body, `$item replace entity @s $(slot) with minecraft:stone[`) {
+		t.Fatalf("unexpected update command: %q", artifacts[0].Body)
+	}
+	if !strings.Contains(artifacts[0].Body, `ver:12345`) {
+		t.Fatalf("update command should include item version: %q", artifacts[0].Body)
+	}
+}
+
+func TestWriteItemUpdateArtifactsWritesTimestampAndFiles(t *testing.T) {
+	root := t.TempDir()
+	artifacts := []ItemUpdateFunction{
+		{ID: "items_1", Body: "$item replace entity @s $(slot) with minecraft:stone 1"},
+	}
+
+	if err := WriteItemUpdateArtifacts(root, 12345, artifacts); err != nil {
+		t.Fatal(err)
+	}
+
+	timestampBody, err := os.ReadFile(filepath.Join(root, "timestamp.mcfunction"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(timestampBody) != "scoreboard players set #maf_item_ver tmp 12345\n" {
+		t.Fatalf("unexpected timestamp body: %q", string(timestampBody))
+	}
+
+	body, err := os.ReadFile(filepath.Join(root, "items_1.mcfunction"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(body) != "$item replace entity @s $(slot) with minecraft:stone 1\n" {
+		t.Fatalf("unexpected item update body: %q", string(body))
+	}
+}
+
 func TestExportDatapackWritesItemArtifacts(t *testing.T) {
 	root := t.TempDir()
 	settingsPath := filepath.Join(root, "export_settings.json")
@@ -176,6 +231,7 @@ func TestExportDatapackWritesItemArtifacts(t *testing.T) {
 			"activeEffect": "generated/active/effect",
 			"activeDebug":  "generated/active/give",
 			"itemGive":     "generated/item/give",
+			"itemUpdate":   "generated/item/update",
 			"enemy":        "generated/enemy/spawn",
 			"enemySkill":   "generated/enemy/skill",
 			"enemyLoot":    "generated/enemy/loot",
@@ -207,6 +263,7 @@ func TestExportDatapackWritesItemArtifacts(t *testing.T) {
 		},
 	}
 
+	restoreExportUnixNow(t, 12345)
 	if err := ExportDatapack(master, cfg); err != nil {
 		t.Fatal(err)
 	}
@@ -221,6 +278,24 @@ func TestExportDatapackWritesItemArtifacts(t *testing.T) {
 	}
 	if !strings.Contains(string(body), `minecraft:custom_data={maf:{`) {
 		t.Fatalf("item give file should contain custom_data: %q", string(body))
+	}
+
+	updatePath := filepath.Join(root, "out", "data", "maf", "function", "generated", "item", "update", "items_1.mcfunction")
+	updateBody, err := os.ReadFile(updatePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(updateBody), `$item replace entity @s $(slot) with minecraft:stone[`) {
+		t.Fatalf("unexpected exported item update body: %q", string(updateBody))
+	}
+
+	timestampPath := filepath.Join(root, "out", "data", "maf", "function", "generated", "item", "update", "timestamp.mcfunction")
+	timestampBody, err := os.ReadFile(timestampPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(timestampBody) != "scoreboard players set #maf_item_ver tmp 12345\n" {
+		t.Fatalf("unexpected exported timestamp body: %q", string(timestampBody))
 	}
 }
 

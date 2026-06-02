@@ -176,6 +176,7 @@ func defaultFixtureExportSettings(outputRoot string) config.ExportSettings {
 			ActiveEffect:  "generated/active/effect",
 			ActiveDebug:   "generated/active/give",
 			ItemGive:      "generated/item/give",
+			ItemUpdate:    "generated/item/update",
 			PassiveEffect: "generated/passive/effect",
 			PassiveGive:   "generated/passive/give",
 			PassiveApply:  "generated/passive/apply",

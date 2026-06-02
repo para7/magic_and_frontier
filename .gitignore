@@ -14,3 +14,6 @@ datapacks/magic_and_frontier/data/maf/function/generated/active/give/
 datapacks/magic_and_frontier/data/maf/function/generated/passive/give/
 datapacks/magic_and_frontier/data/maf/function/generated/enemy/spawn/
 datapacks/magic_and_frontier/data/maf/function/generated/passive/give/
+
+# リリース時には含めたい
+datapacks/magic_and_frontier/data/maf/function/generated/item/update/

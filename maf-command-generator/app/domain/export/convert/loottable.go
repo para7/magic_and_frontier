@@ -18,6 +18,7 @@ func ResolveMafLootPools(
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
 	context string,
+	ver ...int64,
 ) ([]any, error) {
 	resolved := make([]any, 0, len(pools))
 	for i, rawPool := range pools {
@@ -40,7 +41,7 @@ func ResolveMafLootPools(
 		resolvedEntries := make([]any, 0, len(entries))
 		for j, rawEntry := range entries {
 			entryContext := fmt.Sprintf("%s: pools[%d].entries[%d]", context, i, j)
-			nextEntry, err := resolveMafLootEntry(rawEntry, itemsByID, activesByID, passivesByID, bowsByID, entryContext)
+			nextEntry, err := resolveMafLootEntry(rawEntry, itemsByID, activesByID, passivesByID, bowsByID, entryContext, itemVersion(ver...))
 			if err != nil {
 				return nil, err
 			}
@@ -64,6 +65,7 @@ func resolveMafLootEntry(
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
 	context string,
+	ver int64,
 ) (any, error) {
 	entry, ok := rawEntry.(map[string]any)
 	if !ok {
@@ -94,7 +96,7 @@ func resolveMafLootEntry(
 		if !found {
 			return nil, fmt.Errorf("%s: referenced item not found (%s)", context, refID)
 		}
-		out, err := toItemLootEntry(item, activesByID, passivesByID, bowsByID, min, max)
+		out, err := toItemLootEntry(item, activesByID, passivesByID, bowsByID, min, max, ver)
 		if err != nil {
 			return nil, err
 		}
@@ -156,8 +158,9 @@ func toItemLootEntry(
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
 	min, max *float64,
+	ver int64,
 ) (map[string]any, error) {
-	customData, err := itemCustomData(entry, activesByID, passivesByID, bowsByID)
+	customData, err := itemCustomData(entry, activesByID, passivesByID, bowsByID, ver)
 	if err != nil {
 		return nil, err
 	}

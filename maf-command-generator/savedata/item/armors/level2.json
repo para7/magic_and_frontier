@@ -1,0 +1,798 @@
+{
+    "entries": [
+        {
+            "id": "level2_leather_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-leather-helmet-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:leather_helmet",
+            "maf": {
+                "maxmp": 8
+            }
+        },
+        {
+            "id": "level2_leather_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-leather-chestplate-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level2-leather-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:leather_chestplate",
+            "maf": {
+                "maxmp": 15
+            }
+        },
+        {
+            "id": "level2_leather_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-leather-leggings-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level2-leather-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:leather_leggings",
+            "maf": {
+                "maxmp": 15
+            }
+        },
+        {
+            "id": "level2_leather_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-leather-boots-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:leather_boots",
+            "maf": {
+                "maxmp": 8
+            }
+        },
+        {
+            "id": "level2_chainmail_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-chainmail-helmet-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level2-chainmail-helmet-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:chainmail_helmet",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level2_chainmail_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-chainmail-chestplate-armor",
+                            "type": "armor",
+                            "amount": 5,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level2-chainmail-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:chainmail_chestplate",
+            "maf": {
+                "maxmp": 7
+            }
+        },
+        {
+            "id": "level2_chainmail_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-chainmail-leggings-armor",
+                            "type": "armor",
+                            "amount": 4,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level2-chainmail-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:chainmail_leggings",
+            "maf": {
+                "maxmp": 7
+            }
+        },
+        {
+            "id": "level2_chainmail_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-chainmail-boots-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level2-chainmail-boots-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:chainmail_boots",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level2_iron_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-iron-helmet-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level2-iron-helmet-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level2-iron-helmet-attack-damage",
+                            "type": "attack_damage",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:iron_helmet",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level2_iron_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-iron-chestplate-armor",
+                            "type": "armor",
+                            "amount": 6,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level2-iron-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level2-iron-chestplate-attack-damage",
+                            "type": "attack_damage",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:iron_chestplate",
+            "maf": {
+                "maxmp": 4
+            }
+        },
+        {
+            "id": "level2_iron_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-iron-leggings-armor",
+                            "type": "armor",
+                            "amount": 5,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level2-iron-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level2-iron-leggings-attack-damage",
+                            "type": "attack_damage",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:iron_leggings",
+            "maf": {
+                "maxmp": 4
+            }
+        },
+        {
+            "id": "level2_iron_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-iron-boots-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level2-iron-boots-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level2-iron-boots-attack-damage",
+                            "type": "attack_damage",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:iron_boots",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level2_copper_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-copper-helmet-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:copper_helmet",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level2_copper_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-copper-chestplate-armor",
+                            "type": "armor",
+                            "amount": 5,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level2-copper-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:copper_chestplate",
+            "maf": {
+                "maxmp": 3
+            }
+        },
+        {
+            "id": "level2_copper_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-copper-leggings-armor",
+                            "type": "armor",
+                            "amount": 4,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level2-copper-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:copper_leggings",
+            "maf": {
+                "maxmp": 3
+            }
+        },
+        {
+            "id": "level2_copper_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-copper-boots-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:copper_boots",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level2_gold_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-gold-helmet-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:gold_helmet",
+            "maf": {
+                "maxmp": 7
+            }
+        },
+        {
+            "id": "level2_gold_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-gold-chestplate-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level2-gold-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 6
+                    }
+                }
+            },
+            "itemId": "minecraft:gold_chestplate",
+            "maf": {
+                "maxmp": 10
+            }
+        },
+        {
+            "id": "level2_gold_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-gold-leggings-armor",
+                            "type": "armor",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level2-gold-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 6
+                    }
+                }
+            },
+            "itemId": "minecraft:gold_leggings",
+            "maf": {
+                "maxmp": 10
+            }
+        },
+        {
+            "id": "level2_gold_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-gold-boots-armor",
+                            "type": "armor",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:gold_boots",
+            "maf": {
+                "maxmp": 7
+            }
+        },
+        {
+            "id": "level2_diamond_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-diamond-helmet-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level2-diamond-helmet-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:diamond_helmet",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level2_diamond_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-diamond-chestplate-armor",
+                            "type": "armor",
+                            "amount": 8,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level2-diamond-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:diamond_chestplate",
+            "maf": {
+                "maxmp": 7
+            }
+        },
+        {
+            "id": "level2_diamond_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-diamond-leggings-armor",
+                            "type": "armor",
+                            "amount": 6,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level2-diamond-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:diamond_leggings",
+            "maf": {
+                "maxmp": 7
+            }
+        },
+        {
+            "id": "level2_diamond_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-diamond-boots-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level2-diamond-boots-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ]
+                }
+            },
+            "itemId": "minecraft:diamond_boots",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level2_netherite_helmet",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-netherite-helmet-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level2-netherite-helmet-max-health",
+                            "type": "max_health",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "head"
+                        },
+                        {
+                            "id": "level2-netherite-helmet-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "head"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:netherite_helmet",
+            "maf": {
+                "maxmp": 1
+            }
+        },
+        {
+            "id": "level2_netherite_chestplate",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-netherite-chestplate-armor",
+                            "type": "armor",
+                            "amount": 8,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level2-netherite-chestplate-max-health",
+                            "type": "max_health",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        },
+                        {
+                            "id": "level2-netherite-chestplate-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "chest"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:netherite_chestplate",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level2_netherite_leggings",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-netherite-leggings-armor",
+                            "type": "armor",
+                            "amount": 6,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level2-netherite-leggings-max-health",
+                            "type": "max_health",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        },
+                        {
+                            "id": "level2-netherite-leggings-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "legs"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:netherite_leggings",
+            "maf": {
+                "maxmp": 2
+            }
+        },
+        {
+            "id": "level2_netherite_boots",
+            "minecraft": {
+                "components": {
+                    "minecraft:attribute_modifiers": [
+                        {
+                            "id": "level2-netherite-boots-armor",
+                            "type": "armor",
+                            "amount": 3,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level2-netherite-boots-max-health",
+                            "type": "max_health",
+                            "amount": 1,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        },
+                        {
+                            "id": "level2-netherite-boots-armor-toughness",
+                            "type": "armor_toughness",
+                            "amount": 2,
+                            "operation": "add_value",
+                            "slot": "feet"
+                        }
+                    ],
+                    "minecraft:enchantments": {
+                        "minecraft:protection": 5
+                    }
+                }
+            },
+            "itemId": "minecraft:netherite_boots",
+            "maf": {
+                "maxmp": 1
+            }
+        }
+    ]
+}
