@@ -1,7 +1,7 @@
 {
   "entries": [
     {
-      "id": "level0",
+      "id": "levelsample_0",
       "mobType": "minecraft:zombie",
       "minecraft": {
         "Health": 20.0,
@@ -29,7 +29,7 @@
       }
     },
     {
-      "id": "level1",
+      "id": "levelsample_1",
       "mobType": "minecraft:zombie",
       "minecraft": {
         "Health": 28.0,
@@ -57,7 +57,7 @@
       }
     },
     {
-      "id": "level2",
+      "id": "levelsample_2",
       "mobType": "minecraft:zombie",
       "minecraft": {
         "Health": 50.4,
@@ -85,7 +85,7 @@
       }
     },
     {
-      "id": "level3",
+      "id": "levelsample_3",
       "mobType": "minecraft:zombie",
       "minecraft": {
         "Health": 75.6,
@@ -113,7 +113,7 @@
       }
     },
     {
-      "id": "level4",
+      "id": "levelsample_4",
       "mobType": "minecraft:zombie",
       "minecraft": {
         "Health": 113.4,
@@ -141,7 +141,7 @@
       }
     },
     {
-      "id": "level5",
+      "id": "levelsample_5",
       "mobType": "minecraft:zombie",
       "minecraft": {
         "Health": 204.1,
@@ -169,7 +169,7 @@
       }
     },
     {
-      "id": "level6",
+      "id": "levelsample_6",
       "mobType": "minecraft:zombie",
       "minecraft": {
         "Health": 255.2,
@@ -197,7 +197,7 @@
       }
     },
     {
-      "id": "level7",
+      "id": "levelsample_7",
       "mobType": "minecraft:zombie",
       "minecraft": {
         "Health": 382.7,
@@ -225,7 +225,7 @@
       }
     },
     {
-      "id": "level8",
+      "id": "levelsample_8",
       "mobType": "minecraft:zombie",
       "minecraft": {
         "Health": 459.3,
@@ -253,7 +253,7 @@
       }
     },
     {
-      "id": "level9",
+      "id": "levelsample_9",
       "mobType": "minecraft:zombie",
       "minecraft": {
         "Health": 688.9,
@@ -281,7 +281,7 @@
       }
     },
     {
-      "id": "level10",
+      "id": "level1sample_0",
       "mobType": "minecraft:zombie",
       "minecraft": {
         "Health": 1377.8,

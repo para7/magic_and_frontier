@@ -296,12 +296,17 @@ func mergedItemSkillLore(existing any, spellMeta itemSpellMeta, maxMP *int) ([]a
 	return lore, true
 }
 
+// 最大MPの説明を生成
 func maxMPLoreComponents(maxMP *int) []any {
 	if maxMP == nil {
 		return nil
 	}
 	return []any{
-		itemSkillLoreComponent(fmt.Sprintf("MaxMP  : %+d", *maxMP), "white", false),
+		map[string]any{
+			"text":   fmt.Sprintf("最大MP %+d", *maxMP),
+			"color":  "blue",
+			"italic": false,
+		},
 	}
 }
 
