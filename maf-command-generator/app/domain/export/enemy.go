@@ -17,7 +17,7 @@ type EnemyArtifact struct {
 	LootTable    map[string]any
 }
 
-func BuildEnemyArtifacts(master DBMaster, enemyLootLogicalDir, minecraftLootRoot string, ver ...int64) ([]EnemyArtifact, error) {
+func BuildEnemyArtifacts(master DBMaster, enemyLootLogicalDir, minecraftLootRoot string) ([]EnemyArtifact, error) {
 	if master == nil {
 		return []EnemyArtifact{}, nil
 	}
@@ -26,7 +26,7 @@ func BuildEnemyArtifacts(master DBMaster, enemyLootLogicalDir, minecraftLootRoot
 	enemies := master.ListEnemies()
 	artifacts := make([]EnemyArtifact, 0, len(enemies))
 	for _, entry := range enemies {
-		resolvedPools, err := ec.ResolveMafLootPools(entry.Maf.Drops, lookups.itemsByID, lookups.activesByID, lookups.passivesByID, lookups.bowsByID, "enemy("+entry.ID+")", exportItemVersion(ver...))
+		resolvedPools, err := ec.ResolveMafLootPools(entry.Maf.Drops, lookups.itemsByID, lookups.activesByID, lookups.passivesByID, lookups.bowsByID, "enemy("+entry.ID+")")
 		if err != nil {
 			return nil, err
 		}

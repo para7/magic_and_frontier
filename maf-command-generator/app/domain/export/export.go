@@ -72,14 +72,14 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 		return err
 	}
 	itemVersion := exportUnixNow()
-	itemGives, err := BuildItemArtifacts(dmas, itemVersion)
+	itemGives, err := BuildItemArtifacts(dmas)
 	if err != nil {
 		return err
 	}
 	if err := WriteItemArtifacts(itemGiveDir, itemGives); err != nil {
 		return err
 	}
-	itemUpdates, err := BuildItemUpdateArtifacts(dmas, itemVersion)
+	itemUpdates, err := BuildItemUpdateArtifacts(dmas)
 	if err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 		return err
 	}
 
-	enemies, err := BuildEnemyArtifacts(dmas, enemyLootLogicalDir, mafconfig.MinecraftLootTableRoot, itemVersion)
+	enemies, err := BuildEnemyArtifacts(dmas, enemyLootLogicalDir, mafconfig.MinecraftLootTableRoot)
 	if err != nil {
 		return err
 	}
@@ -119,7 +119,7 @@ func ExportDatapack(dmas DBMaster, mafconfig config.MafConfig) error {
 		return err
 	}
 
-	treasures, err := BuildTreasureArtifacts(dmas, mafconfig.LootTableSourceRoot, mafconfig.MinecraftLootTableRoot, itemVersion)
+	treasures, err := BuildTreasureArtifacts(dmas, mafconfig.LootTableSourceRoot, mafconfig.MinecraftLootTableRoot)
 	if err != nil {
 		return err
 	}

@@ -17,14 +17,14 @@ type ItemUpdateFunction struct {
 	Body string
 }
 
-func BuildItemArtifacts(master DBMaster, ver ...int64) ([]ItemGiveFunction, error) {
+func BuildItemArtifacts(master DBMaster) ([]ItemGiveFunction, error) {
 	if master == nil {
 		return []ItemGiveFunction{}, nil
 	}
 	lookups := buildMasterEntityLookups(master)
 	results := make([]ItemGiveFunction, 0, len(lookups.items))
 	for _, entry := range lookups.items {
-		body, err := ec.ItemToGiveCommand(entry, lookups.activesByID, lookups.passivesByID, lookups.bowsByID, exportItemVersion(ver...))
+		body, err := ec.ItemToGiveCommand(entry, lookups.activesByID, lookups.passivesByID, lookups.bowsByID)
 		if err != nil {
 			return nil, err
 		}
@@ -36,14 +36,14 @@ func BuildItemArtifacts(master DBMaster, ver ...int64) ([]ItemGiveFunction, erro
 	return results, nil
 }
 
-func BuildItemUpdateArtifacts(master DBMaster, ver int64) ([]ItemUpdateFunction, error) {
+func BuildItemUpdateArtifacts(master DBMaster) ([]ItemUpdateFunction, error) {
 	if master == nil {
 		return []ItemUpdateFunction{}, nil
 	}
 	lookups := buildMasterEntityLookups(master)
 	results := make([]ItemUpdateFunction, 0, len(lookups.items))
 	for _, entry := range lookups.items {
-		body, err := ec.ItemToUpdateCommand(entry, lookups.activesByID, lookups.passivesByID, lookups.bowsByID, ver)
+		body, err := ec.ItemToUpdateCommand(entry, lookups.activesByID, lookups.passivesByID, lookups.bowsByID)
 		if err != nil {
 			return nil, err
 		}
@@ -76,11 +76,4 @@ func WriteItemUpdateArtifacts(dir string, ver int64, artifacts []ItemUpdateFunct
 		}
 	}
 	return nil
-}
-
-func exportItemVersion(ver ...int64) int64 {
-	if len(ver) == 0 {
-		return 0
-	}
-	return ver[0]
 }

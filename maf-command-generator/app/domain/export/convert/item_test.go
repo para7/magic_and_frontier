@@ -247,21 +247,6 @@ func TestItemToGiveCommandBuildsSortedComponentsAndCustomData(t *testing.T) {
 	}
 }
 
-func TestItemToGiveCommandEmbedsVersion(t *testing.T) {
-	entry := itemModel.Item{
-		ID:     "items_1",
-		ItemID: "minecraft:stone",
-	}
-
-	command, err := ItemToGiveCommand(entry, nil, nil, nil, 12345)
-	if err != nil {
-		t.Fatalf("ItemToGiveCommand returned error: %v", err)
-	}
-	if !strings.Contains(command, `ver:12345`) {
-		t.Fatalf("item version should be embedded: %s", command)
-	}
-}
-
 func TestItemToUpdateCommandWrapsItemReplaceWithDamagePreservation(t *testing.T) {
 	entry := itemModel.Item{
 		ID:     "items_1",
@@ -273,7 +258,7 @@ func TestItemToUpdateCommandWrapsItemReplaceWithDamagePreservation(t *testing.T)
 		},
 	}
 
-	command, err := ItemToUpdateCommand(entry, nil, nil, nil, 12345)
+	command, err := ItemToUpdateCommand(entry, nil, nil, nil)
 	if err != nil {
 		t.Fatalf("ItemToUpdateCommand returned error: %v", err)
 	}
@@ -281,7 +266,6 @@ func TestItemToUpdateCommandWrapsItemReplaceWithDamagePreservation(t *testing.T)
 		`scoreboard players set #maf_update_damage tmp 0`,
 		`$execute store result score #maf_update_damage tmp run data get entity @s $(equip).components."minecraft:damage"`,
 		`$item replace entity @s $(slot) with minecraft:stone[`,
-		`ver:12345`,
 		`$execute store result entity @s $(equip).components."minecraft:damage" int 1 run scoreboard players get #maf_update_damage tmp`,
 	} {
 		if !strings.Contains(command, want) {
@@ -485,5 +469,81 @@ func TestBowItemRejectsHybridActiveMetadata(t *testing.T) {
 
 	if _, err := ItemToGiveCommand(entry, activesByID, nil, bowsByID); err == nil {
 		t.Fatal("expected hybrid bow/active item to be rejected")
+	}
+}
+
+func TestItemToGiveCommandIncludesMaxMPInLore(t *testing.T) {
+	maxMP := 20
+	entry := itemModel.Item{
+		ID:     "armor_with_mp",
+		ItemID: "minecraft:diamond_chestplate",
+		Maf: itemModel.ItemMaf{
+			MaxMP: &maxMP,
+		},
+		Minecraft: map[string]any{
+			"components": map[string]any{
+				"minecraft:lore": []any{
+					map[string]any{"text": "鎧の説明"},
+				},
+			},
+		},
+	}
+
+	command, err := ItemToGiveCommand(entry, nil, nil, nil)
+	if err != nil {
+		t.Fatalf("ItemToGiveCommand returned error: %v", err)
+	}
+	if !strings.Contains(command, `MaxMP  : +20`) {
+		t.Fatalf("MaxMP lore line missing from give command: %s", command)
+	}
+}
+
+func TestItemToGiveCommandMaxMPNegativeSign(t *testing.T) {
+	maxMP := -10
+	entry := itemModel.Item{
+		ID:     "armor_mp_penalty",
+		ItemID: "minecraft:leather_helmet",
+		Maf: itemModel.ItemMaf{
+			MaxMP: &maxMP,
+		},
+	}
+
+	command, err := ItemToGiveCommand(entry, nil, nil, nil)
+	if err != nil {
+		t.Fatalf("ItemToGiveCommand returned error: %v", err)
+	}
+	if !strings.Contains(command, `MaxMP  : -10`) {
+		t.Fatalf("MaxMP negative lore line missing from give command: %s", command)
+	}
+}
+
+func TestItemToGiveCommandMaxMPAppearsBeforeActiveSkill(t *testing.T) {
+	maxMP := 15
+	entry := itemModel.Item{
+		ID:     "armor_with_mp_and_active",
+		ItemID: "minecraft:diamond_chestplate",
+		Maf: itemModel.ItemMaf{
+			MaxMP:    &maxMP,
+			ActiveID: "tempest01",
+		},
+	}
+	activesByID := map[string]activeModel.Active{
+		"tempest01": {ID: "tempest01", MPCost: 13, CastTime: 40, CoolTime: 20, Title: "テンペスト", Target: "視線", Range: 10},
+	}
+
+	command, err := ItemToGiveCommand(entry, activesByID, nil, nil)
+	if err != nil {
+		t.Fatalf("ItemToGiveCommand returned error: %v", err)
+	}
+	mpIndex := strings.Index(command, "MaxMP  : +15")
+	activeIndex := strings.Index(command, "アクティブスキル")
+	if mpIndex == -1 {
+		t.Fatalf("MaxMP lore line missing: %s", command)
+	}
+	if activeIndex == -1 {
+		t.Fatalf("active skill lore missing: %s", command)
+	}
+	if mpIndex > activeIndex {
+		t.Fatalf("MaxMP lore should appear before active skill section: mpIndex=%d activeIndex=%d", mpIndex, activeIndex)
 	}
 }

@@ -177,7 +177,7 @@ func TestBuildItemUpdateArtifactsBuildsUpdateCommands(t *testing.T) {
 		},
 	}
 
-	artifacts, err := BuildItemUpdateArtifacts(master, 12345)
+	artifacts, err := BuildItemUpdateArtifacts(master)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -189,9 +189,6 @@ func TestBuildItemUpdateArtifactsBuildsUpdateCommands(t *testing.T) {
 	}
 	if !strings.Contains(artifacts[0].Body, `$item replace entity @s $(slot) with minecraft:stone[`) {
 		t.Fatalf("unexpected update command: %q", artifacts[0].Body)
-	}
-	if !strings.Contains(artifacts[0].Body, `ver:12345`) {
-		t.Fatalf("update command should include item version: %q", artifacts[0].Body)
 	}
 }
 

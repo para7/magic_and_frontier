@@ -16,9 +16,8 @@ func ItemToGiveCommand(
 	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
-	ver ...int64,
 ) (string, error) {
-	itemStack, err := buildItemStack(entry, activesByID, passivesByID, bowsByID, itemVersion(ver...))
+	itemStack, err := buildItemStack(entry, activesByID, passivesByID, bowsByID)
 	if err != nil {
 		return "", err
 	}
@@ -30,9 +29,8 @@ func ItemToUpdateCommand(
 	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
-	ver ...int64,
 ) (string, error) {
-	itemStack, err := buildItemStack(entry, activesByID, passivesByID, bowsByID, itemVersion(ver...))
+	itemStack, err := buildItemStack(entry, activesByID, passivesByID, bowsByID)
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +47,6 @@ func buildItemStack(
 	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
-	ver int64,
 ) (string, error) {
 	spellMeta, err := resolveItemSpellMeta(entry, activesByID, passivesByID, bowsByID)
 	if err != nil {
@@ -62,7 +59,7 @@ func buildItemStack(
 	if spellMeta.hasUseSpell {
 		componentValues["minecraft:consumable"] = bookConsumableSNBT
 	}
-	customData, err := itemCustomData(entry, activesByID, passivesByID, bowsByID, ver)
+	customData, err := itemCustomData(entry, activesByID, passivesByID, bowsByID)
 	if err != nil {
 		return "", err
 	}
@@ -92,7 +89,7 @@ func itemComponentsForGive(entry itemModel.Item, spellMeta itemSpellMeta) (map[s
 		}
 		values[component.Key] = value
 	}
-	if lore, ok := mergedItemSkillLore(rawValues["minecraft:lore"], spellMeta); ok {
+	if lore, ok := mergedItemSkillLore(rawValues["minecraft:lore"], spellMeta, entry.Maf.MaxMP); ok {
 		if value, valueOK := valueToSNBT(lore); valueOK {
 			values["minecraft:lore"] = value
 		}
@@ -122,13 +119,11 @@ func itemCustomData(
 	activesByID map[string]activeModel.Active,
 	passivesByID map[string]passiveModel.Passive,
 	bowsByID map[string]bowModel.BowPassive,
-	ver ...int64,
 ) (string, error) {
 	itemSNBT, _ := itemModel.BuildItemComponents(entry)
 	parts := []string{
 		fmt.Sprintf("item_id:%s", SNBTString(entry.ItemID)),
 		fmt.Sprintf("source_id:%s", SNBTString(entry.ID)),
-		fmt.Sprintf("ver:%d", itemVersion(ver...)),
 		fmt.Sprintf("nbt_snapshot:%s", itemSNBT),
 	}
 
@@ -146,13 +141,6 @@ func itemCustomData(
 		parts = append(parts, fmt.Sprintf("maxmp:%d", *entry.Maf.MaxMP))
 	}
 	return "{maf:{" + strings.Join(parts, ",") + "}}", nil
-}
-
-func itemVersion(ver ...int64) int64 {
-	if len(ver) == 0 {
-		return 0
-	}
-	return ver[0]
 }
 
 func itemComponentsForLoot(
@@ -176,7 +164,7 @@ func itemComponentsForLoot(
 			"has_consume_particles": false,
 		}
 	}
-	if lore, ok := mergedItemSkillLore(components["minecraft:lore"], spellMeta); ok {
+	if lore, ok := mergedItemSkillLore(components["minecraft:lore"], spellMeta, entry.Maf.MaxMP); ok {
 		components["minecraft:lore"] = lore
 	}
 
@@ -295,15 +283,26 @@ func resolvePassiveSlot(entry itemModel.Item, passive passiveModel.Passive) (int
 	return passive.Slots[0], nil
 }
 
-func mergedItemSkillLore(existing any, spellMeta itemSpellMeta) ([]any, bool) {
+func mergedItemSkillLore(existing any, spellMeta itemSpellMeta, maxMP *int) ([]any, bool) {
+	mpLore := maxMPLoreComponents(maxMP)
 	skillLore := itemSkillLoreComponents(spellMeta)
-	if len(skillLore) == 0 {
+	if len(mpLore) == 0 && len(skillLore) == 0 {
 		return nil, false
 	}
 
 	lore := anyList(existing)
+	lore = append(lore, mpLore...)
 	lore = append(lore, skillLore...)
 	return lore, true
+}
+
+func maxMPLoreComponents(maxMP *int) []any {
+	if maxMP == nil {
+		return nil
+	}
+	return []any{
+		itemSkillLoreComponent(fmt.Sprintf("MaxMP  : %+d", *maxMP), "white", false),
+	}
 }
 
 func itemSkillLoreComponents(spellMeta itemSpellMeta) []any {

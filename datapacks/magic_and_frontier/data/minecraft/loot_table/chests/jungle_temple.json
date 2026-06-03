@@ -198,7 +198,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_both\",ver:1780402931,nbt_snapshot:{id:\"minecraft:diamond_sword\",count:1,components:{\"minecraft:custom_name\":{text:\"アクティブ\u0026パッシブ剣\"},\"minecraft:lore\":[{text:\"Sample item\"}]}},active_id:\"old_tempest01\",hasPassive:1b,passiveId:\"regeneration\",passiveSlot:1,passiveCondition:\"always\"}}"
+              "tag": "{maf:{item_id:\"minecraft:diamond_sword\",source_id:\"test_sword_both\",ver:1780403592,nbt_snapshot:{id:\"minecraft:diamond_sword\",count:1,components:{\"minecraft:custom_name\":{text:\"アクティブ\u0026パッシブ剣\"},\"minecraft:lore\":[{text:\"Sample item\"}]}},active_id:\"old_tempest01\",hasPassive:1b,passiveId:\"regeneration\",passiveSlot:1,passiveCondition:\"always\"}}"
             },
             {
               "components": {
@@ -330,7 +330,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:bow\",source_id:\"test_bow_full\",ver:1780402931,nbt_snapshot:{id:\"minecraft:bow\",count:1,components:{\"minecraft:custom_name\":{text:\"test_bow_full\"},\"minecraft:lore\":[{text:\"Bow full test\"}]}},bowId:\"test_full\",passiveId:\"bow_test_full\",passiveCondition:\"always\"}}"
+              "tag": "{maf:{item_id:\"minecraft:bow\",source_id:\"test_bow_full\",ver:1780403592,nbt_snapshot:{id:\"minecraft:bow\",count:1,components:{\"minecraft:custom_name\":{text:\"test_bow_full\"},\"minecraft:lore\":[{text:\"Bow full test\"}]}},bowId:\"test_full\",passiveId:\"bow_test_full\",passiveCondition:\"always\"}}"
             },
             {
               "components": {
@@ -402,7 +402,7 @@
             },
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{maf:{item_id:\"minecraft:diamond_chestplate\",source_id:\"test_mp_body_diamond\",ver:1780402931,nbt_snapshot:{id:\"minecraft:diamond_chestplate\",count:1,components:{\"minecraft:custom_name\":{text:\"test_mp_body_diamond\"},\"minecraft:lore\":[{text:\"body mp +20\"}]}},maxmp:20}}"
+              "tag": "{maf:{item_id:\"minecraft:diamond_chestplate\",source_id:\"test_mp_body_diamond\",ver:1780403592,nbt_snapshot:{id:\"minecraft:diamond_chestplate\",count:1,components:{\"minecraft:custom_name\":{text:\"test_mp_body_diamond\"},\"minecraft:lore\":[{text:\"body mp +20\"}]}},maxmp:20}}"
             },
             {
               "components": {
@@ -412,6 +412,12 @@
                 "minecraft:lore": [
                   {
                     "text": "body mp +20"
+                  },
+                  {
+                    "color": "white",
+                    "font": "minecraft:uniform",
+                    "italic": false,
+                    "text": "MaxMP  : +20"
                   }
                 ]
               },
