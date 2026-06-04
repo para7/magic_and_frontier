@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"medical_defense_area_01",cost:10,cast:20,cooltime:20,title:"医術防御：範囲",description:"範囲内の味方の耐性を付与する"}

@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"resist_poison_self_01",cost:10,cast:20,cooltime:20,title:"レジストポイズン",description:"自分自身の毒耐性バフを付与する"}

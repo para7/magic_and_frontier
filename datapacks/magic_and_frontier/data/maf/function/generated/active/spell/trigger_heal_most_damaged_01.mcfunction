@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"trigger_heal_most_damaged_01",cost:10,cast:20,cooltime:20,title:"トリガーヒール：負傷",description:"最もHPが減っている味方のHP半分以下で発動する回復バフを付与する"}

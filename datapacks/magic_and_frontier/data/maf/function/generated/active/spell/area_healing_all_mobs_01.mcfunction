@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"area_healing_all_mobs_01",cost:10,cast:20,cooltime:20,title:"エリアヒーリング：全体",description:"周囲のモブ全てのHPを回復する（敵味方問わず）"}

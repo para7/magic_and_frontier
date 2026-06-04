@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"refresh_self_01",cost:10,cast:20,cooltime:20,title:"リフレッシュ",description:"自分自身の悪性状態異常を全て回復する"}

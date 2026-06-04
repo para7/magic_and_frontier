@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"barrier_lowest_armor_01",cost:10,cast:20,cooltime:20,title:"バリア：軽装",description:"最も防具強度の低い味方の緩衝体力を付与する"}

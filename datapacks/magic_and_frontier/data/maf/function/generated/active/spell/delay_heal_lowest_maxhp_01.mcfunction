@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"delay_heal_lowest_maxhp_01",cost:10,cast:20,cooltime:20,title:"ディレイヒール：最大HP下位",description:"最も最大HPの低い味方の15秒後にHPを回復するバフを付与する"}

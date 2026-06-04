@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"resist_curse_nearest_01",cost:10,cast:20,cooltime:20,title:"レジストカース：最寄り",description:"最も近い味方のウィザー耐性バフを付与する"}

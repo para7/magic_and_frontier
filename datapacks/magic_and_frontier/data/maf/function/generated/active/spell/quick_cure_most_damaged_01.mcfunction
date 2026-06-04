@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"quick_cure_most_damaged_01",cost:10,cast:4,cooltime:20,title:"クイックキュア：負傷",description:"最もHPが減っている味方のHPを素早く回復する"}

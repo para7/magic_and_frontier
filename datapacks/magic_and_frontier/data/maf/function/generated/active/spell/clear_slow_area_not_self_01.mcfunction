@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"clear_slow_area_not_self_01",cost:10,cast:20,cooltime:20,title:"クリアスロウ：範囲（自分以外）",description:"自分以外の範囲内の味方の採掘速度低下を治す"}

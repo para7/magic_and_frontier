@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"curse_convert_self_01",cost:10,cast:20,cooltime:20,title:"カースコンバート",description:"自分自身のデバフを解除し回復する"}

@@ -1,0 +1,2086 @@
+{
+  "entries": [
+    {
+      "id": "cure_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect give @s minecraft:instant_health 1 0",
+        "particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 4",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は キュア を唱えた！\"}]"
+      ],
+      "title": "キュア",
+      "description": "自分自身のHPを回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "cure_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect give @s minecraft:instant_health 1 0",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 4",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は キュア を唱えた！\"}]"
+      ],
+      "title": "キュア：範囲",
+      "description": "範囲内の味方のHPを回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "cure_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect give @s minecraft:instant_health 1 0",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 4",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は キュア を唱えた！\"}]"
+      ],
+      "title": "キュア：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方のHPを回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "cure_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect give @s minecraft:instant_health 1 0",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 4",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は キュア を唱えた！\"}]"
+      ],
+      "title": "キュア：最寄り",
+      "description": "最も近い味方のHPを回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "cure_highest_armor_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/highest_armor {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:instant_health 1 0",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 4",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は キュア を唱えた！\"}]"
+      ],
+      "title": "キュア：重装",
+      "description": "最も防具強度の高い味方のHPを回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "cure_lowest_hp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_hp {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:instant_health 1 0",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 4",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は キュア を唱えた！\"}]"
+      ],
+      "title": "キュア：瀕死",
+      "description": "最もHPの低い味方のHPを回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "cure_most_damaged_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/most_hp_missing {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:instant_health 1 0",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 4",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は キュア を唱えた！\"}]"
+      ],
+      "title": "キュア：負傷",
+      "description": "最もHPが減っている味方のHPを回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "regenerate_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect give @s minecraft:regeneration 30 1",
+        "particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 0.5 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リジェネレート を唱えた！\"}]"
+      ],
+      "title": "リジェネレート",
+      "description": "自分自身の再生効果を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "regenerate_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect give @s minecraft:regeneration 30 1",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 0.5 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リジェネレート を唱えた！\"}]"
+      ],
+      "title": "リジェネレート：範囲",
+      "description": "範囲内の味方の再生効果を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "regenerate_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect give @s minecraft:regeneration 30 1",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 0.5 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リジェネレート を唱えた！\"}]"
+      ],
+      "title": "リジェネレート：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の再生効果を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "regenerate_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect give @s minecraft:regeneration 30 1",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 0.5 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リジェネレート を唱えた！\"}]"
+      ],
+      "title": "リジェネレート：最寄り",
+      "description": "最も近い味方の再生効果を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "regenerate_highest_armor_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/highest_armor {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:regeneration 30 1",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 0.5 6",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リジェネレート を唱えた！\"}]"
+      ],
+      "title": "リジェネレート：重装",
+      "description": "最も防具強度の高い味方の再生効果を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "regenerate_lowest_hp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_hp {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:regeneration 30 1",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 0.5 6",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リジェネレート を唱えた！\"}]"
+      ],
+      "title": "リジェネレート：瀕死",
+      "description": "最もHPの低い味方の再生効果を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "regenerate_most_damaged_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/most_hp_missing {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:regeneration 30 1",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 0.5 6",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リジェネレート を唱えた！\"}]"
+      ],
+      "title": "リジェネレート：負傷",
+      "description": "最もHPが減っている味方の再生効果を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "barrier_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect give @s minecraft:absorption 210 2",
+        "particle minecraft:end_rod ~ ~1 ~ 0.3 0.5 0.3 0.05 8",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
+      ],
+      "title": "バリア",
+      "description": "自分自身の緩衝体力を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "barrier_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect give @s minecraft:absorption 210 2",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:end_rod ~ ~1 ~ 0.3 0.5 0.3 0.05 8",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
+      ],
+      "title": "バリア：範囲",
+      "description": "範囲内の味方の緩衝体力を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "barrier_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect give @s minecraft:absorption 210 2",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:end_rod ~ ~1 ~ 0.3 0.5 0.3 0.05 8",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
+      ],
+      "title": "バリア：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の緩衝体力を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "barrier_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect give @s minecraft:absorption 210 2",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:end_rod ~ ~1 ~ 0.3 0.5 0.3 0.05 8",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
+      ],
+      "title": "バリア：最寄り",
+      "description": "最も近い味方の緩衝体力を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "barrier_highest_maxhp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/highest_maxhp {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:absorption 210 2",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:end_rod ~ ~1 ~ 0.3 0.5 0.3 0.05 8",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
+      ],
+      "title": "バリア：最大HP上位",
+      "description": "最も最大HPの高い味方の緩衝体力を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "barrier_lowest_maxhp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_maxhp {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:absorption 210 2",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:end_rod ~ ~1 ~ 0.3 0.5 0.3 0.05 8",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
+      ],
+      "title": "バリア：最大HP下位",
+      "description": "最も最大HPの低い味方の緩衝体力を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "barrier_most_damaged_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/most_hp_missing {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:absorption 210 2",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:end_rod ~ ~1 ~ 0.3 0.5 0.3 0.05 8",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
+      ],
+      "title": "バリア：負傷",
+      "description": "最もHPが減っている味方の緩衝体力を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "barrier_highest_armor_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/highest_armor {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:absorption 210 2",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:end_rod ~ ~1 ~ 0.3 0.5 0.3 0.05 8",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
+      ],
+      "title": "バリア：重装",
+      "description": "最も防具強度の高い味方の緩衝体力を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "barrier_lowest_armor_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_armor {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:absorption 210 2",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:end_rod ~ ~1 ~ 0.3 0.5 0.3 0.05 8",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
+      ],
+      "title": "バリア：軽装",
+      "description": "最も防具強度の低い味方の緩衝体力を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "barrier_lowest_hp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_hp {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:absorption 210 2",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:end_rod ~ ~1 ~ 0.3 0.5 0.3 0.05 8",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
+      ],
+      "title": "バリア：瀕死",
+      "description": "最もHPの低い味方の緩衝体力を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "barrier_most_hp_missing_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/most_hp_missing {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:absorption 210 2",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:end_rod ~ ~1 ~ 0.3 0.5 0.3 0.05 8",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は バリア を唱えた！\"}]"
+      ],
+      "title": "バリア：最大負傷",
+      "description": "最もHPが減っている味方（差分）の緩衝体力を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "heart_boost_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect give @s minecraft:health_boost 300 1",
+        "particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ハートブースト を唱えた！\"}]"
+      ],
+      "title": "ハートブースト",
+      "description": "自分自身の体力増強を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "heart_boost_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect give @s minecraft:health_boost 300 1",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ハートブースト を唱えた！\"}]"
+      ],
+      "title": "ハートブースト：範囲",
+      "description": "範囲内の味方の体力増強を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "heart_boost_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect give @s minecraft:health_boost 300 1",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ハートブースト を唱えた！\"}]"
+      ],
+      "title": "ハートブースト：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の体力増強を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "heart_boost_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect give @s minecraft:health_boost 300 1",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ハートブースト を唱えた！\"}]"
+      ],
+      "title": "ハートブースト：最寄り",
+      "description": "最も近い味方の体力増強を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "heart_boost_highest_maxhp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/highest_maxhp {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:health_boost 300 1",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ハートブースト を唱えた！\"}]"
+      ],
+      "title": "ハートブースト：最大HP上位",
+      "description": "最も最大HPの高い味方の体力増強を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "heart_boost_lowest_maxhp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_maxhp {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:health_boost 300 1",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ハートブースト を唱えた！\"}]"
+      ],
+      "title": "ハートブースト：最大HP下位",
+      "description": "最も最大HPの低い味方の体力増強を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "heart_boost_most_damaged_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/most_hp_missing {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:health_boost 300 1",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ハートブースト を唱えた！\"}]"
+      ],
+      "title": "ハートブースト：負傷",
+      "description": "最もHPが減っている味方の体力増強を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "heart_boost_highest_armor_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/highest_armor {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:health_boost 300 1",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ハートブースト を唱えた！\"}]"
+      ],
+      "title": "ハートブースト：重装",
+      "description": "最も防具強度の高い味方の体力増強を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "heart_boost_lowest_armor_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_armor {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:health_boost 300 1",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ハートブースト を唱えた！\"}]"
+      ],
+      "title": "ハートブースト：軽装",
+      "description": "最も防具強度の低い味方の体力増強を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "heart_boost_lowest_hp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_hp {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:health_boost 300 1",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ハートブースト を唱えた！\"}]"
+      ],
+      "title": "ハートブースト：瀕死",
+      "description": "最もHPの低い味方の体力増強を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "heart_boost_most_hp_missing_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/most_hp_missing {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:health_boost 300 1",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ハートブースト を唱えた！\"}]"
+      ],
+      "title": "ハートブースト：最大負傷",
+      "description": "最もHPが減っている味方（差分）の体力増強を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "area_healing_all_mobs_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[distance=..10] run effect give @s minecraft:instant_health 1 0",
+        "execute at @e[distance=..10] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 4",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は エリアヒーリング を唱えた！\"}]"
+      ],
+      "title": "エリアヒーリング：全体",
+      "description": "周囲のモブ全てのHPを回復する（敵味方問わず）",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "full_healing_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect give @s minecraft:instant_health 1 255",
+        "particle minecraft:heart ~ ~1 ~ 0.5 0.5 0.5 1 12",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は フルヒーリング を唱えた！\"}]"
+      ],
+      "title": "フルヒーリング",
+      "description": "自分自身のHPを全回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "full_healing_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect give @s minecraft:instant_health 1 255",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:heart ~ ~1 ~ 0.5 0.5 0.5 1 12",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は フルヒーリング を唱えた！\"}]"
+      ],
+      "title": "フルヒーリング：最寄り",
+      "description": "最も近い味方のHPを全回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "full_healing_highest_armor_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/highest_armor {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:instant_health 1 255",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.5 0.5 0.5 1 12",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は フルヒーリング を唱えた！\"}]"
+      ],
+      "title": "フルヒーリング：重装",
+      "description": "最も防具強度の高い味方のHPを全回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "full_healing_lowest_hp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_hp {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:instant_health 1 255",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.5 0.5 0.5 1 12",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は フルヒーリング を唱えた！\"}]"
+      ],
+      "title": "フルヒーリング：瀕死",
+      "description": "最もHPの低い味方のHPを全回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "full_healing_most_damaged_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/most_hp_missing {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:instant_health 1 255",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.5 0.5 0.5 1 12",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は フルヒーリング を唱えた！\"}]"
+      ],
+      "title": "フルヒーリング：負傷",
+      "description": "最もHPが減っている味方のHPを全回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "quick_cure_self_01",
+      "castTime": 4,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect give @s minecraft:instant_health 1 0",
+        "particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 4",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クイックキュア を唱えた！\"}]"
+      ],
+      "title": "クイックキュア",
+      "description": "自分自身のHPを素早く回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "quick_cure_lowest_hp_01",
+      "castTime": 4,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_hp {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:instant_health 1 0",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 4",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クイックキュア を唱えた！\"}]"
+      ],
+      "title": "クイックキュア：瀕死",
+      "description": "最もHPの低い味方のHPを素早く回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "quick_cure_most_damaged_01",
+      "castTime": 4,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/most_hp_missing {range:10}",
+        "effect give @e[tag=maf_heal_target] minecraft:instant_health 1 0",
+        "execute at @e[tag=maf_heal_target] run particle minecraft:heart ~ ~1 ~ 0.3 0.3 0.3 1 4",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 2.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クイックキュア を唱えた！\"}]"
+      ],
+      "title": "クイックキュア：負傷",
+      "description": "最もHPが減っている味方のHPを素早く回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "refresh_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect clear @s minecraft:poison",
+        "effect clear @s minecraft:slowness",
+        "effect clear @s minecraft:mining_fatigue",
+        "effect clear @s minecraft:blindness",
+        "effect clear @s minecraft:wither",
+        "effect clear @s minecraft:hunger",
+        "effect clear @s minecraft:levitation",
+        "particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リフレッシュ を唱えた！\"}]"
+      ],
+      "title": "リフレッシュ",
+      "description": "自分自身の悪性状態異常を全て回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "refresh_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:poison",
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:slowness",
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:mining_fatigue",
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:blindness",
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:wither",
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:hunger",
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:levitation",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リフレッシュ を唱えた！\"}]"
+      ],
+      "title": "リフレッシュ：範囲",
+      "description": "範囲内の味方の悪性状態異常を全て回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "refresh_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:poison",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:slowness",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:mining_fatigue",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:blindness",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:wither",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:hunger",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:levitation",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リフレッシュ を唱えた！\"}]"
+      ],
+      "title": "リフレッシュ：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の悪性状態異常を全て回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "refresh_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:poison",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:slowness",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:mining_fatigue",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:blindness",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:wither",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:hunger",
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:levitation",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は リフレッシュ を唱えた！\"}]"
+      ],
+      "title": "リフレッシュ：最寄り",
+      "description": "最も近い味方の悪性状態異常を全て回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_poison_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect clear @s minecraft:poison",
+        "particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアポイズン を唱えた！\"}]"
+      ],
+      "title": "クリアポイズン",
+      "description": "自分自身の毒を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_poison_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:poison",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアポイズン を唱えた！\"}]"
+      ],
+      "title": "クリアポイズン：範囲",
+      "description": "範囲内の味方の毒を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_poison_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:poison",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアポイズン を唱えた！\"}]"
+      ],
+      "title": "クリアポイズン：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の毒を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_poison_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:poison",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアポイズン を唱えた！\"}]"
+      ],
+      "title": "クリアポイズン：最寄り",
+      "description": "最も近い味方の毒を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_bind_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect clear @s minecraft:slowness",
+        "particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアバインド を唱えた！\"}]"
+      ],
+      "title": "クリアバインド",
+      "description": "自分自身の移動速度低下を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_bind_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:slowness",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアバインド を唱えた！\"}]"
+      ],
+      "title": "クリアバインド：範囲",
+      "description": "範囲内の味方の移動速度低下を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_bind_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:slowness",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアバインド を唱えた！\"}]"
+      ],
+      "title": "クリアバインド：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の移動速度低下を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_bind_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:slowness",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアバインド を唱えた！\"}]"
+      ],
+      "title": "クリアバインド：最寄り",
+      "description": "最も近い味方の移動速度低下を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_slow_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect clear @s minecraft:mining_fatigue",
+        "particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアスロウ を唱えた！\"}]"
+      ],
+      "title": "クリアスロウ",
+      "description": "自分自身の採掘速度低下を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_slow_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:mining_fatigue",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアスロウ を唱えた！\"}]"
+      ],
+      "title": "クリアスロウ：範囲",
+      "description": "範囲内の味方の採掘速度低下を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_slow_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:mining_fatigue",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアスロウ を唱えた！\"}]"
+      ],
+      "title": "クリアスロウ：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の採掘速度低下を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_slow_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:mining_fatigue",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアスロウ を唱えた！\"}]"
+      ],
+      "title": "クリアスロウ：最寄り",
+      "description": "最も近い味方の採掘速度低下を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_blind_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect clear @s minecraft:blindness",
+        "particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアブライン を唱えた！\"}]"
+      ],
+      "title": "クリアブライン",
+      "description": "自分自身の暗闇を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_blind_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:blindness",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアブライン を唱えた！\"}]"
+      ],
+      "title": "クリアブライン：範囲",
+      "description": "範囲内の味方の暗闇を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_blind_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:blindness",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアブライン を唱えた！\"}]"
+      ],
+      "title": "クリアブライン：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の暗闇を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_blind_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:blindness",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアブライン を唱えた！\"}]"
+      ],
+      "title": "クリアブライン：最寄り",
+      "description": "最も近い味方の暗闇を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_float_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect clear @s minecraft:levitation",
+        "particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアフロート を唱えた！\"}]"
+      ],
+      "title": "クリアフロート",
+      "description": "自分自身の浮遊を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_float_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:levitation",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアフロート を唱えた！\"}]"
+      ],
+      "title": "クリアフロート：範囲",
+      "description": "範囲内の味方の浮遊を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_float_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:levitation",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアフロート を唱えた！\"}]"
+      ],
+      "title": "クリアフロート：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の浮遊を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_float_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:levitation",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアフロート を唱えた！\"}]"
+      ],
+      "title": "クリアフロート：最寄り",
+      "description": "最も近い味方の浮遊を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_curse_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect clear @s minecraft:wither",
+        "particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアカース を唱えた！\"}]"
+      ],
+      "title": "クリアカース",
+      "description": "自分自身のウィザーを治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_curse_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:wither",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアカース を唱えた！\"}]"
+      ],
+      "title": "クリアカース：範囲",
+      "description": "範囲内の味方のウィザーを治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_curse_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:wither",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアカース を唱えた！\"}]"
+      ],
+      "title": "クリアカース：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方のウィザーを治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_curse_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:wither",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアカース を唱えた！\"}]"
+      ],
+      "title": "クリアカース：最寄り",
+      "description": "最も近い味方のウィザーを治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_hungry_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "effect clear @s minecraft:hunger",
+        "particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアハングリ を唱えた！\"}]"
+      ],
+      "title": "クリアハングリ",
+      "description": "自分自身の空腹を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_hungry_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect clear @s minecraft:hunger",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアハングリ を唱えた！\"}]"
+      ],
+      "title": "クリアハングリ：範囲",
+      "description": "範囲内の味方の空腹を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_hungry_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run effect clear @s minecraft:hunger",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアハングリ を唱えた！\"}]"
+      ],
+      "title": "クリアハングリ：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の空腹を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "clear_hungry_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run effect clear @s minecraft:hunger",
+        "execute at @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run particle minecraft:happy_villager ~ ~1 ~ 0.3 0.3 0.3 1 6",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.8",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は クリアハングリ を唱えた！\"}]"
+      ],
+      "title": "クリアハングリ：最寄り",
+      "description": "最も近い味方の空腹を治す",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_poison_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:buff/data/resist/resist_poison_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストポイズン を唱えた！\"}]"
+      ],
+      "title": "レジストポイズン",
+      "description": "自分自身の毒耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_poison_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run function maf:buff/data/resist/resist_poison_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストポイズン を唱えた！\"}]"
+      ],
+      "title": "レジストポイズン：範囲",
+      "description": "範囲内の味方の毒耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_poison_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run function maf:buff/data/resist/resist_poison_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストポイズン を唱えた！\"}]"
+      ],
+      "title": "レジストポイズン：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の毒耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_poison_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run function maf:buff/data/resist/resist_poison_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストポイズン を唱えた！\"}]"
+      ],
+      "title": "レジストポイズン：最寄り",
+      "description": "最も近い味方の毒耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_bind_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:buff/data/resist/resist_bind_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストバインド を唱えた！\"}]"
+      ],
+      "title": "レジストバインド",
+      "description": "自分自身の移動速度低下耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_bind_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run function maf:buff/data/resist/resist_bind_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストバインド を唱えた！\"}]"
+      ],
+      "title": "レジストバインド：範囲",
+      "description": "範囲内の味方の移動速度低下耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_bind_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run function maf:buff/data/resist/resist_bind_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストバインド を唱えた！\"}]"
+      ],
+      "title": "レジストバインド：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の移動速度低下耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_bind_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run function maf:buff/data/resist/resist_bind_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストバインド を唱えた！\"}]"
+      ],
+      "title": "レジストバインド：最寄り",
+      "description": "最も近い味方の移動速度低下耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_slow_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:buff/data/resist/resist_slow_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストスロウ を唱えた！\"}]"
+      ],
+      "title": "レジストスロウ",
+      "description": "自分自身の採掘速度低下耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_slow_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run function maf:buff/data/resist/resist_slow_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストスロウ を唱えた！\"}]"
+      ],
+      "title": "レジストスロウ：範囲",
+      "description": "範囲内の味方の採掘速度低下耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_slow_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run function maf:buff/data/resist/resist_slow_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストスロウ を唱えた！\"}]"
+      ],
+      "title": "レジストスロウ：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の採掘速度低下耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_slow_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run function maf:buff/data/resist/resist_slow_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストスロウ を唱えた！\"}]"
+      ],
+      "title": "レジストスロウ：最寄り",
+      "description": "最も近い味方の採掘速度低下耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_blind_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:buff/data/resist/resist_blind_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストブライン を唱えた！\"}]"
+      ],
+      "title": "レジストブライン",
+      "description": "自分自身の暗闇耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_blind_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run function maf:buff/data/resist/resist_blind_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストブライン を唱えた！\"}]"
+      ],
+      "title": "レジストブライン：範囲",
+      "description": "範囲内の味方の暗闇耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_blind_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run function maf:buff/data/resist/resist_blind_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストブライン を唱えた！\"}]"
+      ],
+      "title": "レジストブライン：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の暗闇耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_blind_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run function maf:buff/data/resist/resist_blind_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストブライン を唱えた！\"}]"
+      ],
+      "title": "レジストブライン：最寄り",
+      "description": "最も近い味方の暗闇耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_curse_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:buff/data/resist/resist_curse_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストカース を唱えた！\"}]"
+      ],
+      "title": "レジストカース",
+      "description": "自分自身のウィザー耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_curse_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run function maf:buff/data/resist/resist_curse_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストカース を唱えた！\"}]"
+      ],
+      "title": "レジストカース：範囲",
+      "description": "範囲内の味方のウィザー耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_curse_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run function maf:buff/data/resist/resist_curse_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストカース を唱えた！\"}]"
+      ],
+      "title": "レジストカース：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方のウィザー耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "resist_curse_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run function maf:buff/data/resist/resist_curse_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は レジストカース を唱えた！\"}]"
+      ],
+      "title": "レジストカース：最寄り",
+      "description": "最も近い味方のウィザー耐性バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "delay_heal_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:buff/data/delay_heal/delay_heal_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ディレイヒール を唱えた！\"}]"
+      ],
+      "title": "ディレイヒール",
+      "description": "自分自身の15秒後にHPを回復するバフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "delay_heal_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run function maf:buff/data/delay_heal/delay_heal_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ディレイヒール を唱えた！\"}]"
+      ],
+      "title": "ディレイヒール：範囲",
+      "description": "範囲内の味方の15秒後にHPを回復するバフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "delay_heal_area_not_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10] run function maf:buff/data/delay_heal/delay_heal_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ディレイヒール を唱えた！\"}]"
+      ],
+      "title": "ディレイヒール：範囲（自分以外）",
+      "description": "自分以外の範囲内の味方の15秒後にHPを回復するバフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "delay_heal_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run function maf:buff/data/delay_heal/delay_heal_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ディレイヒール を唱えた！\"}]"
+      ],
+      "title": "ディレイヒール：最寄り",
+      "description": "最も近い味方の15秒後にHPを回復するバフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "delay_heal_highest_maxhp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/highest_maxhp {range:10}",
+        "execute as @e[tag=maf_heal_target] run function maf:buff/data/delay_heal/delay_heal_01/init",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ディレイヒール を唱えた！\"}]"
+      ],
+      "title": "ディレイヒール：最大HP上位",
+      "description": "最も最大HPの高い味方の15秒後にHPを回復するバフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "delay_heal_lowest_maxhp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_maxhp {range:10}",
+        "execute as @e[tag=maf_heal_target] run function maf:buff/data/delay_heal/delay_heal_01/init",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ディレイヒール を唱えた！\"}]"
+      ],
+      "title": "ディレイヒール：最大HP下位",
+      "description": "最も最大HPの低い味方の15秒後にHPを回復するバフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "delay_heal_highest_armor_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/highest_armor {range:10}",
+        "execute as @e[tag=maf_heal_target] run function maf:buff/data/delay_heal/delay_heal_01/init",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ディレイヒール を唱えた！\"}]"
+      ],
+      "title": "ディレイヒール：重装",
+      "description": "最も防具強度の高い味方の15秒後にHPを回復するバフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "delay_heal_lowest_armor_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_armor {range:10}",
+        "execute as @e[tag=maf_heal_target] run function maf:buff/data/delay_heal/delay_heal_01/init",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は ディレイヒール を唱えた！\"}]"
+      ],
+      "title": "ディレイヒール：軽装",
+      "description": "最も防具強度の低い味方の15秒後にHPを回復するバフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "trigger_heal_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:buff/data/trigger_heal/trigger_heal_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は トリガーヒール を唱えた！\"}]"
+      ],
+      "title": "トリガーヒール",
+      "description": "自分自身のHP半分以下で発動する回復バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "trigger_heal_nearest_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=0.1..10,sort=nearest,limit=1] run function maf:buff/data/trigger_heal/trigger_heal_01/init",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は トリガーヒール を唱えた！\"}]"
+      ],
+      "title": "トリガーヒール：最寄り",
+      "description": "最も近い味方のHP半分以下で発動する回復バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "trigger_heal_highest_maxhp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/highest_maxhp {range:10}",
+        "execute as @e[tag=maf_heal_target] run function maf:buff/data/trigger_heal/trigger_heal_01/init",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は トリガーヒール を唱えた！\"}]"
+      ],
+      "title": "トリガーヒール：最大HP上位",
+      "description": "最も最大HPの高い味方のHP半分以下で発動する回復バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "trigger_heal_lowest_maxhp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_maxhp {range:10}",
+        "execute as @e[tag=maf_heal_target] run function maf:buff/data/trigger_heal/trigger_heal_01/init",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は トリガーヒール を唱えた！\"}]"
+      ],
+      "title": "トリガーヒール：最大HP下位",
+      "description": "最も最大HPの低い味方のHP半分以下で発動する回復バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "trigger_heal_most_damaged_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/most_hp_missing {range:10}",
+        "execute as @e[tag=maf_heal_target] run function maf:buff/data/trigger_heal/trigger_heal_01/init",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は トリガーヒール を唱えた！\"}]"
+      ],
+      "title": "トリガーヒール：負傷",
+      "description": "最もHPが減っている味方のHP半分以下で発動する回復バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "trigger_heal_highest_armor_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/highest_armor {range:10}",
+        "execute as @e[tag=maf_heal_target] run function maf:buff/data/trigger_heal/trigger_heal_01/init",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は トリガーヒール を唱えた！\"}]"
+      ],
+      "title": "トリガーヒール：重装",
+      "description": "最も防具強度の高い味方のHP半分以下で発動する回復バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "trigger_heal_lowest_armor_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_armor {range:10}",
+        "execute as @e[tag=maf_heal_target] run function maf:buff/data/trigger_heal/trigger_heal_01/init",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は トリガーヒール を唱えた！\"}]"
+      ],
+      "title": "トリガーヒール：軽装",
+      "description": "最も防具強度の低い味方のHP半分以下で発動する回復バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "trigger_heal_lowest_hp_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/lowest_hp {range:10}",
+        "execute as @e[tag=maf_heal_target] run function maf:buff/data/trigger_heal/trigger_heal_01/init",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は トリガーヒール を唱えた！\"}]"
+      ],
+      "title": "トリガーヒール：瀕死",
+      "description": "最もHPの低い味方のHP半分以下で発動する回復バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "trigger_heal_most_hp_missing_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "function maf:common/target/most_hp_missing {range:10}",
+        "execute as @e[tag=maf_heal_target] run function maf:buff/data/trigger_heal/trigger_heal_01/init",
+        "function maf:common/target/clear",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は トリガーヒール を唱えた！\"}]"
+      ],
+      "title": "トリガーヒール：最大負傷",
+      "description": "最もHPが減っている味方（差分）のHP半分以下で発動する回復バフを付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "curse_convert_self_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "scoreboard players set @s tmp 0",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:poison\"}]}] run scoreboard players add @s tmp 1",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:poison\"}]}] run effect clear @s minecraft:poison",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:slowness\"}]}] run scoreboard players add @s tmp 1",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:slowness\"}]}] run effect clear @s minecraft:slowness",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:mining_fatigue\"}]}] run scoreboard players add @s tmp 1",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:mining_fatigue\"}]}] run effect clear @s minecraft:mining_fatigue",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:blindness\"}]}] run scoreboard players add @s tmp 1",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:blindness\"}]}] run effect clear @s minecraft:blindness",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:wither\"}]}] run scoreboard players add @s tmp 1",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:wither\"}]}] run effect clear @s minecraft:wither",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:hunger\"}]}] run scoreboard players add @s tmp 1",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:hunger\"}]}] run effect clear @s minecraft:hunger",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:levitation\"}]}] run scoreboard players add @s tmp 1",
+        "execute if entity @s[nbt={active_effects:[{id:\"minecraft:levitation\"}]}] run effect clear @s minecraft:levitation",
+        "execute if score @s tmp matches 1.. run effect give @s minecraft:instant_health 1 0",
+        "execute if score @s tmp matches 3.. run effect give @s minecraft:instant_health 1 1",
+        "execute if score @s tmp matches 5.. run effect give @s minecraft:instant_health 1 2",
+        "particle minecraft:heart ~ ~1 ~ 0.5 0.5 0.5 1 8",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は カースコンバート を唱えた！\"}]"
+      ],
+      "title": "カースコンバート",
+      "description": "自分自身のデバフを解除し回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "curse_convert_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run scoreboard players set @s tmp 0",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:poison\"}]}] run scoreboard players add @s tmp 1",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:poison\"}]}] run effect clear @s minecraft:poison",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:slowness\"}]}] run scoreboard players add @s tmp 1",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:slowness\"}]}] run effect clear @s minecraft:slowness",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:mining_fatigue\"}]}] run scoreboard players add @s tmp 1",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:mining_fatigue\"}]}] run effect clear @s minecraft:mining_fatigue",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:blindness\"}]}] run scoreboard players add @s tmp 1",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:blindness\"}]}] run effect clear @s minecraft:blindness",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:wither\"}]}] run scoreboard players add @s tmp 1",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:wither\"}]}] run effect clear @s minecraft:wither",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:hunger\"}]}] run scoreboard players add @s tmp 1",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:hunger\"}]}] run effect clear @s minecraft:hunger",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:levitation\"}]}] run scoreboard players add @s tmp 1",
+        "execute as @e[type=#maf:friendmob,distance=..10] if entity @s[nbt={active_effects:[{id:\"minecraft:levitation\"}]}] run effect clear @s minecraft:levitation",
+        "execute as @e[type=#maf:friendmob,distance=..10] if score @s tmp matches 1.. run effect give @s minecraft:instant_health 1 0",
+        "execute as @e[type=#maf:friendmob,distance=..10] if score @s tmp matches 3.. run effect give @s minecraft:instant_health 1 1",
+        "execute as @e[type=#maf:friendmob,distance=..10] if score @s tmp matches 5.. run effect give @s minecraft:instant_health 1 2",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:heart ~ ~1 ~ 0.5 0.5 0.5 1 8",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.0",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は カースコンバート を唱えた！\"}]"
+      ],
+      "title": "カースコンバート：範囲",
+      "description": "範囲内の味方のデバフを解除し回復する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    },
+    {
+      "id": "medical_defense_area_01",
+      "castTime": 20,
+      "coolTime": 20,
+      "mpCost": 10,
+      "script": [
+        "execute as @e[type=#maf:friendmob,distance=..10] run effect give @s minecraft:resistance 120 3",
+        "execute at @e[type=#maf:friendmob,distance=..10] run particle minecraft:enchanted_hit ~ ~1 ~ 0.3 0.5 0.3 0.05 12",
+        "playsound minecraft:entity.player.levelup player @a ~ ~ ~ 2 1.5",
+        "tellraw @a[distance=..50] [{\"selector\":\"@s\"},{\"text\":\" は 医術防御 を唱えた！\"}]"
+      ],
+      "title": "医術防御：範囲",
+      "description": "範囲内の味方の耐性を付与する",
+      "generate_grimoire": true,
+      "target": "",
+      "range": 0
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"resist_slow_self_01",cost:10,cast:20,cooltime:20,title:"レジストスロウ",description:"自分自身の採掘速度低下耐性バフを付与する"}

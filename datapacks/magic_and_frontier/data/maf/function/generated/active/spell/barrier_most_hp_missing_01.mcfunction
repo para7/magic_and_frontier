@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"barrier_most_hp_missing_01",cost:10,cast:20,cooltime:20,title:"バリア：最大負傷",description:"最もHPが減っている味方（差分）の緩衝体力を付与する"}

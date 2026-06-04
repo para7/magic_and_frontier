@@ -1,0 +1,1 @@
+execute at @s run particle minecraft:heart ~ ~1.0 ~ 0.2 0.2 0.2 0.3 1 force

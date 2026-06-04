@@ -1,0 +1,1 @@
+data modify storage oh_my_dat: _[-4][-4][-4][-4][-4][-4][-4][-4].maf.magic.casting set value {kind:"active",id:"full_healing_most_damaged_01",cost:10,cast:20,cooltime:20,title:"フルヒーリング：負傷",description:"最もHPが減っている味方のHPを全回復する"}

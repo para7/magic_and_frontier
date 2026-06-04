@@ -89,6 +89,11 @@ scoreboard objectives add tmp dummy
 scoreboard objectives add tmp2 dummy
 scoreboard objectives add maf_vh_rand dummy
 
+scoreboard objectives add mafTgtHP dummy
+scoreboard objectives add mafTgtMaxHP dummy
+scoreboard objectives add mafTgtArmor dummy
+scoreboard objectives add mafTgtDiff dummy
+
 # gamerule keepInventory true
 
 # MPシステム初期化用
